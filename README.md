@@ -1,5 +1,10 @@
 ### VBoxManage Tool Location:
-```%ProgramFiles%\Oracle\VirtualBox\VBoxManage.exe```
+```
+Linux: /usr/bin/VBoxManage
+Mac OS X: /Applications/VirtualBox.app/Contents/MacOS/VBoxManage
+Oracle Solaris: /opt/VirtualBox/bin/VBoxManage
+Windows: C:\Program Files\Oracle\VirtualBox\VBoxManage.exe
+```
 
 ### Spoofed Information
 - DMI BIOS Information
