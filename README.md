@@ -1,8 +1,8 @@
 ### VBoxManage Tool Location:
-`%ProgramFiles%\Oracle\VirtualBox\VBoxManage.exe`
+```%ProgramFiles%\Oracle\VirtualBox\VBoxManage.exe```
 
 ### Configuring the BIOS DMI Information
-
+```
 DMI BIOS information (type 0)
 $ VBoxManage setextradata <VM-name> "VBoxInternal/Devices/pcbios/0/Config/DmiBIOSVendor" "BIOS Vendor"
 $ VBoxManage setextradata <VM-name> "VBoxInternal/Devices/pcbios/0/Config/DmiBIOSVersion" "BIOS Version"
@@ -44,3 +44,4 @@ $ VBoxManage setextradata <VM-name> "VBoxInternal/Devices/pcbios/0/Config/DmiPro
 DMI OEM strings (type 11)
 $ VBoxManage setextradata <VM-name> "VBoxInternal/Devices/pcbios/0/Config/DmiOEMVBoxVer" "vboxVer_1.2.3"
 $ VBoxManage setextradata <VM-name> "VBoxInternal/Devices/pcbios/0/Config/DmiOEMVBoxRev" "vboxRev_12345"
+```
