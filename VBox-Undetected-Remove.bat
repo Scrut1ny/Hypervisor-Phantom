@@ -47,3 +47,7 @@ PowerShell Rename-Item -Path "'HKLM:\HARDWARE\ACPI\SSDT\AMD\VBOXCPUT'" -NewName 
 
 reg add "HKLM\HARDWARE\DESCRIPTION\System" /v "SystemBiosDate" /t REG_SZ /d "04/23/21" /f
 reg add "HKLM\HARDWARE\DESCRIPTION\System" /v "VideoBiosVersion" /t REG_MULTI_SZ /d "Version 90.06.2E.40.0D\0Version 90.06.2E.40.0D\0Version 90.06.2E.40.0D" /f
+
+
+:: Spoofing System Uptime
+date 07/04/2018 & time 15:47

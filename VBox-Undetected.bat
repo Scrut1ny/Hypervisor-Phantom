@@ -17,6 +17,9 @@ echo(
 set /p "VM=.  # Enter VM Name: "
 
 
+:: Make sure VM storage size is 61 GB and above.
+
+
 >nul 2>&1 (
 	rem modifyvm
 	"!VBoxManager!" modifyvm "!VM!" --apic "on"
@@ -25,16 +28,22 @@ set /p "VM=.  # Enter VM Name: "
 	"!VBoxManager!" modifyvm "!VM!" --hwvirtex "on"
 	"!VBoxManager!" modifyvm "!VM!" --largepages "on"
 	"!VBoxManager!" modifyvm "!VM!" --longmode "on"
-	"!VBoxManager!" modifyvm "!VM!" --macaddress1 "6CF1481A9E03"
+	"!VBoxManager!" modifyvm "!VM!" --mac-address1 "6CF1481A9E03"
 	"!VBoxManager!" modifyvm "!VM!" --mouse "ps2"
 	"!VBoxManager!" modifyvm "!VM!" --nestedpaging "on"
 	"!VBoxManager!" modifyvm "!VM!" --pae "on"
 	"!VBoxManager!" modifyvm "!VM!" --paravirtprovider "legacy"
 	"!VBoxManager!" modifyvm "!VM!" --vtxux "on"
 	"!VBoxManager!" modifyvm "!VM!" --vtxvpid "on"
+	"!VBoxManager!" modifyvm "!VM!" --nested-hw-virt "on"
+	"!VBoxManager!" modifyvm "!VM!" --rtc-use-utc "on"
+	"!VBoxManager!" modifyvm "!VM!" --nic1 bridged
 
 	rem CPUM
 	"!VBoxManager!" setextradata "!VM!" "VBoxInternal/CPUM/EnableHVP" "0"
+	
+	rem TSC
+	"!VBoxManager!" setextradata "!VM!" "VBoxInternal/TM/TSCTiedToExecution" "1"
 
 	rem DMI BIOS Information (type 0)
 	"!VBoxManager!" setextradata "!VM!" "VBoxInternal/Devices/pcbios/0/Config/DmiBIOSVendor" "American Megatrends International, LLC."
@@ -78,23 +87,31 @@ set /p "VM=.  # Enter VM Name: "
 	"!VBoxManager!" setextradata "!VM!" "VBoxInternal/Devices/pcbios/0/Config/DmiOEMVBoxVer" ""
 	"!VBoxManager!" setextradata "!VM!" "VBoxInternal/Devices/pcbios/0/Config/DmiOEMVBoxRev" ""
 	
+	rem Disk drives
+	"!VBoxManager!" setextradata "!VM!" "VBoxInternal/Devices/ahci/0/Config/Port0/ModelNumber" "Samsung SSD 970 EVO 500GB"
+	"!VBoxManager!" setextradata "!VM!" "VBoxInternal/Devices/ahci/0/Config/Port0/SerialNumber" "5H6Y7SDFXRGJ9LL"
+	"!VBoxManager!" setextradata "!VM!" "VBoxInternal/Devices/ahci/0/Config/Port0/FirmwareRevision" "ES2OA60W"
+	
+	rem DVD/CD-ROM drives
+	"!VBoxManager!" setextradata "!VM!" "VBoxInternal/Devices/ahci/0/Config/Port1/ModelNumber" "HL-DT-ST DVDRAM GH12NS74 ATA Device"
+	"!VBoxManager!" setextradata "!VM!" "VBoxInternal/Devices/ahci/0/Config/Port1/SerialNumber" "KC6AYJ8SQ58XSS9"
+	"!VBoxManager!" setextradata "!VM!" "VBoxInternal/Devices/ahci/0/Config/Port1/FirmwareRevision" "KAA2"
+	
+	rem CD-ROM drives
+	"!VBoxManager!" setextradata "!VM!" "VBoxInternal/Devices/ahci/0/Config/Port1/ATAPIProductId" "DVD A DS8A8SH"
+	"!VBoxManager!" setextradata "!VM!" "VBoxInternal/Devices/ahci/0/Config/Port1/ATAPIRevision" "KAA2"
+	"!VBoxManager!" setextradata "!VM!" "VBoxInternal/Devices/ahci/0/Config/Port1/ATAPIVendorId" "Slimtype"
+	
+	
+	
+	
 	rem 
 	rem "!VBoxManager!" setextradata "!VM!" "VBoxInternal/Devices/acpi/0/Config/CustomTable" $SLIC
 	"!VBoxManager!" setextradata "!VM!" "VBoxInternal/Devices/acpi/0/Config/AcpiOemId" "ASUS"
-	
-	rem 
 	rem %vBox% setextradata "%VMname%" "VBoxInternal/Devices/%fw%/0/Config/DmiOEMVBoxVer" "Extended version info: 1.00.00"
 	rem %vBox% setextradata "%VMname%" "VBoxInternal/Devices/%fw%/0/Config/DmiOEMVBoxRev" "Extended revision info: 1A"
-	"!VBoxManager!" setextradata "!VM!" "VBoxInternal/Devices/acpi/0/Config/AcpiOemId" "ASUS"
-	"!VBoxManager!" setextradata "!VM!" "VBoxInternal/Devices/ahci/0/Config/Port0/FirmwareRevision" "ES2OA60W"
-	"!VBoxManager!" setextradata "!VM!" "VBoxInternal/Devices/ahci/0/Config/Port0/ModelNumber" "Hitachi HTS543230AAA384"
-	"!VBoxManager!" setextradata "!VM!" "VBoxInternal/Devices/ahci/0/Config/Port0/SerialNumber" "2E3024L1T2V9KA"
-	"!VBoxManager!" setextradata "!VM!" "VBoxInternal/Devices/ahci/0/Config/Port1/ATAPIProductId" "DVD A  DS8A8SH"
-	"!VBoxManager!" setextradata "!VM!" "VBoxInternal/Devices/ahci/0/Config/Port1/ATAPIRevision" "KAA2"
-	"!VBoxManager!" setextradata "!VM!" "VBoxInternal/Devices/ahci/0/Config/Port1/ATAPIVendorId" "Slimtype"
-	"!VBoxManager!" setextradata "!VM!" "VBoxInternal/Devices/ahci/0/Config/Port1/FirmwareRevision" "KAA2"
-	"!VBoxManager!" setextradata "!VM!" "VBoxInternal/Devices/ahci/0/Config/Port1/ModelNumber" "Slimtype DVD A  DS8A8SH"
-	"!VBoxManager!" setextradata "!VM!" "VBoxInternal/Devices/ahci/0/Config/Port1/SerialNumber" "ABCDEF0123456789"
+	
+	"!VBoxManager!" startvm "!VM!"
 	
 ) && echo( & echo   # Success & pause>nul
 
