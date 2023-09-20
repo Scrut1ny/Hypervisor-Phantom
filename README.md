@@ -7,6 +7,8 @@
 - Pearson VUE ❔
   - Pearson VUE: [System Test](https://system-test.onvue.com/system_test?customer=pearson_vue)
 - ProctorU ❔
+  - [FF Addon](https://s3-us-west-2.amazonaws.com/proctoru-assets/extension/firefox-extension-latest.xpi)
+  - [Chrome Addon](https://chrome.google.com/webstore/detail/proctoru/goobgennebinldhonaajgafidboenlkl)
 - Proctorio ❔
 - Respondus Monitor ❔
 - Kryterion ❔
