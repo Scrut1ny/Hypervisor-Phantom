@@ -1,4 +1,5 @@
 ### Test VM Detectablity with [Pafish](https://github.com/a0rtega/pafish)
+```
 - Undetected (BYPASS) ✅
 - Detected ❌
 ```
@@ -10,7 +11,6 @@
 - Respondus Monitor ❔
 - Kryterion ❔
 - Honorlock ❔
-```
 
 ### VBoxManage Tool Location:
 ```
