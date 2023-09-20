@@ -1,20 +1,16 @@
-### Test VM Detectablity with [Pafish](https://github.com/a0rtega/pafish)
-```
-- Undetected (BYPASS) ✅
-- Detected ❌
-```
-- Pafish ✅
-- Pearson VUE ❔
-  - Pearson VUE: [System Test](https://system-test.onvue.com/system_test?customer=pearson_vue)
-- ProctorU ❔
-  - [FF Addon](https://s3-us-west-2.amazonaws.com/proctoru-assets/extension/firefox-extension-latest.xpi)
-  - [Chrome Addon](https://chrome.google.com/webstore/detail/proctoru/goobgennebinldhonaajgafidboenlkl)
-- Proctorio ❔
-- Respondus Monitor ❔
-- Kryterion ❔
-- Honorlock ❔
+### Detections
+| Software | System Test | Bypass |
+| - | - |
+| Pafish | [Link](https://github.com/a0rtega/pafish) | ✅ |
+| Al-Khaser | [Link](https://github.com/LordNoteworthy/al-khaser) | ❔ |
+| Pearson VUE | [Link](https://system-test.onvue.com/system_test?customer=pearson_vue) | ❔ |
+| ProctorU | [FF Addon](https://s3-us-west-2.amazonaws.com/proctoru-assets/extension/firefox-extension-latest.xpi) [Chrome Addon](https://chrome.google.com/webstore/detail/proctoru/goobgennebinldhonaajgafidboenlkl) | ❔ |
+| Proctorio |  | ❔ |
+| Respondus |  | ❔ |
+| Kryterion |  | ❔ |
+| Honorlock |  | ❔ |
 
-### VBoxManage Tool Location:
+### Virtual Box - VBoxManage Tool Location:
 ```
 Linux: /usr/bin/VBoxManage
 Mac OS X: /Applications/VirtualBox.app/Contents/MacOS/VBoxManage
