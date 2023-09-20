@@ -22,23 +22,39 @@ set /p "VM=.  # Enter VM Name: "
 
 
 >nul 2>&1 (
-	rem modifyvm
-	"!VBoxManager!" modifyvm "!VM!" --apic "on" rem Enables or disables APIC
-	"!VBoxManager!" modifyvm "!VM!" --bios-logo-image-path "C:\XXX.bmp" rem Replaces the existing BIOS logo with a different image.
-	"!VBoxManager!" modifyvm "!VM!" --hpet "on" rem Enables or disables a High Precision Event Timer (HPET) that can replace a legacy system timer.
-	"!VBoxManager!" modifyvm "!VM!" --hwvirtex "on" rem Enables or disables the use of hardware virtualization extensions in the processor of the host system.
-	"!VBoxManager!" modifyvm "!VM!" --large-pages "on" rem Enables or disables the hypervisor’s use of large pages, which can improve performance by up to 5%. 
-	"!VBoxManager!" modifyvm "!VM!" --longmode "on" rem Enables or disables long mode.
-	"!VBoxManager!" modifyvm "!VM!" --mac-address1 "6CF1481A9E03" rem Specifies the MAC address of the specified network adapter on the VM.
-	"!VBoxManager!" modifyvm "!VM!" --mouse "ps2" rem Specifies the mode of the mouse to use in the VM.
-	"!VBoxManager!" modifyvm "!VM!" --nested-paging "on" rem Enables or disables the nested paging feature in the processor of the host system.
-	"!VBoxManager!" modifyvm "!VM!" --pae "on" rem Enables or disables physical address extension (PAE).
-	"!VBoxManager!" modifyvm "!VM!" --paravirt-provider "hyperv" rem Specifies one of the following paravirtualization interfaces to provide to the guest OS.
-	"!VBoxManager!" modifyvm "!VM!" --vtx-ux "on" rem Enables or disables the use of unrestricted guest mode for executing the guest VM.
-	"!VBoxManager!" modifyvm "!VM!" --vtx-vpid "on" rem Enables or disables the use of the tagged TLB (VPID) feature in the processor of your host system.
-	"!VBoxManager!" modifyvm "!VM!" --nested-hw-virt "on" rem Enables or disables nested virtualization. Enabling makes hardware virtualization features available to the VM. 
-	"!VBoxManager!" modifyvm "!VM!" --rtc-use-utc "on" rem Specifies whether the real-time clock (RTC) uses coordinated universal time (UTC).
-	"!VBoxManager!" modifyvm "!VM!" --nic1 bridged rem Configures the network type used by each virtual network card in the VM.
+	rem Enables or disables APIC
+	"!VBoxManager!" modifyvm "!VM!" --apic "on"
+	rem Replaces the existing BIOS logo with a different image.
+	"!VBoxManager!" modifyvm "!VM!" --bios-logo-image-path "C:\XXX.bmp"
+	rem Enables or disables a High Precision Event Timer (HPET) that can replace a legacy system timer.
+	"!VBoxManager!" modifyvm "!VM!" --hpet "on"
+	rem Enables or disables the use of hardware virtualization extensions in the processor of the host system.
+	"!VBoxManager!" modifyvm "!VM!" --hwvirtex "on"
+	rem Enables or disables the hypervisor’s use of large pages, which can improve performance by up to 5%.
+	"!VBoxManager!" modifyvm "!VM!" --large-pages "on"
+	rem Enables or disables long mode.
+	"!VBoxManager!" modifyvm "!VM!" --longmode "on"
+	rem Specifies the MAC address of the specified network adapter on the VM.
+	"!VBoxManager!" modifyvm "!VM!" --mac-address1 "6CF1481A9E03"
+	rem Specifies the mode of the mouse to use in the VM.
+	"!VBoxManager!" modifyvm "!VM!" --mouse "ps2"
+	rem Enables or disables the nested paging feature in the processor of the host system.
+	"!VBoxManager!" modifyvm "!VM!" --nested-paging "on"
+	rem Enables or disables physical address extension (PAE).
+	"!VBoxManager!" modifyvm "!VM!" --pae "on"
+	rem Specifies one of the following paravirtualization interfaces to provide to the guest OS.
+	"!VBoxManager!" modifyvm "!VM!" --paravirt-provider "hyperv"
+	rem Enables or disables the use of unrestricted guest mode for executing the guest VM.
+	"!VBoxManager!" modifyvm "!VM!" --vtx-ux "on"
+	rem Enables or disables the use of the tagged TLB (VPID) feature in the processor of your host system.
+	"!VBoxManager!" modifyvm "!VM!" --vtx-vpid "on"
+	rem Enables or disables nested virtualization. Enabling makes hardware virtualization features available to the VM. 
+	"!VBoxManager!" modifyvm "!VM!" --nested-hw-virt "on"
+	rem Specifies whether the real-time clock (RTC) uses coordinated universal time (UTC).
+	"!VBoxManager!" modifyvm "!VM!" --rtc-use-utc "on"
+	rem Configures the network type used by each virtual network card in the VM.
+	"!VBoxManager!" modifyvm "!VM!" --nic1 "bridged"
+
 
 	rem RDTSC (Read Time-Stamp Counter)
 	rem UserManual.pdf#section.10.11
@@ -47,6 +63,7 @@ set /p "VM=.  # Enter VM Name: "
 	"!VBoxManager!" setextradata "!VM!" "VBoxInternal/CPUM/EnableHVP" "0"
 	"!VBoxManager!" setextradata "!VM!" "VBoxInternal/CPUM/SSE4.1" "1"
 	"!VBoxManager!" setextradata "!VM!" "VBoxInternal/CPUM/SSE4.2" "1"
+
 
 	rem DMI BIOS Information (type 0)
 	rem UserManual.pdf#section.10.9
