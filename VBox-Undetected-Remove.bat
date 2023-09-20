@@ -10,6 +10,16 @@
 setlocal enableDelayedExpansion
 
 
+fltmc >nul 2>&1 || (
+    echo( && echo   [33m# Administrator privileges are required. && echo([0m
+    PowerShell Start -Verb RunAs '%0' 2> nul || (
+        echo   [33m# Right-click on the script and select "Run as administrator".[0m
+        >nul pause && exit 1
+    )
+    exit 0
+)
+
+
 :: HKLM\HARDWARE\ACPI
 
 :: DSDT
@@ -29,3 +39,11 @@ PowerShell Rename-Item -Path "'HKLM:\HARDWARE\ACPI\RSDT\ALASKA\VBOXXSDT'" -NewNa
 :: SSDT
 PowerShell Rename-Item -Path "'HKLM:\HARDWARE\ACPI\SSDT\VBOX__'" -NewName "'AMD'" -Force
 PowerShell Rename-Item -Path "'HKLM:\HARDWARE\ACPI\SSDT\AMD\VBOXCPUT'" -NewName "'AmdTable'" -Force
+
+
+
+
+:: HKLM\HARDWARE\DESCRIPTION\System
+
+reg add "HKLM\HARDWARE\DESCRIPTION\System" /v "SystemBiosDate" /t REG_SZ /d "04/23/21" /f
+reg add "HKLM\HARDWARE\DESCRIPTION\System" /v "VideoBiosVersion" /t REG_MULTI_SZ /d "Version 90.06.2E.40.0D\0Version 90.06.2E.40.0D\0Version 90.06.2E.40.0D" /f
