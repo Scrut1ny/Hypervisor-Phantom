@@ -4,6 +4,7 @@
 ```
 - Pafish ✅
 - Pearson VUE ❔
+  - Pearson VUE: [System Test](https://system-test.onvue.com/system_test?customer=pearson_vue)
 - ProctorU ❔
 - Proctorio ❔
 - Respondus Monitor ❔
