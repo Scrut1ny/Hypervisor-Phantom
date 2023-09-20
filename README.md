@@ -1,5 +1,15 @@
 ### Test VM Detectablity with [Pafish](https://github.com/a0rtega/pafish)
-- Currently Undetected (BYPASS) ✅
+- Undetected (BYPASS) ✅
+- Detected ❌
+```
+- Pafish ✅
+- Pearson VUE ❔
+- ProctorU ❔
+- Proctorio ❔
+- Respondus Monitor ❔
+- Kryterion ❔
+- Honorlock ❔
+```
 
 ### VBoxManage Tool Location:
 ```
