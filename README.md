@@ -27,4 +27,5 @@ Windows: C:\Program Files\Oracle\VirtualBox\VBoxManage.exe
 - DMI Processor Information
 - DMI OEM Strings
 - MAC Address
-- 
+- Disk drives
+- DVD/CD-ROM drives
