@@ -28,3 +28,6 @@ Windows: C:\Program Files\Oracle\VirtualBox\VBoxManage.exe
 - MAC Address
 - Disk drives
 - DVD/CD-ROM drives
+
+### References
+- https://www.unknowncheats.me/forum/escape-from-tarkov/418885-kvm-detection-fixes.html
