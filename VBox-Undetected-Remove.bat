@@ -27,5 +27,5 @@ PowerShell Rename-Item -Path "'HKLM:\HARDWARE\ACPI\RSDT\ASUS__'" -NewName "'ALAS
 PowerShell Rename-Item -Path "'HKLM:\HARDWARE\ACPI\RSDT\ALASKA\VBOXXSDT'" -NewName "'A_M_I_'" -Force
 
 :: SSDT
-PowerShell Rename-Item -Path "'HKLM:\HARDWARE\ACPI\SSDT\VBOX__'" -NewName "'ALASKA'" -Force
-PowerShell Rename-Item -Path "'HKLM:\HARDWARE\ACPI\SSDT\ALASKA\VBOXCPUT'" -NewName "'A_M_I_'" -Force
+PowerShell Rename-Item -Path "'HKLM:\HARDWARE\ACPI\SSDT\VBOX__'" -NewName "'AMD'" -Force
+PowerShell Rename-Item -Path "'HKLM:\HARDWARE\ACPI\SSDT\AMD\VBOXCPUT'" -NewName "'AmdTable'" -Force
