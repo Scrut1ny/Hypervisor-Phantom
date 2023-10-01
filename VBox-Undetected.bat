@@ -24,8 +24,6 @@ set /p "VM=.  # Enter VM Name: "
 >nul 2>&1 (
 	rem Enables or disables APIC
 	"!VBoxManager!" modifyvm "!VM!" --apic "on"
-	rem Replaces the existing BIOS logo with a different image.
-	"!VBoxManager!" modifyvm "!VM!" --bios-logo-image-path "C:\XXX.bmp"
 	rem Enables or disables a High Precision Event Timer (HPET) that can replace a legacy system timer.
 	"!VBoxManager!" modifyvm "!VM!" --hpet "on"
 	rem Enables or disables the use of hardware virtualization extensions in the processor of the host system.
