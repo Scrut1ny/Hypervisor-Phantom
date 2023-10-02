@@ -1,25 +1,25 @@
 <sysinfo type="smbios">
     <bios>
-      <entry name="vendor">REMOVED ENTER YOUR OWN</entry>
-      <entry name="version">REMOVED ENTER YOUR OWN</entry>
+      <entry name="vendor">American Megatrends International, LLC.</entry>
+      <entry name="version">A.K3</entry>
     </bios>
     <system>
-      <entry name="manufacturer">REMOVED ENTER YOUR OWN</entry>
-      <entry name="product">REMOVED ENTER YOUR OWN</entry>
-      <entry name="version">REMOVED ENTER YOUR OWN</entry>
+      <entry name="manufacturer">Micro-Star International Co., Ltd.</entry>
+      <entry name="product">MS-7B79</entry>
+      <entry name="version">2.0</entry>
     </system>
     <baseBoard>
-      <entry name="manufacturer">REMOVED ENTER YOUR OWN</entry>
-      <entry name="product">REMOVED ENTER YOUR OWN</entry>
-      <entry name="version">REMOVED ENTER YOUR OWN</entry>
-      <entry name="serial">REMOVED ENTER YOUR OWN</entry>
+      <entry name="manufacturer">Micro-Star International Co., Ltd.</entry>
+      <entry name="product">X470 GAMING PLUS (MS-7B79)</entry>
+      <entry name="version">2.0</entry>
+      <entry name="serial">A593233849</entry>
     </baseBoard>
     <chassis>
-      <entry name="manufacturer">REMOVED ENTER YOUR OWN</entry>
-      <entry name="version">REMOVED ENTER YOUR OWN</entry>
-      <entry name="serial">REMOVED ENTER YOUR OWN</entry>
-      <entry name="asset">REMOVED ENTER YOUR OWN</entry>
-      <entry name="sku">REMOVED ENTER YOUR OWN</entry>
+      <entry name="manufacturer">Micro-Star International Co., Ltd.</entry>
+      <entry name="version">2.0</entry>
+      <entry name="serial">To be filled by O.E.M.</entry>
+      <entry name="asset">To be filled by O.E.M.</entry>
+      <entry name="sku"></entry>
     </chassis>
   </sysinfo>
  
