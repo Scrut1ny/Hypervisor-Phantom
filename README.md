@@ -29,5 +29,6 @@ Windows: C:\Program Files\Oracle\VirtualBox\VBoxManage.exe
 - Disk drives
 - DVD/CD-ROM drives
 
-### References
+### References & Help
+- https://evasions.checkpoint.com/
 - https://www.unknowncheats.me/forum/escape-from-tarkov/418885-kvm-detection-fixes.html
