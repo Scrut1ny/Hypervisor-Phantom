@@ -41,7 +41,7 @@ set /p "VM=.  # Enter VM Name: "
 	rem Enables or disables physical address extension (PAE).
 	"!VBoxManager!" modifyvm "!VM!" --pae "on"
 	rem Specifies one of the following paravirtualization interfaces to provide to the guest OS.
-	"!VBoxManager!" modifyvm "!VM!" --paravirt-provider "hyperv"
+	"!VBoxManager!" modifyvm "!VM!" --paravirt-provider "legacy"
 	rem Enables or disables the use of unrestricted guest mode for executing the guest VM.
 	"!VBoxManager!" modifyvm "!VM!" --vtx-ux "on"
 	rem Enables or disables the use of the tagged TLB (VPID) feature in the processor of your host system.
@@ -61,6 +61,10 @@ set /p "VM=.  # Enter VM Name: "
 	"!VBoxManager!" setextradata "!VM!" "VBoxInternal/CPUM/EnableHVP" "0"
 	"!VBoxManager!" setextradata "!VM!" "VBoxInternal/CPUM/SSE4.1" "1"
 	"!VBoxManager!" setextradata "!VM!" "VBoxInternal/CPUM/SSE4.2" "1"
+
+
+	rem CustomVideoMode
+	"!VBoxManager!" setextradata "!VM!" "CustomVideoMode1" "1920x1080x32"
 
 
 	rem DMI BIOS Information (type 0)
