@@ -18,7 +18,7 @@ set /p "VM=.  # Enter VM Name: "
 
 
 :: System Name: DESKTOP-Y357A62
-:: Make sure VM storage size is 65 GB and above.
+:: Make sure VM storage size is 128 GB and above.
 
 
 >nul 2>&1 (
