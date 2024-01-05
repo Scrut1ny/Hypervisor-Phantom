@@ -30,5 +30,6 @@ Windows: C:\Program Files\Oracle\VirtualBox\VBoxManage.exe
 - DVD/CD-ROM drives
 
 ### References & Help
-- https://evasions.checkpoint.com/
-- https://www.unknowncheats.me/forum/escape-from-tarkov/418885-kvm-detection-fixes.html
+- [https://evasions.checkpoint.com/](https://evasions.checkpoint.com/)
+- [https://tulach.cc/bypassing-vmprotect-themida-vm-checks-in-vmware/](https://tulach.cc/bypassing-vmprotect-themida-vm-checks-in-vmware/)
+- [https://www.unknowncheats.me/forum/escape-from-tarkov/418885-kvm-detection-fixes.html](https://www.unknowncheats.me/forum/escape-from-tarkov/418885-kvm-detection-fixes.html)
