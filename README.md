@@ -22,7 +22,7 @@
   <details>
   <summary>Honorlock</summary>
     
-  | Function | Description |
+  | **Function** | **Description** |
   |-|-|
   | Record Webcam | Record student's testing enviroment using webcam |
   | Record Screen | Record student's screen during exam |
@@ -40,7 +40,7 @@
   <details>
   <summary>Proctorio</summary>
   
-  | Recording Settings | Verification Settings | Lock Down Settings |
+  | **Recording Settings** | **Verification Settings** | **Lock Down Settings** |
   |-|-|-|
   | Record Video | Verify Video | Force Full Screen |
   | Record Audio | Verify Audio | Only One Screen |
