@@ -10,12 +10,17 @@
 | Kryterion |  | ❔ |
 | Honorlock |  | ✅ |
 
-### VMware PRO License Key
+### Important Tips:
+* The Host and VM Machine cannot have the same IPv4 LAN address. That is a clear indicator a VM is being utilized, because network traffic from the same IPv4 LAN Address is being generated from the host.
+* Use DNS-over-HTTPS (DoH) because it's encrypted. Using a unencrypted DNS means the websites you visit are visible to all, but with DoH the most you can obtain is a external IP address.
+* Use a Virtual Private Network (VPN) to mask all traffic. Remember popular VPNs won't work with some proctoring or anti-cheat softwore, because the VPNs IP ranges might be blacklisted.
+
+### VMware PRO License Key:
 ```
 MC60H-DWHD5-H80U9-6V85M-8280D
 ```
 
-### QEMU Patch File Bypass
+### QEMU Patch File Bypass:
 * [qemu-anti-detection](https://github.com/zhaodice/qemu-anti-detection)
 
 ### Virtual Box - VBoxManage Tool Location:
