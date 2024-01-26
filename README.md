@@ -10,6 +10,9 @@
 | Kryterion |  | ❔ |
 | Honorlock |  | ❔ |
 
+### QEMU Patch File Bypass
+* [qemu-anti-detection](https://github.com/zhaodice/qemu-anti-detection)
+
 ### Virtual Box - VBoxManage Tool Location:
 ```
 Linux: /usr/bin/VBoxManage
