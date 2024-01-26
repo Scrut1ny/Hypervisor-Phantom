@@ -1,5 +1,5 @@
 ### Detections
-| Software | System Test | Bypass | Difficulty |
+| Software | System Test | Bypassed | Difficulty |
 | - | - | - | - |
 | Pafish | [Link](https://github.com/a0rtega/pafish) | ✅ |  |
 | Al-Khaser | [Link](https://github.com/LordNoteworthy/al-khaser) | ❔ |  |
