@@ -8,7 +8,7 @@
 | Proctorio |  | ❔ |  |
 | Respondus | [Link](https://download.respondus.com/lockdown/download.php) | ❔ |  |
 | Kryterion |  | ❔ |  |
-| Honorlock |  | ✅ | 😀 |
+| Honorlock | [Link](https://app.honorlock.com/install/extension) | ✅ | 😀 |
 
 ### Important Tips:
 * To bypass certain Anti-Cheats and Proctoring software you must take different approaches, some are extreme and some are simple.
