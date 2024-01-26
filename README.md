@@ -1,4 +1,4 @@
-### Detections
+### Proctoring Software
 | Software | System Test | Bypassed | Difficulty |
 | - | - | - | - |
 | Pafish | [Link](https://github.com/a0rtega/pafish) | ✅ |  |
@@ -9,6 +9,20 @@
 | Respondus | [Link](https://download.respondus.com/lockdown/download.php) | ❔ |  |
 | Kryterion |  | ❔ |  |
 | Honorlock | [Link](https://app.honorlock.com/install/extension) | ✅ | 😀 |
+
+### Proctoring Functions
+| Function | Description |
+|-|-|
+| Record Webcam | Record student's testing enviroment using webcam |
+| Record Screen | Record student's screen during exam |
+| Record Web Traffic | Log student's internet activity |
+| Room Scan | Record a 360 degree enviroment scan before the assessment begins |
+| Disable Copy/Paste | Block clipboard actions |
+| Disable Printing | Block printing exam content |
+| Browser Guard | Limit browser activity to exam content and allowed site URLs only |
+| Allowed Site URLs | Allow access to specific websites during an exam session |
+| Student Photo | Capture student photo before the assessment begins |
+| Student ID | Capture ID photo before the assessment begins |
 
 ### Important Tips:
 * To bypass certain Anti-Cheats and Proctoring software you must take different approaches, some are extreme and some are simple.
