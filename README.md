@@ -8,7 +8,7 @@
 | Proctorio |  | ❔ |
 | Respondus | [Link](https://download.respondus.com/lockdown/download.php) | ❔ |
 | Kryterion |  | ❔ |
-| Honorlock |  | ❔ |
+| Honorlock |  | ✅ |
 
 ### VMware PRO License Key
 ```
