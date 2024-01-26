@@ -27,12 +27,13 @@ Windows: C:\Program Files\Oracle\VirtualBox\VBoxManage.exe
 ```
 
 ### Spoofed Information
-- DMI BIOS Information
-- DMI System Information
-- DMI Board Information
-- DMI System Enclosure or Chassis
-- DMI Processor Information
-- DMI OEM Strings
+- DMI
+  - BIOS Information
+  - System Information
+  - Board Information
+  - System Enclosure or Chassis
+  - Processor Information
+  - OEM Strings
 - MAC Address
 - Disk drives
 - DVD/CD-ROM drives
