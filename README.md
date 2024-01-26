@@ -1,6 +1,7 @@
 ## Proctor Stuff
 <details>
 <summary>Proctoring Software</summary>
+
 | Software | Browser Extension | System Test | Bypassed | Difficulty |
 | - | - | - | - | - |
 | Pafish |  | [Link](https://github.com/a0rtega/pafish) | ✅ |  |
@@ -12,6 +13,7 @@
 | Respondus (LockDown Browser) | ✅ | [Link](https://download.respondus.com/lockdown/download.php) | ❔ |  |
 | Kryterion |  |  | ❔ |  |
 | Honorlock | ✅ | [Link](https://app.honorlock.com/install/extension) | ✅ | 😀 |
+
 </details>
 
 
@@ -19,6 +21,7 @@
 <summary>Proctoring Functions</summary>
   <details>
   <summary>Honorlock</summary>
+    
   | Function | Description |
   |-|-|
   | Record Webcam | Record student's testing enviroment using webcam |
@@ -31,6 +34,7 @@
   | Allowed Site URLs | Allow access to specific websites during an exam session |
   | Student Photo | Capture student photo before the assessment begins |
   | Student ID | Capture ID photo before the assessment begins |
+  
   </details>
 </details>
 
