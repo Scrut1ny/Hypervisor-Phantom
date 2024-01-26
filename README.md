@@ -8,7 +8,7 @@
 | Al-Khaser |  | [Link](https://github.com/LordNoteworthy/al-khaser) | ❔ |  |
 | Pearson VUE |  | [Link](https://system-test.onvue.com/system_test?customer=pearson_vue) | ❔ | 🤬 |
 | ProctorU | ✅ | [FF Addon](https://s3-us-west-2.amazonaws.com/proctoru-assets/extension/firefox-extension-latest.xpi) or [Chrome Addon](https://chrome.google.com/webstore/detail/proctoru/goobgennebinldhonaajgafidboenlkl) | ❔ |  |
-| Proctorio | ✅ |  | ❔ |  |
+| Proctorio | ✅ | [Link](https://getproctorio.com/) | ❔ |  |
 | Examity |  |  | ❔ |  |
 | Respondus (LockDown Browser) | ✅ | [Link](https://download.respondus.com/lockdown/download.php) | ❔ |  |
 | Kryterion |  |  | ❔ |  |
@@ -22,24 +22,34 @@
   <details>
   <summary>Honorlock</summary>
     
-    | Function | Description |
-    |-|-|
-    | Record Webcam | Record student's testing enviroment using webcam |
-    | Record Screen | Record student's screen during exam |
-    | Record Web Traffic | Log student's internet activity |
-    | Room Scan | Record a 360 degree enviroment scan before the assessment begins |
-    | Disable Copy/Paste | Block clipboard actions |
-    | Disable Printing | Block printing exam content |
-    | Browser Guard | Limit browser activity to exam content and allowed site URLs only |
-    | Allowed Site URLs | Allow access to specific websites during an exam session |
-    | Student Photo | Capture student photo before the assessment begins |
-    | Student ID | Capture ID photo before the assessment begins |
+  | Function | Description |
+  |-|-|
+  | Record Webcam | Record student's testing enviroment using webcam |
+  | Record Screen | Record student's screen during exam |
+  | Record Web Traffic | Log student's internet activity |
+  | Room Scan | Record a 360 degree enviroment scan before the assessment begins |
+  | Disable Copy/Paste | Block clipboard actions |
+  | Disable Printing | Block printing exam content |
+  | Browser Guard | Limit browser activity to exam content and allowed site URLs only |
+  | Allowed Site URLs | Allow access to specific websites during an exam session |
+  | Student Photo | Capture student photo before the assessment begins |
+  | Student ID | Capture ID photo before the assessment begins |
   
   </details>
 
   <details>
   <summary>Proctorio</summary>
-  
+  | Recording Settings | Verification Settings | Lock Down Settings |
+  |-|-|-|
+  | Record Video | Verify Video | Force Full Screen |
+  | Record Audio | Verify Audio | Only One Screen |
+  | Record Screen | Verify Identity | Disable New Tabs |
+  | Record Web Traffic | Verify Desktop | Close Open Tabs |
+  | Record Desk | Verify Signature | Disable Printing |
+  |  |  | Disable Clipboard |
+  |  |  | Clear Cache |
+  |  |  | Disable Right Click |
+  |  |  | Prevent Re-Entry |
   </details>
 </details>
 
