@@ -10,6 +10,11 @@
 | Kryterion |  | ❔ |
 | Honorlock |  | ❔ |
 
+### VMware PRO License Key
+```
+MC60H-DWHD5-H80U9-6V85M-8280D
+```
+
 ### QEMU Patch File Bypass
 * [qemu-anti-detection](https://github.com/zhaodice/qemu-anti-detection)
 
