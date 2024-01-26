@@ -39,6 +39,7 @@
 
   <details>
   <summary>Proctorio</summary>
+  
   | Recording Settings | Verification Settings | Lock Down Settings |
   |-|-|-|
   | Record Video | Verify Video | Force Full Screen |
@@ -50,6 +51,7 @@
   |  |  | Clear Cache |
   |  |  | Disable Right Click |
   |  |  | Prevent Re-Entry |
+  
   </details>
 </details>
 
