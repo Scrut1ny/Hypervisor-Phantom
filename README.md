@@ -1,14 +1,14 @@
 ### Detections
-| Software | System Test | Bypass |
+| Software | System Test | Bypass | Difficulty |
 | - | - | - |
-| Pafish | [Link](https://github.com/a0rtega/pafish) | ✅ |
-| Al-Khaser | [Link](https://github.com/LordNoteworthy/al-khaser) | ❔ |
-| Pearson VUE | [Link](https://system-test.onvue.com/system_test?customer=pearson_vue) | ❔ |
-| ProctorU | [FF Addon](https://s3-us-west-2.amazonaws.com/proctoru-assets/extension/firefox-extension-latest.xpi) or [Chrome Addon](https://chrome.google.com/webstore/detail/proctoru/goobgennebinldhonaajgafidboenlkl) | ❔ |
-| Proctorio |  | ❔ |
-| Respondus | [Link](https://download.respondus.com/lockdown/download.php) | ❔ |
-| Kryterion |  | ❔ |
-| Honorlock |  | ✅ |
+| Pafish | [Link](https://github.com/a0rtega/pafish) | ✅ |  |
+| Al-Khaser | [Link](https://github.com/LordNoteworthy/al-khaser) | ❔ |  |
+| Pearson VUE | [Link](https://system-test.onvue.com/system_test?customer=pearson_vue) | ❔ | 🤬 |
+| ProctorU | [FF Addon](https://s3-us-west-2.amazonaws.com/proctoru-assets/extension/firefox-extension-latest.xpi) or [Chrome Addon](https://chrome.google.com/webstore/detail/proctoru/goobgennebinldhonaajgafidboenlkl) | ❔ |  |
+| Proctorio |  | ❔ |  |
+| Respondus | [Link](https://download.respondus.com/lockdown/download.php) | ❔ |  |
+| Kryterion |  | ❔ |  |
+| Honorlock |  | ✅ | 😀 |
 
 ### Important Tips:
 * To bypass certain Anti-Cheats and Proctoring software you must take different approaches, some are extreme and some are simple.
