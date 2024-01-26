@@ -1,6 +1,6 @@
 ### Detections
 | Software | System Test | Bypass | Difficulty |
-| - | - | - |
+| - | - | - | - |
 | Pafish | [Link](https://github.com/a0rtega/pafish) | ✅ |  |
 | Al-Khaser | [Link](https://github.com/LordNoteworthy/al-khaser) | ❔ |  |
 | Pearson VUE | [Link](https://system-test.onvue.com/system_test?customer=pearson_vue) | ❔ | 🤬 |
