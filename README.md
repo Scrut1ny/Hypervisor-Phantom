@@ -69,8 +69,9 @@
 MC60H-DWHD5-H80U9-6V85M-8280D
 ```
 
-### QEMU Patch File Bypass:
-* [qemu-anti-detection](https://github.com/zhaodice/qemu-anti-detection)
+### QEMU:
+* [Windows Download](https://qemu.weilnetz.de/w64/)
+* [qemu-patch-bypass](https://github.com/zhaodice/qemu-anti-detection)
 
 ### Virtual Box - VBoxManage Tool Location:
 ```
