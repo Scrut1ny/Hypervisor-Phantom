@@ -16,6 +16,16 @@
 
 </details>
 
+<details>
+<summary>Anti-Cheat Software</summary>
+
+| Software | Bypassed | Difficulty |
+| - | - | - |
+| Easy Anti-Cheat (EAC) |  |  |
+| BattlEye |  |  |
+| Vanguard |  |  |
+
+</details>
 
 <details>
 <summary>Proctoring Functions</summary>
