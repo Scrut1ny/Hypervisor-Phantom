@@ -62,6 +62,7 @@
 * The Host and VM Machine cannot have the same IPv4 LAN address. That is a clear indicator a VM is being utilized, because network traffic from the same IPv4 LAN Address is being generated from the host.
 * Use DNS-over-HTTPS (DoH) because it's encrypted. Using a unencrypted DNS means the websites you visit are visible to all, but with DoH the most you can obtain is a external IP address.
 * Use a Virtual Private Network (VPN) to mask all traffic. Remember popular VPNs won't work with some proctoring or Anti-Cheat software, because the VPNs IP ranges might be blacklisted.
+* Make sure the VM is 128GB+ in size, any less will be flagged/detected.
 
 ### VMware PRO License Key:
 ```
