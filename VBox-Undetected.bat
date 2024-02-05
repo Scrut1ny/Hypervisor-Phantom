@@ -130,7 +130,7 @@ set /p "VM=.  # Enter VM Name: "
 	
 	rem 
 	rem "!VBoxManager!" setextradata "!VM!" "VBoxInternal/Devices/acpi/0/Config/CustomTable" $SLIC
-	"!VBoxManager!" setextradata "!VM!" "VBoxInternal/Devices/acpi/0/Config/AcpiOemId" "ASUS"
+	rem "!VBoxManager!" setextradata "!VM!" "VBoxInternal/Devices/acpi/0/Config/AcpiOemId" "ASUS"
 	rem %vBox% setextradata "%VMname%" "VBoxInternal/Devices/%fw%/0/Config/DmiOEMVBoxVer" "Extended version info: 1.00.00"
 	rem %vBox% setextradata "%VMname%" "VBoxInternal/Devices/%fw%/0/Config/DmiOEMVBoxRev" "Extended revision info: 1A"
 	
