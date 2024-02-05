@@ -92,6 +92,7 @@
 
   <details>
   <summary>VMware</summary>
+  
   ## 1st Step: Add following settings into .vmx
   ```
   hypervisor.cpuid.v0 = "FALSE"
@@ -115,6 +116,7 @@
   monitor_control.disable_btseg = "TRUE"
   monitor_control.restrict_backdoor = "TRUE"
   ```
+
   </details>
   
 </details>
