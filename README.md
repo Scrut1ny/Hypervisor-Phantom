@@ -64,6 +64,31 @@
   |  |  | Prevent Re-Entry |
   
   </details>
+
+<details>
+<summary>VM Setup Guide</summary>
+
+<details>
+<summary>Oracle VM VirtualBox</summary>
+
+- General > Advanced
+    - Shared Clipboard: Bidirectional
+    - Drag'n'Drop: Bidirectional
+- System
+    - Processor
+        - ✅ Enable PAE/NX
+        - ✅ Enable Nested VT-x/AMD-V
+    - Acceleration
+        - Paravirtualization Interface: Legacy
+        - Hardware Virtualization: ✅
+- Network
+    - Adapter 1
+        - ✅ Enable Network Adapter
+        - Attach to: `Bridged Adapter`
+        - MAC Address: Randomize fully!
+
+</details>
+
 </details>
 
 
