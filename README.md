@@ -94,6 +94,7 @@
   <summary>VMware</summary>
   
   ## 1st Step: Add following settings into .vmx
+  
   ```
   hypervisor.cpuid.v0 = "FALSE"
   board-id.reflectHost = "TRUE"
@@ -115,6 +116,46 @@
   monitor_control.disable_btpriv = "TRUE"
   monitor_control.disable_btseg = "TRUE"
   monitor_control.restrict_backdoor = "TRUE"
+  ```
+  
+  If you have a SCSI virtual disk at scsi0 slot (first slot) as your system drive, remember to add
+  
+  ```
+  scsi0:0.productID = "Whatever you want"
+  scsi0:0.vendorID = "Whatever you want"
+  ```
+  
+  I use
+  ```
+  scsi0:0.productID = "Tencent SSD"
+  scsi0:0.vendorID = "Tencent"
+  ```
+  
+  ## 2nd Step: Modify MAC address
+  
+  Modify guest's MAC address to whatever except below:
+  ```
+  	TCHAR *szMac[][2] = {
+  		{ _T("\x00\x05\x69"), _T("00:05:69") }, // VMWare, Inc.
+  		{ _T("\x00\x0C\x29"), _T("00:0c:29") }, // VMWare, Inc.
+  		{ _T("\x00\x1C\x14"), _T("00:1C:14") }, // VMWare, Inc.
+  		{ _T("\x00\x50\x56"), _T("00:50:56") },	// VMWare, Inc.
+  	};
+  ```
+  
+  ![mac](https://github.com/hzqst/VmwareHardenedLoader/raw/master/img/4.png)
+  
+  You could add
+  
+  ```
+  ethernet0.address = "Some random mac address"
+  ```
+  Into vmx file instead of modifying MAC address in VMware GUI
+  
+  I use
+  
+  ```
+  ethernet0.address = "00:11:56:20:D2:E8"
   ```
 
   </details>
