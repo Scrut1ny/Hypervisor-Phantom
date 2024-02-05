@@ -199,6 +199,9 @@ Windows: C:\Program Files\Oracle\VirtualBox\VBoxManage.exe
 - MAC Address
 - Disk drives
 - DVD/CD-ROM drives
+- Registry
+- Device Manager
+- Hardware
 
 ### References & Help
 - [https://evasions.checkpoint.com/](https://evasions.checkpoint.com/)
