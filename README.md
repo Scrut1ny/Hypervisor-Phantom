@@ -69,7 +69,7 @@
 <summary>VM Setup Guide</summary>
   <details>
   <summary>Oracle VM VirtualBox</summary>
-
+    
   - General > Advanced
       - Shared Clipboard: Bidirectional
       - Drag'n'Drop: Bidirectional
@@ -85,8 +85,9 @@
           - ✅ Enable Network Adapter
           - Attach to: `Bridged Adapter`
           - MAC Address: Randomize fully!
+      
   </details>
-
+  
 </details>
 
 
