@@ -177,7 +177,8 @@ MC60H-DWHD5-H80U9-6V85M-8280D
 ```
 
 ### QEMU:
-* [Windows Download](https://qemu.weilnetz.de/w64/)
+* [QEMU](https://qemu.weilnetz.de/w64/)
+* [QtEmu](https://sourceforge.net/projects/qtemu/)
 * [qemu-patch-bypass](https://github.com/zhaodice/qemu-anti-detection)
 
 ### Virtual Box - VBoxManage Tool Location:
