@@ -1,3 +1,8 @@
+### Set execution policy to be able to run scripts only in the current PowerShell session:
+```
+Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
+```
+
 ## Proctor Info
 <details>
 <summary>Proctoring Software</summary>
