@@ -104,6 +104,23 @@ if (Test-Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Oracle 
 
 
 # ==================================================
+# Remove Flagged/Detected VBox Device form Device Manager
+# ==================================================
+
+
+$devices = Get-PnpDevice | Where-Object { $_.FriendlyName -match "Base System Device|Unknown Device" }
+
+if ($devices) {
+    foreach ($device in $devices) {
+        $null = pnputil /remove-driver $device.InstanceId /uninstall /force
+        Write-Host "Removed device: $($device.FriendlyName)"
+    }
+} else {
+    Write-Host "No devices found with names matching 'Base System Device' or 'Unknown Device'."
+}
+
+
+# ==================================================
 # Custom DNS
 # ==================================================
 
@@ -122,5 +139,7 @@ Clear-DnsClientCache
 
 
 # ==================================================
-# 
+# Restart System to Apply changes
 # ==================================================
+
+Restart-Computer -Force
