@@ -211,6 +211,7 @@ Windows: C:\Program Files\Oracle\VirtualBox\VBoxManage.exe
 
 ### References & Help
 - [https://evasions.checkpoint.com/](https://evasions.checkpoint.com/)
+- [https://superuser.com/questions/625648/virtualbox-how-to-force-a-specific-cpu-to-the-guest](https://superuser.com/questions/625648/virtualbox-how-to-force-a-specific-cpu-to-the-guest)
 - [https://github.com/d4rksystem/VBoxCloak](https://github.com/d4rksystem/VBoxCloak)
 - [https://github.com/nsmfoo/antivmdetection](https://github.com/nsmfoo/antivmdetection)
 - [https://tulach.cc/bypassing-vmprotect-themida-vm-checks-in-vmware/](https://tulach.cc/bypassing-vmprotect-themida-vm-checks-in-vmware/)
