@@ -3,11 +3,9 @@
 # ==================================================
 
 
-$isAdmin = ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
-if (-not $isAdmin) {
-	Write-Host "`n  [92m# Administrator privileges are required.[0m"
-	Start-Process powershell -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`"" -Verb RunAs
-	exit
+if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+    Start-Process powershell -ArgumentList "-NoProfile -ExecutionPolicy Bypass -Command `"cd '$($PWD.Path)' ; & '$($myInvocation.InvocationName)'`"" -Verb RunAs
+    Exit
 }
 
 
@@ -23,6 +21,35 @@ Rename-Computer -NewName "DESKTOP-$RandomString" -Force *>$null
 
 
 # ==================================================
+# Legit Install Date & Time (https://www.epochconverter.com/ldap)
+# ==================================================
+
+
+# Generate random values for month, day, year, hour, minute, and second
+$month = Get-Random -Minimum 1 -Maximum 13
+$day = Get-Random -Minimum 1 -Maximum 32
+$year = Get-Random -Minimum 2011 -Maximum 2023
+$hour = Get-Random -Minimum 0 -Maximum 24
+$minute = Get-Random -Minimum 0 -Maximum 60
+$second = Get-Random -Minimum 0 -Maximum 60
+
+# Construct the DateTime object
+$dateTime = Get-Date -Year $year -Month $month -Day $day -Hour $hour -Minute $minute -Second $second
+
+# Convert the DateTime object to Unix timestamp and LDAP/FILETIME timestamp
+$unixTimestamp = [int]((Get-Date $dateTime).ToUniversalTime()-[datetime]'1970-01-01 00:00:00').TotalSeconds
+$LDAP_FILETIME_timestamp = ($unixTimestamp + 11644473600) * 10000000
+
+# Set the Custom Inputted Date & Time in the registry
+try {
+    Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion" -Name "InstallDate" -Value "$unixTimestamp" -Force
+    Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion" -Name "InstallTime" -Value "$LDAP_FILETIME_timestamp" -Force
+} catch {
+    Write-Error "Failed to set registry values: $_"
+}
+
+
+# ==================================================
 # Device Manager: 'Friendly name' Spoofing
 # ==================================================
 
@@ -33,6 +60,23 @@ foreach ($deviceID in $deviceIDs) {
 	$registryPath = "HKLM:\SYSTEM\CurrentControlSet\Enum\$deviceID"
 	Set-ItemProperty -Path "$registryPath" -Name "FriendlyName" -Value "Samsung SSD" -Force
 	Write-Host "Set FriendlyName for $deviceID to 'Samsung SSD'"
+}
+
+
+# ==================================================
+# Removes Flagged/Detected VBox Device(s) from Device Manager
+# ==================================================
+
+
+$devices = Get-PnpDevice | Where-Object { $_.FriendlyName -match "Base System Device|Unknown Device" }
+
+if ($devices) {
+    foreach ($device in $devices) {
+        $null = pnputil /remove-driver $device.InstanceId /uninstall /force
+        Write-Host "Removed device: $($device.FriendlyName)"
+    }
+} else {
+    Write-Host "No devices found with names matching 'Base System Device' or 'Unknown Device'."
 }
 
 
@@ -85,8 +129,8 @@ foreach ($PortNumber in 0..9) {
 
 			if (Test-Path -Path $registryPath) {
 				$NewString = Get-UpperRandomString
-				Set-ItemProperty -Path $registryPath -Name 'Identifier' -Type String -Value "NVMe Samsung SSD 980" -Force
-				Set-ItemProperty -Path $registryPath -Name 'SerialNumber' -Type String -Value "$NewString" -Force
+				Set-ItemProperty -Path "$registryPath" -Name 'Identifier' -Type String -Value "NVMe Samsung SSD 980" -Force
+				Set-ItemProperty -Path "$registryPath" -Name 'SerialNumber' -Type String -Value "$NewString" -Force
 			}
 		}
     }
@@ -100,23 +144,6 @@ foreach ($PortNumber in 0..9) {
 
 if (Test-Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Oracle VM VirtualBox Guest Additions") {
     Remove-Item "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Oracle VM VirtualBox Guest Additions" -Recurse -Force
-}
-
-
-# ==================================================
-# Remove Flagged/Detected VBox Device form Device Manager
-# ==================================================
-
-
-$devices = Get-PnpDevice | Where-Object { $_.FriendlyName -match "Base System Device|Unknown Device" }
-
-if ($devices) {
-    foreach ($device in $devices) {
-        $null = pnputil /remove-driver $device.InstanceId /uninstall /force
-        Write-Host "Removed device: $($device.FriendlyName)"
-    }
-} else {
-    Write-Host "No devices found with names matching 'Base System Device' or 'Unknown Device'."
 }
 
 
