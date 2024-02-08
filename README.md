@@ -209,6 +209,9 @@ Windows: C:\Program Files\Oracle\VirtualBox\VBoxManage.exe
 - Device Manager
 - Hardware
 
+### Spoofing Software
+- [Read & Write Everything](http://rweverything.com/download/)
+
 ### References & Help
 - [https://evasions.checkpoint.com/](https://evasions.checkpoint.com/)
 - [https://forums.virtualbox.org/viewtopic.php?t=81600](https://forums.virtualbox.org/viewtopic.php?t=81600)
