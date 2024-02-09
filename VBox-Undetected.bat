@@ -24,7 +24,9 @@ set /p "VM=.  # Enter VM Name: "
 	"!VBoxManager!" modifyvm "!VM!" --drag-and-drop "bidirectional"
 	
 	rem Specifies the mode of the mouse to use in the VM.
-	"!VBoxManager!" modifyvm "!VM!" --mouse "ps2"
+	"!VBoxManager!" modifyvm "!VM!" --mouse "usb"
+	rem Specifies the mode of the keyboard to use in the VM.
+	"!VBoxManager!" modifyvm "!VM!" --keyboard "usb"
 	rem Specifies whether the real-time clock (RTC) uses coordinated universal time (UTC).
 	"!VBoxManager!" modifyvm "!VM!" --rtc-use-utc "off"
 	
@@ -38,6 +40,9 @@ set /p "VM=.  # Enter VM Name: "
 	rem Enables or disables the nested paging feature in the processor of the host system.
 	"!VBoxManager!" modifyvm "!VM!" --nested-paging "on"
 	
+	rem Enables you to configure multiple monitors.
+	"!VBoxManager!" modifyvm "!VM!" --monitor-count "1"
+	
 	rem Configures the network type used by each virtual network card in the VM.
 	"!VBoxManager!" modifyvm "!VM!" --nic1 "bridged"
 	rem Specifies the MAC address of the specified network adapter on the VM.
@@ -46,7 +51,7 @@ set /p "VM=.  # Enter VM Name: "
 	
 	rem RDTSC (Read Time-Stamp Counter)
 	rem UserManual.pdf#section.10.11
-	"!VBoxManager!" setextradata "!VM!" "VBoxInternal/TM/TSCTiedToExecution" "1"
+	rem "!VBoxManager!" setextradata "!VM!" "VBoxInternal/TM/TSCTiedToExecution" "1"
 	rem "!VBoxManager!" setextradata "!VM!" "VBoxInternal/TM/TSCMode" "RealTSCOffset"
 	rem "!VBoxManager!" setextradata "!VM!" "VBoxInternal/CPUM/EnableHVP" "0"
 	rem "!VBoxManager!" setextradata "!VM!" "VBoxInternal/CPUM/SSE4.1" "1"
@@ -59,9 +64,9 @@ set /p "VM=.  # Enter VM Name: "
 	rem Enables or disables the hypervisor’s use of large pages, which can improve performance by up to 5%.
 	"!VBoxManager!" modifyvm "!VM!" --large-pages "on"
 	rem Enables or disables a High Precision Event Timer (HPET) that can replace a legacy system timer.
-	"!VBoxManager!" modifyvm "!VM!" --hpet "on"
+	rem "!VBoxManager!" modifyvm "!VM!" --hpet "on"
 	rem Specifies the profile to use for guest CPU emulation
-	"!VBoxManager!" modifyvm "!VM!" --cpu-profile "Intel 8086"
+	rem "!VBoxManager!" modifyvm "!VM!" --cpu-profile "Intel 8086"
 	
 	rem "!VBoxManager!" modifyvm "!VM!" --cpuid-remove-all
 	
