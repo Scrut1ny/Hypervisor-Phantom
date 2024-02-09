@@ -27,21 +27,16 @@ set /p "VM=.  # Enter VM Name: "
 	"!VBoxManager!" modifyvm "!VM!" --mouse "ps2"
 	rem Specifies the mode of the keyboard to use in the VM.
 	"!VBoxManager!" modifyvm "!VM!" --keyboard "ps2"
-	rem Specifies whether the real-time clock (RTC) uses coordinated universal time (UTC).
-	"!VBoxManager!" modifyvm "!VM!" --rtc-use-utc "off"
 	
 	rem Enables or disables physical address extension (PAE).
 	"!VBoxManager!" modifyvm "!VM!" --pae "on"
 	rem Enables or disables nested virtualization. Enabling makes hardware virtualization features available to the VM. 
 	"!VBoxManager!" modifyvm "!VM!" --nested-hw-virt "on"
 	
-	rem Specifies one of the following paravirtualization interfaces to provide to the guest OS.
-	"!VBoxManager!" modifyvm "!VM!" --paravirt-provider "hyperv"
-	rem Enables or disables the nested paging feature in the processor of the host system.
-	"!VBoxManager!" modifyvm "!VM!" --nested-paging "on"
-	
-	rem Enables you to configure multiple monitors.
-	"!VBoxManager!" modifyvm "!VM!" --monitor-count "1"
+	rem Specifies whether to enable or disable audio capture from the host system.
+	"!VBoxManager!" modifyvm "!VM!" --audio-in "on"
+	rem Specifies whether to enable or disable audio playback from the guest VM.
+	"!VBoxManager!" modifyvm "!VM!" --audio-out "on"
 	
 	rem Configures the network type used by each virtual network card in the VM.
 	"!VBoxManager!" modifyvm "!VM!" --nic1 "bridged"
@@ -49,13 +44,6 @@ set /p "VM=.  # Enter VM Name: "
 	"!VBoxManager!" modifyvm "!VM!" --mac-address1 "00065B1A9E03"
 	
 	
-	rem RDTSC (Read Time-Stamp Counter)
-	rem UserManual.pdf#section.10.11
-	rem "!VBoxManager!" setextradata "!VM!" "VBoxInternal/TM/TSCTiedToExecution" "1"
-	rem "!VBoxManager!" setextradata "!VM!" "VBoxInternal/TM/TSCMode" "RealTSCOffset"
-	rem "!VBoxManager!" setextradata "!VM!" "VBoxInternal/CPUM/EnableHVP" "0"
-	rem "!VBoxManager!" setextradata "!VM!" "VBoxInternal/CPUM/SSE4.1" "1"
-	rem "!VBoxManager!" setextradata "!VM!" "VBoxInternal/CPUM/SSE4.2" "1"
 	
 	rem Enables or disables the use of hardware virtualization extensions in the processor of the host system.
 	"!VBoxManager!" modifyvm "!VM!" --hwvirtex "on"
@@ -65,14 +53,30 @@ set /p "VM=.  # Enter VM Name: "
 	"!VBoxManager!" modifyvm "!VM!" --large-pages "on"
 	rem Enables or disables a High Precision Event Timer (HPET) that can replace a legacy system timer.
 	rem "!VBoxManager!" modifyvm "!VM!" --hpet "on"
-	rem Specifies the profile to use for guest CPU emulation
-	rem "!VBoxManager!" modifyvm "!VM!" --cpu-profile "Intel 8086"
+	rem Enables or disables the nested paging feature in the processor of the host system.
+	"!VBoxManager!" modifyvm "!VM!" --nested-paging "on"
 	
-	rem "!VBoxManager!" modifyvm "!VM!" --cpuid-remove-all
+	rem "%ProgramFiles%\Oracle\VirtualBox\VBoxManage.exe" list cpu-profiles
+	rem "%ProgramFiles%\Oracle\VirtualBox\VBoxManage.exe" list hostcpuids
 	
+	rem RDTSC (Read Time-Stamp Counter)
+	rem UserManual.pdf#section.10.11
+	"!VBoxManager!" setextradata "!VM!" "VBoxInternal/TM/TSCTiedToExecution" "1"
+	"!VBoxManager!" setextradata "!VM!" "VBoxInternal/TM/TSCMode" "RealTSCOffset"
+	"!VBoxManager!" setextradata "!VM!" "VBoxInternal/CPUM/EnableHVP" "0"
+	"!VBoxManager!" setextradata "!VM!" "VBoxInternal/CPUM/SSE4.1" "1"
+	"!VBoxManager!" setextradata "!VM!" "VBoxInternal/CPUM/SSE4.2" "1"
 	
-	rem CustomVideoMode
-	"!VBoxManager!" setextradata "!VM!" "CustomVideoMode1" "1920x1080x32"
+	rem BYPASS: CPU Brand
+	"!VBoxManager!" modifyvm "!VM!" --cpu-profile "AMD Ryzen 7 1800X Eight-Core"
+	rem "!VBoxManager!" modifyvm "!VM!" --cpuid-set ""
+	
+	rem BYPASS: CPU Vendor - Hypervisor (VboxVboxVbox)
+	"!VBoxManager!" modifyvm "!VM!" --paravirtdebug "enabled=1,vendor=AuthenticAMD"
+	
+	rem BYPASS: Task Manager VM Detection
+	"!VBoxManager!" modifyvm "!VM!" --paravirtprovider "none"
+
 
 
 	rem DMI BIOS Information (type 0)
@@ -104,8 +108,8 @@ set /p "VM=.  # Enter VM Name: "
 	"!VBoxManager!" setextradata "!VM!" "VBoxInternal/Devices/pcbios/0/Config/DmiProcVersion" "AMD Ryzen 7 7700X 8-Core Processor"
 
 	rem DMI OEM strings (type 11)
-	"!VBoxManager!" setextradata "!VM!" "VBoxInternal/Devices/pcbios/0/Config/DmiOEMVBoxVer" "To be filled by O.E.M."
-	"!VBoxManager!" setextradata "!VM!" "VBoxInternal/Devices/pcbios/0/Config/DmiOEMVBoxRev" "To be filled by O.E.M."
+	"!VBoxManager!" setextradata "!VM!" "VBoxInternal/Devices/pcbios/0/Config/DmiOEMVBoxVer" "<EMPTY>"
+	"!VBoxManager!" setextradata "!VM!" "VBoxInternal/Devices/pcbios/0/Config/DmiOEMVBoxRev" "<EMPTY>"
 	
 	rem Configuring the Hard Disk Vendor Product Data (VPD) (10.7.2)
 	"!VBoxManager!" setextradata "!VM!" "VBoxInternal/Devices/ahci/0/Config/Port0/ModelNumber" "Samsung SSD 980 EVO"
@@ -120,9 +124,6 @@ set /p "VM=.  # Enter VM Name: "
 	"!VBoxManager!" setextradata "!VM!" "VBoxInternal/Devices/ahci/0/Config/Port1/ATAPIProductId" "DVD A DS8A8SH"
 	"!VBoxManager!" setextradata "!VM!" "VBoxInternal/Devices/ahci/0/Config/Port1/ATAPIRevision" "KAA2"
 	"!VBoxManager!" setextradata "!VM!" "VBoxInternal/Devices/ahci/0/Config/Port1/ATAPIVendorId" "Slimtype"
-	
-	rem "!VBoxManager!" setextradata "!VM!" "VBoxInternal/Devices/acpi/0/Config/CustomTable" $SLIC
-	rem "!VBoxManager!" setextradata "!VM!" "VBoxInternal/Devices/acpi/0/Config/AcpiOemId" "ASUS"
 	
 	"!VBoxManager!" startvm "!VM!"
 	
