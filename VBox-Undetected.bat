@@ -24,9 +24,9 @@ set /p "VM=.  # Enter VM Name: "
 	"!VBoxManager!" modifyvm "!VM!" --drag-and-drop "bidirectional"
 	
 	rem Specifies the mode of the mouse to use in the VM.
-	"!VBoxManager!" modifyvm "!VM!" --mouse "usb"
+	"!VBoxManager!" modifyvm "!VM!" --mouse "ps2"
 	rem Specifies the mode of the keyboard to use in the VM.
-	"!VBoxManager!" modifyvm "!VM!" --keyboard "usb"
+	"!VBoxManager!" modifyvm "!VM!" --keyboard "ps2"
 	rem Specifies whether the real-time clock (RTC) uses coordinated universal time (UTC).
 	"!VBoxManager!" modifyvm "!VM!" --rtc-use-utc "off"
 	
