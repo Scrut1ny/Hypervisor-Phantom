@@ -72,7 +72,7 @@ $devices = Get-PnpDevice | Where-Object { $_.FriendlyName -match "Base System De
 
 if ($devices) {
     foreach ($device in $devices) {
-        $null = pnputil /remove-driver $device.InstanceId /uninstall /force
+        $null = pnputil /remove-driver $device.InstanceId /uninstall /force; pnputil /scan-devices
         Write-Host "Removed device: $($device.FriendlyName)"
     }
 } else {
@@ -101,14 +101,23 @@ Rename-Item -Path "HKLM:\HARDWARE\ACPI\RSDT\ALASKA\VBOXXSDT" -NewName "A_M_I_" -
 Rename-Item -Path "HKLM:\HARDWARE\ACPI\SSDT\VBOX__" -NewName "AMD" -Force
 Rename-Item -Path "HKLM:\HARDWARE\ACPI\SSDT\AMD\VBOXCPUT" -NewName "AmdTable" -Force
 
-# Removing/Modifying Identifiers
+# System
 Remove-ItemProperty -Path "HKLM:\HARDWARE\DESCRIPTION\System" -Name "SystemBiosDate" -Force
 Remove-ItemProperty -Path "HKLM:\HARDWARE\DESCRIPTION\System" -Name "SystemBiosVersion" -Force
 Remove-ItemProperty -Path "HKLM:\HARDWARE\DESCRIPTION\System" -Name "VideoBiosVersion" -Force
+
+# SystemInformation
 Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\SystemInformation" -Name "BIOSReleaseDate" -Value "11/23/2023" -Force
 Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\SystemInformation" -Name "BIOSVersion" -Value "1.A0" -Force
 Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\SystemInformation" -Name "SystemManufacturer" -Value "Micro-Star International Co., Ltd." -Force
 Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\SystemInformation" -Name "SystemProductName" -Value "MS-7D78" -Force
+
+# HardwareConfig
+$lastConfig = Get-ItemProperty -Path "HKLM:\SYSTEM\HardwareConfig" -Name "LastConfig"
+$guidValue = $lastConfig.LastConfig
+
+Set-ItemProperty -Path "HKLM:\SYSTEM\HardwareConfig\$guidValue" -Name "SystemBiosVersion" -Value "ALASKA - 1072009", "01.A0", "American Megatrends - 50020" -Force
+Set-ItemProperty -Path "HKLM:\SYSTEM\HardwareConfig\$guidValue" -Name "SystemFamily" -Value "To be filled by O.E.M." -Force
 
 
 # ==================================================
