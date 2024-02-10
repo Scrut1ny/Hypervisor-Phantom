@@ -3,6 +3,10 @@
 Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
 ```
 
+### TODO LIST:
+- Bypass RDTSC checks
+- Bypass/fix Vbox monitor settings SEB error
+
 ### Setup Guide
 
 
