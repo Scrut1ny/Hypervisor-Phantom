@@ -223,6 +223,7 @@ Windows: C:\Program Files\Oracle\VirtualBox\VBoxManage.exe
 
 ### References & Help
 - [https://evasions.checkpoint.com/](https://evasions.checkpoint.com/)
+- [https://www.hexacorn.com/blog/2014/08/25/protecting-vmware-from-cpuid-hypervisor-detection/](https://www.hexacorn.com/blog/2014/08/25/protecting-vmware-from-cpuid-hypervisor-detection/)
 - [https://forums.virtualbox.org/viewtopic.php?t=78859](https://forums.virtualbox.org/viewtopic.php?t=78859)
 - [https://github.com/nxvvvv/safe-exam-browser-bypass](https://github.com/nxvvvv/safe-exam-browser-bypass)
 - [https://forums.virtualbox.org/viewtopic.php?t=81600](https://forums.virtualbox.org/viewtopic.php?t=81600)
