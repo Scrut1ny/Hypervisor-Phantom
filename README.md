@@ -203,6 +203,7 @@ Windows: C:\Program Files\Oracle\VirtualBox\VBoxManage.exe
 ```
 
 ### Spoofed Information
+- CPUID
 - DMI
   - BIOS Information
   - System Information
