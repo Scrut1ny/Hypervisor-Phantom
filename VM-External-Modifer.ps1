@@ -42,6 +42,7 @@ if ($Hypervisor -eq "vbox") {
 		& $VBoxManager modifyvm $VM --large-pages "on" --firmware "efi"
 		
 		# ===== Storage Config [SATA > NVMe] =====
+		# Important: Must install Windows on the .vdi attachment before switching to a NVMe Controller.
 		& $VBoxManager storagectl $VM --name "NVMe" --add "pcie" --controller "NVMe" --bootable "on"
 		& $VBoxManager storageattach $VM --storagectl "SATA" --port "0" --device "0" --medium "none"
 		& $VBoxManager storageattach $VM --storagectl "NVMe" --port "0" --device "0" --type hdd --medium "$VDI" --nonrotational "on"
