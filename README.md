@@ -19,9 +19,9 @@ Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
 | Pafish |  | [Link](https://github.com/a0rtega/pafish) | ✅ |  |
 | Al-Khaser |  | [Link](https://github.com/LordNoteworthy/al-khaser) | ❔ |  |
 | Pearson VUE |  | [Link](https://system-test.onvue.com/system_test?customer=pearson_vue) | ❔ | 🤬 |
-| ProctorU | ✅ | [FF Addon](https://s3-us-west-2.amazonaws.com/proctoru-assets/extension/firefox-extension-latest.xpi) or [Chrome Addon](https://chrome.google.com/webstore/detail/proctoru/goobgennebinldhonaajgafidboenlkl) | ❔ |  |
+| ProctorU | ✅ | [FF Addon](https://s3-us-west-2.amazonaws.com/proctoru-assets/extension/firefox-extension-latest.xpi) or [Chrome Addon](https://chrome.google.com/webstore/detail/proctoru/goobgennebinldhonaajgafidboenlkl) | ✅ |  |
 | ProctorU: Guardian Browser |  | [Link](https://guardian.meazurelearning.com/) | ❔ |  |
-| Proctorio | ✅ | [Link](https://getproctorio.com/) | ❔ |  |
+| Proctorio | ✅ | [Link](https://getproctorio.com/) | ✅ |  |
 | Examity |  |  | ❔ |  |
 | Respondus (LockDown Browser) | ✅ | [Link](https://download.respondus.com/lockdown/download.php) | ❔ |  |
 | Kryterion |  |  | ❔ |  |
