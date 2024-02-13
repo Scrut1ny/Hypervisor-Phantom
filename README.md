@@ -175,7 +175,7 @@ Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
 
   <details>
   <summary>QEMU/KVM</summary>
-  - [QEMU Setup Guide](https://christitus.com/vm-setup-in-linux/)
+    - [QEMU Setup Guide](https://christitus.com/vm-setup-in-linux/)
     
   </details>
   
