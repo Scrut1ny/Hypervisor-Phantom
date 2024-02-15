@@ -4,13 +4,11 @@ Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
 ```
 
 ### TODO LIST:
-- Bypass RDTSC checks
-- Bypass/fix Vbox monitor settings SEB error
+- Fix:
+    - RDTSC force VM Exit check
+    - Vbox failed to query monitor/displays via SEB ()
 
-### Setup Guide
-
-
-## Proctor Info
+### Proctor Info
 <details>
 <summary>Proctoring Software</summary>
 
