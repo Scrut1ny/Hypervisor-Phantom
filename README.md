@@ -108,26 +108,14 @@ Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
   
   ```
   hypervisor.cpuid.v0 = "FALSE"
-  board-id.reflectHost = "TRUE"
-  hw.model.reflectHost = "TRUE"
-  serialNumber.reflectHost = "TRUE"
-  SMBIOS.reflectHost = "TRUE"
-  SMBIOS.noOEMStrings = "TRUE"
-  SMBIOS.addHostVendor = "TRUE"
+  smbios.reflectHost = "TRUE"
+  monitor_control.virtual_rdtsc = "FALSE"
+  monitor_control.restrict_backdoor = "TRUE"
   isolation.tools.getPtrLocation.disable = "TRUE"
   isolation.tools.setPtrLocation.disable = "TRUE"
   isolation.tools.setVersion.disable = "TRUE"
   isolation.tools.getVersion.disable = "TRUE"
   monitor_control.disable_directexec = "TRUE"
-  monitor_control.disable_chksimd = "TRUE"
-  monitor_control.disable_ntreloc = "TRUE"
-  monitor_control.disable_selfmod = "TRUE"
-  monitor_control.disable_reloc = "TRUE"
-  monitor_control.disable_btinout = "TRUE"
-  monitor_control.disable_btmemspace = "TRUE"
-  monitor_control.disable_btpriv = "TRUE"
-  monitor_control.disable_btseg = "TRUE"
-  monitor_control.restrict_backdoor = "TRUE"
   ```
   
   If you have a SCSI virtual disk at scsi0 slot (first slot) as your system drive, remember to add
