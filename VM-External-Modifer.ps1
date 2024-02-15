@@ -37,31 +37,28 @@ if ($Hypervisor -eq "vbox") {
 		& $VBoxManager modifyvm $VM --pae "on" --nested-hw-virt "on"
 		& $VBoxManager modifyvm $VM --paravirtprovider "none" --nested-paging "on"
 		& $VBoxManager modifyvm $VM --audio-out "on" --audio-in "on"
-		& $VBoxManager modifyvm $VM --nic1 "bridged" --mac-address1 "408D5C257A8B"
+		& $VBoxManager modifyvm $VM --nic1 "bridged" --mac-address1 "428D5C257A8B"
 		& $VBoxManager modifyvm $VM --hwvirtex "on" --vtx-ux "on"
-		& $VBoxManager modifyvm $VM --large-pages "on" --firmware "efi"
+		& $VBoxManager modifyvm $VM --large-pages "on"
 		
 		# ===== Storage Config [SATA > NVMe] =====
 		# Important: Must install Windows on the .vdi attachment before switching to a NVMe Controller.
-		& $VBoxManager storagectl $VM --name "NVMe" --add "pcie" --controller "NVMe" --bootable "on"
-		& $VBoxManager storageattach $VM --storagectl "SATA" --port "0" --device "0" --medium "none"
-		& $VBoxManager storageattach $VM --storagectl "NVMe" --port "0" --device "0" --type hdd --medium "$VDI" --nonrotational "on"
+		# & $VBoxManager storagectl $VM --name "NVMe" --add "pcie" --controller "NVMe" --bootable "on"
+		# & $VBoxManager storageattach $VM --storagectl "SATA" --port "0" --device "0" --medium "none"
+		# & $VBoxManager storageattach $VM --storagectl "NVMe" --port "0" --device "0" --type "hdd" --medium "$VDI" --nonrotational "on"
 		# NVMe Fix
 		# & $VBoxManager setextradata $VM "VBoxInternal/Devices/nvme/0/Config/MsiXSupported" "0"
 		# & $VBoxManager setextradata $VM "VBoxInternal/Devices/nvme/0/Config/CtrlMemBufSize" "0"
 		
-		# ===== CPUID [feature bits - hypervisor vendor - VM vendor] =====
-		# & $VBoxManager modifyvm $VM --cpuid-set "00000001", "00a60f12", "02100800", "7ed8320b", "178bfbff"
+		# ===== CPU =====
+		# CPUID
 		& $VBoxManager modifyvm $VM --cpu-profile "AMD Ryzen 7 1800X Eight-Core"
-		# & $VBoxManager modifyvm $VM --paravirtdebug "enabled=1,vendor=AuthenticAMD"
-		# & $VBoxManager modifyvm $VM --paravirtdebug "enabled=1,vendor=GenuineIntel"
-		
-		# ===== CPU [RDTSC (Read Time-Stamp Counter)] =====
-		& $VBoxManager setextradata $VM "VBoxInternal/TM/TSCTiedToExecution" "1"
+		# RDTSC (Read Time-Stamp Counter)
 		& $VBoxManager setextradata $VM "VBoxInternal/TM/TSCMode" "RealTSCOffset"
-		& $VBoxManager setextradata $VM "VBoxInternal/CPUM/EnableHVP" "0"
 		& $VBoxManager setextradata $VM "VBoxInternal/CPUM/SSE4.1" "1"
 		& $VBoxManager setextradata $VM "VBoxInternal/CPUM/SSE4.2" "1"
+		# RDTSC VM Exit (Read Time-Stamp Counter)
+		
 
 		# ===== SMBIOS DMI =====
 		# DMI BIOS Information (type 0)
@@ -102,7 +99,7 @@ if ($Hypervisor -eq "vbox") {
 		& $VBoxManager setextradata $VM "VBoxInternal/Devices/ahci/0/Config/Port1/ATAPIRevision" "KAA2"
 		& $VBoxManager setextradata $VM "VBoxInternal/Devices/ahci/0/Config/Port1/ATAPIVendorId" "Slimtype"
 
-		& $VBoxManager startvm $VM
+		# & $VBoxManager startvm $VM
         Write-Host "`n  # Success" -ForegroundColor Green
     }
     catch {
@@ -123,6 +120,10 @@ else {
 # https://en.wikipedia.org/wiki/CPUID
 # "%ProgramFiles%\Oracle\VirtualBox\VBoxManage.exe" list cpu-profiles
 # "%ProgramFiles%\Oracle\VirtualBox\VBoxManage.exe" list hostcpuids
+
+# & $VBoxManager modifyvm $VM --cpuid-set "00000001", "00a60f12", "02100800", "7ed8320b", "178bfbff"
+# & $VBoxManager modifyvm $VM --paravirtdebug "enabled=1,vendor=AuthenticAMD"
+# & $VBoxManager modifyvm $VM --paravirtdebug "enabled=1,vendor=GenuineIntel"
 
 # --long-mode "off"
 # --vtx-vpid "off"
