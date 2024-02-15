@@ -175,7 +175,9 @@ Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
   First Make sure `Intel vt-d` or `amd-vi` and `IOMMU` are enabled in the UEFI/BIOS.
       
   ```
-  Make sure its enabled in here:
+  LC_ALL=C lscpu | grep Virtualization
+  egrep -c '(vmx|svm)' /proc/cpuinfo
+
   sudo vim /etc/default/grub
 
   Search all installed PCI devices (look for VGA):
