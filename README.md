@@ -174,7 +174,26 @@ Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
 
   <details>
   <summary>QEMU/KVM</summary>
-      - [QEMU Setup Guide](https://christitus.com/vm-setup-in-linux/)
+  ### QEMU + Virt-Manager Setup
+  [GPU Pass-through On Linux/Virt-Manager](https://www.youtube.com/watch?v=KVDUs019IB8)
+  ```
+  sudo apt-get install qemu-system && sudo apt-get install virt-manager
+  ```
+  ### PCIe Passthrough
+  First Make sure `Intel vt-d` or `amd-vi` and `IOMMU` are enabled in the UEFI/BIOS.
+  ```
+  Make sure its enabled in here:
+  sudo vim /etc/default/grub
+
+  Search all installed PCI devices (look for VGA):
+  lspci -nn | grep "VGA"
+
+  sudo grub-mkconfig -o /boot/grub/grub.cfg
+
+  sudo vim /etc/modprobe.d/vfio.conf
+
+  sudo mkinitcpio -p linux
+  ```
     
   </details>
   
