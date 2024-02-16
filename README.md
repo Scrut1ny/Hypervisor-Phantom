@@ -226,7 +226,7 @@ sudo mkinitcpio -p linux
 
 </details>
 
-### Spoofed Information
+## Spoofed Information
 | Feature                           | VirtualBox | VMware  | QEMU  |
 |-----------------------------------|------------|---------|-------|
 | **CPUID**                         | ✅          | ✅      | ✅    |
@@ -246,10 +246,10 @@ sudo mkinitcpio -p linux
 | **Monitor/Display (Passthrough)** | ❌          | ❌      | ✅    |
 | **GPU (Passthrough)**             | ❌          | ❌      | ✅    |
 
-### Spoofing Software
+## Spoofing Software
 * [Read & Write Everything](http://rweverything.com/download/)
 
-### References & Help
+## References & Help
 <details>
 <summary>General</summary>
     
