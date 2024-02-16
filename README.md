@@ -151,16 +151,17 @@ virt-manager
 * First Make sure `Intel vt-d` or `amd-vi` and `IOMMU` are enabled in the UEFI/BIOS.
       
 ```
+# Check if your system has virtualization enabled
 LC_ALL=C lscpu | grep Virtualization
 egrep -c '(vmx|svm)' /proc/cpuinfo
 
 Add "amd_iommu=on" or "intel_iommu=on" to line "GRUB_CMDLINE_LINUX_DEFAULT"
 sudo vim /etc/default/grub
 
+sudo grub-mkconfig -o /boot/grub/grub.cfg
+
 Search all installed PCI devices (look for VGA):
 lspci -nn | grep "VGA"
-
-sudo grub-mkconfig -o /boot/grub/grub.cfg
 
 sudo vim /etc/modprobe.d/vfio.conf
 
