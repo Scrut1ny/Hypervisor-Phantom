@@ -90,23 +90,11 @@ Mac OS X: /Applications/VirtualBox.app/Contents/MacOS/VBoxManage
 Oracle Solaris: /opt/VirtualBox/bin/VBoxManage
 Windows: C:\Program Files\Oracle\VirtualBox\VBoxManage.exe
 ```
-  
-- General
-    - Advanced
-        - Shared Clipboard: Bidirectional
-        - Drag'n'Drop: Bidirectional
-- System
-    - Processor
-        - ✅ Enable PAE/NX
-        - ✅ Enable Nested VT-x/AMD-V
-- Acceleration
-    - Paravirtualization Interface: Legacy
-    - Hardware Virtualization: ✅
-- Network
-    - Adapter 1
-        - ✅ Enable Network Adapter
-        - Attach to: `Bridged Adapter`
-        - MAC Address: Randomize fully!
+
+### Run these scripts:
+* Configure the VM: `VM-External-Modifer.ps1`
+* Spoof the VM: `VM-Internal-Modifier.ps1`
+
 </details>
 
 <details>
