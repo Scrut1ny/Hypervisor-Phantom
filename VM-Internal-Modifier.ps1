@@ -58,8 +58,8 @@ $deviceIDs = (Get-CimInstance Win32_PnPEntity | Where-Object { $_.Name -like '*V
 
 foreach ($deviceID in $deviceIDs) {
 	$registryPath = "HKLM:\SYSTEM\CurrentControlSet\Enum\$deviceID"
-	Set-ItemProperty -Path "$registryPath" -Name "FriendlyName" -Value "Samsung SSD" -Force
-	Write-Host "Set FriendlyName for $deviceID to 'Samsung SSD'"
+	Set-ItemProperty -Path "$registryPath" -Name "FriendlyName" -Value "Samsung 980 SSD" -Force
+	Write-Host "Set FriendlyName for $deviceID to 'Samsung 980 SSD'"
 }
 
 
@@ -194,7 +194,7 @@ foreach ($PortNumber in 0..9) {
 
 			if (Test-Path -Path $registryPath) {
 				$NewString = Get-UpperRandomString
-				Set-ItemProperty -Path "$registryPath" -Name 'Identifier' -Type String -Value "NVMe Samsung SSD 980" -Force
+				Set-ItemProperty -Path "$registryPath" -Name 'Identifier' -Type String -Value "Samsung 980 SSD" -Force
 				Set-ItemProperty -Path "$registryPath" -Name 'SerialNumber' -Type String -Value "$NewString" -Force
 			}
 		}
