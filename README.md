@@ -1,14 +1,14 @@
-### Set execution policy to be able to run scripts only in the current PowerShell session:
+## Set execution policy to be able to run scripts only in the current PowerShell session:
 ```
 Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
 ```
 
-### Todo List:
+## Todo List:
 - Fix:
     - RDTSC force VM Exit check
     - Vbox failed to query monitor/displays via SEB [Code Reference](https://github.com/SafeExamBrowser/seb-win-refactoring/blob/master/SafeExamBrowser.Monitoring/Display/DisplayMonitor.cs)
 
-### Proctor Info
+## Proctor Info
 <details>
 <summary>Proctoring Software</summary>
 
@@ -80,138 +80,140 @@ Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
 
 <details>
 <summary>VM Setup Guide</summary>
-  <details>
-  <summary>Oracle VM VirtualBox</summary>
+<details>
+<summary>Oracle VM VirtualBox</summary>
 
-  ### Virtual Box - VBoxManage Tool Location:
-  ```
-  Linux: /usr/bin/VBoxManage
-  Mac OS X: /Applications/VirtualBox.app/Contents/MacOS/VBoxManage
-  Oracle Solaris: /opt/VirtualBox/bin/VBoxManage
-  Windows: C:\Program Files\Oracle\VirtualBox\VBoxManage.exe
-  ```
+### Virtual Box - VBoxManage Tool Location:
+```
+Linux: /usr/bin/VBoxManage
+Mac OS X: /Applications/VirtualBox.app/Contents/MacOS/VBoxManage
+Oracle Solaris: /opt/VirtualBox/bin/VBoxManage
+Windows: C:\Program Files\Oracle\VirtualBox\VBoxManage.exe
+```
   
-  - General
-      - Advanced
-          - Shared Clipboard: Bidirectional
-          - Drag'n'Drop: Bidirectional
-  - System
-      - Processor
-          - ✅ Enable PAE/NX
-          - ✅ Enable Nested VT-x/AMD-V
-      - Acceleration
-          - Paravirtualization Interface: Legacy
-          - Hardware Virtualization: ✅
-  - Network
-      - Adapter 1
-          - ✅ Enable Network Adapter
-          - Attach to: `Bridged Adapter`
-          - MAC Address: Randomize fully!
-  </details>
+- General
+    - Advanced
+        - Shared Clipboard: Bidirectional
+        - Drag'n'Drop: Bidirectional
+- System
+    - Processor
+        - ✅ Enable PAE/NX
+        - ✅ Enable Nested VT-x/AMD-V
+- Acceleration
+    - Paravirtualization Interface: Legacy
+    - Hardware Virtualization: ✅
+- Network
+    - Adapter 1
+        - ✅ Enable Network Adapter
+        - Attach to: `Bridged Adapter`
+        - MAC Address: Randomize fully!
+</details>
 
-  <details>
-  <summary>VMware</summary>
+<details>
+<summary>VMware</summary>
 
-  ### VMware PRO License Key:
-  ```
-  MC60H-DWHD5-H80U9-6V85M-8280D
-  ```
+### VMware PRO License Key:
+```
+MC60H-DWHD5-H80U9-6V85M-8280D
+```
   
-  ### 1st Step: Add following settings into .vmx
+### 1st Step: Add following settings into .vmx
   
-  ```
-  hypervisor.cpuid.v0 = "FALSE"
-  smbios.reflectHost = "TRUE"
-  monitor_control.virtual_rdtsc = "FALSE"
-  monitor_control.restrict_backdoor = "TRUE"
-  isolation.tools.getPtrLocation.disable = "TRUE"
-  isolation.tools.setPtrLocation.disable = "TRUE"
-  isolation.tools.setVersion.disable = "TRUE"
-  isolation.tools.getVersion.disable = "TRUE"
-  monitor_control.disable_directexec = "TRUE"
-  ```
+```
+hypervisor.cpuid.v0 = "FALSE"
+smbios.reflectHost = "TRUE"
+monitor_control.virtual_rdtsc = "FALSE"
+monitor_control.restrict_backdoor = "TRUE"
+isolation.tools.getPtrLocation.disable = "TRUE"
+isolation.tools.setPtrLocation.disable = "TRUE"
+isolation.tools.setVersion.disable = "TRUE"
+isolation.tools.getVersion.disable = "TRUE"
+monitor_control.disable_directexec = "TRUE"
+```
   
-  If you have a SCSI virtual disk at scsi0 slot (first slot) as your system drive, remember to add
+If you have a SCSI virtual disk at scsi0 slot (first slot) as your system drive, remember to add
   
-  ```
-  scsi0:0.productID = "Whatever you want"
-  scsi0:0.vendorID = "Whatever you want"
-  ```
+```
+scsi0:0.productID = "Whatever you want"
+scsi0:0.vendorID = "Whatever you want"
+```
   
-  I use
-  ```
-  scsi0:0.productID = "Tencent SSD"
-  scsi0:0.vendorID = "Tencent"
-  ```
+I use
+```
+scsi0:0.productID = "Tencent SSD"
+scsi0:0.vendorID = "Tencent"
+```
   
-  ## 2nd Step: Modify MAC address
+### 2nd Step: Modify MAC address
   
-  Modify guest's MAC address to whatever except below:
-  ```
-  	TCHAR *szMac[][2] = {
-  		{ _T("\x00\x05\x69"), _T("00:05:69") }, // VMWare, Inc.
-  		{ _T("\x00\x0C\x29"), _T("00:0c:29") }, // VMWare, Inc.
-  		{ _T("\x00\x1C\x14"), _T("00:1C:14") }, // VMWare, Inc.
-  		{ _T("\x00\x50\x56"), _T("00:50:56") },	// VMWare, Inc.
-  	};
-  ```
+Modify guest's MAC address to whatever except below:
+```
+TCHAR *szMac[][2] = {
+    { _T("\x00\x05\x69"), _T("00:05:69") }, // VMWare, Inc.
+    { _T("\x00\x0C\x29"), _T("00:0c:29") }, // VMWare, Inc.
+    { _T("\x00\x1C\x14"), _T("00:1C:14") }, // VMWare, Inc.
+    { _T("\x00\x50\x56"), _T("00:50:56") },	// VMWare, Inc.
+};
+```
   
-  ![mac](https://github.com/hzqst/VmwareHardenedLoader/raw/master/img/4.png)
+![mac](https://github.com/hzqst/VmwareHardenedLoader/raw/master/img/4.png)
   
-  You could add
-  
-  ```
-  ethernet0.address = "Some random mac address"
-  ```
-  Into vmx file instead of modifying MAC address in VMware GUI
-  
-  I use
-  
-  ```
-  ethernet0.address = "00:11:56:20:D2:E8"
-  ```
+You could add/modify
 
-  </details>
+```
+ethernet0.address = "Some random mac address"
+```
+Into vmx file instead of modifying MAC address in VMware GUI, I use:
 
-  <details>
-  <summary>QEMU/KVM</summary>
+```
+ethernet0.address = "00:11:56:20:D2:E8"
+```
+
+</details>
+
+<details>
+<summary>QEMU/KVM</summary>
       
-  ### QEMU + Virt-Manager Setup
+### QEMU + Virt-Manager Setup
+   
+```
+sudo apt update && sudo apt upgrade
+sudo apt install qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils virt-manager
+sudo adduser $USER libvirt && sudo adduser $USER kvm
+sudo systemctl status libvirtd
+sudo systemctl start libvirtd && sudo systemctl enable libvirtd
+virt-manager
+```
+
+### QEMU libvert: Domain XML format
+* [Domain XML format](https://libvirt.org/formatdomain.html)
+
+### QEMU Strings Patch
+* [qemu-patch-bypass](https://github.com/zhaodice/qemu-anti-detection)
+
+### QEMU RDTSC Kernal Patch
+
+### PCIe Passthrough
+* [GPU Pass-through On Linux/Virt-Manager](https://www.youtube.com/watch?v=KVDUs019IB8)
+First Make sure `Intel vt-d` or `amd-vi` and `IOMMU` are enabled in the UEFI/BIOS.
       
-  * [GPU Pass-through On Linux/Virt-Manager](https://www.youtube.com/watch?v=KVDUs019IB8)
-      
-  ```
-  sudo apt update && sudo apt upgrade
-  sudo apt install qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils virt-manager
-  sudo adduser $USER libvirt && sudo adduser $USER kvm
-  sudo systemctl status libvirtd
-  sudo systemctl start libvirtd && sudo systemctl enable libvirtd
-  virt-manager
-  ```
+```
+LC_ALL=C lscpu | grep Virtualization
+egrep -c '(vmx|svm)' /proc/cpuinfo
 
-  * [qemu-patch-bypass](https://github.com/zhaodice/qemu-anti-detection)
-      
-  ### PCIe Passthrough
-  First Make sure `Intel vt-d` or `amd-vi` and `IOMMU` are enabled in the UEFI/BIOS.
-      
-  ```
-  LC_ALL=C lscpu | grep Virtualization
-  egrep -c '(vmx|svm)' /proc/cpuinfo
+sudo vim /etc/default/grub
 
-  sudo vim /etc/default/grub
+Search all installed PCI devices (look for VGA):
+lspci -nn | grep "VGA"
 
-  Search all installed PCI devices (look for VGA):
-  lspci -nn | grep "VGA"
+sudo grub-mkconfig -o /boot/grub/grub.cfg
 
-  sudo grub-mkconfig -o /boot/grub/grub.cfg
+sudo vim /etc/modprobe.d/vfio.conf
 
-  sudo vim /etc/modprobe.d/vfio.conf
+sudo mkinitcpio -p linux
+```
 
-  sudo mkinitcpio -p linux
-  ```
-    
-  </details>
-  
+</details>
 </details>
 
 <details>
