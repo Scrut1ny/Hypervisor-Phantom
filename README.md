@@ -178,7 +178,7 @@ Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
       
   ### QEMU + Virt-Manager Setup
       
-  [GPU Pass-through On Linux/Virt-Manager](https://www.youtube.com/watch?v=KVDUs019IB8)
+  * [GPU Pass-through On Linux/Virt-Manager](https://www.youtube.com/watch?v=KVDUs019IB8)
       
   ```
   sudo apt update && sudo apt upgrade
