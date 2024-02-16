@@ -222,22 +222,22 @@ Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
 * Make sure the VM is 128GB+ in size, any less will be flagged/detected.
 
 ### Spoofed Information
-| Feature                           | VirtualBox | VMware | QEMU |
-|-----------------------------------|------------|--------|------|
-| **CPUID**                         | -          | -      | -    |
-| **SMBIOS DMI**                    | -          | -      | -    |
-| - BIOS Information                | -          | -      | -    |
-| - System Information              | -          | -      | -    |
-| - Board Information               | -          | -      | -    |
-| - System Enclosure or Chassis     | -          | -      | -    |
-| - Processor Information           | -          | -      | -    |
-| - OEM Strings                     | -          | -      | -    |
-| **MAC Address**                   | -          | -      | -    |
-| **Disk drives**                   | -          | -      | -    |
-| **DVD/CD-ROM drives**             | -          | -      | -    |
-| **Registry**                      | -          | -      | -    |
-| **Device Manager**                | -          | -      | -    |
-| **Hardware**                      | -          | -      | -    |
+| Feature                           | VirtualBox | VMware  | QEMU  |
+|-----------------------------------|------------|---------|-------|
+| **CPUID**                         | ✅          | ✅      | ✅    |
+| **SMBIOS DMI**                    | ✅          | ✅      | ✅    |
+| - BIOS Information                | ✅          | ✅      | ✅    |
+| - System Information              | ✅          | ✅      | ✅    |
+| - Board Information               | ✅          | ✅      | ✅    |
+| - System Enclosure or Chassis     | ✅          | ✅      | ✅    |
+| - Processor Information           | ✅          | ✅      | ✅    |
+| - OEM Strings                     | ✅          | ✅      | ✅    |
+| **MAC Address**                   | ✅          | ✅      | ✅    |
+| **Hard Drives**                   | ✅          | ✅      | ✅    |
+| **DVD/CD-ROM drives**             | ✅          | ✅      | ✅    |
+| **Registry**                      | ✅          | ✅      | ✅    |
+| **Device Manager**                | ✅          | ✅      | ✅    |
+| **Hardware**                      | ✅          | ✅      | ✅    |
 
 
 ### Spoofing Software
