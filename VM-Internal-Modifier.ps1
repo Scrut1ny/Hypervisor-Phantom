@@ -158,6 +158,23 @@ function vmware {
 	Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\0000" -Name "ProviderName" -Value "NVIDIA" -Force
 }
 
+function QEMU {
+	# DSDT
+	Rename-Item -Path "HKLM:\HARDWARE\ACPI\DSDT\BOCHS_" -NewName "ALASKA" -Force
+	Rename-Item -Path "HKLM:\HARDWARE\ACPI\DSDT\ALASKA\BXPC____" -NewName "A_M_I_" -Force
+
+	# FADT
+	Rename-Item -Path "HKLM:\HARDWARE\ACPI\FADT\BOCHS_" -NewName "ALASKA" -Force
+	Rename-Item -Path "HKLM:\HARDWARE\ACPI\FADT\ALASKA\BXPC____" -NewName "A_M_I_" -Force
+
+	# RSDT
+	Rename-Item -Path "HKLM:\HARDWARE\ACPI\RSDT\BOCHS_" -NewName "ALASKA" -Force
+	Rename-Item -Path "HKLM:\HARDWARE\ACPI\RSDT\ALASKA\BXPC____" -NewName "A_M_I_" -Force
+
+ 	# System
+	Set-ItemProperty -Path "HKLM:\HARDWARE\DESCRIPTION\System" -Name "SystemBiosDate" -Value "1.A0" -Force
+ 	Set-ItemProperty -Path "HKLM:\HARDWARE\DESCRIPTION\System" -Name "SystemBiosVersion" -Value "11/23/2023" -Force
+}
 
 # ==================================================
 # HKLM:\HARDWARE\DEVICEMAP\Scsi
