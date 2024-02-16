@@ -243,8 +243,8 @@ Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
 ### References & Help
 <details>
 <summary>General</summary>
-    * [https://evasions.checkpoint.com/](https://evasions.checkpoint.com/)
-    * [https://bannedit.github.io/Virtual-Machine-Detection-In-The-Browser.html](https://bannedit.github.io/Virtual-Machine-Detection-In-The-Browser.html)
+* [https://evasions.checkpoint.com/](https://evasions.checkpoint.com/)
+* [https://bannedit.github.io/Virtual-Machine-Detection-In-The-Browser.html](https://bannedit.github.io/Virtual-Machine-Detection-In-The-Browser.html)
 </details>
 
 <details>
