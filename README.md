@@ -82,7 +82,15 @@ Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
 <summary>VM Setup Guide</summary>
   <details>
   <summary>Oracle VM VirtualBox</summary>
-    
+
+  ### Virtual Box - VBoxManage Tool Location:
+  ```
+  Linux: /usr/bin/VBoxManage
+  Mac OS X: /Applications/VirtualBox.app/Contents/MacOS/VBoxManage
+  Oracle Solaris: /opt/VirtualBox/bin/VBoxManage
+  Windows: C:\Program Files\Oracle\VirtualBox\VBoxManage.exe
+  ```
+  
   - General
       - Advanced
           - Shared Clipboard: Bidirectional
@@ -103,8 +111,13 @@ Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
 
   <details>
   <summary>VMware</summary>
+
+  ### VMware PRO License Key:
+  ```
+  MC60H-DWHD5-H80U9-6V85M-8280D
+  ```
   
-  ## 1st Step: Add following settings into .vmx
+  ### 1st Step: Add following settings into .vmx
   
   ```
   hypervisor.cpuid.v0 = "FALSE"
@@ -175,6 +188,8 @@ Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
   sudo systemctl start libvirtd && sudo systemctl enable libvirtd
   virt-manager
   ```
+
+  * [qemu-patch-bypass](https://github.com/zhaodice/qemu-anti-detection)
       
   ### PCIe Passthrough
   First Make sure `Intel vt-d` or `amd-vi` and `IOMMU` are enabled in the UEFI/BIOS.
@@ -199,32 +214,12 @@ Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
   
 </details>
 
-
-
 ### Important Tips:
 * To bypass certain Anti-Cheats and Proctoring software you must take different approaches, some are extreme and some are simple.
 * Don't use NAT: The Host and VM Machine cannot have the same IPv4 LAN address. That is a clear indicator a VM is being utilized, because network traffic from the same IPv4 LAN Address is being generated from the host.
 * Use DNS-over-HTTPS (DoH) because it's encrypted. Using a unencrypted DNS means the websites you visit are visible to all, but with DoH the most you can obtain is a external IP address.
 * Use a Virtual Private Network (VPN) to mask all traffic. Remember popular VPNs won't work with some proctoring or Anti-Cheat software, because the VPNs IP ranges might be blacklisted.
 * Make sure the VM is 128GB+ in size, any less will be flagged/detected.
-
-### VMware PRO License Key:
-```
-MC60H-DWHD5-H80U9-6V85M-8280D
-```
-
-### QEMU:
-* [QEMU](https://qemu.weilnetz.de/w64/)
-* [QtEmu](https://sourceforge.net/projects/qtemu/)
-* [qemu-patch-bypass](https://github.com/zhaodice/qemu-anti-detection)
-
-### Virtual Box - VBoxManage Tool Location:
-```
-Linux: /usr/bin/VBoxManage
-Mac OS X: /Applications/VirtualBox.app/Contents/MacOS/VBoxManage
-Oracle Solaris: /opt/VirtualBox/bin/VBoxManage
-Windows: C:\Program Files\Oracle\VirtualBox\VBoxManage.exe
-```
 
 ### Spoofed Information
 - CPUID
