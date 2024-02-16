@@ -117,11 +117,14 @@ Windows: C:\Program Files\Oracle\VirtualBox\VBoxManage.exe
 MC60H-DWHD5-H80U9-6V85M-8280D
 ```
   
-### 1st Step: Add following settings into .vmx
-  
+### Add the following into your *.vmx
+
 ```
 hypervisor.cpuid.v0 = "FALSE"
 smbios.reflectHost = "TRUE"
+ethernet0.address = "00:C0:CA:A7:2B:9E"
+scsi0:0.productID = "Samsung 980 PRO SSD"
+scsi0:0.vendorID = "Samsung"
 monitor_control.virtual_rdtsc = "FALSE"
 monitor_control.restrict_backdoor = "TRUE"
 isolation.tools.getPtrLocation.disable = "TRUE"
@@ -129,44 +132,6 @@ isolation.tools.setPtrLocation.disable = "TRUE"
 isolation.tools.setVersion.disable = "TRUE"
 isolation.tools.getVersion.disable = "TRUE"
 monitor_control.disable_directexec = "TRUE"
-```
-  
-If you have a SCSI virtual disk at scsi0 slot (first slot) as your system drive, remember to add
-  
-```
-scsi0:0.productID = "Whatever you want"
-scsi0:0.vendorID = "Whatever you want"
-```
-  
-I use
-```
-scsi0:0.productID = "Tencent SSD"
-scsi0:0.vendorID = "Tencent"
-```
-  
-### 2nd Step: Modify MAC address
-  
-Modify guest's MAC address to whatever except below:
-```
-TCHAR *szMac[][2] = {
-    { _T("\x00\x05\x69"), _T("00:05:69") }, // VMWare, Inc.
-    { _T("\x00\x0C\x29"), _T("00:0c:29") }, // VMWare, Inc.
-    { _T("\x00\x1C\x14"), _T("00:1C:14") }, // VMWare, Inc.
-    { _T("\x00\x50\x56"), _T("00:50:56") },	// VMWare, Inc.
-};
-```
-  
-![mac](https://github.com/hzqst/VmwareHardenedLoader/raw/master/img/4.png)
-  
-You could add/modify
-
-```
-ethernet0.address = "Some random mac address"
-```
-Into vmx file instead of modifying MAC address in VMware GUI, I use:
-
-```
-ethernet0.address = "00:11:56:20:D2:E8"
 ```
 
 </details>
