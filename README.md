@@ -238,7 +238,8 @@ Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
 | **Registry**                      | ✅          | ✅      | ✅    |
 | **Device Manager**                | ✅          | ✅      | ✅    |
 | **Hardware**                      | ✅          | ✅      | ✅    |
-
+| **Monitor/Display (Passthrough)** | ❌          | ❌      | ✅    |
+| **GPU (Passthrough)**             | ❌          | ❌      | ✅    |
 
 ### Spoofing Software
     * [Read & Write Everything](http://rweverything.com/download/)
