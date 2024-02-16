@@ -75,7 +75,7 @@ Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
   |  |  | Prevent Re-Entry |
   
   </details>
-  
+
 </details>
 
 <details>
@@ -214,12 +214,16 @@ Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
   
 </details>
 
-### Important Tips:
+<details>
+<summary>Important Tips</summary>
+
 * To bypass certain Anti-Cheats and Proctoring software you must take different approaches, some are extreme and some are simple.
 * Don't use NAT: The Host and VM Machine cannot have the same IPv4 LAN address. That is a clear indicator a VM is being utilized, because network traffic from the same IPv4 LAN Address is being generated from the host.
 * Use DNS-over-HTTPS (DoH) because it's encrypted. Using a unencrypted DNS means the websites you visit are visible to all, but with DoH the most you can obtain is a external IP address.
 * Use a Virtual Private Network (VPN) to mask all traffic. Remember popular VPNs won't work with some proctoring or Anti-Cheat software, because the VPNs IP ranges might be blacklisted.
 * Make sure the VM is 128GB+ in size, any less will be flagged/detected.
+
+</details>
 
 ### Spoofed Information
 | Feature                           | VirtualBox | VMware  | QEMU  |
