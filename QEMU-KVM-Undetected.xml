@@ -1,45 +1,51 @@
-<sysinfo type="smbios">
+ <sysinfo type="smbios">
     <bios>
-      <entry name="vendor">REMOVED ENTER YOUR OWN</entry>
-      <entry name="version">REMOVED ENTER YOUR OWN</entry>
+      <entry name="vendor">American Megatrends International, LLC.</entry>
+      <entry name="version">1.A0</entry>
+      <entry name="date">11/23/2023</entry>
     </bios>
     <system>
-      <entry name="manufacturer">REMOVED ENTER YOUR OWN</entry>
-      <entry name="product">REMOVED ENTER YOUR OWN</entry>
-      <entry name="version">REMOVED ENTER YOUR OWN</entry>
+      <entry name="manufacturer">Micro-Star International Co., Ltd.</entry>
+      <entry name="product">MS-7D78</entry>
+      <entry name="version">1.0</entry>
+      <entry name="serial">To be filled by O.E.M.</entry>
+      <entry name="family">To be filled by O.E.M.</entry>
     </system>
     <baseBoard>
-      <entry name="manufacturer">REMOVED ENTER YOUR OWN</entry>
-      <entry name="product">REMOVED ENTER YOUR OWN</entry>
-      <entry name="version">REMOVED ENTER YOUR OWN</entry>
-      <entry name="serial">REMOVED ENTER YOUR OWN</entry>
+      <entry name="manufacturer">Micro-Star International Co., Ltd.</entry>
+      <entry name="product">PRO B650-P WIFI (MS-7D78)</entry>
+      <entry name="version">1.0</entry>
+      <entry name="serial">To be filled by O.E.M.</entry>
     </baseBoard>
     <chassis>
-      <entry name="manufacturer">REMOVED ENTER YOUR OWN</entry>
-      <entry name="version">REMOVED ENTER YOUR OWN</entry>
-      <entry name="serial">REMOVED ENTER YOUR OWN</entry>
-      <entry name="asset">REMOVED ENTER YOUR OWN</entry>
-      <entry name="sku">REMOVED ENTER YOUR OWN</entry>
+      <entry name="manufacturer">Micro-Star International Co., Ltd.</entry>
+      <entry name="version">1.0</entry>
+      <entry name="serial">To be filled by O.E.M.</entry>
     </chassis>
+    <oemStrings>
+      <entry>myappname:some arbitrary data</entry>
+      <entry>otherappname:more arbitrary data</entry>
+    </oemStrings>
   </sysinfo>
- 
-<os>
-   <smbios mode="sysinfo"/>
-</os>
- 
-<features>
+  <os>
+    <type arch="x86_64" machine="pc-q35-6.2">hvm</type>
+    <boot dev="hd"/>
+    <bootmenu enable="no"/>
+    <smbios mode="sysinfo"/>
+  </os>
+  <features>
     <acpi/>
     <apic/>
     <hyperv mode="custom">
       <relaxed state="on"/>
       <vapic state="on"/>
-	  <spinlocks state="on" retries="8191"/>
-	  <vpindex state="on"/>
-	  <runtime state="on"/>
+      <spinlocks state="on" retries="8191"/>
+      <vpindex state="on"/>
+      <runtime state="on"/>
       <synic state="on"/>
       <stimer state="on"/>
       <reset state="on"/>
-      <vendor_id state="on" value="REMOVED ENTER YOUR OWN"/>
+      <vendor_id state="on" value="AuthenticAMD"/>
       <frequencies state="on"/>
     </hyperv>
     <kvm>
@@ -49,8 +55,6 @@
     <smm state="on"/>
     <ioapic driver="kvm"/>
   </features>
- 
-  <cpu mode="host-model" check="partial">
-    <feature policy="disable" name="hypervisor"/>
-    <feature policy="disable" name="aes"/>
+  <cpu mode="host-passthrough" check="partial" migratable="on">
+    <topology sockets="1" dies="1" cores="8" threads="2"/>
   </cpu>
