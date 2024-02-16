@@ -1,37 +1,6 @@
- <sysinfo type="smbios">
-    <bios>
-      <entry name="vendor">American Megatrends International, LLC.</entry>
-      <entry name="version">1.A0</entry>
-      <entry name="date">11/23/2023</entry>
-    </bios>
-    <system>
-      <entry name="manufacturer">Micro-Star International Co., Ltd.</entry>
-      <entry name="product">MS-7D78</entry>
-      <entry name="version">1.0</entry>
-      <entry name="serial">To be filled by O.E.M.</entry>
-      <entry name="family">To be filled by O.E.M.</entry>
-    </system>
-    <baseBoard>
-      <entry name="manufacturer">Micro-Star International Co., Ltd.</entry>
-      <entry name="product">PRO B650-P WIFI (MS-7D78)</entry>
-      <entry name="version">1.0</entry>
-      <entry name="serial">To be filled by O.E.M.</entry>
-    </baseBoard>
-    <chassis>
-      <entry name="manufacturer">Micro-Star International Co., Ltd.</entry>
-      <entry name="version">1.0</entry>
-      <entry name="serial">To be filled by O.E.M.</entry>
-    </chassis>
-    <oemStrings>
-      <entry>myappname:some arbitrary data</entry>
-      <entry>otherappname:more arbitrary data</entry>
-    </oemStrings>
-  </sysinfo>
   <os>
-    <type arch="x86_64" machine="pc-q35-6.2">hvm</type>
-    <boot dev="hd"/>
     <bootmenu enable="no"/>
-    <smbios mode="sysinfo"/>
+    <smbios mode="host"/>
   </os>
   <features>
     <acpi/>
@@ -40,21 +9,14 @@
       <relaxed state="on"/>
       <vapic state="on"/>
       <spinlocks state="on" retries="8191"/>
-      <vpindex state="on"/>
-      <runtime state="on"/>
-      <synic state="on"/>
-      <stimer state="on"/>
-      <reset state="on"/>
       <vendor_id state="on" value="AuthenticAMD"/>
-      <frequencies state="on"/>
     </hyperv>
     <kvm>
       <hidden state="on"/>
     </kvm>
     <vmport state="off"/>
-    <smm state="on"/>
-    <ioapic driver="kvm"/>
   </features>
-  <cpu mode="host-passthrough" check="partial" migratable="on">
+  <cpu mode="host-passthrough" check="none" migratable="on">
     <topology sockets="1" dies="1" cores="8" threads="2"/>
+    <feature policy="disable" name="hypervisor"/>
   </cpu>
