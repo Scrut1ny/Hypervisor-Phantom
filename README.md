@@ -195,7 +195,7 @@ virt-manager
 
 ### PCIe Passthrough
 * [GPU Pass-through On Linux/Virt-Manager](https://www.youtube.com/watch?v=KVDUs019IB8)
-First Make sure `Intel vt-d` or `amd-vi` and `IOMMU` are enabled in the UEFI/BIOS.
+* First Make sure `Intel vt-d` or `amd-vi` and `IOMMU` are enabled in the UEFI/BIOS.
       
 ```
 LC_ALL=C lscpu | grep Virtualization
