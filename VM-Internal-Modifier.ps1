@@ -172,8 +172,8 @@ function QEMU {
 	Rename-Item -Path "HKLM:\HARDWARE\ACPI\RSDT\ALASKA\BXPC____" -NewName "A_M_I_" -Force
 
  	# System
-	Set-ItemProperty -Path "HKLM:\HARDWARE\DESCRIPTION\System" -Name "SystemBiosDate" -Value "1.A0" -Force
- 	Set-ItemProperty -Path "HKLM:\HARDWARE\DESCRIPTION\System" -Name "SystemBiosVersion" -Value "11/23/2023" -Force
+	Set-ItemProperty -Path "HKLM:\HARDWARE\DESCRIPTION\System" -Name "SystemBiosDate" -Value "11/23/2023" -Force
+ 	Set-ItemProperty -Path "HKLM:\HARDWARE\DESCRIPTION\System" -Name "SystemBiosVersion" -Value "1.A0" -Force
 }
 
 # ==================================================
