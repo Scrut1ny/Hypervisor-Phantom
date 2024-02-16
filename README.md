@@ -168,7 +168,12 @@ Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
   [GPU Pass-through On Linux/Virt-Manager](https://www.youtube.com/watch?v=KVDUs019IB8)
       
   ```
-  sudo apt-get install qemu-system && sudo apt-get install virt-manager
+  sudo apt update && sudo apt upgrade
+  sudo apt install qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils virt-manager
+  sudo adduser $USER libvirt && sudo adduser $USER kvm
+  sudo systemctl status libvirtd
+  sudo systemctl start libvirtd && sudo systemctl enable libvirtd
+  virt-manager
   ```
       
   ### PCIe Passthrough
