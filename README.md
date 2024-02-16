@@ -1,4 +1,4 @@
-## Execution policy Modifier:
+## ExecutionPolicy Modifier:
 ```
 Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
 ```
