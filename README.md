@@ -1,4 +1,4 @@
-## Set execution policy to be able to run scripts only in the current PowerShell session:
+## Execution policy Modifier:
 ```
 Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
 ```
