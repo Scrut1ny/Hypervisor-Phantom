@@ -191,27 +191,23 @@ sudo mkinitcpio -p linux
 </details>
 
 ## Spoofed Information
-| Feature                           | VirtualBox | VMware  | QEMU  |
-|-----------------------------------|------------|---------|-------|
-| **CPUID**                         | ✅          | ✅      | ✅    |
-| **SMBIOS DMI**                    | ✅          | ✅      | ✅    |
-| - BIOS Information                | ✅          | ✅      | ✅    |
-| - System Information              | ✅          | ✅      | ✅    |
-| - Board Information               | ✅          | ✅      | ✅    |
-| - System Enclosure or Chassis     | ✅          | ✅      | ✅    |
-| - Processor Information           | ✅          | ✅      | ✅    |
-| - OEM Strings                     | ✅          | ✅      | ✅    |
-| **MAC Address**                   | ✅          | ✅      | ✅    |
-| **Hard Drives**                   | ✅          | ✅      | ✅    |
-| **DVD/CD-ROM drives**             | ✅          | ✅      | ✅    |
-| **Registry**                      | ✅          | ✅      | ✅    |
-| **Device Manager**                | ✅          | ✅      | ✅    |
-| **Hardware**                      | ✅          | ✅      | ✅    |
-| **Monitor/Display (Passthrough)** | ❌          | ❌      | ✅    |
-| **GPU (Passthrough)**             | ❌          | ❌      | ✅    |
-
-## Software
-* [Read & Write Everything](http://rweverything.com/download/)
+| Feature                           | VirtualBox | VMware  | QEMU   |
+|-----------------------------------|------------|---------|--------|
+| **CPUID**                         | ✅         | ✅      | ✅    |
+| **SMBIOS DMI**                    | ✅         | ✅      | ✅    |
+| - BIOS Information                | ✅         | ✅      | ✅    |
+| - System Information              | ✅         | ✅      | ✅    |
+| - Board Information               | ✅         | ✅      | ✅    |
+| - System Enclosure or Chassis     | ✅         | ✅      | ✅    |
+| - Processor Information           | ✅         | ✅      | ✅    |
+| - OEM Strings                     | ✅         | ✅      | ✅    |
+| **MAC Address**                   | ✅         | ✅      | ✅    |
+| **Hard Drives**                   | ✅         | ✅      | ✅    |
+| **DVD/CD-ROM drives**             | ✅         | ✅      | ✅    |
+| **Registry**                      | ✅         | ✅      | ✅    |
+| **Device Manager**                | ✅         | ✅      | ✅    |
+| **Hardware**                      | ✅         | ✅      | ✅    |
+| **Passthrough Capabilities**      | ❌         | ❌      | ✅    |
 
 ## References & Help
 <details>
