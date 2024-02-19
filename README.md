@@ -107,7 +107,7 @@ MC60H-DWHD5-H80U9-6V85M-8280D
 
 ### Patching BIOS ROM
 1. Locate file `BIOS.440.ROM` within `%PROGRAMFILES(X86)%\VMware\VMware Workstation\x64`.
-2. Utilize [Phoenix BIOS Editor](https://www.phoenix.com/uefi-bios-utilities-package/) to modify compromising DMI Strings, like `VMware` or `Virtual Platform`.
+2. Utilize [Phoenix BIOS Editor](https://mega.nz/file/cek3ARwR#0L3mXNAlknF0zJQPOmtqPoyAvF5exviI3zw_BfRixOk) to modify compromising DMI Strings, like `VMware` or `Virtual Platform`.
 3. Once completed, go to `File` then `Build BIOS` and save the patched BIOS somewhere. **Don't overwrite the original file!**
 4. Now within the `*.vmx` config file, make sure to add the new patched BIOS location for the `bios440.filename` argument line.
 
