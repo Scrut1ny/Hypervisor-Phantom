@@ -92,7 +92,7 @@ Windows: C:\Program Files\Oracle\VirtualBox\VBoxManage.exe
 
 ### Run these scripts:
 * Configure the VM: `VM-External-Modifer.ps1`
-* Spoof the VM: `VM-Internal-Modifier.ps1`
+* Spoof Windows: `VM-Internal-Modifier.ps1`
 
 </details>
 
@@ -116,8 +116,6 @@ bios440.filename = "C:\<path_to_your_bios_file>\BIOS.440.PATCH.ROM"
 hypervisor.cpuid.v0 = "FALSE"
 smbios.reflectHost = "TRUE"
 ethernet0.address = "00:C0:CA:A7:2B:9E"
-nvme0:0.productID = "Samsung SSD 980 500GB"
-nvme0:0.vendorID = "Samsung"
 monitor_control.virtual_rdtsc = "FALSE"
 monitor_control.restrict_backdoor = "TRUE"
 isolation.tools.getPtrLocation.disable = "TRUE"
@@ -129,6 +127,9 @@ monitor_control.disable_directexec = "TRUE"
 
 ### **IMPORTANT**
 * `smbios.reflectHost` will NOT function properly if UEFI is utilized instead of BIOS firmware! If you utilize a patched BIOS firmware image, then you can use UEFI without malfunction.
+
+### Run these scripts:
+* Spoof Windows: `VM-Internal-Modifier.ps1`
 
 </details>
 
