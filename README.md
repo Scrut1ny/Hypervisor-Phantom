@@ -241,7 +241,7 @@ sudo mkinitcpio -p linux
 </details>
 
 <details>
-<summary>QEMU/KVM</summary>
+<summary>QEMU</summary>
 
 * [Spoof and make your VM Undetectable - No more bullsh*t bans](https://www.reddit.com/r/VFIO/comments/i071qx/spoof_and_make_your_vm_undetectable_no_more/)
 * [BE is banning KVM on R6](https://www.reddit.com/r/VFIO/comments/hts1o1/be_is_banning_kvm_on_r6/)
