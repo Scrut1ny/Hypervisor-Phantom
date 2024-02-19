@@ -201,7 +201,7 @@ sudo mkinitcpio -p linux
 | **Monitor/Display (Passthrough)** | ❌          | ❌      | ✅    |
 | **GPU (Passthrough)**             | ❌          | ❌      | ✅    |
 
-## Spoofing Software
+## Software
 * [Read & Write Everything](http://rweverything.com/download/)
 
 ## References & Help
