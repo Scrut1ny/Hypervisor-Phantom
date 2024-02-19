@@ -153,6 +153,7 @@ virt-manager
 * [qemu-patch-bypass](https://github.com/zhaodice/qemu-anti-detection)
 
 ### QEMU RDTSC Kernal Patch
+* [RDTSC-KVM-Handler](https://github.com/WCharacter/RDTSC-KVM-Handler)
 
 ### PCIe Passthrough
 * [GPU Pass-through On Linux/Virt-Manager](https://www.youtube.com/watch?v=KVDUs019IB8)
