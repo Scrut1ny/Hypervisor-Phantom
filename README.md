@@ -104,10 +104,16 @@ Windows: C:\Program Files\Oracle\VirtualBox\VBoxManage.exe
 ```
 MC60H-DWHD5-H80U9-6V85M-8280D
 ```
-  
-### Add the following into your *.vmx
 
+### Patching BIOS ROM
+1. Locate file `BIOS.440.ROM` within `%PROGRAMFILES(X86)%\VMware\VMware Workstation\x64`.
+2. Utilize [Phoenix BIOS Editor](https://www.phoenix.com/uefi-bios-utilities-package/) to modify compromising DMI Strings, like `VMware` or `Virtual Platform`.
+3. Once completed, go to `File` then `Build BIOS` and save the patched BIOS somewhere. **Don't overwrite the original file!**
+4. Now within the `*.vmx` config file, make sure to add the new patched BIOS location for the `bios440.filename` argument line.
+
+### Add the following into your *.vmx
 ```
+bios440.filename = "C:\<path_to_your_bios_file>\BIOS.440.PATCH.ROM"
 hypervisor.cpuid.v0 = "FALSE"
 smbios.reflectHost = "TRUE"
 ethernet0.address = "00:C0:CA:A7:2B:9E"
@@ -123,7 +129,7 @@ monitor_control.disable_directexec = "TRUE"
 ```
 
 ### **IMPORTANT**
-* `smbios.reflectHost` will NOT function properly if UEFI is utilized instead of BIOS firmware!
+* `smbios.reflectHost` will NOT function properly if UEFI is utilized instead of BIOS firmware! If you utilize a patched BIOS firmware image, then you can use UEFI without malfunction.
 
 </details>
 
@@ -131,7 +137,6 @@ monitor_control.disable_directexec = "TRUE"
 <summary>QEMU/KVM</summary>
       
 ### QEMU + Virt-Manager Setup
-   
 ```
 sudo apt update && sudo apt upgrade
 sudo apt install qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils virt-manager
