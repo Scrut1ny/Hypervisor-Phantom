@@ -122,6 +122,9 @@ isolation.tools.getVersion.disable = "TRUE"
 monitor_control.disable_directexec = "TRUE"
 ```
 
+### **IMPORTANT**
+* `smbios.reflectHost` will NOT function properly if UEFI is utilized instead of BIOS firmware!
+
 </details>
 
 <details>
