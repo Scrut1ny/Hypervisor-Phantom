@@ -78,7 +78,7 @@ Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
 </details>
 
 <details>
-<summary>VM Setup Guide</summary>
+<summary>Hypervisor Setup Guide</summary>
 <details>
 <summary>VirtualBox</summary>
 
