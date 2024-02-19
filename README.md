@@ -126,7 +126,7 @@ monitor_control.disable_directexec = "TRUE"
 ```
 
 ### **IMPORTANT**
-* `smbios.reflectHost` will NOT function properly if UEFI is utilized instead of BIOS firmware! If you utilize a patched BIOS firmware image, then you can use UEFI without malfunction.
+* `smbios.reflectHost` will NOT function properly if UEFI is utilized instead of BIOS firmware! If you utilize a patched BIOS firmware image, then you can use UEFI without issues.
 
 ### Run these scripts:
 * Spoof Windows: `VM-Internal-Modifier.ps1`
