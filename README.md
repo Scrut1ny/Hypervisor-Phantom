@@ -156,9 +156,11 @@ virt-manager
 * [RDTSC-KVM-Handler](https://github.com/WCharacter/RDTSC-KVM-Handler)
 
 ## PCIe Passthrough
-* [GPU Pass-through On Linux/Virt-Manager](https://www.youtube.com/watch?v=KVDUs019IB8)
-* [GPU Pass-through Guide](https://mathiashueber.com/windows-virtual-machine-gpu-passthrough-ubuntu/)
-* First, make sure `Intel vt-d`, `amd-vi`, `SVM`, and `IOMMU` are enabled in the UEFI/BIOS.
+* [YT Guide #1](https://www.youtube.com/watch?v=g--fe8_kEcw)
+* [YT Guide #2](https://www.youtube.com/watch?v=KVDUs019IB8)
+* [Article Guide](https://mathiashueber.com/windows-virtual-machine-gpu-passthrough-ubuntu/)
+* First, make sure `Intel vt-d`, `amd-vi`, `SVM`, and `IOMMU` are enabled in the host UEFI/BIOS.
+* Second, make sure to use UEFI for the firmware!
 
 ### Requirements
 - Virtualization Check
