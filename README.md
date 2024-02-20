@@ -165,7 +165,7 @@ LC_ALL=C lscpu | grep Virtualization
 egrep -c '(vmx|svm)' /proc/cpuinfo
 
 # Add "amd_iommu=on" or "intel_iommu=on" to line "GRUB_CMDLINE_LINUX_DEFAULT"
-sudo vim /etc/default/grub
+sudo nano /etc/default/grub
 
 # Rebuild grub.cfg
 sudo grub-mkconfig -o /boot/grub/grub.cfg
@@ -176,7 +176,7 @@ sudo reboot
 Search all installed PCI devices (look for VGA):
 lspci -nn | grep "VGA"
 
-sudo vim /etc/modprobe.d/vfio.conf
+sudo nano /etc/modprobe.d/vfio.conf
 
 sudo mkinitcpio -p linux
 ```
