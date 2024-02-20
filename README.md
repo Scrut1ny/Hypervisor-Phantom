@@ -168,14 +168,8 @@ egrep -c '(vmx|svm)' /proc/cpuinfo
 # GRUB_CMDLINE_LINUX_DEFAULT="amd_iommu=on iommu=pt vfio-pci.ids=XXXX:XXXX,XXXX:XXXX,XXXX:XXXX,XXXX:XXXX"
 sudo nano /etc/default/grub
 
-# Update or Rebuild grub.cfg
 sudo update-grub
-sudo grub-mkconfig -o /boot/grub/grub.cfg
 
-# Reboot to enable IOMMU
-sudo reboot
-
-Search all installed PCI devices (look for VGA):
 lspci -nn | grep "NVIDIA"
 
 sudo nano /etc/modprobe.d/vfio.conf
@@ -185,6 +179,8 @@ sudo mkinitcpio -p linux
 
 # Ubuntu:
 sudo update-initramfs -c -k $(uname -r)
+
+sudo reboot
 ```
 
 </details>
