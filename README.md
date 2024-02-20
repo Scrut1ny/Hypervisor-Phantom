@@ -157,7 +157,7 @@ virt-manager
 
 ### PCIe Passthrough
 * [GPU Pass-through On Linux/Virt-Manager](https://www.youtube.com/watch?v=KVDUs019IB8)
-* First Make sure `Intel vt-d` or `amd-vi` and `IOMMU` are enabled in the UEFI/BIOS.
+* First, make sure `Intel vt-d`, `amd-vi`, `SVM`, and `IOMMU` are enabled in the UEFI/BIOS.
       
 ```
 # Check if your system has virtualization enabled
@@ -167,7 +167,8 @@ egrep -c '(vmx|svm)' /proc/cpuinfo
 # Add "amd_iommu=on" or "intel_iommu=on" to line "GRUB_CMDLINE_LINUX_DEFAULT"
 sudo nano /etc/default/grub
 
-# Rebuild grub.cfg
+# Update or Rebuild grub.cfg
+sudo update-grub
 sudo grub-mkconfig -o /boot/grub/grub.cfg
 
 # Reboot to enable IOMMU
