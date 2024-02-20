@@ -161,26 +161,25 @@ virt-manager
 * First, make sure `Intel vt-d`, `amd-vi`, `SVM`, and `IOMMU` are enabled in the UEFI/BIOS.
       
 ```
-# Check if your system has virtualization enabled
+# Check if your system has virtualization enabled and list down IDs for the GPU
 LC_ALL=C lscpu | grep Virtualization
 egrep -c '(vmx|svm)' /proc/cpuinfo
+lspci -nn | grep "NVIDIA"
 
 # GRUB_CMDLINE_LINUX_DEFAULT="amd_iommu=on iommu=pt vfio-pci.ids=XXXX:XXXX,XXXX:XXXX,XXXX:XXXX,XXXX:XXXX"
 sudo nano /etc/default/grub
 
-sudo update-grub
+sudo update-grub && sudo reboot now
 
-lspci -nn | grep "NVIDIA"
-
+# options vfio-pci ids=XXXX:XXXX,XXXX:XXXX,XXXX:XXXX,XXXX:XXXX
+# softdep nvidia pre: vfio-pci
 sudo nano /etc/modprobe.d/vfio.conf
 
-# Arch:
-sudo mkinitcpio -p linux
-
 # Ubuntu:
-sudo update-initramfs -c -k $(uname -r)
+sudo update-initramfs -c -k $(uname -r) && sudo reboot now
 
-sudo reboot now
+# Arch:
+sudo mkinitcpio -p linux && sudo reboot now
 ```
 
 </details>
