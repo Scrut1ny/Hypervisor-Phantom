@@ -155,30 +155,41 @@ virt-manager
 ### QEMU RDTSC Kernal Patch
 * [RDTSC-KVM-Handler](https://github.com/WCharacter/RDTSC-KVM-Handler)
 
-### PCIe Passthrough
+## PCIe Passthrough
 * [GPU Pass-through On Linux/Virt-Manager](https://www.youtube.com/watch?v=KVDUs019IB8)
 * [GPU Pass-through Guide](https://mathiashueber.com/windows-virtual-machine-gpu-passthrough-ubuntu/)
 * First, make sure `Intel vt-d`, `amd-vi`, `SVM`, and `IOMMU` are enabled in the UEFI/BIOS.
-      
-```
-# Check if your system has virtualization enabled and list down IDs for the GPU
+
+### Requirements
 LC_ALL=C lscpu | grep Virtualization
 egrep -c '(vmx|svm)' /proc/cpuinfo
 lspci -nn | grep "NVIDIA"
 
-# GRUB_CMDLINE_LINUX_DEFAULT="amd_iommu=on iommu=pt vfio-pci.ids=XXXX:XXXX,XXXX:XXXX,XXXX:XXXX,XXXX:XXXX"
+### Modify grub.cfg
+- GRUB_CMDLINE_LINUX_DEFAULT="amd_iommu=on iommu=pt vfio-pci.ids=XXXX:XXXX,XXXX:XXXX,XXXX:XXXX,XXXX:XXXX"
+```
 sudo nano /etc/default/grub
+```
 
+### Update grub.cfg & reboot
+```
 sudo update-grub && sudo reboot now
+```
 
-# options vfio-pci ids=XXXX:XXXX,XXXX:XXXX,XXXX:XXXX,XXXX:XXXX
-# softdep nvidia pre: vfio-pci
+### Modify vfio.conf (isolate GPU)
+- options vfio-pci ids=XXXX:XXXX,XXXX:XXXX,XXXX:XXXX,XXXX:XXXX
+- softdep nvidia pre: vfio-pci
+```
 sudo nano /etc/modprobe.d/vfio.conf
+```
 
-# Ubuntu:
+### Update initramfs
+- Ubuntu
+```
 sudo update-initramfs -c -k $(uname -r) && sudo reboot now
-
-# Arch:
+```
+- Arch
+```
 sudo mkinitcpio -p linux && sudo reboot now
 ```
 
