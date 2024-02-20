@@ -178,7 +178,11 @@ lspci -nn | grep "NVIDIA"
 
 sudo nano /etc/modprobe.d/vfio.conf
 
+# Arch:
 sudo mkinitcpio -p linux
+
+# Ubuntu:
+sudo update-initramfs -c -k $(uname -r)
 ```
 
 </details>
