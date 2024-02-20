@@ -205,7 +205,7 @@ sudo mkinitcpio -p linux && sudo reboot now
 lspci -k | grep -E "vfio-pci|NVIDIA"
 ```
 
-### Obtain Virtio
+### Install Virtio on the guest
 - [Virtio](https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/stable-virtio/)
 - If your mouse stops working properly run `virtio-win-gt-x64.msi` and select uninstall, then reboot the guest.
 
