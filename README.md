@@ -180,7 +180,7 @@ sudo mkinitcpio -p linux
 # Ubuntu:
 sudo update-initramfs -c -k $(uname -r)
 
-sudo reboot
+sudo reboot now
 ```
 
 </details>
