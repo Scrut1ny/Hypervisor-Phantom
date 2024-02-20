@@ -174,7 +174,7 @@ sudo grub-mkconfig -o /boot/grub/grub.cfg
 sudo reboot
 
 Search all installed PCI devices (look for VGA):
-lspci -nn | grep "VGA"
+lspci -nn | grep "NVIDIA"
 
 sudo nano /etc/modprobe.d/vfio.conf
 
