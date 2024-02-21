@@ -161,7 +161,13 @@ virt-manager
 * [YT Guide #1](https://www.youtube.com/watch?v=g--fe8_kEcw)
 * [YT Guide #2](https://www.youtube.com/watch?v=KVDUs019IB8)
 * [Article Guide](https://mathiashueber.com/windows-virtual-machine-gpu-passthrough-ubuntu/)
-* First, make sure `Intel vt-d`, `amd-vi`, `SVM`, and `IOMMU` are enabled in the host UEFI/BIOS.
+* First, make sure to enable the following in the host UEFI/BIOS:
+| **AMD CPU** | **Intel CPU** |
+|-|-|
+| IOMMU | VT-D |
+| NX | VT-X |
+| SVM |  |
+
 * Second, make sure to use UEFI for the firmware!
 
 ### Requirements
