@@ -110,7 +110,7 @@ MC60H-DWHD5-H80U9-6V85M-8280D
 3. Once completed, go to `File` then `Build BIOS` and save the patched BIOS somewhere. **Don't overwrite the original file!**
 4. Now within the `*.vmx` config file, make sure to add the new patched BIOS location for the `bios440.filename` argument line.
 
-### Set Custom CPUID
+### Set Custom CPUID (optional)
 ![image](https://github.com/Scrut1ny/Hypervisor-Phantom/assets/53458032/fed4e5e8-4ea3-4001-80f3-e84fce123c8e)
 
 ### Add the following into your *.vmx
