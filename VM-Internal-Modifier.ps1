@@ -135,8 +135,12 @@ function QEMU {
 	Rename-Item -Path "HKLM:\HARDWARE\ACPI\RSDT\ALASKA\BXPC____" -NewName "A_M_I_" -Force
 
  	# System
-	Set-ItemProperty -Path "HKLM:\HARDWARE\DESCRIPTION\System" -Name "SystemBiosDate" -Value "02/06/2024" -Force
  	Set-ItemProperty -Path "HKLM:\HARDWARE\DESCRIPTION\System" -Name "SystemBiosVersion" -Value "ALASKA - 1072009", "1.C0", "American Megatrends - 50020" -Force
+
+  	# HardwareConfig
+	$lastConfig = Get-ItemProperty -Path "HKLM:\SYSTEM\HardwareConfig" -Name "LastConfig"
+	$guidValue = $lastConfig.LastConfig
+	Set-ItemProperty -Path "HKLM:\SYSTEM\HardwareConfig\$guidValue" -Name "SystemBiosVersion" -Value "ALASKA - 1072009", "1.C0", "American Megatrends - 50020" -Force
 }
 
 $userChoice = Read-Host "Are you using VirtualBox, VMware, or QEMU? Please type your choice"
