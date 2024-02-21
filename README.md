@@ -167,44 +167,55 @@ virt-manager
 
 ### Requirements
 - Virtualization Check
-```
+```bash
 LC_ALL=C lscpu | grep Virtualization && egrep -c '(vmx|svm)' /proc/cpuinfo
 ```
-- Obtain GPU Device IDs
-```
+- IOMMU Groups
+```bash
 lspci -nn | grep "NVIDIA"
+```
+or
+```bash
+#!/bin/bash
+shopt -s nullglob
+for g in /sys/kernel/iommu_groups/*; do
+    echo "IOMMU Group ${g##*/}:"
+    for d in $g/devices/*; do
+        echo -e "\t$(lspci -nns ${d##*/})"
+    done;
+done;
 ```
 
 ### Modify grub.cfg
 - GRUB_CMDLINE_LINUX_DEFAULT="amd_iommu=on iommu=pt vfio-pci.ids=XXXX:XXXX,XXXX:XXXX,XXXX:XXXX,XXXX:XXXX"
-```
+```bash
 sudo nano /etc/default/grub
 ```
 
 ### Update grub.cfg & reboot
-```
+```bash
 sudo update-grub && sudo reboot now
 ```
 
 ### Modify vfio.conf (isolate GPU)
 - options vfio-pci ids=XXXX:XXXX,XXXX:XXXX,XXXX:XXXX,XXXX:XXXX
 - softdep nvidia pre: vfio-pci
-```
+```bash
 sudo nano /etc/modprobe.d/vfio.conf
 ```
 
 ### Update initramfs
 - Ubuntu
-```
+```bash
 sudo update-initramfs -c -k $(uname -r) && sudo reboot now
 ```
 - Arch
-```
+```bash
 sudo mkinitcpio -p linux && sudo reboot now
 ```
 
 ### Check kernal driver in use for the GPU (should be vfio-pci)
-```
+```bash
 lspci -k | grep -E "vfio-pci|NVIDIA"
 ```
 
