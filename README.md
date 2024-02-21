@@ -154,6 +154,7 @@ virt-manager
 * [YT Guide #1](https://www.youtube.com/watch?v=g--fe8_kEcw)
 * [YT Guide #2](https://www.youtube.com/watch?v=KVDUs019IB8)
 * [Article Guide](https://mathiashueber.com/windows-virtual-machine-gpu-passthrough-ubuntu/)
+* [GitLab Guide](https://gitlab.com/risingprismtv/single-gpu-passthrough/-/wikis/1)-Preparations)
 * First, make sure to enable the following in the host UEFI/BIOS:
 
 | **AMD CPU** | **Intel CPU** |
