@@ -128,7 +128,7 @@ monitor_control.virtual_rdtsc = "FALSE"
 ```
 
 ### **IMPORTANT**
-* `smbios.reflectHost` will NOT function properly if UEFI is utilized instead of BIOS firmware! If you utilize a patched BIOS firmware image, then you can use UEFI without issues.
+* `smbios.reflectHost` will NOT fully function properly if UEFI firmware is used without the BIOS ROM patch. If you use BIOS firmware instead, you don't have to worry about doing the BIOS ROM patch (you can still do it if you want though).
 
 ### Run these scripts:
 * Spoof Windows: `VM-Internal-Modifier.ps1`
