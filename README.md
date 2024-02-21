@@ -137,8 +137,10 @@ monitor_control.virtual_rdtsc = "FALSE"
 
 <details>
 <summary>QEMU</summary>
-      
-### QEMU + Virt-Manager Setup
+
+* [Domain XML format](https://libvirt.org/formatdomain.html)
+
+## QEMU + Virt-Manager Setup
 ```
 sudo apt update && sudo apt upgrade
 sudo apt install qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils virt-manager
@@ -147,15 +149,6 @@ sudo systemctl status libvirtd
 sudo systemctl start libvirtd && sudo systemctl enable libvirtd
 virt-manager
 ```
-
-### QEMU libvert: Domain XML format
-* [Domain XML format](https://libvirt.org/formatdomain.html)
-
-### QEMU Strings Patch
-* [qemu-patch-bypass](https://github.com/zhaodice/qemu-anti-detection)
-
-### QEMU RDTSC Kernal Patch
-* [RDTSC-KVM-Handler](https://github.com/WCharacter/RDTSC-KVM-Handler)
 
 ## PCIe Passthrough
 * [YT Guide #1](https://www.youtube.com/watch?v=g--fe8_kEcw)
@@ -216,6 +209,12 @@ lspci -k | grep -E "vfio-pci|NVIDIA"
 ### Install Virtio on the guest
 - [Virtio](https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/stable-virtio/)
 - If your mouse stops working properly run `virtio-win-gt-x64.msi` and select uninstall, then reboot the guest.
+
+## QEMU Strings Patch
+* [qemu-patch-bypass](https://github.com/zhaodice/qemu-anti-detection)
+
+## QEMU RDTSC Kernal Patch
+* [RDTSC-KVM-Handler](https://github.com/WCharacter/RDTSC-KVM-Handler)
 
 </details>
 </details>
