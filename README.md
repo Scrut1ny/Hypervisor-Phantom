@@ -119,13 +119,12 @@ bios440.filename = "C:\<path_to_your_bios_file>\BIOS.440.PATCH.ROM"
 hypervisor.cpuid.v0 = "FALSE"
 smbios.reflectHost = "TRUE"
 ethernet0.address = "00:C0:CA:A7:2B:9E"
-monitor_control.virtual_rdtsc = "FALSE"
-monitor_control.restrict_backdoor = "TRUE"
 isolation.tools.getPtrLocation.disable = "TRUE"
 isolation.tools.setPtrLocation.disable = "TRUE"
 isolation.tools.setVersion.disable = "TRUE"
 isolation.tools.getVersion.disable = "TRUE"
-monitor_control.disable_directexec = "TRUE"
+monitor_control.restrict_backdoor = "TRUE"
+monitor_control.virtual_rdtsc = "FALSE"
 ```
 
 ### **IMPORTANT**
