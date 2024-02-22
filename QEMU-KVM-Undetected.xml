@@ -27,6 +27,8 @@
     <cache mode="passthrough"/>
     <feature policy="disable" name="hypervisor"/>
     <feature policy="require" name="invtsc"/>
+    <feature policy="require" name="topoext"/>
+    <feature policy="require" name="svm"/>
   </cpu>
   <clock offset="utc">
     <timer name="pit" tickpolicy="delay"/>
