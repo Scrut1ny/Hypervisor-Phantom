@@ -150,7 +150,7 @@ sudo virsh net-autostart default && sudo virsh net-start default
 virt-manager
 ```
 
-## PCIe Passthrough
+## PCIe Passthrough (Debian Guide)
 * [YT Guide #1](https://www.youtube.com/watch?v=g--fe8_kEcw)
 * [YT Guide #2](https://www.youtube.com/watch?v=KVDUs019IB8)
 * [Article Guide](https://mathiashueber.com/windows-virtual-machine-gpu-passthrough-ubuntu/)
@@ -206,13 +206,8 @@ sudo nano /etc/modprobe.d/vfio.conf
 ```
 
 ### Update initramfs
-- Ubuntu
 ```bash
 sudo update-initramfs -c -k $(uname -r) && sudo reboot now
-```
-- Arch
-```bash
-sudo mkinitcpio -p linux && sudo reboot now
 ```
 
 ### Check kernal driver in use for the GPU (should be vfio-pci)
