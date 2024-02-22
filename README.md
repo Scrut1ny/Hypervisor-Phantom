@@ -216,9 +216,9 @@ sudo update-initramfs -c -k $(uname -r) && sudo reboot now
 lspci -k | grep -E "vfio-pci|NVIDIA"
 ```
 
-### Install Virtio on the guest
-- [Virtio](https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/stable-virtio/)
-- If your mouse stops working properly run `virtio-win-gt-x64.msi` and select uninstall, then reboot the guest.
+### Testing it out...
+- Connect an additional DisplayPort or HDMI cable from your spare/isolated GPU to your monitor. Alternatively, you can utilize a DisplayPort or HDMI Bidirectional Switch Splitter for convenience.
+    - [Amazon Link](https://www.amazon.com/dp/B089SLDDZZ)
 
 ## QEMU Strings Patch
 * [qemu-patch-bypass](https://github.com/zhaodice/qemu-anti-detection)
