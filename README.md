@@ -143,10 +143,10 @@ monitor_control.virtual_rdtsc = "FALSE"
 ## QEMU + Virt-Manager Setup
 ```
 sudo apt update && sudo apt upgrade
-sudo apt install qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils virt-manager
-sudo adduser $USER libvirt && sudo adduser $USER kvm
-sudo systemctl status libvirtd
-sudo systemctl start libvirtd && sudo systemctl enable libvirtd
+sudo apt install qemu-system-x86 libvirt-clients libvirt-daemon-system libvirt-daemon-config-network bridge-utils virt-manager ovmf
+sudo usermod -a -G kvm,libvirt $(whoami)
+sudo systemctl enable libvirtd && sudo systemctl start libvirtd && sudo groups $(whoami)
+sudo virsh net-autostart default && sudo virsh net-start default
 virt-manager
 ```
 
@@ -155,7 +155,8 @@ virt-manager
 * [YT Guide #2](https://www.youtube.com/watch?v=KVDUs019IB8)
 * [Article Guide](https://mathiashueber.com/windows-virtual-machine-gpu-passthrough-ubuntu/)
 * [Amazing Single GPU Passthrough Guide](https://gitlab.com/risingprismtv/single-gpu-passthrough/-/wikis/home)
-* First, make sure to enable the following in the host UEFI/BIOS:
+
+First, make sure to enable the following in the host UEFI/BIOS:
 
 | **AMD CPU** | **Intel CPU** |
 |-|-|
