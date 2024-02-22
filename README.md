@@ -153,6 +153,7 @@ virt-manager
 ## PCIe Passthrough (Debian Guide)
 * [YT Guide #1](https://www.youtube.com/watch?v=g--fe8_kEcw)
 * [YT Guide #2](https://www.youtube.com/watch?v=KVDUs019IB8)
+* [YT Guide #3](https://www.youtube.com/watch?v=jc3PjDX-CGs)
 * [Article Guide](https://mathiashueber.com/windows-virtual-machine-gpu-passthrough-ubuntu/)
 * [Amazing Single GPU Passthrough Guide](https://gitlab.com/risingprismtv/single-gpu-passthrough/-/wikis/home)
 
