@@ -168,7 +168,14 @@ First, make sure to enable the following in the host UEFI/BIOS:
 | NX | VT-X |
 | SVM |  |
 
-* Second, make sure to use UEFI for the firmware!
+- Set a realistic amount of RAM:
+| GB | MBs |
+|-|-|
+| 8 | 8192 |
+| 16 | 16384 |
+| 32 | 32768 |
+
+- Second, make sure to use UEFI for the firmware!
 
 ### Requirements
 - Virtualization Check
