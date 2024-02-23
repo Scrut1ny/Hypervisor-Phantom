@@ -235,11 +235,14 @@ lspci -k | grep -E "vfio-pci|NVIDIA"
 - Connect an additional DisplayPort or HDMI cable from your spare/isolated GPU to your monitor. Alternatively, you can utilize a DisplayPort or HDMI Bidirectional Switch Splitter for convenience.
     - [Amazon Link](https://www.amazon.com/dp/B089SLDDZZ)
 
+## QEMU General Patches
+* [KVM-Spoofing](https://github.com/A1exxander/KVM-Spoofing)
+
 ## QEMU Strings Patch
 * [qemu-patch-bypass](https://github.com/zhaodice/qemu-anti-detection)
 
 ## QEMU RDTSC VM_Exit Kernal Patch
-* [RDTSC-KVM-Handler](https://github.com/lexi-src/kernel-rdtsc-patch)
+* [RDTSC-KVM-Handler](https://github.com/Gyztor/kernel-rdtsc-patch)
 
 </details>
 </details>
