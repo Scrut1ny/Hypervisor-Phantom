@@ -226,8 +226,8 @@ lspci -k | grep -E "vfio-pci|NVIDIA"
 ## QEMU Strings Patch
 * [qemu-patch-bypass](https://github.com/zhaodice/qemu-anti-detection)
 
-## QEMU RDTSC Kernal Patch
-* [RDTSC-KVM-Handler](https://github.com/WCharacter/RDTSC-KVM-Handler)
+## QEMU RDTSC VM_Exit Kernal Patch
+* [RDTSC-KVM-Handler](https://github.com/lexi-src/kernel-rdtsc-patch)
 
 </details>
 </details>
