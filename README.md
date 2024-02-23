@@ -160,7 +160,7 @@ virt-manager
 * [Article Guide](https://mathiashueber.com/windows-virtual-machine-gpu-passthrough-ubuntu/)
 * [Amazing Single GPU Passthrough Guide](https://gitlab.com/risingprismtv/single-gpu-passthrough/-/wikis/home)
 
-### First, make sure to enable the following in the host UEFI/BIOS:
+### First, make sure to enable the following in the host UEFI/BIOS
 
 | **AMD CPU** | **Intel CPU** |
 |-|-|
@@ -168,7 +168,7 @@ virt-manager
 | NX | VT-X |
 | SVM |  |
 
-### Set a realistic amount of RAM:
+### Second, Set a realistic amount of RAM (make sure its half of the full amount)
 
 | GB | MBs |
 |-|-|
@@ -176,7 +176,11 @@ virt-manager
 | 16 | 16384 |
 | 32 | 32768 |
 
-### Second, make sure to use UEFI for the firmware!
+### Third, Set exactly half of the amount of CPUs available
+
+### Fourth, Set a virtual disk size of above 128 GB+
+
+### Fifth, make sure to use UEFI for the firmware!
 
 ### Requirements
 - Virtualization Check
