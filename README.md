@@ -33,13 +33,36 @@ Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
 </details>
 
 <details>
-<summary>Anti-Cheat Software</summary>
+<summary>QEMU Anti Detection</summary>
+
+| Type | Engine | Bypassed |
+|-|-|-|
+| **Anti-Cheat** | Anti Cheat Expert(ACE) | ✅ |
+| **Anti-Cheat** | Easy Anti-Cheat(EAC) | ✅ |
+| **Anti-Cheat** | Gepard Shield | ✅ (But need to patch host kernel: https://github.com/WCharacter/RDTSC-KVM-Handler ) |
+| **Anti-Cheat** | Mhyprot | ✅ |
+| **Anti-Cheat** | nProtect GameGuard(NP) | ✅ |
+| **Anti-Cheat** | Roblex | ‼️(The application encountered an unrecoverable error) |
+| **Anti-Cheat** | Vanguard | ‼️(1: Incorrect function) |
+| **Encrypt** | Enigma Protector | ✅ |
+| **Encrypt** | Safegine Shielden | ✅ |
+| **Encrypt** | Themida | ✅ |
+| **Encrypt** | VMProtect | ✅ |
+| **Encrypt** | VProtect | ✅ |
+
+- ‼️ Some games cannot run under this environment, but I'm not sure whether qemu has been detected. The game doesn't say "Virtual machine detected" specifically.
 
 | Software | Bypassed | Difficulty |
 | - | - | - |
-| Easy Anti-Cheat (EAC) |  |  |
-| BattlEye |  |  |
-| Vanguard |  |  |
+| Mhyprot | ✅ | ❔ |
+| Anti Cheat Expert(ACE) | ✅ | ❔ |
+| Easy Anti-Cheat (EAC) | ✅ | 🤬 |
+| BattlEye (BE) | ✅ | 🤬 |
+| Vanguard | ❔ | 💀 |
+| RICOCHET | ❔ | 💀 |
+| nProtect GameGuard(NP) | ✅ | ❔ |
+| Roblex | ❔ | ❔ |
+| Gepard Shield | ❔ | ❔ |
 
 </details>
 
