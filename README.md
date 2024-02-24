@@ -338,7 +338,7 @@ systemctl restart libvirtd
 <details>
 <summary>NVIDIA Error 43</summary>
 
-- Add this line in the `<hyperv/>` section:
+- Add this line in the `<hyperv/>` section in the QEMU XML:
 ```
 <vendor_id state="on" value="AuthenticAMD"/>
 ```
