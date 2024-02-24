@@ -263,20 +263,20 @@ lspci -k | grep -E "vfio-pci|NVIDIA"
 6. Set a virtual disk size of above 250GB+
 7. Select "Customize configuration before install" and finish
 8. Select `UEFI x86_64:/usr/share/OVMF/OVMF_CODE_4M.ms.fd` for the Firmware, then apply
-    8a. If you want to use Windows 11 you need to use `UEFI x86_64:/usr/share/qemu/edk2-x86_64-secure-code.fd` instead
+8a. If you want to use Windows 11 you need to use `UEFI x86_64:/usr/share/qemu/edk2-x86_64-secure-code.fd` instead
 9. Under `CPUs`, check `Copy host CPU configuration (host-passthrough)`
-    9a. Drop down `Topology` and check `Manually set CPU topology` then input whatever works with your system, then apply
-   
-    | Sockets: | Cores: | Threads: |
-    |-|-|-|
-    | 1 | X | X |
+9a. Drop down `Topology` and check `Manually set CPU topology` then input whatever works with your system, then apply
 
-10. Under `Boot Options` check `SATA CDROM 1`, then apply
-11. Under `SATA Disk 1` and `SATA CDROM 1` drop down `Advanced options` and set a random custom serial #, then apply
-12. Under `NIC:XX:XX:XX` select the drop down menu and pick hypervisor `default`
-    12a. Set a custom MAC address, make sure the vendor isn't a hypervisor vendor! then apply
-13. Select `Add Hardware` and under `PCI Host Device` add ALL devices under the isolated GPU IOMMU group you figured out earlier
-14. Now select `Begin Installation`, and enjoy your new undetectable windows system!
+| Sockets: | Cores: | Threads: |
+|-|-|-|
+| 1 | X | X |
+
+11. Under `Boot Options` check `SATA CDROM 1`, then apply
+12. Under `SATA Disk 1` and `SATA CDROM 1` drop down `Advanced options` and set a random custom serial #, then apply
+13. Under `NIC:XX:XX:XX` select the drop down menu and pick `hypervisor default`
+12a. Set a custom MAC address, make sure the vendor isn't a hypervisor vendor! then apply
+14. Select `Add Hardware` and under `PCI Host Device` add ALL devices under the isolated GPU IOMMU group you figured out earlier
+15. Now select `Begin Installation`, and enjoy your new undetectable windows system!
 
 ## QEMU XML Config
 ```
