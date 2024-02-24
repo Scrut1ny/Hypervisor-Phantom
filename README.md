@@ -197,18 +197,6 @@ mv qemu-system-x86_64 /bin
 | NX | VT-X |
 | SVM |  |
 
-### 2. Set a realistic amount of RAM (make sure its half of the full amount)
-
-| GB | MBs |
-|-|-|
-| 8 | 8192 |
-| 16 | 16384 |
-| 32 | 32768 |
-
-### 3. Set exactly half of the amount of CPUs available
-### 4. Set a virtual disk size of above 128 GB+
-### 5. Make sure to use UEFI for the firmware!
-
 ### Requirements
 - Virtualization Check
 ```bash
@@ -256,6 +244,81 @@ sudo update-initramfs -c -k $(uname -r) && sudo reboot now
 ### Check kernal driver in use for the GPU (should be vfio-pci)
 ```bash
 lspci -k | grep -E "vfio-pci|NVIDIA"
+```
+
+## QEMU Virt-Manager Setup
+
+1. Create a new virtual machine
+2. Local install media (ISO image or CDROM)
+3. Select a [Windows ISO](https://massgrave.dev/msdl/) and enter the OS you're using
+4. Set a realistic amount of RAM (make sure its half of the full amount)
+
+| GB | MBs |
+|-|-|
+| 8 | 8192 |
+| 16 | 16384 |
+| 32 | 32768 |
+
+5. Set 1 less of the maximum amount of CPUs available
+6. Set a virtual disk size of above 250GB+
+7. Select "Customize configuration before install" and finish
+8. Select `UEFI x86_64:/usr/share/OVMF/OVMF_CODE_4M.ms.fd` for the Firmware, then apply
+    8a. If you want to use Windows 11 you need to use `UEFI x86_64:/usr/share/qemu/edk2-x86_64-secure-code.fd` instead
+9. Under `CPUs`, check `Copy host CPU configuration (host-passthrough)`
+    9a. Drop down `Topology` and check `Manually set CPU topology` then input whatever works with your system, then apply
+   
+    | Sockets: | Cores: | Threads: |
+    |-|-|-|
+    | 1 | X | X |
+
+10. Under `Boot Options` check `SATA CDROM 1`, then apply
+11. Under `SATA Disk 1` and `SATA CDROM 1` drop down `Advanced options` and set a random custom serial #, then apply
+12. Under `NIC:XX:XX:XX` select the drop down menu and pick hypervisor `default`
+    12a. Set a custom MAC address, make sure the vendor isn't a hypervisor vendor! then apply
+13. Select `Add Hardware` and under `PCI Host Device` add ALL devices under the isolated GPU IOMMU group you figured out earlier
+14. Now select `Begin Installation`, and enjoy your new undetectable windows system!
+
+## QEMU XML Config
+```
+  <os>
+    <bootmenu enable="no"/>
+    <smbios mode="host"/>
+  </os>
+  <features>
+    <acpi/>
+    <apic/>
+    <hyperv mode="custom">
+      <relaxed state="on"/>
+      <vapic state="on"/>
+      <spinlocks state="on" retries="8191"/>
+      <vpindex state="on"/>
+      <runtime state="on"/>
+      <synic state="on"/>
+      <stimer state="on"/>
+      <reset state="on"/>
+      <vendor_id state="on" value="AuthenticAMD"/>
+      <frequencies state="on"/>
+    </hyperv>
+    <kvm>
+      <hidden state="on"/>
+    </kvm>
+    <vmport state="off"/>
+  </features>
+  <cpu mode="host-passthrough" check="none">
+    <topology sockets="1" dies="1" cores="8" threads="2"/>
+    <cache mode="passthrough"/>
+    <feature policy="disable" name="hypervisor"/>
+    <feature policy="require" name="invtsc"/>
+    <feature policy="require" name="topoext"/>
+    <feature policy="require" name="svm"/>
+  </cpu>
+  <clock offset="utc">
+    <timer name="pit" tickpolicy="delay"/>
+    <timer name="rtc" tickpolicy="catchup" track="guest"/>
+    <timer name="hpet" present="no"/>
+    <timer name="tsc" present="yes" mode="native"/>
+    <timer name="hypervclock" present="yes"/>
+  </clock>
 ```
 
 ### Testing it out...
