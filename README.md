@@ -276,9 +276,8 @@ lspci -k | grep -E "vfio-pci|NVIDIA"
 | **CPUID**              | ✅         | ✅      | ✅    |
 | **SMBIOS**             | ✅         | ✅      | ✅    |
 | **MAC Address**        | ✅         | ✅      | ✅    |
-| **Hard Drive**         | ✅         | ✅      | ✅    |
-| **Solid State Drive**  | ✅         | ✅      | ✅    |
-| **Hard Disk Drive**    | ✅         | ✅      | ✅    |
+| **Solid State Drive (SSD)** | ✅         | ✅      | ✅    |
+| **Hard Disk Drive (HDD)** | ✅         | ✅      | ✅    |
 | **DVD/CD-ROM drives**  | ✅         | ✅      | ✅    |
 | **Registry**           | ✅         | ✅      | ✅    |
 | **ACPI Tables**        | ❌         | ❌      | ✅    |
