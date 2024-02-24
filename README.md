@@ -14,7 +14,7 @@ Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
 ## Proctor Info
 <details>
 <summary>Proctoring Software</summary>
-
+internal error: cannot load AppArmor profile 'libvirt-
 | Software | Browser Extension | System Test | Bypassed | Difficulty |
 | - | - | - | - | - |
 | Pafish |  | [Link](https://github.com/a0rtega/pafish/releases/download/v0.6/pafish64.exe) | ✅ |  |
@@ -314,5 +314,33 @@ lspci -k | grep -E "vfio-pci|NVIDIA"
 * [Spoof and make your VM Undetectable - No more bullsh*t bans](https://www.reddit.com/r/VFIO/comments/i071qx/spoof_and_make_your_vm_undetectable_no_more/)
 * [BE is banning KVM on R6](https://www.reddit.com/r/VFIO/comments/hts1o1/be_is_banning_kvm_on_r6/)
 * [KVM Detection fixes](https://www.unknowncheats.me/forum/escape-from-tarkov/418885-kvm-detection-fixes.html)
+
+</details>
+
+## Common Error Solutions
+
+<details>
+<summary>Unable to complete install: 'internal error: cannot load AppArmor profile 'libvirt-<UUID>''</summary>
+
+- Set security_driver = "none" in /etc/libvirt/qemu.conf
+```
+#       security_driver = [ "selinux", "apparmor" ]
+#security_driver = "selinux"
+security_driver = "none"
+```
+- restart libvirtd service
+```
+systemctl restart libvirtd
+```
+
+</details>
+
+<details>
+<summary>NVIDIA Error 43</summary>
+
+- Add this line in the `<hyperv/>` section:
+```
+<vendor_id state="on" value="AuthenticAMD"/>
+```
 
 </details>
