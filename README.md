@@ -186,7 +186,7 @@ virt-manager
 - Virtualization Check
 ```bash
 LC_ALL=C lscpu | grep Virtualization && egrep -c '(vmx|svm)' /proc/cpuinfo
-```
+```<hyperv
 - IOMMU Groups
 ```bash
 lspci -nn | grep "NVIDIA"
@@ -323,12 +323,14 @@ lspci -k | grep -E "vfio-pci|NVIDIA"
 <summary>Unable to complete install: 'internal error: cannot load AppArmor profile 'libvirt-<UUID>''</summary>
 
 - Set security_driver = "none" in /etc/libvirt/qemu.conf
+
 ```
 #       security_driver = [ "selinux", "apparmor" ]
 #security_driver = "selinux"
 security_driver = "none"
 ```
 - restart libvirtd service
+
 ```
 systemctl restart libvirtd
 ```
@@ -339,6 +341,7 @@ systemctl restart libvirtd
 <summary>NVIDIA Error 43</summary>
 
 - Add this line in the `<hyperv/>` section in the QEMU XML:
+
 ```
 <vendor_id state="on" value="AuthenticAMD"/>
 ```
