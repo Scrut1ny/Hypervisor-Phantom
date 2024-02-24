@@ -52,18 +52,6 @@ Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
 
 - ‼️ Some games cannot run under this environment, but I'm not sure whether qemu has been detected. The game doesn't say "Virtual machine detected" specifically.
 
-| Software | Bypassed | Difficulty |
-| - | - | - |
-| Mhyprot | ✅ | ❔ |
-| Anti Cheat Expert(ACE) | ✅ | ❔ |
-| Easy Anti-Cheat (EAC) | ✅ | 🤬 |
-| BattlEye (BE) | ✅ | 🤬 |
-| Vanguard | ❔ | 💀 |
-| RICOCHET | ❔ | 💀 |
-| nProtect GameGuard(NP) | ✅ | ❔ |
-| Roblex | ❔ | ❔ |
-| Gepard Shield | ❔ | ❔ |
-
 </details>
 
 <details>
