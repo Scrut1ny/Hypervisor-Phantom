@@ -267,7 +267,7 @@ lspci -k | grep -E "vfio-pci|NVIDIA"
 
 </details>
 
-## Spoofed Information
+## Spoofed Hardware/Firmware/Software Information
 <details>
 <summary>Expand - ⤵️</summary>
 
