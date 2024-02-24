@@ -3,15 +3,7 @@
 Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
 ```
 
-## Todo List:
-- Secret Detected Stuff:
-    - RDTSC force VM Exit
-    - SMBIOS (double check all strings)
-    - ACPI Table Signature, OEM ID, Oem Table ID... Strings
-    - USB idVendor, iManufacturer, iProduct, etc... Strings
-    - Vbox failed to query monitor/displays via SEB [Code Reference](https://github.com/SafeExamBrowser/seb-win-refactoring/blob/master/SafeExamBrowser.Monitoring/Display/DisplayMonitor.cs)
-
-## Proctor Info
+## Info & Guide
 
 <details>
 <summary>Proctoring Software</summary>
