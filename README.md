@@ -12,9 +12,10 @@ Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
     - Vbox failed to query monitor/displays via SEB [Code Reference](https://github.com/SafeExamBrowser/seb-win-refactoring/blob/master/SafeExamBrowser.Monitoring/Display/DisplayMonitor.cs)
 
 ## Proctor Info
+
 <details>
 <summary>Proctoring Software</summary>
-internal error: cannot load AppArmor profile 'libvirt-
+
 | Software | Browser Extension | System Test | Bypassed | Difficulty |
 | - | - | - | - | - |
 | Pafish |  | [Link](https://github.com/a0rtega/pafish/releases/download/v0.6/pafish64.exe) | ✅ |  |
