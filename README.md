@@ -154,7 +154,7 @@ Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
 
 ## QEMU + Virt-Manager Setup
 ```
-sudo apt update && sudo apt upgrade
+sudo apt update && sudo apt upgrade -y && sudo apt autoremove -y && sudo apt clean -y
 sudo apt install qemu-system-x86 libvirt-clients libvirt-daemon-system libvirt-daemon-config-network bridge-utils virt-manager ovmf
 sudo usermod -a -G kvm,libvirt $(whoami)
 sudo systemctl enable libvirtd && sudo systemctl start libvirtd && sudo groups $(whoami)
