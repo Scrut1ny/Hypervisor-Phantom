@@ -271,23 +271,20 @@ lspci -k | grep -E "vfio-pci|NVIDIA"
 <details>
 <summary>Expand - ⤵️</summary>
 
-| Feature                           | VirtualBox | VMware  | QEMU   |
-|-----------------------------------|------------|---------|--------|
-| **CPUID**                         | ✅         | ✅      | ✅    |
-| **SMBIOS DMI**                    | ✅         | ✅      | ✅    |
-| - BIOS Information                | ✅         | ✅      | ✅    |
-| - System Information              | ✅         | ✅      | ✅    |
-| - Board Information               | ✅         | ✅      | ✅    |
-| - System Enclosure or Chassis     | ✅         | ✅      | ✅    |
-| - Processor Information           | ✅         | ✅      | ✅    |
-| - OEM Strings                     | ✅         | ✅      | ✅    |
-| **MAC Address**                   | ✅         | ✅      | ✅    |
-| **Hard Drives**                   | ✅         | ✅      | ✅    |
-| **DVD/CD-ROM drives**             | ✅         | ✅      | ✅    |
-| **Registry**                      | ✅         | ✅      | ✅    |
-| **Device Manager**                | ✅         | ✅      | ✅    |
-| **Hardware**                      | ✅         | ✅      | ✅    |
-| **PCIe Passthrough Capabilities**      | ❌         | ❌      | ✅    |
+| Feature                | VirtualBox | VMware | QEMU |
+|------------------------|------------|--------|-------|
+| **CPUID**              | ✅         | ✅      | ✅    |
+| **SMBIOS**             | ✅         | ✅      | ✅    |
+| **MAC Address**        | ✅         | ✅      | ✅    |
+| **Hard Drive**         | ✅         | ✅      | ✅    |
+| **SSD Drive**          | ✅         | ✅      | ✅    |
+| **Hard Disk Drive**    | ✅         | ✅      | ✅    |
+| **DVD/CD-ROM drives**  | ✅         | ✅      | ✅    |
+| **Registry**           | ✅         | ✅      | ✅    |
+| **ACPI Tables**        | ❌         | ❌      | ✅    |
+| **EDID**               | ❌         | ❌      | ✅    |
+| **USB**                | ❌         | ❌      | ✅    |
+| **PCIe Passthrough**   | ❌         | ❌      | ✅    |
 
 </details>
 
