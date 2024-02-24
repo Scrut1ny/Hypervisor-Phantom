@@ -39,7 +39,7 @@ Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
 |-|-|-|
 | **Anti-Cheat** | Anti Cheat Expert(ACE) | ✅ |
 | **Anti-Cheat** | Easy Anti-Cheat(EAC) | ✅ |
-| **Anti-Cheat** | Gepard Shield | ✅ (But need to patch host kernel: https://github.com/WCharacter/RDTSC-KVM-Handler ) |
+| **Anti-Cheat** | Gepard Shield | ✅ (With RDTSC VM Force Exit Kernal Patch) |
 | **Anti-Cheat** | Mhyprot | ✅ |
 | **Anti-Cheat** | nProtect GameGuard(NP) | ✅ |
 | **Anti-Cheat** | Roblex | ‼️(The application encountered an unrecoverable error) |
