@@ -162,6 +162,26 @@ sudo virsh net-autostart default && sudo virsh net-start default
 virt-manager
 ```
 
+## QEMU Strings Patch [smbios, ACPI Tables, USB, etc...]
+* [qemu-patch-bypass](https://github.com/zhaodice/qemu-anti-detection)
+
+### Installing Dependancies:
+```
+sudo apt update && sudo apt upgrade -y && sudo apt autoremove -y && sudo apt install -y binutils-mingw-w64 binutils-mingw-w64-i686 binutils-mingw-w64-x86-64 build-essential clang g++-mingw-w64 g++-mingw-w64-i686 g++-mingw-w64-x86-64 gcc-mingw-w64 gcc-mingw-w64-i686 gcc-mingw-w64-x86-64 git git-email gnutls-bin libaio-dev libbluetooth-dev libbrlapi-dev libbz2-dev libcacard-dev libcap-dev libcap-ng-dev libcurl4-gnutls-dev libfdt-dev libglib2.0-dev libgtk-3-dev libibverbs-dev libiscsi-dev libjpeg8-dev liblzo2-dev libncurses5-dev libncursesw5-dev libnfs-dev libnuma-dev libpam0g-dev libpixman-1-dev librbd-dev librdmacm-dev libseccomp-dev libsnappy-dev libsasl2-dev libsdl1.2-dev libsdl2-dev libsdl2-image-dev libspice-protocol-dev libspice-server-dev libusb-1.0-0-dev libusb-dev libusbredirparser-dev libusbredirparser1 libvde-dev libvdeplug-dev libvirglrenderer-dev libvte-2.91-dev libxen-dev libxml2-dev libz-mingw-w64-dev libzstd-dev ninja-build valgrind win-iconv-mingw-w64-dev xfslibs-dev zlib1g-dev
+```
+
+### Downloading & Building QEMU w/patch
+```
+cd /home/null/Downloads && git clone https://gitlab.com/qemu-project/qemu/ -b v8.2.1 --depth 1 --recursive
+
+cd qemu && git apply qemu8.2.1.patch && cd .. && mkdir qemu_build && cd qemu_build && ../qemu/configure --target-list=x86_64-softmmu,x86_64-linux-user --prefix=/usr && make -j $(nproc) && sudo make install
+
+mv qemu-system-x86_64 /bin
+```
+
+## QEMU RDTSC VM_Exit Kernal Patch
+* [RDTSC-KVM-Handler](https://github.com/Gyztor/kernel-rdtsc-patch)
+
 ## PCIe Passthrough (Debian Guide)
 * [YT Guide #1](https://www.youtube.com/watch?v=g--fe8_kEcw)
 * [YT Guide #2](https://www.youtube.com/watch?v=KVDUs019IB8)
@@ -169,7 +189,7 @@ virt-manager
 * [Article Guide](https://mathiashueber.com/windows-virtual-machine-gpu-passthrough-ubuntu/)
 * [Amazing Single GPU Passthrough Guide](https://gitlab.com/risingprismtv/single-gpu-passthrough/-/wikis/home)
 
-### First, make sure to enable the following in the host UEFI/BIOS
+### 1. Make sure to enable the following in the host UEFI/BIOS
 
 | **AMD CPU** | **Intel CPU** |
 |-|-|
@@ -177,7 +197,7 @@ virt-manager
 | NX | VT-X |
 | SVM |  |
 
-### Second, Set a realistic amount of RAM (make sure its half of the full amount)
+### 2. Set a realistic amount of RAM (make sure its half of the full amount)
 
 | GB | MBs |
 |-|-|
@@ -185,11 +205,9 @@ virt-manager
 | 16 | 16384 |
 | 32 | 32768 |
 
-### Third, Set exactly half of the amount of CPUs available
-
-### Fourth, Set a virtual disk size of above 128 GB+
-
-### Fifth, make sure to use UEFI for the firmware!
+### 3. Set exactly half of the amount of CPUs available
+### 4. Set a virtual disk size of above 128 GB+
+### 5. Make sure to use UEFI for the firmware!
 
 ### Requirements
 - Virtualization Check
@@ -243,26 +261,6 @@ lspci -k | grep -E "vfio-pci|NVIDIA"
 ### Testing it out...
 - Connect an additional DisplayPort or HDMI cable from your spare/isolated GPU to your monitor. Alternatively, you can utilize a DisplayPort or HDMI Bidirectional Switch Splitter for convenience.
     - [Amazon Link](https://www.amazon.com/dp/B089SLDDZZ)
-
-## QEMU Strings Patch [smbios, ACPI Tables, USB, etc...]
-* [qemu-patch-bypass](https://github.com/zhaodice/qemu-anti-detection)
-
-### Installing Dependancies:
-```
-sudo apt update && sudo apt upgrade -y && sudo apt autoremove -y && sudo apt install -y binutils-mingw-w64 binutils-mingw-w64-i686 binutils-mingw-w64-x86-64 build-essential clang g++-mingw-w64 g++-mingw-w64-i686 g++-mingw-w64-x86-64 gcc-mingw-w64 gcc-mingw-w64-i686 gcc-mingw-w64-x86-64 git git-email gnutls-bin libaio-dev libbluetooth-dev libbrlapi-dev libbz2-dev libcacard-dev libcap-dev libcap-ng-dev libcurl4-gnutls-dev libfdt-dev libglib2.0-dev libgtk-3-dev libibverbs-dev libiscsi-dev libjpeg8-dev liblzo2-dev libncurses5-dev libncursesw5-dev libnfs-dev libnuma-dev libpam0g-dev libpixman-1-dev librbd-dev librdmacm-dev libseccomp-dev libsnappy-dev libsasl2-dev libsdl1.2-dev libsdl2-dev libsdl2-image-dev libspice-protocol-dev libspice-server-dev libusb-1.0-0-dev libusb-dev libusbredirparser-dev libusbredirparser1 libvde-dev libvdeplug-dev libvirglrenderer-dev libvte-2.91-dev libxen-dev libxml2-dev libz-mingw-w64-dev libzstd-dev ninja-build valgrind win-iconv-mingw-w64-dev xfslibs-dev zlib1g-dev
-```
-
-### Downloading & Building QEMU w/patch
-```
-cd /home/null/Downloads && git clone https://gitlab.com/qemu-project/qemu/ -b v8.2.1 --depth 1 --recursive
-
-cd qemu && git apply qemu8.2.1.patch && cd .. && mkdir qemu_build && cd qemu_build && ../qemu/configure --target-list=x86_64-softmmu,x86_64-linux-user --prefix=/usr && make -j $(nproc) && sudo make install
-
-mv qemu-system-x86_64 /bin
-```
-
-## QEMU RDTSC VM_Exit Kernal Patch
-* [RDTSC-KVM-Handler](https://github.com/Gyztor/kernel-rdtsc-patch)
 
 ## QEMU General Patches
 * [KVM-Spoofing](https://github.com/A1exxander/KVM-Spoofing)
