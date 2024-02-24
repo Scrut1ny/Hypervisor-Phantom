@@ -287,7 +287,7 @@ lspci -k | grep -E "vfio-pci|NVIDIA"
 | **Registry**                      | ✅         | ✅      | ✅    |
 | **Device Manager**                | ✅         | ✅      | ✅    |
 | **Hardware**                      | ✅         | ✅      | ✅    |
-| **Passthrough Capabilities**      | ❌         | ❌      | ✅    |
+| **PCIe Passthrough Capabilities**      | ❌         | ❌      | ✅    |
 
 </details>
 
