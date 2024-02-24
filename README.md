@@ -244,14 +244,28 @@ lspci -k | grep -E "vfio-pci|NVIDIA"
 - Connect an additional DisplayPort or HDMI cable from your spare/isolated GPU to your monitor. Alternatively, you can utilize a DisplayPort or HDMI Bidirectional Switch Splitter for convenience.
     - [Amazon Link](https://www.amazon.com/dp/B089SLDDZZ)
 
-## QEMU General Patches
-* [KVM-Spoofing](https://github.com/A1exxander/KVM-Spoofing)
-
-## QEMU Strings Patch
+## QEMU Strings Patch [smbios, ACPI Tables, USB, etc...]
 * [qemu-patch-bypass](https://github.com/zhaodice/qemu-anti-detection)
+
+### Installing Dependancies:
+```
+sudo apt update && sudo apt upgrade -y && sudo apt autoremove -y && sudo apt install -y binutils-mingw-w64 binutils-mingw-w64-i686 binutils-mingw-w64-x86-64 build-essential clang g++-mingw-w64 g++-mingw-w64-i686 g++-mingw-w64-x86-64 gcc-mingw-w64 gcc-mingw-w64-i686 gcc-mingw-w64-x86-64 git git-email gnutls-bin libaio-dev libbluetooth-dev libbrlapi-dev libbz2-dev libcacard-dev libcap-dev libcap-ng-dev libcurl4-gnutls-dev libfdt-dev libglib2.0-dev libgtk-3-dev libibverbs-dev libiscsi-dev libjpeg8-dev liblzo2-dev libncurses5-dev libncursesw5-dev libnfs-dev libnuma-dev libpam0g-dev libpixman-1-dev librbd-dev librdmacm-dev libseccomp-dev libsnappy-dev libsasl2-dev libsdl1.2-dev libsdl2-dev libsdl2-image-dev libspice-protocol-dev libspice-server-dev libusb-1.0-0-dev libusb-dev libusbredirparser-dev libusbredirparser1 libvde-dev libvdeplug-dev libvirglrenderer-dev libvte-2.91-dev libxen-dev libxml2-dev libz-mingw-w64-dev libzstd-dev ninja-build valgrind win-iconv-mingw-w64-dev xfslibs-dev zlib1g-dev
+```
+
+### Installing & Building QEMU w/patch
+```
+git clone https://gitlab.com/qemu-project/qemu/ -b v8.2.1 --depth 1 --recursive
+
+cd qemu && git apply qemu8.2.1.patch && cd .. && mkdir qemu_build && cd qemu_build && ../qemu/configure --target-list=x86_64-softmmu,x86_64-linux-user --prefix=/usr && make -j $(nproc) && sudo make install
+
+mv qemu-system-x86_64 /bin
+```
 
 ## QEMU RDTSC VM_Exit Kernal Patch
 * [RDTSC-KVM-Handler](https://github.com/Gyztor/kernel-rdtsc-patch)
+
+## QEMU General Patches
+* [KVM-Spoofing](https://github.com/A1exxander/KVM-Spoofing)
 
 </details>
 </details>
