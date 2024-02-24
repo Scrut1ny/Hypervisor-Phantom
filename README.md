@@ -1,10 +1,4 @@
-## ExecutionPolicy Modifier:
-```
-Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
-```
-
 ## Info & Guide
-
 <details>
 <summary>Proctoring Software</summary>
 
@@ -102,6 +96,11 @@ Windows: C:\Program Files\Oracle\VirtualBox\VBoxManage.exe
 * Configure the VM: `VM-External-Modifer.ps1`
 * Spoof Windows: `VM-Internal-Modifier.ps1`
 
+### ExecutionPolicy Modifier:
+```
+Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
+```
+
 </details>
 
 <details>
@@ -140,6 +139,11 @@ monitor_control.virtual_rdtsc = "FALSE"
 
 ### Run these scripts:
 * Spoof Windows: `VM-Internal-Modifier.ps1`
+
+### ExecutionPolicy Modifier:
+```
+Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
+```
 
 </details>
 
@@ -264,6 +268,9 @@ lspci -k | grep -E "vfio-pci|NVIDIA"
 </details>
 
 ## Spoofed Information
+<details>
+<summary>Expand - ⤵️</summary>
+
 | Feature                           | VirtualBox | VMware  | QEMU   |
 |-----------------------------------|------------|---------|--------|
 | **CPUID**                         | ✅         | ✅      | ✅    |
@@ -281,6 +288,8 @@ lspci -k | grep -E "vfio-pci|NVIDIA"
 | **Device Manager**                | ✅         | ✅      | ✅    |
 | **Hardware**                      | ✅         | ✅      | ✅    |
 | **Passthrough Capabilities**      | ❌         | ❌      | ✅    |
+
+</details>
 
 ## References & Help
 <details>
