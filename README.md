@@ -277,7 +277,7 @@ lspci -k | grep -E "vfio-pci|NVIDIA"
 | **SMBIOS**             | ✅         | ✅      | ✅    |
 | **MAC Address**        | ✅         | ✅      | ✅    |
 | **Hard Drive**         | ✅         | ✅      | ✅    |
-| **SSD Drive**          | ✅         | ✅      | ✅    |
+| **Solid State Drive**  | ✅         | ✅      | ✅    |
 | **Hard Disk Drive**    | ✅         | ✅      | ✅    |
 | **DVD/CD-ROM drives**  | ✅         | ✅      | ✅    |
 | **Registry**           | ✅         | ✅      | ✅    |
