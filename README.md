@@ -215,12 +215,16 @@ mv qemu-system-x86_64 /bin
 - Virtualization Check
 ```bash
 LC_ALL=C lscpu | grep Virtualization && egrep -c '(vmx|svm)' /proc/cpuinfo
-```<hyperv
-- IOMMU Groups
+```
+
+- List PCI Devices
 ```bash
 lspci -nn | grep "NVIDIA"
 ```
+
 or
+
+- List IOMMU Groups
 ```bash
 #!/bin/bash
 shopt -s nullglob
