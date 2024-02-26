@@ -102,12 +102,17 @@ Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
 ```
 
 ## Building a Custom Version
-- [Vbox Source Code](https://www.virtualbox.org/browser/vbox/trunk)
+- [Vbox Source Code](https://www.virtualbox.org/browser/vbox/trunk#src/VBox)
 - [Vbox Build Instructions](https://www.virtualbox.org/wiki/Linux%20build%20instructions)
 
 ### Install Prerequisites (Debian)
 ```
 sudo apt update && sudo apt upgrade -y && sudo apt autoremove -y && sudo apt install -y acpica-tools chrpath doxygen g++-multilib libasound2-dev libcap-dev libcurl4-openssl-dev libdevmapper-dev libidl-dev libopus-dev libpam0g-dev libpulse-dev libqt5opengl5-dev libqt5x11extras5-dev qttools5-dev libsdl1.2-dev libsdl-ttf2.0-dev libssl-dev libvpx-dev libxcursor-dev libxinerama-dev libxml2-dev libxml2-utils libxmu-dev libxrandr-dev make nasm python3-dev python-dev qttools5-dev-tools texlive texlive-fonts-extra texlive-latex-extra unzip xsltproc default-jdk libstdc++5 libxslt1-dev linux-kernel-headers makeself mesa-common-dev subversion yasm zlib1g-dev glslang-tools ia32-libs libc6-dev-i386 lib32gcc1 lib32stdc++6
+```
+
+### Building VirtualBox
+```
+./configure --disable-hardening && source ./env.sh && kmk all && 
 ```
 
 </details>
