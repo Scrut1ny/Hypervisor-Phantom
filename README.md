@@ -82,6 +82,11 @@
 <summary>Pearson VUE</summary>
 
 ## BrowserLock
+- Exam Content & Special Configurations (SDS)
+```
+https://securedelivery-hs-prd-1.pearsonvue.com/SecureDeliveryService
+```
+
 - Application location:
 ```batch
 %APPDATA%\OnVUE\BrowserLock.exe
