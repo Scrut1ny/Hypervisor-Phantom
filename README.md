@@ -99,6 +99,9 @@ https://securedelivery-hs-prd-1.pearsonvue.com/SecureDeliveryService
 
 - Commands it runs
 ```powershell
+# Obtains NetConnectionID
+wmic nic where "NetConnectionStatus = 2" get NetConnectionID /value
+
 # Obtains USB FriendlyName
 powershell.exe Get-PnpDevice -PresentOnly | Where-Object { $_.InstanceId -match '^USB' }
 
