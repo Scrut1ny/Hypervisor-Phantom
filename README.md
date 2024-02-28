@@ -97,14 +97,19 @@ https://securedelivery-hs-prd-1.pearsonvue.com/SecureDeliveryService
 %LOCALAPPDATA%\BrowserLock\log
 ```
 
-- Obtains Display/Monitor Friendly Name
+- Commands it runs
 ```powershell
-powershell.exe -Command "Get-WmiObject -Namespace 'root\WMI' -Class 'WMIMonitorID' | ForEach-Object -Process { if($_.UserFriendlyName) { ([System.Text.Encoding]::ASCII.GetString($_.UserFriendlyName)).Replace('$([char]0x0000)','') } }"
-```
+# Obtains USB FriendlyName
+powershell.exe Get-PnpDevice -PresentOnly | Where-Object { $_.InstanceId -match '^USB' }
 
-- Obtains system hostname
-```
-%COMSPEC% /c hostname
+# Obtains Display/Monitor FriendlyName
+powershell.exe -Command "Get-WmiObject -Namespace 'root\WMI' -Class 'WMIMonitorID' | ForEach-Object -Process { if($_.UserFriendlyName) { ([System.Text.Encoding]::ASCII.GetString($_.UserFriendlyName)).Replace('$([char]0x0000)','') } }"
+
+# Obtains running processes
+powershell.exe /c Get-CimInstance -className win32_process | select Name,ProcessId,ParentProcessId,CommandLine,ExecutablePath
+
+# Obtains system hostname
+C:\Windows\system32\cmd.exe /c hostname
 ```
 
 - Hypervisor System Checks (in log file):
