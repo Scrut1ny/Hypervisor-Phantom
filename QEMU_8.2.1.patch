@@ -12,7 +12,7 @@ index 5aa1a13..eb0140f 100644
      signature = cpu_to_le64(VHDX_FILE_SIGNATURE);
      ret = blk_co_pwrite(blk, VHDX_FILE_ID_OFFSET, sizeof(signature), &signature,
 diff --git a/block/vvfat.c b/block/vvfat.c
-index 9d050ba..88e3697 100644
+index 9d050ba..5cf2dd4 100644
 --- a/block/vvfat.c
 +++ b/block/vvfat.c
 @@ -1177,7 +1177,7 @@ static int vvfat_open(BlockDriverState *bs, QDict *options, int flags,
@@ -20,7 +20,7 @@ index 9d050ba..88e3697 100644
          memcpy(s->volume_label, label, label_length);
      } else {
 -        memcpy(s->volume_label, "QEMU VVFAT", 10);
-+        memcpy(s->volume_label, "VVFAT", 10);
++        memcpy(s->volume_label, "MSI  VVFAT", 10);
      }
  
      if (floppy) {
