@@ -96,6 +96,32 @@ index 29b9964..433471c 100644
      { "kvm64" "-" TYPE_X86_CPU, "min-level", "5" },
      { "pentium3" "-" TYPE_X86_CPU, "min-level", "2" },
      { "n270" "-" TYPE_X86_CPU, "min-level", "5" },
+diff --git a/hw/i386/pc_piix.c b/hw/i386/pc_piix.c
+index eace854..725008f 100644
+--- a/hw/i386/pc_piix.c
++++ b/hw/i386/pc_piix.c
+@@ -235,7 +235,7 @@ static void pc_init1(MachineState *machine,
+     if (pcmc->smbios_defaults) {
+         MachineClass *mc = MACHINE_GET_CLASS(machine);
+         /* These values are guest ABI, do not change */
+-        smbios_set_defaults("QEMU", mc->desc,
++        smbios_set_defaults("MSI", mc->desc,
+                             mc->name, pcmc->smbios_legacy_mode,
+                             pcmc->smbios_uuid_encoded,
+                             pcms->smbios_entry_point_type);
+diff --git a/hw/i386/pc_q35.c b/hw/i386/pc_q35.c
+index 4f3e541..faf2533 100644
+--- a/hw/i386/pc_q35.c
++++ b/hw/i386/pc_q35.c
+@@ -203,7 +203,7 @@ static void pc_q35_init(MachineState *machine)
+ 
+     if (pcmc->smbios_defaults) {
+         /* These values are guest ABI, do not change */
+-        smbios_set_defaults("QEMU", mc->desc,
++        smbios_set_defaults("MSI", mc->desc,
+                             mc->name, pcmc->smbios_legacy_mode,
+                             pcmc->smbios_uuid_encoded,
+                             pcms->smbios_entry_point_type);
 diff --git a/hw/ide/atapi.c b/hw/ide/atapi.c
 index dcc39df..9e606fc 100644
 --- a/hw/ide/atapi.c
@@ -275,10 +301,74 @@ index 45e4d4c..1bf74df 100644
  
  /* ----------------------------------------------------------------- */
  
+diff --git a/hw/loongarch/virt.c b/hw/loongarch/virt.c
+index 4b7dc67..8e87b3a 100644
+--- a/hw/loongarch/virt.c
++++ b/hw/loongarch/virt.c
+@@ -314,13 +314,13 @@ static void virt_build_smbios(LoongArchMachineState *lams)
+     MachineClass *mc = MACHINE_GET_CLASS(lams);
+     uint8_t *smbios_tables, *smbios_anchor;
+     size_t smbios_tables_len, smbios_anchor_len;
+-    const char *product = "QEMU Virtual Machine";
++    const char *product = "MSI Real Machine";
+ 
+     if (!lams->fw_cfg) {
+         return;
+     }
+ 
+-    smbios_set_defaults("QEMU", product, mc->name, false,
++    smbios_set_defaults("MSI", product, mc->name, false,
+                         true, SMBIOS_ENTRY_POINT_TYPE_64);
+ 
+     smbios_get_tables(ms, NULL, 0, &smbios_tables, &smbios_tables_len,
+diff --git a/hw/nvme/ctrl.c b/hw/nvme/ctrl.c
+index f026245..b4d13a7 100644
+--- a/hw/nvme/ctrl.c
++++ b/hw/nvme/ctrl.c
+@@ -8164,7 +8164,7 @@ static void nvme_init_ctrl(NvmeCtrl *n, PCIDevice *pci_dev)
+ 
+     id->vid = cpu_to_le16(pci_get_word(pci_conf + PCI_VENDOR_ID));
+     id->ssvid = cpu_to_le16(pci_get_word(pci_conf + PCI_SUBSYSTEM_VENDOR_ID));
+-    strpadcpy((char *)id->mn, sizeof(id->mn), "QEMU NVMe Ctrl", ' ');
++    strpadcpy((char *)id->mn, sizeof(id->mn), "NVMe Ctrl", ' ');
+     strpadcpy((char *)id->fr, sizeof(id->fr), QEMU_VERSION, ' ');
+     strpadcpy((char *)id->sn, sizeof(id->sn), n->params.serial, ' ');
+ 
+diff --git a/hw/scsi/mptconfig.c b/hw/scsi/mptconfig.c
+index 19d01f3..00ee3f8 100644
+--- a/hw/scsi/mptconfig.c
++++ b/hw/scsi/mptconfig.c
+@@ -189,12 +189,12 @@ static
+ size_t mptsas_config_manufacturing_0(MPTSASState *s, uint8_t **data, int address)
+ {
+     return MPTSAS_CONFIG_PACK(0, MPI_CONFIG_PAGETYPE_MANUFACTURING, 0x00,
+-                              "s16s8s16s16s16",
+-                              "QEMU MPT Fusion",
++                              "s10s4s85s45s34",
++                              "MPT Fusion",
+                               "2.5",
+-                              "QEMU MPT Fusion",
+-                              "QEMU",
+-                              "0000111122223333");
++                              "MPT Fusion",
++                              "MSI",
++                              "7624862998526197");
+ }
+ 
+ static
 diff --git a/hw/scsi/scsi-disk.c b/hw/scsi/scsi-disk.c
-index 6691f5e..1b2face 100644
+index 6691f5e..34dfd40 100644
 --- a/hw/scsi/scsi-disk.c
 +++ b/hw/scsi/scsi-disk.c
+@@ -2509,7 +2509,7 @@ static void scsi_realize(SCSIDevice *dev, Error **errp)
+         s->version = g_strdup(qemu_hw_version());
+     }
+     if (!s->vendor) {
+-        s->vendor = g_strdup("QEMU");
++        s->vendor = g_strdup("MSI");
+     }
+     if (!s->device_id) {
+         if (s->serial) {
 @@ -2564,7 +2564,7 @@ static void scsi_hd_realize(SCSIDevice *dev, Error **errp)
      s->qdev.blocksize = s->qdev.conf.logical_block_size;
      s->qdev.type = TYPE_DISK;
@@ -297,6 +387,21 @@ index 6691f5e..1b2face 100644
      }
      scsi_realize(&s->qdev, errp);
      aio_context_release(ctx);
+diff --git a/hw/ufs/lu.c b/hw/ufs/lu.c
+index 81bfff9..33dcea0 100644
+--- a/hw/ufs/lu.c
++++ b/hw/ufs/lu.c
+@@ -184,8 +184,8 @@ static int ufs_emulate_wlun_inquiry(UfsRequest *req, uint8_t *outbuf,
+     outbuf[5] = 0;
+     outbuf[6] = 0;
+     outbuf[7] = 0x2;
+-    strpadcpy((char *)&outbuf[8], 8, "QEMU", ' ');
+-    strpadcpy((char *)&outbuf[16], 16, "QEMU UFS", ' ');
++    strpadcpy((char *)&outbuf[8], 8, "MSI", ' ');
++    strpadcpy((char *)&outbuf[16], 16, "UFS", ' ');
+     memset(&outbuf[32], 0, 4);
+ 
+     return SCSI_INQUIRY_LEN;
 diff --git a/hw/usb/dev-audio.c b/hw/usb/dev-audio.c
 index d5ac1f8..c8406ba 100644
 --- a/hw/usb/dev-audio.c
@@ -675,6 +780,21 @@ index 5600124..b7aad75 100644
      dc->vmsd           = &vmstate_u2f_key;
  }
  
+diff --git a/include/hw/acpi/aml-build.h b/include/hw/acpi/aml-build.h
+index ff2a310..7e65945 100644
+--- a/include/hw/acpi/aml-build.h
++++ b/include/hw/acpi/aml-build.h
+@@ -4,8 +4,8 @@
+ #include "hw/acpi/acpi-defs.h"
+ #include "hw/acpi/bios-linker-loader.h"
+ 
+-#define ACPI_BUILD_APPNAME6 "BOCHS "
+-#define ACPI_BUILD_APPNAME8 "BXPC    "
++#define ACPI_BUILD_APPNAME6 "AMD   "
++#define ACPI_BUILD_APPNAME8 "A M I   "
+ 
+ #define ACPI_BUILD_TABLE_FILE "etc/acpi/tables"
+ #define ACPI_BUILD_RSDP_FILE "etc/acpi/rsdp"
 diff --git a/target/i386/cpu.c b/target/i386/cpu.c
 index cd16cb8..9398945 100644
 --- a/target/i386/cpu.c
