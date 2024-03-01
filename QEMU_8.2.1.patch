@@ -1,0 +1,788 @@
+diff --git a/block/vhdx.c b/block/vhdx.c
+index 5aa1a13..eb0140f 100644
+--- a/block/vhdx.c
++++ b/block/vhdx.c
+@@ -2020,7 +2020,7 @@ vhdx_co_create(BlockdevCreateOptions *opts, Error **errp)
+ 
+     /* The creator field is optional, but may be useful for
+      * debugging / diagnostics */
+-    creator = g_utf8_to_utf16("QEMU v" QEMU_VERSION, -1, NULL,
++    creator = g_utf8_to_utf16("MSI v" QEMU_VERSION, -1, NULL,
+                               &creator_items, NULL);
+     signature = cpu_to_le64(VHDX_FILE_SIGNATURE);
+     ret = blk_co_pwrite(blk, VHDX_FILE_ID_OFFSET, sizeof(signature), &signature,
+diff --git a/hw/arm/nseries.c b/hw/arm/nseries.c
+index 35aff46..c688bfe 100644
+--- a/hw/arm/nseries.c
++++ b/hw/arm/nseries.c
+@@ -849,7 +849,7 @@ static void n800_setup_nolo_tags(void *sram_base)
+ 
+     memset(p, 0, 0x3000);
+ 
+-    strcpy((void *) (p + 0), "QEMU N800");
++    strcpy((void *) (p + 0), "N800");
+ 
+     strcpy((void *) (p + 8), "F5");
+ 
+@@ -1152,7 +1152,7 @@ static int n8x0_atag_setup(void *p, int model)
+ 
+     stw_p(w++, OMAP_TAG_LCD);			/* u16 tag */
+     stw_p(w++, 36);				/* u16 len */
+-    strcpy((void *) w, "QEMU LCD panel");	/* char panel_name[16] */
++    strcpy((void *) w, "LCD panel");	/* char panel_name[16] */
+     w += 8;
+     strcpy((void *) w, "blizzard");		/* char ctrl_name[16] */
+     w += 8;
+@@ -1272,7 +1272,7 @@ static int n8x0_atag_setup(void *p, int model)
+     stw_p(w++, 24);				/* u16 len */
+     strcpy((void *) w, "hw-build");		/* char component[12] */
+     w += 6;
+-    strcpy((void *) w, "QEMU ");
++    strcpy((void *) w, "MSI");
+     pstrcat((void *) w, 12, qemu_hw_version()); /* char version[12] */
+     w += 6;
+ 
+diff --git a/hw/i386/pc.c b/hw/i386/pc.c
+index 29b9964..433471c 100644
+--- a/hw/i386/pc.c
++++ b/hw/i386/pc.c
+@@ -74,9 +74,9 @@
+  * depending on QEMU versions up to QEMU 2.4.
+  */
+ #define PC_CPU_MODEL_IDS(v) \
+-    { "qemu32-" TYPE_X86_CPU, "model-id", "QEMU Virtual CPU version " v, },\
+-    { "qemu64-" TYPE_X86_CPU, "model-id", "QEMU Virtual CPU version " v, },\
+-    { "athlon-" TYPE_X86_CPU, "model-id", "QEMU Virtual CPU version " v, },
++    { "MSI32-" TYPE_X86_CPU, "model-id", "CPU version " v, },\
++    { "MSI64-" TYPE_X86_CPU, "model-id", "CPU version " v, },\
++    { "athlon-" TYPE_X86_CPU, "model-id", "CPU version " v, },
+ 
+ GlobalProperty pc_compat_8_1[] = {};
+ const size_t pc_compat_8_1_len = G_N_ELEMENTS(pc_compat_8_1);
+@@ -111,9 +111,9 @@ GlobalProperty pc_compat_6_1[] = {
+ const size_t pc_compat_6_1_len = G_N_ELEMENTS(pc_compat_6_1);
+ 
+ GlobalProperty pc_compat_6_0[] = {
+-    { "qemu64" "-" TYPE_X86_CPU, "family", "6" },
+-    { "qemu64" "-" TYPE_X86_CPU, "model", "6" },
+-    { "qemu64" "-" TYPE_X86_CPU, "stepping", "3" },
++    { "MSI64" "-" TYPE_X86_CPU, "family", "6" },
++    { "MSI64" "-" TYPE_X86_CPU, "model", "6" },
++    { "MSI64" "-" TYPE_X86_CPU, "stepping", "3" },
+     { TYPE_X86_CPU, "x-vendor-cpuid-only", "off" },
+     { "ICH9-LPC", ACPI_PM_PROP_ACPI_PCIHP_BRIDGE, "off" },
+     { "ICH9-LPC", "x-keep-pci-slot-hpc", "true" },
+@@ -242,10 +242,10 @@ GlobalProperty pc_compat_2_4[] = {
+     { "Broadwell-noTSX-" TYPE_X86_CPU, "abm", "off" },
+     { "host" "-" TYPE_X86_CPU, "host-cache-info", "on" },
+     { TYPE_X86_CPU, "check", "off" },
+-    { "qemu64" "-" TYPE_X86_CPU, "sse4a", "on" },
+-    { "qemu64" "-" TYPE_X86_CPU, "abm", "on" },
+-    { "qemu64" "-" TYPE_X86_CPU, "popcnt", "on" },
+-    { "qemu32" "-" TYPE_X86_CPU, "popcnt", "on" },
++    { "MSI64" "-" TYPE_X86_CPU, "sse4a", "on" },
++    { "MSI64" "-" TYPE_X86_CPU, "abm", "on" },
++    { "MSI64" "-" TYPE_X86_CPU, "popcnt", "on" },
++    { "MSI32" "-" TYPE_X86_CPU, "popcnt", "on" },
+     { "Opteron_G2" "-" TYPE_X86_CPU, "rdtscp", "on" },
+     { "Opteron_G3" "-" TYPE_X86_CPU, "rdtscp", "on" },
+     { "Opteron_G4" "-" TYPE_X86_CPU, "rdtscp", "on" },
+@@ -256,7 +256,7 @@ const size_t pc_compat_2_4_len = G_N_ELEMENTS(pc_compat_2_4);
+ GlobalProperty pc_compat_2_3[] = {
+     PC_CPU_MODEL_IDS("2.3.0")
+     { TYPE_X86_CPU, "arat", "off" },
+-    { "qemu64" "-" TYPE_X86_CPU, "min-level", "4" },
++    { "MSI64" "-" TYPE_X86_CPU, "min-level", "4" },
+     { "kvm64" "-" TYPE_X86_CPU, "min-level", "5" },
+     { "pentium3" "-" TYPE_X86_CPU, "min-level", "2" },
+     { "n270" "-" TYPE_X86_CPU, "min-level", "5" },
+diff --git a/hw/ide/atapi.c b/hw/ide/atapi.c
+index dcc39df..9e606fc 100644
+--- a/hw/ide/atapi.c
++++ b/hw/ide/atapi.c
+@@ -797,8 +797,8 @@ static void cmd_inquiry(IDEState *s, uint8_t *buf)
+         buf[5] = 0;    /* reserved */
+         buf[6] = 0;    /* reserved */
+         buf[7] = 0;    /* reserved */
+-        padstr8(buf + 8, 8, "QEMU");
+-        padstr8(buf + 16, 16, "QEMU DVD-ROM");
++        padstr8(buf + 8, 8, "MSI");
++        padstr8(buf + 16, 16, "DVD-ROM");
+         padstr8(buf + 32, 4, s->version);
+         idx = 36;
+     }
+diff --git a/hw/ide/core.c b/hw/ide/core.c
+index 8a0579b..3299626 100644
+--- a/hw/ide/core.c
++++ b/hw/ide/core.c
+@@ -2637,13 +2637,13 @@ int ide_init_drive(IDEState *s, BlockBackend *blk, IDEDriveKind kind,
+     } else {
+         switch (kind) {
+         case IDE_CD:
+-            strcpy(s->drive_model_str, "QEMU DVD-ROM");
++            strcpy(s->drive_model_str, "DVD-ROM");
+             break;
+         case IDE_CFATA:
+-            strcpy(s->drive_model_str, "QEMU MICRODRIVE");
++            strcpy(s->drive_model_str, "MICRODRIVE");
+             break;
+         default:
+-            strcpy(s->drive_model_str, "QEMU HARDDISK");
++            strcpy(s->drive_model_str, "HARDDISK");
+             break;
+         }
+     }
+diff --git a/hw/input/adb-kbd.c b/hw/input/adb-kbd.c
+index e21edf9..b91b984 100644
+--- a/hw/input/adb-kbd.c
++++ b/hw/input/adb-kbd.c
+@@ -356,7 +356,7 @@ static void adb_kbd_reset(DeviceState *dev)
+ }
+ 
+ static const QemuInputHandler adb_keyboard_handler = {
+-    .name  = "QEMU ADB Keyboard",
++    .name  = "ADB Keyboard",
+     .mask  = INPUT_EVENT_MASK_KEY,
+     .event = adb_keyboard_event,
+ };
+diff --git a/hw/input/adb-mouse.c b/hw/input/adb-mouse.c
+index e6b341f..f08fc1b 100644
+--- a/hw/input/adb-mouse.c
++++ b/hw/input/adb-mouse.c
+@@ -236,7 +236,7 @@ static void adb_mouse_realizefn(DeviceState *dev, Error **errp)
+ 
+     amc->parent_realize(dev, errp);
+ 
+-    qemu_add_mouse_event_handler(adb_mouse_event, s, 0, "QEMU ADB Mouse");
++    qemu_add_mouse_event_handler(adb_mouse_event, s, 0, "ADB Mouse");
+ }
+ 
+ static void adb_mouse_initfn(Object *obj)
+diff --git a/hw/input/ads7846.c b/hw/input/ads7846.c
+index 91116c6..1e045a0 100644
+--- a/hw/input/ads7846.c
++++ b/hw/input/ads7846.c
+@@ -154,7 +154,7 @@ static void ads7846_realize(SSIPeripheral *d, Error **errp)
+ 
+     /* We want absolute coordinates */
+     qemu_add_mouse_event_handler(ads7846_ts_event, s, 1,
+-                    "QEMU ADS7846-driven Touchscreen");
++                    "ADS7846-driven Touchscreen");
+ 
+     ads7846_int_update(s);
+ 
+diff --git a/hw/input/hid.c b/hw/input/hid.c
+index b8e8537..a49f38f 100644
+--- a/hw/input/hid.c
++++ b/hw/input/hid.c
+@@ -511,20 +511,20 @@ void hid_free(HIDState *hs)
+ }
+ 
+ static const QemuInputHandler hid_keyboard_handler = {
+-    .name  = "QEMU HID Keyboard",
++    .name  = "HID Keyboard",
+     .mask  = INPUT_EVENT_MASK_KEY,
+     .event = hid_keyboard_event,
+ };
+ 
+ static const QemuInputHandler hid_mouse_handler = {
+-    .name  = "QEMU HID Mouse",
++    .name  = "HID Mouse",
+     .mask  = INPUT_EVENT_MASK_BTN | INPUT_EVENT_MASK_REL,
+     .event = hid_pointer_event,
+     .sync  = hid_pointer_sync,
+ };
+ 
+ static const QemuInputHandler hid_tablet_handler = {
+-    .name  = "QEMU HID Tablet",
++    .name  = "HID Tablet",
+     .mask  = INPUT_EVENT_MASK_BTN | INPUT_EVENT_MASK_ABS,
+     .event = hid_pointer_event,
+     .sync  = hid_pointer_sync,
+diff --git a/hw/input/ps2.c b/hw/input/ps2.c
+index c8fd23c..5ad5066 100644
+--- a/hw/input/ps2.c
++++ b/hw/input/ps2.c
+@@ -1232,7 +1232,7 @@ static const VMStateDescription vmstate_ps2_mouse = {
+ };
+ 
+ static const QemuInputHandler ps2_keyboard_handler = {
+-    .name  = "QEMU PS/2 Keyboard",
++    .name  = "PS/2 Keyboard",
+     .mask  = INPUT_EVENT_MASK_KEY,
+     .event = ps2_keyboard_event,
+ };
+@@ -1243,7 +1243,7 @@ static void ps2_kbd_realize(DeviceState *dev, Error **errp)
+ }
+ 
+ static const QemuInputHandler ps2_mouse_handler = {
+-    .name  = "QEMU PS/2 Mouse",
++    .name  = "PS/2 Mouse",
+     .mask  = INPUT_EVENT_MASK_BTN | INPUT_EVENT_MASK_REL,
+     .event = ps2_mouse_event,
+     .sync  = ps2_mouse_sync,
+diff --git a/hw/input/tsc2005.c b/hw/input/tsc2005.c
+index db2b80e..976f1d1 100644
+--- a/hw/input/tsc2005.c
++++ b/hw/input/tsc2005.c
+@@ -510,7 +510,7 @@ void *tsc2005_init(qemu_irq pintdav)
+     tsc2005_reset(s);
+ 
+     qemu_add_mouse_event_handler(tsc2005_touchscreen_event, s, 1,
+-                    "QEMU TSC2005-driven Touchscreen");
++                    "TSC2005-driven Touchscreen");
+ 
+     qemu_register_reset((void *) tsc2005_reset, s);
+     vmstate_register(NULL, 0, &vmstate_tsc2005, s);
+diff --git a/hw/input/tsc210x.c b/hw/input/tsc210x.c
+index 950506f..25d7177 100644
+--- a/hw/input/tsc210x.c
++++ b/hw/input/tsc210x.c
+@@ -1122,7 +1122,7 @@ uWireSlave *tsc2102_init(qemu_irq pint)
+     s->model = 0x2102;
+     s->name = "tsc2102";
+ 
+-    tsc210x_init(s, "QEMU TSC2102-driven Touchscreen", &vmstate_tsc2102);
++    tsc210x_init(s, "TSC2102-driven Touchscreen", &vmstate_tsc2102);
+ 
+     return &s->chip;
+ }
+@@ -1143,7 +1143,7 @@ uWireSlave *tsc2301_init(qemu_irq penirq, qemu_irq kbirq, qemu_irq dav)
+     s->model = 0x2301;
+     s->name = "tsc2301";
+ 
+-    tsc210x_init(s, "QEMU TSC2301-driven Touchscreen", &vmstate_tsc2301);
++    tsc210x_init(s, "TSC2301-driven Touchscreen", &vmstate_tsc2301);
+ 
+     return &s->chip;
+ }
+diff --git a/hw/input/virtio-input-hid.c b/hw/input/virtio-input-hid.c
+index 45e4d4c..1bf74df 100644
+--- a/hw/input/virtio-input-hid.c
++++ b/hw/input/virtio-input-hid.c
+@@ -16,10 +16,10 @@
+ 
+ #include "standard-headers/linux/input.h"
+ 
+-#define VIRTIO_ID_NAME_KEYBOARD     "QEMU Virtio Keyboard"
+-#define VIRTIO_ID_NAME_MOUSE        "QEMU Virtio Mouse"
+-#define VIRTIO_ID_NAME_TABLET       "QEMU Virtio Tablet"
+-#define VIRTIO_ID_NAME_MULTITOUCH   "QEMU Virtio MultiTouch"
++#define VIRTIO_ID_NAME_KEYBOARD     "Virtio Keyboard"
++#define VIRTIO_ID_NAME_MOUSE        "Virtio Mouse"
++#define VIRTIO_ID_NAME_TABLET       "Virtio Tablet"
++#define VIRTIO_ID_NAME_MULTITOUCH   "Virtio MultiTouch"
+ 
+ /* ----------------------------------------------------------------- */
+ 
+diff --git a/hw/scsi/scsi-disk.c b/hw/scsi/scsi-disk.c
+index 6691f5e..1b2face 100644
+--- a/hw/scsi/scsi-disk.c
++++ b/hw/scsi/scsi-disk.c
+@@ -2564,7 +2564,7 @@ static void scsi_hd_realize(SCSIDevice *dev, Error **errp)
+     s->qdev.blocksize = s->qdev.conf.logical_block_size;
+     s->qdev.type = TYPE_DISK;
+     if (!s->product) {
+-        s->product = g_strdup("QEMU HARDDISK");
++        s->product = g_strdup("HARDDISK");
+     }
+     scsi_realize(&s->qdev, errp);
+ out:
+@@ -2598,7 +2598,7 @@ static void scsi_cd_realize(SCSIDevice *dev, Error **errp)
+     s->qdev.type = TYPE_ROM;
+     s->features |= 1 << SCSI_DISK_F_REMOVABLE;
+     if (!s->product) {
+-        s->product = g_strdup("QEMU CD-ROM");
++        s->product = g_strdup("CD-ROM");
+     }
+     scsi_realize(&s->qdev, errp);
+     aio_context_release(ctx);
+diff --git a/hw/usb/dev-audio.c b/hw/usb/dev-audio.c
+index d5ac1f8..c8406ba 100644
+--- a/hw/usb/dev-audio.c
++++ b/hw/usb/dev-audio.c
+@@ -73,8 +73,8 @@ enum usb_audio_strings {
+ };
+ 
+ static const USBDescStrings usb_audio_stringtable = {
+-    [STRING_MANUFACTURER]       = "QEMU",
+-    [STRING_PRODUCT]            = "QEMU USB Audio",
++    [STRING_MANUFACTURER]       = "MSI",
++    [STRING_PRODUCT]            = "USB Audio",
+     [STRING_SERIALNUMBER]       = "1",
+     [STRING_CONFIG]             = "Audio Configuration",
+     [STRING_USBAUDIO_CONTROL]   = "Audio Device",
+@@ -1008,7 +1008,7 @@ static void usb_audio_class_init(ObjectClass *klass, void *data)
+     dc->vmsd          = &vmstate_usb_audio;
+     device_class_set_props(dc, usb_audio_properties);
+     set_bit(DEVICE_CATEGORY_SOUND, dc->categories);
+-    k->product_desc   = "QEMU USB Audio Interface";
++    k->product_desc   = "USB Audio Interface";
+     k->realize        = usb_audio_realize;
+     k->handle_reset   = usb_audio_handle_reset;
+     k->handle_control = usb_audio_handle_control;
+diff --git a/hw/usb/dev-hid.c b/hw/usb/dev-hid.c
+index bdd6d1f..ac67b0e 100644
+--- a/hw/usb/dev-hid.c
++++ b/hw/usb/dev-hid.c
+@@ -63,10 +63,10 @@ enum {
+ };
+ 
+ static const USBDescStrings desc_strings = {
+-    [STR_MANUFACTURER]     = "QEMU",
+-    [STR_PRODUCT_MOUSE]    = "QEMU USB Mouse",
+-    [STR_PRODUCT_TABLET]   = "QEMU USB Tablet",
+-    [STR_PRODUCT_KEYBOARD] = "QEMU USB Keyboard",
++    [STR_MANUFACTURER]     = "MSI",
++    [STR_PRODUCT_MOUSE]    = "USB Mouse",
++    [STR_PRODUCT_TABLET]   = "USB Tablet",
++    [STR_PRODUCT_KEYBOARD] = "USB Keyboard",
+     [STR_SERIAL_COMPAT]    = "42",
+     [STR_CONFIG_MOUSE]     = "HID Mouse",
+     [STR_CONFIG_TABLET]    = "HID Tablet",
+@@ -806,7 +806,7 @@ static void usb_tablet_class_initfn(ObjectClass *klass, void *data)
+     USBDeviceClass *uc = USB_DEVICE_CLASS(klass);
+ 
+     uc->realize        = usb_tablet_realize;
+-    uc->product_desc   = "QEMU USB Tablet";
++    uc->product_desc   = "USB Tablet";
+     dc->vmsd = &vmstate_usb_ptr;
+     device_class_set_props(dc, usb_tablet_properties);
+     set_bit(DEVICE_CATEGORY_INPUT, dc->categories);
+@@ -829,7 +829,7 @@ static void usb_mouse_class_initfn(ObjectClass *klass, void *data)
+     USBDeviceClass *uc = USB_DEVICE_CLASS(klass);
+ 
+     uc->realize        = usb_mouse_realize;
+-    uc->product_desc   = "QEMU USB Mouse";
++    uc->product_desc   = "USB Mouse";
+     dc->vmsd = &vmstate_usb_ptr;
+     device_class_set_props(dc, usb_mouse_properties);
+     set_bit(DEVICE_CATEGORY_INPUT, dc->categories);
+@@ -853,7 +853,7 @@ static void usb_keyboard_class_initfn(ObjectClass *klass, void *data)
+     USBDeviceClass *uc = USB_DEVICE_CLASS(klass);
+ 
+     uc->realize        = usb_keyboard_realize;
+-    uc->product_desc   = "QEMU USB Keyboard";
++    uc->product_desc   = "USB Keyboard";
+     dc->vmsd = &vmstate_usb_kbd;
+     device_class_set_props(dc, usb_keyboard_properties);
+     set_bit(DEVICE_CATEGORY_INPUT, dc->categories);
+diff --git a/hw/usb/dev-hub.c b/hw/usb/dev-hub.c
+index 5703e0e..d7b3501 100644
+--- a/hw/usb/dev-hub.c
++++ b/hw/usb/dev-hub.c
+@@ -104,8 +104,8 @@ enum {
+ };
+ 
+ static const USBDescStrings desc_strings = {
+-    [STR_MANUFACTURER] = "QEMU",
+-    [STR_PRODUCT]      = "QEMU USB Hub",
++    [STR_MANUFACTURER] = "MSI",
++    [STR_PRODUCT]      = "USB Hub",
+     [STR_SERIALNUMBER] = "314159",
+ };
+ 
+@@ -676,7 +676,7 @@ static void usb_hub_class_initfn(ObjectClass *klass, void *data)
+     USBDeviceClass *uc = USB_DEVICE_CLASS(klass);
+ 
+     uc->realize        = usb_hub_realize;
+-    uc->product_desc   = "QEMU USB Hub";
++    uc->product_desc   = "USB Hub";
+     uc->usb_desc       = &desc_hub;
+     uc->find_device    = usb_hub_find_device;
+     uc->handle_reset   = usb_hub_handle_reset;
+diff --git a/hw/usb/dev-mtp.c b/hw/usb/dev-mtp.c
+index 1cac1cd..ee85cf1 100644
+--- a/hw/usb/dev-mtp.c
++++ b/hw/usb/dev-mtp.c
+@@ -247,8 +247,8 @@ OBJECT_DECLARE_SIMPLE_TYPE(MTPState, USB_MTP)
+ 
+ /* ----------------------------------------------------------------------- */
+ 
+-#define MTP_MANUFACTURER  "QEMU"
+-#define MTP_PRODUCT       "QEMU filesharing"
++#define MTP_MANUFACTURER  "MSI"
++#define MTP_PRODUCT       "MSI filesharing"
+ #define MTP_WRITE_BUF_SZ  (512 * KiB)
+ 
+ enum {
+@@ -2091,7 +2091,7 @@ static void usb_mtp_class_initfn(ObjectClass *klass, void *data)
+     USBDeviceClass *uc = USB_DEVICE_CLASS(klass);
+ 
+     uc->realize        = usb_mtp_realize;
+-    uc->product_desc   = "QEMU USB MTP";
++    uc->product_desc   = "USB MTP";
+     uc->usb_desc       = &desc;
+     uc->cancel_packet  = usb_mtp_cancel_packet;
+     uc->handle_attach  = usb_desc_attach;
+diff --git a/hw/usb/dev-network.c b/hw/usb/dev-network.c
+index 2c33e36..6ac3f46 100644
+--- a/hw/usb/dev-network.c
++++ b/hw/usb/dev-network.c
+@@ -99,15 +99,15 @@ enum usbstring_idx {
+ #define ETH_FRAME_LEN                   1514 /* Max. octets in frame sans FCS */
+ 
+ static const USBDescStrings usb_net_stringtable = {
+-    [STRING_MANUFACTURER]       = "QEMU",
+-    [STRING_PRODUCT]            = "RNDIS/QEMU USB Network Device",
+-    [STRING_ETHADDR]            = "400102030405",
+-    [STRING_DATA]               = "QEMU USB Net Data Interface",
+-    [STRING_CONTROL]            = "QEMU USB Net Control Interface",
+-    [STRING_RNDIS_CONTROL]      = "QEMU USB Net RNDIS Control Interface",
+-    [STRING_CDC]                = "QEMU USB Net CDC",
+-    [STRING_SUBSET]             = "QEMU USB Net Subset",
+-    [STRING_RNDIS]              = "QEMU USB Net RNDIS",
++    [STRING_MANUFACTURER]       = "MSI",
++    [STRING_PRODUCT]            = "RNDIS USB Network Device",
++    [STRING_ETHADDR]            = "4C82A94C9ECA",
++    [STRING_DATA]               = "USB Net Data Interface",
++    [STRING_CONTROL]            = "USB Net Control Interface",
++    [STRING_RNDIS_CONTROL]      = "USB Net RNDIS Control Interface",
++    [STRING_CDC]                = "USB Net CDC",
++    [STRING_SUBSET]             = "USB Net Subset",
++    [STRING_RNDIS]              = "USB Net RNDIS",
+     [STRING_SERIALNUMBER]       = "1",
+ };
+ 
+@@ -725,7 +725,7 @@ static int ndis_query(USBNetState *s, uint32_t oid,
+ 
+     /* mandatory */
+     case OID_GEN_VENDOR_DESCRIPTION:
+-        pstrcpy((char *)outbuf, outlen, "QEMU USB RNDIS Net");
++        pstrcpy((char *)outbuf, outlen, "USB RNDIS Net");
+         return strlen((char *)outbuf) + 1;
+ 
+     case OID_GEN_VENDOR_DRIVER_VERSION:
+@@ -1426,7 +1426,7 @@ static void usb_net_class_initfn(ObjectClass *klass, void *data)
+     USBDeviceClass *uc = USB_DEVICE_CLASS(klass);
+ 
+     uc->realize        = usb_net_realize;
+-    uc->product_desc   = "QEMU USB Network Interface";
++    uc->product_desc   = "USB Network Interface";
+     uc->usb_desc       = &desc_net;
+     uc->handle_reset   = usb_net_handle_reset;
+     uc->handle_control = usb_net_handle_control;
+diff --git a/hw/usb/dev-serial.c b/hw/usb/dev-serial.c
+index 63047d7..b09ceab 100644
+--- a/hw/usb/dev-serial.c
++++ b/hw/usb/dev-serial.c
+@@ -119,9 +119,9 @@ enum {
+ };
+ 
+ static const USBDescStrings desc_strings = {
+-    [STR_MANUFACTURER]    = "QEMU",
+-    [STR_PRODUCT_SERIAL]  = "QEMU USB SERIAL",
+-    [STR_PRODUCT_BRAILLE] = "QEMU USB BAUM BRAILLE",
++    [STR_MANUFACTURER]    = "MSI",
++    [STR_PRODUCT_SERIAL]  = "USB SERIAL",
++    [STR_PRODUCT_BRAILLE] = "USB BAUM BRAILLE",
+     [STR_SERIALNUMBER]    = "1",
+ };
+ 
+@@ -666,7 +666,7 @@ static void usb_serial_class_initfn(ObjectClass *klass, void *data)
+     DeviceClass *dc = DEVICE_CLASS(klass);
+     USBDeviceClass *uc = USB_DEVICE_CLASS(klass);
+ 
+-    uc->product_desc   = "QEMU USB Serial";
++    uc->product_desc   = "USB Serial";
+     uc->usb_desc       = &desc_serial;
+     device_class_set_props(dc, serial_properties);
+ }
+@@ -687,7 +687,7 @@ static void usb_braille_class_initfn(ObjectClass *klass, void *data)
+     DeviceClass *dc = DEVICE_CLASS(klass);
+     USBDeviceClass *uc = USB_DEVICE_CLASS(klass);
+ 
+-    uc->product_desc   = "QEMU USB Braille";
++    uc->product_desc   = "USB Braille";
+     uc->usb_desc       = &desc_braille;
+     device_class_set_props(dc, braille_properties);
+ }
+diff --git a/hw/usb/dev-smartcard-reader.c b/hw/usb/dev-smartcard-reader.c
+index be0a4fc..5319330 100644
+--- a/hw/usb/dev-smartcard-reader.c
++++ b/hw/usb/dev-smartcard-reader.c
+@@ -80,8 +80,8 @@ OBJECT_DECLARE_SIMPLE_TYPE(USBCCIDState, USB_CCID_DEV)
+ #define CCID_CONTROL_GET_CLOCK_FREQUENCIES  0x2
+ #define CCID_CONTROL_GET_DATA_RATES         0x3
+ 
+-#define CCID_PRODUCT_DESCRIPTION        "QEMU USB CCID"
+-#define CCID_VENDOR_DESCRIPTION         "QEMU"
++#define CCID_PRODUCT_DESCRIPTION        "USB CCID"
++#define CCID_VENDOR_DESCRIPTION         "MSI"
+ #define CCID_INTERFACE_NAME             "CCID Interface"
+ #define CCID_SERIAL_NUMBER_STRING       "1"
+ /*
+@@ -419,8 +419,8 @@ enum {
+ };
+ 
+ static const USBDescStrings desc_strings = {
+-    [STR_MANUFACTURER]  = "QEMU",
+-    [STR_PRODUCT]       = "QEMU USB CCID",
++    [STR_MANUFACTURER]  = "MSI",
++    [STR_PRODUCT]       = "MSI USB CCID",
+     [STR_SERIALNUMBER]  = "1",
+     [STR_INTERFACE]     = "CCID Interface",
+ };
+@@ -1443,7 +1443,7 @@ static void ccid_class_initfn(ObjectClass *klass, void *data)
+     HotplugHandlerClass *hc = HOTPLUG_HANDLER_CLASS(klass);
+ 
+     uc->realize        = ccid_realize;
+-    uc->product_desc   = "QEMU USB CCID";
++    uc->product_desc   = "USB CCID";
+     uc->usb_desc       = &desc_ccid;
+     uc->handle_reset   = ccid_handle_reset;
+     uc->handle_control = ccid_handle_control;
+diff --git a/hw/usb/dev-storage.c b/hw/usb/dev-storage.c
+index a496c81..63a68d5 100644
+--- a/hw/usb/dev-storage.c
++++ b/hw/usb/dev-storage.c
+@@ -47,8 +47,8 @@ enum {
+ };
+ 
+ static const USBDescStrings desc_strings = {
+-    [STR_MANUFACTURER] = "QEMU",
+-    [STR_PRODUCT]      = "QEMU USB HARDDRIVE",
++    [STR_MANUFACTURER] = "MSI",
++    [STR_PRODUCT]      = "USB HARDDRIVE",
+     [STR_SERIALNUMBER] = "1",
+     [STR_CONFIG_FULL]  = "Full speed config (usb 1.1)",
+     [STR_CONFIG_HIGH]  = "High speed config (usb 2.0)",
+@@ -591,7 +591,7 @@ static void usb_msd_class_initfn_common(ObjectClass *klass, void *data)
+     DeviceClass *dc = DEVICE_CLASS(klass);
+     USBDeviceClass *uc = USB_DEVICE_CLASS(klass);
+ 
+-    uc->product_desc   = "QEMU USB MSD";
++    uc->product_desc   = "USB MSD";
+     uc->usb_desc       = &desc;
+     uc->cancel_packet  = usb_msd_cancel_io;
+     uc->handle_attach  = usb_desc_attach;
+diff --git a/hw/usb/dev-uas.c b/hw/usb/dev-uas.c
+index f013ded..fd506fa 100644
+--- a/hw/usb/dev-uas.c
++++ b/hw/usb/dev-uas.c
+@@ -171,7 +171,7 @@ enum {
+ };
+ 
+ static const USBDescStrings desc_strings = {
+-    [STR_MANUFACTURER] = "QEMU",
++    [STR_MANUFACTURER] = "MSI",
+     [STR_PRODUCT]      = "USB Attached SCSI HBA",
+     [STR_SERIALNUMBER] = "27842",
+     [STR_CONFIG_HIGH]  = "High speed config (usb 2.0)",
+diff --git a/hw/usb/dev-wacom.c b/hw/usb/dev-wacom.c
+index 7177c17..836bd4a 100644
+--- a/hw/usb/dev-wacom.c
++++ b/hw/usb/dev-wacom.c
+@@ -64,7 +64,7 @@ enum {
+ };
+ 
+ static const USBDescStrings desc_strings = {
+-    [STR_MANUFACTURER]     = "QEMU",
++    [STR_MANUFACTURER]     = "MSI",
+     [STR_PRODUCT]          = "Wacom PenPartner",
+     [STR_SERIALNUMBER]     = "1",
+ };
+@@ -231,7 +231,7 @@ static int usb_mouse_poll(USBWacomState *s, uint8_t *buf, int len)
+ 
+     if (!s->mouse_grabbed) {
+         s->eh_entry = qemu_add_mouse_event_handler(usb_mouse_event, s, 0,
+-                        "QEMU PenPartner tablet");
++                        "PenPartner tablet");
+         qemu_activate_mouse_event_handler(s->eh_entry);
+         s->mouse_grabbed = 1;
+     }
+@@ -269,7 +269,7 @@ static int usb_wacom_poll(USBWacomState *s, uint8_t *buf, int len)
+ 
+     if (!s->mouse_grabbed) {
+         s->eh_entry = qemu_add_mouse_event_handler(usb_wacom_event, s, 1,
+-                        "QEMU PenPartner tablet");
++                        "PenPartner tablet");
+         qemu_activate_mouse_event_handler(s->eh_entry);
+         s->mouse_grabbed = 1;
+     }
+@@ -425,7 +425,7 @@ static void usb_wacom_class_init(ObjectClass *klass, void *data)
+     DeviceClass *dc = DEVICE_CLASS(klass);
+     USBDeviceClass *uc = USB_DEVICE_CLASS(klass);
+ 
+-    uc->product_desc   = "QEMU PenPartner Tablet";
++    uc->product_desc   = "PenPartner Tablet";
+     uc->usb_desc       = &desc_wacom;
+     uc->realize        = usb_wacom_realize;
+     uc->handle_reset   = usb_wacom_handle_reset;
+@@ -433,7 +433,7 @@ static void usb_wacom_class_init(ObjectClass *klass, void *data)
+     uc->handle_data    = usb_wacom_handle_data;
+     uc->unrealize      = usb_wacom_unrealize;
+     set_bit(DEVICE_CATEGORY_INPUT, dc->categories);
+-    dc->desc = "QEMU PenPartner Tablet";
++    dc->desc = "PenPartner Tablet";
+     dc->vmsd = &vmstate_usb_wacom;
+ }
+ 
+diff --git a/hw/usb/u2f-emulated.c b/hw/usb/u2f-emulated.c
+index 63cceaa..b395e35 100644
+--- a/hw/usb/u2f-emulated.c
++++ b/hw/usb/u2f-emulated.c
+@@ -386,7 +386,7 @@ static void u2f_emulated_class_init(ObjectClass *klass, void *data)
+     kc->realize = u2f_emulated_realize;
+     kc->unrealize = u2f_emulated_unrealize;
+     kc->recv_from_guest = u2f_emulated_recv_from_guest;
+-    dc->desc = "QEMU U2F emulated key";
++    dc->desc = "U2F emulated key";
+     device_class_set_props(dc, u2f_emulated_properties);
+ }
+ 
+diff --git a/hw/usb/u2f-passthru.c b/hw/usb/u2f-passthru.c
+index fc93429..f06e8ff 100644
+--- a/hw/usb/u2f-passthru.c
++++ b/hw/usb/u2f-passthru.c
+@@ -531,7 +531,7 @@ static void u2f_passthru_class_init(ObjectClass *klass, void *data)
+     kc->realize = u2f_passthru_realize;
+     kc->unrealize = u2f_passthru_unrealize;
+     kc->recv_from_guest = u2f_passthru_recv_from_guest;
+-    dc->desc = "QEMU U2F passthrough key";
++    dc->desc = "U2F passthrough key";
+     dc->vmsd = &u2f_passthru_vmstate;
+     device_class_set_props(dc, u2f_passthru_properties);
+     set_bit(DEVICE_CATEGORY_MISC, dc->categories);
+diff --git a/hw/usb/u2f.c b/hw/usb/u2f.c
+index 5600124..b7aad75 100644
+--- a/hw/usb/u2f.c
++++ b/hw/usb/u2f.c
+@@ -46,7 +46,7 @@ enum {
+ };
+ 
+ static const USBDescStrings desc_strings = {
+-    [STR_MANUFACTURER]     = "QEMU",
++    [STR_MANUFACTURER]     = "MSI",
+     [STR_PRODUCT]          = "U2F USB key",
+     [STR_SERIALNUMBER]     = "0",
+     [STR_CONFIG]           = "U2F key config",
+@@ -322,7 +322,7 @@ static void u2f_key_class_init(ObjectClass *klass, void *data)
+     DeviceClass *dc = DEVICE_CLASS(klass);
+     USBDeviceClass *uc = USB_DEVICE_CLASS(klass);
+ 
+-    uc->product_desc   = "QEMU U2F USB key";
++    uc->product_desc   = "U2F USB key";
+     uc->usb_desc       = &desc_u2f_key;
+     uc->handle_reset   = u2f_key_handle_reset;
+     uc->handle_control = u2f_key_handle_control;
+@@ -330,7 +330,7 @@ static void u2f_key_class_init(ObjectClass *klass, void *data)
+     uc->handle_attach  = usb_desc_attach;
+     uc->realize        = u2f_key_realize;
+     uc->unrealize      = u2f_key_unrealize;
+-    dc->desc           = "QEMU U2F key";
++    dc->desc           = "U2F key";
+     dc->vmsd           = &vmstate_u2f_key;
+ }
+ 
+diff --git a/target/i386/cpu.c b/target/i386/cpu.c
+index cd16cb8..9398945 100644
+--- a/target/i386/cpu.c
++++ b/target/i386/cpu.c
+@@ -2209,7 +2209,7 @@ static const X86CPUDefinition builtin_x86_defs[] = {
+         .features[FEAT_8000_0001_ECX] =
+             CPUID_EXT3_LAHF_LM | CPUID_EXT3_SVM,
+         .xlevel = 0x8000000A,
+-        .model_id = "QEMU Virtual CPU version " QEMU_HW_VERSION,
++        .model_id = "CPU version " QEMU_HW_VERSION,
+     },
+     {
+         .name = "phenom",
+@@ -2338,7 +2338,7 @@ static const X86CPUDefinition builtin_x86_defs[] = {
+         .features[FEAT_1_ECX] =
+             CPUID_EXT_SSE3,
+         .xlevel = 0x80000004,
+-        .model_id = "QEMU Virtual CPU version " QEMU_HW_VERSION,
++        .model_id = "CPU version " QEMU_HW_VERSION,
+     },
+     {
+         .name = "kvm32",
+@@ -2464,7 +2464,7 @@ static const X86CPUDefinition builtin_x86_defs[] = {
+         .features[FEAT_8000_0001_EDX] =
+             CPUID_EXT2_MMXEXT | CPUID_EXT2_3DNOW | CPUID_EXT2_3DNOWEXT,
+         .xlevel = 0x80000008,
+-        .model_id = "QEMU Virtual CPU version " QEMU_HW_VERSION,
++        .model_id = "CPU version " QEMU_HW_VERSION,
+     },
+     {
+         .name = "n270",
+@@ -4987,7 +4987,7 @@ static void max_x86_cpu_initfn(Object *obj)
+     object_property_set_str(OBJECT(cpu), "vendor", CPUID_VENDOR_AMD,
+                             &error_abort);
+     object_property_set_str(OBJECT(cpu), "model-id",
+-                            "QEMU TCG CPU version " QEMU_HW_VERSION,
++                            "TCG CPU version " QEMU_HW_VERSION,
+                             &error_abort);
+ }
+ 
+diff --git a/target/i386/kvm/kvm.c b/target/i386/kvm/kvm.c
+index 4ce8055..20678c7 100644
+--- a/target/i386/kvm/kvm.c
++++ b/target/i386/kvm/kvm.c
+@@ -1855,7 +1855,7 @@ int kvm_arch_init_vcpu(CPUState *cs)
+         abort();
+ #endif
+     } else if (cpu->expose_kvm) {
+-        memcpy(signature, "KVMKVMKVM\0\0\0", 12);
++        memcpy(signature, "AuthenticAMD", 12);
+         c = &cpuid_data.entries[cpuid_i++];
+         c->function = KVM_CPUID_SIGNATURE | kvm_base;
+         c->eax = KVM_CPUID_FEATURES | kvm_base;
+diff --git a/target/s390x/tcg/misc_helper.c b/target/s390x/tcg/misc_helper.c
+index 6aa7907..78cdbd6 100644
+--- a/target/s390x/tcg/misc_helper.c
++++ b/target/s390x/tcg/misc_helper.c
+@@ -327,18 +327,18 @@ uint32_t HELPER(stsi)(CPUS390XState *env, uint64_t a0, uint64_t r0, uint64_t r1)
+             /* Basic Machine Configuration */
+             char type[5] = {};
+ 
+-            ebcdic_put(sysib.sysib_111.manuf, "QEMU            ", 16);
++            ebcdic_put(sysib.sysib_111.manuf, "FUCK            ", 16);
+             /* same as machine type number in STORE CPU ID, but in EBCDIC */
+             snprintf(type, ARRAY_SIZE(type), "%X", cpu->model->def->type);
+             ebcdic_put(sysib.sysib_111.type, type, 4);
+             /* model number (not stored in STORE CPU ID for z/Architecture) */
+-            ebcdic_put(sysib.sysib_111.model, "QEMU            ", 16);
+-            ebcdic_put(sysib.sysib_111.sequence, "QEMU            ", 16);
+-            ebcdic_put(sysib.sysib_111.plant, "QEMU", 4);
++            ebcdic_put(sysib.sysib_111.model, "FUCK            ", 16);
++            ebcdic_put(sysib.sysib_111.sequence, "FUCK            ", 16);
++            ebcdic_put(sysib.sysib_111.plant, "FUCK", 4);
+         } else if ((sel1 == 2) && (sel2 == 1)) {
+             /* Basic Machine CPU */
+-            ebcdic_put(sysib.sysib_121.sequence, "QEMUQEMUQEMUQEMU", 16);
+-            ebcdic_put(sysib.sysib_121.plant, "QEMU", 4);
++            ebcdic_put(sysib.sysib_121.sequence, "FUCKFUCKFUCKFUCK", 16);
++            ebcdic_put(sysib.sysib_121.plant, "FUCK", 4);
+             sysib.sysib_121.cpu_addr = cpu_to_be16(env->core_id);
+         } else if ((sel1 == 2) && (sel2 == 2)) {
+             /* Basic Machine CPUs */
+@@ -353,8 +353,8 @@ uint32_t HELPER(stsi)(CPUS390XState *env, uint64_t a0, uint64_t r0, uint64_t r1)
+     case STSI_R0_FC_LEVEL_2:
+         if ((sel1 == 2) && (sel2 == 1)) {
+             /* LPAR CPU */
+-            ebcdic_put(sysib.sysib_221.sequence, "QEMUQEMUQEMUQEMU", 16);
+-            ebcdic_put(sysib.sysib_221.plant, "QEMU", 4);
++            ebcdic_put(sysib.sysib_221.sequence, "FUCKFUCKFUCKFUCK", 16);
++            ebcdic_put(sysib.sysib_221.plant, "FUCK", 4);
+             sysib.sysib_221.cpu_addr = cpu_to_be16(env->core_id);
+         } else if ((sel1 == 2) && (sel2 == 2)) {
+             /* LPAR CPUs */
+@@ -362,7 +362,7 @@ uint32_t HELPER(stsi)(CPUS390XState *env, uint64_t a0, uint64_t r0, uint64_t r1)
+             sysib.sysib_222.total_cpus = cpu_to_be16(total_cpus);
+             sysib.sysib_222.conf_cpus = cpu_to_be16(conf_cpus);
+             sysib.sysib_222.reserved_cpus = cpu_to_be16(reserved_cpus);
+-            ebcdic_put(sysib.sysib_222.name, "QEMU    ", 8);
++            ebcdic_put(sysib.sysib_222.name, "FUCK    ", 8);
+             sysib.sysib_222.caf = cpu_to_be32(1000);
+             sysib.sysib_222.dedicated_cpus = cpu_to_be16(conf_cpus);
+         } else {
+@@ -378,7 +378,7 @@ uint32_t HELPER(stsi)(CPUS390XState *env, uint64_t a0, uint64_t r0, uint64_t r1)
+             sysib.sysib_322.vm[0].reserved_cpus = cpu_to_be16(reserved_cpus);
+             sysib.sysib_322.vm[0].caf = cpu_to_be32(1000);
+             /* Linux kernel uses this to distinguish us from z/VM */
+-            ebcdic_put(sysib.sysib_322.vm[0].cpi, "KVM/Linux       ", 16);
++            ebcdic_put(sysib.sysib_322.vm[0].cpi, "FUCK/You        ", 16);
+             sysib.sysib_322.vm[0].ext_name_encoding = 2; /* UTF-8 */
+ 
+             /* If our VM has a name, use the real name */
