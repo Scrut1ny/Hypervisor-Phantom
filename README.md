@@ -307,6 +307,7 @@ done;
 ```bash
 sudo nano /etc/default/grub
 ```
+![image](https://github.com/Scrut1ny/Hypervisor-Phantom/assets/53458032/0c0820d5-3b9f-4b8d-9e87-1df84b947eac)
 
 ### Update grub.cfg & reboot
 ```bash
@@ -319,6 +320,7 @@ sudo update-grub && sudo reboot now
 ```bash
 sudo nano /etc/modprobe.d/vfio.conf
 ```
+![image](https://github.com/Scrut1ny/Hypervisor-Phantom/assets/53458032/dd7fa9e5-8305-4ec0-8a96-c8b2ad4d2ae1)
 
 ### Update initramfs
 ```bash
