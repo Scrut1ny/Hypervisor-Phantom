@@ -42,6 +42,27 @@ index 35aff46..c688bfe 100644
      pstrcat((void *) w, 12, qemu_hw_version()); /* char version[12] */
      w += 6;
  
+diff --git a/hw/arm/virt.c b/hw/arm/virt.c
+index be2856c..cce8b69 100644
+--- a/hw/arm/virt.c
++++ b/hw/arm/virt.c
+@@ -1628,13 +1628,13 @@ static void virt_build_smbios(VirtMachineState *vms)
+     uint8_t *smbios_tables, *smbios_anchor;
+     size_t smbios_tables_len, smbios_anchor_len;
+     struct smbios_phys_mem_area mem_array;
+-    const char *product = "QEMU Virtual Machine";
++    const char *product = "AMD Real Machine";
+ 
+     if (kvm_enabled()) {
+-        product = "KVM Virtual Machine";
++        product = "AMD Real Machine";
+     }
+ 
+-    smbios_set_defaults("QEMU", product,
++    smbios_set_defaults("AMD", product,
+                         vmc->smbios_old_sys_ver ? "1.0" : mc->name, false,
+                         true, SMBIOS_ENTRY_POINT_TYPE_64);
+ 
 diff --git a/hw/i386/pc.c b/hw/i386/pc.c
 index 29b9964..433471c 100644
 --- a/hw/i386/pc.c
@@ -97,7 +118,7 @@ index 29b9964..433471c 100644
      { "pentium3" "-" TYPE_X86_CPU, "min-level", "2" },
      { "n270" "-" TYPE_X86_CPU, "min-level", "5" },
 diff --git a/hw/i386/pc_piix.c b/hw/i386/pc_piix.c
-index eace854..725008f 100644
+index eace854..27afa25 100644
 --- a/hw/i386/pc_piix.c
 +++ b/hw/i386/pc_piix.c
 @@ -235,7 +235,7 @@ static void pc_init1(MachineState *machine,
@@ -105,12 +126,12 @@ index eace854..725008f 100644
          MachineClass *mc = MACHINE_GET_CLASS(machine);
          /* These values are guest ABI, do not change */
 -        smbios_set_defaults("QEMU", mc->desc,
-+        smbios_set_defaults("MSI", mc->desc,
++        smbios_set_defaults("AMD", mc->desc,
                              mc->name, pcmc->smbios_legacy_mode,
                              pcmc->smbios_uuid_encoded,
                              pcms->smbios_entry_point_type);
 diff --git a/hw/i386/pc_q35.c b/hw/i386/pc_q35.c
-index 4f3e541..faf2533 100644
+index 4f3e541..02ceaba 100644
 --- a/hw/i386/pc_q35.c
 +++ b/hw/i386/pc_q35.c
 @@ -203,7 +203,7 @@ static void pc_q35_init(MachineState *machine)
@@ -118,7 +139,7 @@ index 4f3e541..faf2533 100644
      if (pcmc->smbios_defaults) {
          /* These values are guest ABI, do not change */
 -        smbios_set_defaults("QEMU", mc->desc,
-+        smbios_set_defaults("MSI", mc->desc,
++        smbios_set_defaults("AMD", mc->desc,
                              mc->name, pcmc->smbios_legacy_mode,
                              pcmc->smbios_uuid_encoded,
                              pcms->smbios_entry_point_type);
@@ -848,6 +869,54 @@ index 4ce8055..20678c7 100644
          c = &cpuid_data.entries[cpuid_i++];
          c->function = KVM_CPUID_SIGNATURE | kvm_base;
          c->eax = KVM_CPUID_FEATURES | kvm_base;
+diff --git a/target/s390x/cpu_models.c b/target/s390x/cpu_models.c
+index a63d990..50f2f5f 100644
+--- a/target/s390x/cpu_models.c
++++ b/target/s390x/cpu_models.c
+@@ -87,9 +87,9 @@ static S390CPUDef s390_cpu_defs[] = {
+     CPUDEF_INIT(0x3932, 16, 1, 47, 0x08000000U, "gen16b", "IBM 3932 GA1"),
+ };
+ 
+-#define QEMU_MAX_CPU_TYPE 0x8561
+-#define QEMU_MAX_CPU_GEN 15
+-#define QEMU_MAX_CPU_EC_GA 1
++#define AMD_MAX_CPU_TYPE 0x8561
++#define AMD_MAX_CPU_GEN 15
++#define AMD_MAX_CPU_EC_GA 1
+ static S390FeatBitmap qemu_max_cpu_feat;
+ 
+ /* features part of a base model but not relevant for finding a base model */
+@@ -552,8 +552,8 @@ S390CPUModel *get_max_cpu_model(Error **errp)
+     if (kvm_enabled()) {
+         kvm_s390_get_host_cpu_model(&max_model, &err);
+     } else {
+-        max_model.def = s390_find_cpu_def(QEMU_MAX_CPU_TYPE, QEMU_MAX_CPU_GEN,
+-                                          QEMU_MAX_CPU_EC_GA, NULL);
++        max_model.def = s390_find_cpu_def(AMD_MAX_CPU_TYPE, AMD_MAX_CPU_GEN,
++                                          AMD_MAX_CPU_EC_GA, NULL);
+         bitmap_copy(max_model.features, qemu_max_cpu_feat, S390_FEAT_MAX);
+     }
+     if (err) {
+@@ -879,7 +879,7 @@ static void s390_qemu_cpu_model_class_init(ObjectClass *oc, void *data)
+     S390CPUClass *xcc = S390_CPU_CLASS(oc);
+ 
+     xcc->is_migration_safe = true;
+-    xcc->desc = g_strdup_printf("QEMU Virtual CPU version %s",
++    xcc->desc = g_strdup_printf("CPU version %s",
+                                 qemu_hw_version());
+ }
+ 
+@@ -986,8 +986,8 @@ static void register_types(void)
+     }
+ 
+     /* initialize the qemu model with the maximum definition ("max" model) */
+-    s390_set_qemu_cpu_model(QEMU_MAX_CPU_TYPE, QEMU_MAX_CPU_GEN,
+-                            QEMU_MAX_CPU_EC_GA, qemu_max_init);
++    s390_set_qemu_cpu_model(AMD_MAX_CPU_TYPE, AMD_MAX_CPU_GEN,
++                            AMD_MAX_CPU_EC_GA, qemu_max_init);
+ 
+     for (i = 0; i < ARRAY_SIZE(s390_cpu_defs); i++) {
+         char *base_name = s390_base_cpu_type_name(s390_cpu_defs[i].name);
 diff --git a/target/s390x/tcg/misc_helper.c b/target/s390x/tcg/misc_helper.c
 index 6aa7907..78cdbd6 100644
 --- a/target/s390x/tcg/misc_helper.c
