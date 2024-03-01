@@ -137,48 +137,6 @@ index be2856c..df76204 100644
                          vmc->smbios_old_sys_ver ? "1.0" : mc->name, false,
                          true, SMBIOS_ENTRY_POINT_TYPE_64);
  
-diff --git a/hw/audio/hda-codec.c b/hw/audio/hda-codec.c
-index 0bc20d4..0993099 100644
---- a/hw/audio/hda-codec.c
-+++ b/hw/audio/hda-codec.c
-@@ -118,11 +118,11 @@ static void hda_codec_parse_fmt(uint32_t format, struct audsettings *as)
- 
- /* some defines */
- 
--#define QEMU_HDA_ID_VENDOR  0x1af4
--#define QEMU_HDA_PCM_FORMATS (AC_SUPPCM_BITS_16 |       \
-+#define MSI_HDA_ID_VENDOR  0x1af4
-+#define MSI_HDA_PCM_FORMATS (AC_SUPPCM_BITS_16 |       \
-                               0x1fc /* 16 -> 96 kHz */)
--#define QEMU_HDA_AMP_NONE    (0)
--#define QEMU_HDA_AMP_STEPS   0x4a
-+#define MSI_HDA_AMP_NONE    (0)
-+#define MSI_HDA_AMP_STEPS   0x4a
- 
- #define   PARAM mixemu
- #define   HDA_MIXER
-@@ -459,8 +459,8 @@ static void hda_audio_set_amp(HDAAudioStream *st)
-     left  = st->mute_left  ? 0 : st->gain_left;
-     right = st->mute_right ? 0 : st->gain_right;
- 
--    left = left * 255 / QEMU_HDA_AMP_STEPS;
--    right = right * 255 / QEMU_HDA_AMP_STEPS;
-+    left = left * 255 / MSI_HDA_AMP_STEPS;
-+    right = right * 255 / MSI_HDA_AMP_STEPS;
- 
-     if (!st->state->mixer) {
-         return;
-@@ -722,8 +722,8 @@ static void hda_audio_init(HDACodecDevice *hda,
-             st->node = node;
-             if (type == AC_WID_AUD_OUT) {
-                 /* unmute output by default */
--                st->gain_left = QEMU_HDA_AMP_STEPS;
--                st->gain_right = QEMU_HDA_AMP_STEPS;
-+                st->gain_left = MSI_HDA_AMP_STEPS;
-+                st->gain_right = MSI_HDA_AMP_STEPS;
-                 st->compat_bpos = sizeof(st->compat_buf);
-                 st->output = true;
-             } else {
 diff --git a/hw/display/edid-generate.c b/hw/display/edid-generate.c
 index 2cb8196..271ff3d 100644
 --- a/hw/display/edid-generate.c
