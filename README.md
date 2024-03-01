@@ -327,7 +327,7 @@ sudo nano /etc/modprobe.d/vfio.conf
 sudo update-initramfs -c -k $(uname -r) && sudo reboot now
 ```
 
-### Check kernal driver in use for the GPU (should be vfio-pci)
+### Check kernal driver in use for the isolated GPU (should be vfio-pci)
 ```bash
 lspci -k | grep -E "vfio-pci|NVIDIA"
 ```
