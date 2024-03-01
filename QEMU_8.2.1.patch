@@ -781,7 +781,7 @@ index 5600124..b7aad75 100644
  }
  
 diff --git a/include/hw/acpi/aml-build.h b/include/hw/acpi/aml-build.h
-index ff2a310..7e65945 100644
+index ff2a310..690a610 100644
 --- a/include/hw/acpi/aml-build.h
 +++ b/include/hw/acpi/aml-build.h
 @@ -4,8 +4,8 @@
@@ -790,8 +790,8 @@ index ff2a310..7e65945 100644
  
 -#define ACPI_BUILD_APPNAME6 "BOCHS "
 -#define ACPI_BUILD_APPNAME8 "BXPC    "
-+#define ACPI_BUILD_APPNAME6 "AMD   "
-+#define ACPI_BUILD_APPNAME8 "A M I   "
++#define ACPI_BUILD_APPNAME6 "ALASKA"
++#define ACPI_BUILD_APPNAME8 "A M I "
  
  #define ACPI_BUILD_TABLE_FILE "etc/acpi/tables"
  #define ACPI_BUILD_RSDP_FILE "etc/acpi/rsdp"
