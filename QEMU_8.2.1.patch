@@ -11,6 +11,45 @@ index 5aa1a13..eb0140f 100644
                                &creator_items, NULL);
      signature = cpu_to_le64(VHDX_FILE_SIGNATURE);
      ret = blk_co_pwrite(blk, VHDX_FILE_ID_OFFSET, sizeof(signature), &signature,
+diff --git a/block/vvfat.c b/block/vvfat.c
+index 9d050ba..88e3697 100644
+--- a/block/vvfat.c
++++ b/block/vvfat.c
+@@ -1177,7 +1177,7 @@ static int vvfat_open(BlockDriverState *bs, QDict *options, int flags,
+         }
+         memcpy(s->volume_label, label, label_length);
+     } else {
+-        memcpy(s->volume_label, "QEMU VVFAT", 10);
++        memcpy(s->volume_label, "VVFAT", 10);
+     }
+ 
+     if (floppy) {
+diff --git a/chardev/msmouse.c b/chardev/msmouse.c
+index a774c39..61a2635 100644
+--- a/chardev/msmouse.c
++++ b/chardev/msmouse.c
+@@ -172,7 +172,7 @@ static int msmouse_chr_write(struct Chardev *s, const uint8_t *buf, int len)
+ }
+ 
+ static const QemuInputHandler msmouse_handler = {
+-    .name  = "QEMU Microsoft Mouse",
++    .name  = "Microsoft Mouse",
+     .mask  = INPUT_EVENT_MASK_BTN | INPUT_EVENT_MASK_REL,
+     .event = msmouse_input_event,
+     .sync  = msmouse_input_sync,
+diff --git a/contrib/vhost-user-gpu/vhost-user-gpu.c b/contrib/vhost-user-gpu/vhost-user-gpu.c
+index bb41758..dbd2777 100644
+--- a/contrib/vhost-user-gpu/vhost-user-gpu.c
++++ b/contrib/vhost-user-gpu/vhost-user-gpu.c
+@@ -1254,7 +1254,7 @@ main(int argc, char *argv[])
+     QTAILQ_INIT(&g.reslist);
+     QTAILQ_INIT(&g.fenceq);
+ 
+-    context = g_option_context_new("QEMU vhost-user-gpu");
++    context = g_option_context_new("vhost-user-gpu");
+     g_option_context_add_main_entries(context, entries, NULL);
+     if (!g_option_context_parse(context, &argc, &argv, &error)) {
+         g_printerr("Option parsing failed: %s\n", error->message);
 diff --git a/hw/arm/nseries.c b/hw/arm/nseries.c
 index 35aff46..c688bfe 100644
 --- a/hw/arm/nseries.c
@@ -42,16 +81,51 @@ index 35aff46..c688bfe 100644
      pstrcat((void *) w, 12, qemu_hw_version()); /* char version[12] */
      w += 6;
  
+diff --git a/hw/arm/sbsa-ref.c b/hw/arm/sbsa-ref.c
+index f3c9704..06b9e23 100644
+--- a/hw/arm/sbsa-ref.c
++++ b/hw/arm/sbsa-ref.c
+@@ -900,7 +900,7 @@ static void sbsa_ref_class_init(ObjectClass *oc, void *data)
+     MachineClass *mc = MACHINE_CLASS(oc);
+ 
+     mc->init = sbsa_ref_init;
+-    mc->desc = "QEMU 'SBSA Reference' ARM Virtual Machine";
++    mc->desc = "MSI 'SBSA Reference' ARM Machine";
+     mc->default_cpu_type = ARM_CPU_TYPE_NAME("neoverse-n1");
+     mc->max_cpus = 512;
+     mc->pci_allow_0_address = true;
+diff --git a/hw/arm/virt-acpi-build.c b/hw/arm/virt-acpi-build.c
+index 8bc35a4..34905d8 100644
+--- a/hw/arm/virt-acpi-build.c
++++ b/hw/arm/virt-acpi-build.c
+@@ -97,7 +97,7 @@ static void acpi_dsdt_add_uart(Aml *scope, const MemMapEntry *uart_memmap,
+ static void acpi_dsdt_add_fw_cfg(Aml *scope, const MemMapEntry *fw_cfg_memmap)
+ {
+     Aml *dev = aml_device("FWCF");
+-    aml_append(dev, aml_name_decl("_HID", aml_string("QEMU0002")));
++    aml_append(dev, aml_name_decl("_HID", aml_string("MSI0002")));
+     /* device present, functioning, decoding, not shown in UI */
+     aml_append(dev, aml_name_decl("_STA", aml_int(0xB)));
+     aml_append(dev, aml_name_decl("_CCA", aml_int(1)));
 diff --git a/hw/arm/virt.c b/hw/arm/virt.c
-index be2856c..cce8b69 100644
+index be2856c..df76204 100644
 --- a/hw/arm/virt.c
 +++ b/hw/arm/virt.c
+@@ -88,7 +88,7 @@
+     { \
+         MachineClass *mc = MACHINE_CLASS(oc); \
+         virt_machine_##major##_##minor##_options(mc); \
+-        mc->desc = "QEMU " # major "." # minor " ARM Virtual Machine"; \
++        mc->desc = "QEMU " # major "." # minor " ARM Machine"; \
+         if (latest) { \
+             mc->alias = "virt"; \
+         } \
 @@ -1628,13 +1628,13 @@ static void virt_build_smbios(VirtMachineState *vms)
      uint8_t *smbios_tables, *smbios_anchor;
      size_t smbios_tables_len, smbios_anchor_len;
      struct smbios_phys_mem_area mem_array;
 -    const char *product = "QEMU Virtual Machine";
-+    const char *product = "AMD Real Machine";
++    const char *product = "AMD Machine";
  
      if (kvm_enabled()) {
 -        product = "KVM Virtual Machine";
@@ -63,6 +137,78 @@ index be2856c..cce8b69 100644
                          vmc->smbios_old_sys_ver ? "1.0" : mc->name, false,
                          true, SMBIOS_ENTRY_POINT_TYPE_64);
  
+diff --git a/hw/audio/hda-codec.c b/hw/audio/hda-codec.c
+index 0bc20d4..0993099 100644
+--- a/hw/audio/hda-codec.c
++++ b/hw/audio/hda-codec.c
+@@ -118,11 +118,11 @@ static void hda_codec_parse_fmt(uint32_t format, struct audsettings *as)
+ 
+ /* some defines */
+ 
+-#define QEMU_HDA_ID_VENDOR  0x1af4
+-#define QEMU_HDA_PCM_FORMATS (AC_SUPPCM_BITS_16 |       \
++#define MSI_HDA_ID_VENDOR  0x1af4
++#define MSI_HDA_PCM_FORMATS (AC_SUPPCM_BITS_16 |       \
+                               0x1fc /* 16 -> 96 kHz */)
+-#define QEMU_HDA_AMP_NONE    (0)
+-#define QEMU_HDA_AMP_STEPS   0x4a
++#define MSI_HDA_AMP_NONE    (0)
++#define MSI_HDA_AMP_STEPS   0x4a
+ 
+ #define   PARAM mixemu
+ #define   HDA_MIXER
+@@ -459,8 +459,8 @@ static void hda_audio_set_amp(HDAAudioStream *st)
+     left  = st->mute_left  ? 0 : st->gain_left;
+     right = st->mute_right ? 0 : st->gain_right;
+ 
+-    left = left * 255 / QEMU_HDA_AMP_STEPS;
+-    right = right * 255 / QEMU_HDA_AMP_STEPS;
++    left = left * 255 / MSI_HDA_AMP_STEPS;
++    right = right * 255 / MSI_HDA_AMP_STEPS;
+ 
+     if (!st->state->mixer) {
+         return;
+@@ -722,8 +722,8 @@ static void hda_audio_init(HDACodecDevice *hda,
+             st->node = node;
+             if (type == AC_WID_AUD_OUT) {
+                 /* unmute output by default */
+-                st->gain_left = QEMU_HDA_AMP_STEPS;
+-                st->gain_right = QEMU_HDA_AMP_STEPS;
++                st->gain_left = MSI_HDA_AMP_STEPS;
++                st->gain_right = MSI_HDA_AMP_STEPS;
+                 st->compat_bpos = sizeof(st->compat_buf);
+                 st->output = true;
+             } else {
+diff --git a/hw/display/edid-generate.c b/hw/display/edid-generate.c
+index 2cb8196..271ff3d 100644
+--- a/hw/display/edid-generate.c
++++ b/hw/display/edid-generate.c
+@@ -394,10 +394,10 @@ void qemu_edid_generate(uint8_t *edid, size_t size,
+     /* =============== set defaults  =============== */
+ 
+     if (!info->vendor || strlen(info->vendor) != 3) {
+-        info->vendor = "RHT";
++        info->vendor = "MSI";
+     }
+     if (!info->name) {
+-        info->name = "QEMU Monitor";
++        info->name = "MSI Monitor";
+     }
+     if (!info->prefx) {
+         info->prefx = 1280;
+diff --git a/hw/i386/fw_cfg.c b/hw/i386/fw_cfg.c
+index 7362daa..6aa2d02 100644
+--- a/hw/i386/fw_cfg.c
++++ b/hw/i386/fw_cfg.c
+@@ -206,7 +206,7 @@ void fw_cfg_add_acpi_dsdt(Aml *scope, FWCfgState *fw_cfg)
+     Aml *dev = aml_device("FWCF");
+     Aml *crs = aml_resource_template();
+ 
+-    aml_append(dev, aml_name_decl("_HID", aml_string("QEMU0002")));
++    aml_append(dev, aml_name_decl("_HID", aml_string("MSI0002")));
+ 
+     /* device present, functioning, decoding, not shown in UI */
+     aml_append(dev, aml_name_decl("_STA", aml_int(0xB)));
 diff --git a/hw/i386/pc.c b/hw/i386/pc.c
 index 29b9964..433471c 100644
 --- a/hw/i386/pc.c
@@ -342,6 +488,28 @@ index 4b7dc67..8e87b3a 100644
                          true, SMBIOS_ENTRY_POINT_TYPE_64);
  
      smbios_get_tables(ms, NULL, 0, &smbios_tables, &smbios_tables_len,
+diff --git a/hw/m68k/virt.c b/hw/m68k/virt.c
+index 2e49e26..86bc2c2 100644
+--- a/hw/m68k/virt.c
++++ b/hw/m68k/virt.c
+@@ -301,7 +301,7 @@ static void virt_init(MachineState *machine)
+ static void virt_machine_class_init(ObjectClass *oc, void *data)
+ {
+     MachineClass *mc = MACHINE_CLASS(oc);
+-    mc->desc = "QEMU M68K Virtual Machine";
++    mc->desc = "MSI M68K Machine";
+     mc->init = virt_init;
+     mc->default_cpu_type = M68K_CPU_TYPE_NAME("m68040");
+     mc->max_cpus = 1;
+@@ -330,7 +330,7 @@ type_init(virt_machine_register_types)
+     { \
+         MachineClass *mc = MACHINE_CLASS(oc); \
+         virt_machine_##major##_##minor##_options(mc); \
+-        mc->desc = "QEMU " # major "." # minor " M68K Virtual Machine"; \
++        mc->desc = "MSI " # major "." # minor " M68K Machine"; \
+         if (latest) { \
+             mc->alias = "virt"; \
+         } \
 diff --git a/hw/nvme/ctrl.c b/hw/nvme/ctrl.c
 index f026245..b4d13a7 100644
 --- a/hw/nvme/ctrl.c
@@ -355,6 +523,32 @@ index f026245..b4d13a7 100644
      strpadcpy((char *)id->fr, sizeof(id->fr), QEMU_VERSION, ' ');
      strpadcpy((char *)id->sn, sizeof(id->sn), n->params.serial, ' ');
  
+diff --git a/hw/ppc/e500plat.c b/hw/ppc/e500plat.c
+index 7aa2f21..2671265 100644
+--- a/hw/ppc/e500plat.c
++++ b/hw/ppc/e500plat.c
+@@ -22,7 +22,7 @@
+ 
+ static void e500plat_fixup_devtree(void *fdt)
+ {
+-    const char model[] = "QEMU ppce500";
++    const char model[] = "ppce500";
+     const char compatible[] = "fsl,qemu-e500";
+ 
+     qemu_fdt_setprop(fdt, "/", "model", model, sizeof(model));
+diff --git a/hw/riscv/virt-acpi-build.c b/hw/riscv/virt-acpi-build.c
+index 7331248..1a60c15 100644
+--- a/hw/riscv/virt-acpi-build.c
++++ b/hw/riscv/virt-acpi-build.c
+@@ -100,7 +100,7 @@ static void acpi_dsdt_add_cpus(Aml *scope, RISCVVirtState *s)
+ static void acpi_dsdt_add_fw_cfg(Aml *scope, const MemMapEntry *fw_cfg_memmap)
+ {
+     Aml *dev = aml_device("FWCF");
+-    aml_append(dev, aml_name_decl("_HID", aml_string("QEMU0002")));
++    aml_append(dev, aml_name_decl("_HID", aml_string("MSI0002")));
+ 
+     /* device present, functioning, decoding, not shown in UI */
+     aml_append(dev, aml_name_decl("_STA", aml_int(0xB)));
 diff --git a/hw/scsi/mptconfig.c b/hw/scsi/mptconfig.c
 index 19d01f3..00ee3f8 100644
 --- a/hw/scsi/mptconfig.c
@@ -408,6 +602,30 @@ index 6691f5e..34dfd40 100644
      }
      scsi_realize(&s->qdev, errp);
      aio_context_release(ctx);
+diff --git a/hw/scsi/spapr_vscsi.c b/hw/scsi/spapr_vscsi.c
+index 5bbbef6..3cdfdfa 100644
+--- a/hw/scsi/spapr_vscsi.c
++++ b/hw/scsi/spapr_vscsi.c
+@@ -713,8 +713,8 @@ static void vscsi_inquiry_no_target(VSCSIState *s, vscsi_req *req)
+     resp_data[3] = 0x02;   /* Resp data format */
+     resp_data[4] = 36 - 5; /* Additional length */
+     resp_data[7] = 0x10;   /* Sync transfers */
+-    memcpy(&resp_data[16], "QEMU EMPTY      ", 16);
+-    memcpy(&resp_data[8], "QEMU    ", 8);
++    memcpy(&resp_data[16], "EMPTY           ", 16);
++    memcpy(&resp_data[8], "MSI     ", 8);
+ 
+     req->writing = 0;
+     vscsi_preprocess_desc(req);
+@@ -971,7 +971,7 @@ static int vscsi_send_adapter_info(VSCSIState *s, vscsi_req *req)
+ #endif
+     memset(&info, 0, sizeof(info));
+     strcpy(info.srp_version, SRP_VERSION);
+-    memcpy(info.partition_name, "qemu", sizeof("qemu"));
++    memcpy(info.partition_name, "msi", sizeof("msi"));
+     info.partition_number = cpu_to_be32(0);
+     info.mad_version = cpu_to_be32(1);
+     info.os_type = cpu_to_be32(2);
 diff --git a/hw/ufs/lu.c b/hw/ufs/lu.c
 index 81bfff9..33dcea0 100644
 --- a/hw/ufs/lu.c
@@ -494,20 +712,22 @@ index bdd6d1f..ac67b0e 100644
      device_class_set_props(dc, usb_keyboard_properties);
      set_bit(DEVICE_CATEGORY_INPUT, dc->categories);
 diff --git a/hw/usb/dev-hub.c b/hw/usb/dev-hub.c
-index 5703e0e..d7b3501 100644
+index 5703e0e..2fbbed2 100644
 --- a/hw/usb/dev-hub.c
 +++ b/hw/usb/dev-hub.c
-@@ -104,8 +104,8 @@ enum {
+@@ -104,9 +104,9 @@ enum {
  };
  
  static const USBDescStrings desc_strings = {
 -    [STR_MANUFACTURER] = "QEMU",
 -    [STR_PRODUCT]      = "QEMU USB Hub",
+-    [STR_SERIALNUMBER] = "314159",
 +    [STR_MANUFACTURER] = "MSI",
 +    [STR_PRODUCT]      = "USB Hub",
-     [STR_SERIALNUMBER] = "314159",
++    [STR_SERIALNUMBER] = "931554",
  };
  
+ static const USBDescIface desc_iface_hub = {
 @@ -676,7 +676,7 @@ static void usb_hub_class_initfn(ObjectClass *klass, void *data)
      USBDeviceClass *uc = USB_DEVICE_CLASS(klass);
  
