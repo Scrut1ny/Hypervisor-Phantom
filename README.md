@@ -269,7 +269,7 @@ cd $HOME/Downloads && git clone https://gitlab.com/qemu-project/qemu/ -b v8.2.1 
 
 cd qemu && git apply qemu8.2.1.patch && cd .. && mkdir qemu_build && cd qemu_build && ../qemu/configure --target-list=x86_64-softmmu,x86_64-linux-user --prefix=/usr && make -j $(nproc) && sudo make install
 
-mv qemu-system-x86_64 /bin
+sudo mv -f qemu-system-x86_64 /bin
 ```
 
 ## QEMU RDTSC VM_Exit Kernal Patch
