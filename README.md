@@ -257,6 +257,10 @@ cd /home/$USER/Downloads
 git clone https://gitlab.com/qemu-project/qemu/ -b v8.2.1 --depth 1 --recursive
 
 Edit all compromised strings within the source code...
+grep -Rn '/home/$USER/Downloads/qemu/hw' -e '"QEMU '
+grep -Rn '/home/$USER/Downloads/qemu/hw' -e 'QEMU'
+grep -Rn '/home/$USER/Downloads/qemu/hw' -e 'qemu'
+grep -Rn '/home/$USER/Downloads/qemu/target/i386' -e '"QEMU '
 
 git diff > QEMU_8.2.1.patch
 ```
