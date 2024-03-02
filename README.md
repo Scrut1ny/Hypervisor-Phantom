@@ -420,7 +420,19 @@ lspci -k | grep -E "vfio-pci|NVIDIA"
   </clock>
 ```
 
-### Testing it out...
+## Looking Glass Setup Guide
+
+- *KVM (Kernel-based Virtual Machine) configured for VGA PCI Pass-through without an attached physical monitor, keyboard or mouse.*
+
+### Add this to your .XML file
+```
+    <shmem name='looking-glass'>
+      <model type='ivshmem-plain'/>
+      <size unit='M'>32</size>
+    </shmem>
+```
+
+## Testing it out...
 - Connect an additional DisplayPort or HDMI cable from your spare/isolated GPU to your monitor. Alternatively, you can utilize a DisplayPort or HDMI Bidirectional Switch Splitter for convenience.
     - [DP Bidirectional Switch Splitter](https://www.amazon.com/dp/B0C9PDFYH3)
 
