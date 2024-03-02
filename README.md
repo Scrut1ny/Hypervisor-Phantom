@@ -254,7 +254,7 @@ sudo apt update && sudo apt upgrade -y && sudo apt autoremove -y && sudo apt ins
 ```
 cd $HOME/Downloads
 
-git clone https://gitlab.com/qemu-project/qemu/ -b v8.2.1 --depth 1 --recursive && cd qemu/
+git clone https://gitlab.com/qemu-project/qemu.git -b v8.2.1 --depth 1 --recursive && cd qemu/
 
 Edit all compromised strings within the source code...
 grep -Rn "$HOME/Downloads/qemu" -e '"QEMU '
@@ -265,7 +265,7 @@ git diff > QEMU_8.2.1.patch
 
 ### Downloading & Building QEMU w/patch
 ```
-cd $HOME/Downloads && git clone https://gitlab.com/qemu-project/qemu/ -b v8.2.1 --depth 1 --recursive
+cd $HOME/Downloads && git clone https://gitlab.com/qemu-project/qemu.git -b v8.2.1 --depth 1 --recursive
 
 cd qemu/ && git apply qemu8.2.1.patch && cd .. && mkdir qemu_build && cd qemu_build && ../qemu/configure --target-list=x86_64-softmmu,x86_64-linux-user --prefix=/usr && make -j $(nproc) && sudo make install
 
@@ -433,6 +433,17 @@ lspci -k | grep -E "vfio-pci|NVIDIA"
 ```
 ![image](https://github.com/Scrut1ny/Hypervisor-Phantom/assets/53458032/c2400987-64fa-4a00-87c7-f2b6b6b4047f)
 
+### Installing Prerequisites
+```
+sudo apt update && sudo apt upgrade -y && sudo apt autoremove -y && sudo apt install -y binutils-dev cmake fonts-dejavu-core libfontconfig-dev gcc g++ pkg-config libegl-dev libgl-dev libgles-dev libspice-protocol-dev nettle-dev libx11-dev libxcursor-dev libxi-dev libxinerama-dev libxpresent-dev libxss-dev libxkbcommon-dev libwayland-dev wayland-protocols libpipewire-0.3-dev libpulse-dev libsamplerate0-dev
+```
+
+### Downloading Source & Building LookingGlass
+```
+git clone --recursive https://github.com/gnif/LookingGlass.git
+
+mkdir client/build && cd client/build && cmake ../ && make
+```
 
 ## Testing it out...
 - Connect an additional DisplayPort or HDMI cable from your spare/isolated GPU to your monitor. Alternatively, you can utilize a DisplayPort or HDMI Bidirectional Switch Splitter for convenience.
