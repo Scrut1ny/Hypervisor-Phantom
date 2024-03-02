@@ -254,7 +254,7 @@ sudo apt update && sudo apt upgrade -y && sudo apt autoremove -y && sudo apt ins
 ```
 cd $HOME/Downloads
 
-git clone https://gitlab.com/qemu-project/qemu/ -b v8.2.1 --depth 1 --recursive
+git clone https://gitlab.com/qemu-project/qemu/ -b v8.2.1 --depth 1 --recursive && cd qemu/
 
 Edit all compromised strings within the source code...
 grep -Rn "$HOME/Downloads/qemu" -e '"QEMU '
@@ -267,7 +267,7 @@ git diff > QEMU_8.2.1.patch
 ```
 cd $HOME/Downloads && git clone https://gitlab.com/qemu-project/qemu/ -b v8.2.1 --depth 1 --recursive
 
-cd qemu && git apply qemu8.2.1.patch && cd .. && mkdir qemu_build && cd qemu_build && ../qemu/configure --target-list=x86_64-softmmu,x86_64-linux-user --prefix=/usr && make -j $(nproc) && sudo make install
+cd qemu/ && git apply qemu8.2.1.patch && cd .. && mkdir qemu_build && cd qemu_build && ../qemu/configure --target-list=x86_64-softmmu,x86_64-linux-user --prefix=/usr && make -j $(nproc) && sudo make install
 
 sudo mv -f qemu-system-x86_64 /bin
 ```
