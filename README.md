@@ -442,7 +442,7 @@ sudo apt update && sudo apt upgrade -y && sudo apt autoremove -y && sudo apt ins
 ```
 git clone --recursive https://github.com/gnif/LookingGlass.git
 
-mkdir client/build && cd client/build && cmake ../ && make
+cd LookingGlass/ && mkdir client/build && cd client/build && cmake ../ && make
 ```
 
 ## Testing it out...
