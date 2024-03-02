@@ -438,13 +438,24 @@ lspci -k | grep -E "vfio-pci|NVIDIA"
 sudo apt update && sudo apt upgrade -y && sudo apt autoremove -y && sudo apt install -y binutils-dev cmake fonts-dejavu-core libfontconfig-dev gcc g++ pkg-config libegl-dev libgl-dev libgles-dev libspice-protocol-dev nettle-dev libx11-dev libxcursor-dev libxi-dev libxinerama-dev libxpresent-dev libxss-dev libxkbcommon-dev libwayland-dev wayland-protocols libpipewire-0.3-dev libpulse-dev libsamplerate0-dev
 ```
 
-### Downloading Source & Building LookingGlass
+### Downloading/Build/Install LookingGlass
 ```
 git clone --recursive https://github.com/gnif/LookingGlass.git
 
 cd LookingGlass/ && mkdir client/build && cd client/build && cmake ../ && make && sudo make install
 
 ./looking-glass-client
+```
+
+### Create a new file
+```
+sudo nano /etc/tmpfiles.d/10-looking-glass.conf
+```
+- Give it the following contents
+```
+# Type Path               Mode UID  GID Age Argument
+
+f /dev/shm/looking-glass 0660 user kvm -
 ```
 
 ## Testing it out...
