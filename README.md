@@ -424,13 +424,15 @@ lspci -k | grep -E "vfio-pci|NVIDIA"
 
 - *KVM (Kernel-based Virtual Machine) configured for VGA PCI Pass-through without an attached physical monitor, keyboard or mouse.*
 
-### Add this to your .XML file
+### Add this to your .XML file in the devices section:
 ```
     <shmem name='looking-glass'>
       <model type='ivshmem-plain'/>
       <size unit='M'>32</size>
     </shmem>
 ```
+![image](https://github.com/Scrut1ny/Hypervisor-Phantom/assets/53458032/c2400987-64fa-4a00-87c7-f2b6b6b4047f)
+
 
 ## Testing it out...
 - Connect an additional DisplayPort or HDMI cable from your spare/isolated GPU to your monitor. Alternatively, you can utilize a DisplayPort or HDMI Bidirectional Switch Splitter for convenience.
