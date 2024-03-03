@@ -3,7 +3,7 @@
 <summary>Proctoring Software</summary>
 
 | Software | Browser Extension | System Test | Bypassed | Difficulty |
-| - | - | - | - | - |touch /dev/shm/looking-glass && chown $VIRT_USER:kvm /dev/shm/looking-glass && chmod 660 /dev/shm/looking-glass
+| - | - | - | - | - |
 | Pafish |  | [Link](https://github.com/a0rtega/pafish/releases/download/v0.6/pafish64.exe) | ✅ | 🤬 |
 | Al-Khaser |  | [Link](https://github.com/LordNoteworthy/al-khaser) | ❔ | 🤬 |
 | Safe Exam Browser |  | [Link](https://github.com/SafeExamBrowser/seb-win-refactoring) | ✅ | 😤 |
