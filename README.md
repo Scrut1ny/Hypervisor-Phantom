@@ -481,6 +481,10 @@ touch /dev/shm/looking-glass && chown user:kvm /dev/shm/looking-glass && chmod 6
 - DP/HDMI/DVI/VGA Dummy Plug (EDID Emulator)
     - [#1](https://www.amazon.com/dp/B071CGCTMY)
     - [#2](https://www.amazon.com/dp/B07YLP1GG4)
+- USB Type C to DP Adapter <---> DP/HDMI/DVI/VGA Dummy Plug (EDID Emulator)
+    - [Adapter](https://www.amazon.com/dp/B0836FFKGD)
+    - [#1 Dummy Plug](https://www.amazon.com/dp/B071CGCTMY)
+    - [#2 Dummy Plug](https://www.amazon.com/dp/B07YLP1GG4)
 - Connect an additional DisplayPort or HDMI cable from your spare/isolated GPU to your monitor. Alternatively, you can utilize a DisplayPort or HDMI Bidirectional Switch Splitter for convenience.
     - [DP Bidirectional Switch Splitter](https://www.amazon.com/dp/B0C9PDFYH3)
 
