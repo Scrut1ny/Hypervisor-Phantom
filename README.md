@@ -19,6 +19,17 @@
 </details>
 
 <details>
+<summary>Bypassing HDCP (High-bandwidth Digital Content Protection)</summary>
+
+- [HDCP Versions](https://en.wikipedia.org/wiki/High-bandwidth_Digital_Content_Protection#Versions)
+
+| Product | Link |
+|-|-|
+|  |  |
+
+</details>
+
+<details>
 <summary>QEMU Anti Detection</summary>
 
 | Type | Engine | Bypassed |
