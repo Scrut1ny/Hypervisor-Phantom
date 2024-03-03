@@ -1,5 +1,4 @@
   <os>
-    <bootmenu enable="no"/>
     <smbios mode="host"/>
   </os>
   <features>
