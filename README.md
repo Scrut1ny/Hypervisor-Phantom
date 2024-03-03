@@ -23,9 +23,12 @@
 
 - [HDCP Versions](https://en.wikipedia.org/wiki/High-bandwidth_Digital_Content_Protection#Versions)
 
-| Product | Link |
-|-|-|
-|  |  |
+## Bypass Methods
+- HDMI Splitter 1 in 2 Out
+    - [#1](https://www.amazon.com/dp/B07VP37KMB)
+- DP or HDMI (Male) to VGA (Female) Adapter <---> VGA (Male) to DP or HDMI (Male) Adapter
+    - [#1](https://www.amazon.com/dp/B01GPMRYNM)
+    - [#2](https://www.amazon.com/dp/B083P358V6)
 
 </details>
 
@@ -475,6 +478,9 @@ touch /dev/shm/looking-glass && chown user:kvm /dev/shm/looking-glass && chmod 6
 ```
 
 ## Testing it out...
+- DP/HDMI/DVI/VGA Dummy Plug (EDID Emulator)
+    - [#1](https://www.amazon.com/dp/B071CGCTMY)
+    - [#2](https://www.amazon.com/dp/B07YLP1GG4)
 - Connect an additional DisplayPort or HDMI cable from your spare/isolated GPU to your monitor. Alternatively, you can utilize a DisplayPort or HDMI Bidirectional Switch Splitter for convenience.
     - [DP Bidirectional Switch Splitter](https://www.amazon.com/dp/B0C9PDFYH3)
 
