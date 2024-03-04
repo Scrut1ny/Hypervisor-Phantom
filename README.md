@@ -170,11 +170,6 @@ XXXX-XX-XX XX:XX:XX.XXX-XXXX [BROWSER LOCK] [INFO] Number of display devices con
 - vpnDetectConfig
 ```
 
-- Obtains `MachineGuid`
-```batch
-HKLM\SOFTWARE\Microsoft\Cryptography
-```
-
 </details>
 </details>
 
