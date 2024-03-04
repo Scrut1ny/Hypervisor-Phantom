@@ -130,6 +130,9 @@ powershell.exe -Command "Get-WmiObject -Namespace 'root\WMI' -Class 'WMIMonitorI
 # Obtains running processes
 powershell.exe /c Get-CimInstance -className win32_process | select Name,ProcessId,ParentProcessId,CommandLine,ExecutablePath
 
+# Obtains MachineGUID
+powershell (Get-ItemProperty registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Cryptography\ -Name MachineGuid).MachineGUID
+
 # Obtains system hostname
 C:\Windows\system32\cmd.exe /c hostname
 ```
