@@ -258,8 +258,6 @@ Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
 <details>
 <summary>QEMU</summary>
 
-* [Domain XML format](https://libvirt.org/formatdomain.html)
-
 ## QEMU + Virt-Manager Setup
 ```
 sudo apt update && sudo apt upgrade -y && sudo apt autoremove -y && sudo apt clean -y
@@ -406,6 +404,7 @@ lspci -k | grep -E "vfio-pci|NVIDIA"
 15. Now select `Begin Installation`, and enjoy your new undetectable windows system!
 
 ## QEMU XML Config
+* [Domain XML format](https://libvirt.org/formatdomain.html)
 ```
   <os>
     <bootmenu enable="no"/>
