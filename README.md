@@ -27,8 +27,7 @@
 - HDMI Splitter 1 in 2 Out
     - [#1](https://www.amazon.com/dp/B07VP37KMB)
     - [#2](https://www.amazon.com/dp/B07TZRXKYG)
-    - [#3](https://www.amazon.com/dp/B01LAILGN0)
-    - [#4](https://www.amazon.com/dp/B08T62MKH1)
+    - [#3](https://www.amazon.com/dp/B08T62MKH1)
 - DP or HDMI (Male) to VGA (Female) Adapter <---> VGA (Male) to DP or HDMI (Male) Adapter
     - [#1](https://www.amazon.com/dp/B01GPMRYNM)
     - [#2](https://www.amazon.com/dp/B083P358V6)
