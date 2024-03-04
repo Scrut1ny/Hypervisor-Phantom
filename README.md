@@ -96,6 +96,9 @@
 <summary>Pearson VUE</summary>
 
 ## BrowserLock
+- System Requirements
+[Link](https://home.pearsonvue.com/Standalone-pages/System-requirements-PVBL.aspx)
+
 - Exam Content & Special Configurations (SDS)
 ```
 https://securedelivery-hs-prd-1.pearsonvue.com/SecureDeliveryService
