@@ -136,6 +136,7 @@ C:\Windows\system32\cmd.exe /c hostname
 
 - Hypervisor System Checks (in log file):
 ```
+# LOG:
 XXXX-XX-XX XX:XX:XX.XXX-XXXX [BROWSER LOCK] [INFO] VM Allowed flag value from forensics is vmAllowedForensic=false
 XXXX-XX-XX XX:XX:XX.XXX-XXXX [BROWSER LOCK] [INFO] Multiple Monitor Allowed flag value from forensics is multiMonitorAllowedForensic=false
 XXXX-XX-XX XX:XX:XX.XXX-XXXX [BROWSER LOCK] [INFO] VPN Allowed flag value from forensics is vpnAllowedForensic=true
@@ -154,6 +155,16 @@ XXXX-XX-XX XX:XX:XX.XXX-XXXX [BROWSER LOCK] [INFO] VM check: diskSize=499 GB
 XXXX-XX-XX XX:XX:XX.XXX-XXXX [BROWSER LOCK] [INFO] Browserlock is not running on virtual machine
 XXXX-XX-XX XX:XX:XX.XXX-XXXX [BROWSER LOCK] [INFO] Display HDCP supported check: hdcpSupported=true
 XXXX-XX-XX XX:XX:XX.XXX-XXXX [BROWSER LOCK] [INFO] Number of display devices connected: AWT=1, Physical=1, Physical/Virtual=1, Duplicate=1
+
+# BrowserLock Booleon Variables
+- hdcpSupported
+- multiMonitorAllowedForensic
+- multipleMonitorDetectConfig
+- usbDetectConfig
+- vmAllowedForensic
+- vmDetectConfig
+- vpnAllowedForensic
+- vpnDetectConfig
 ```
 
 - Obtains `MachineGuid`
