@@ -491,6 +491,7 @@ touch /dev/shm/looking-glass && chown user:kvm /dev/shm/looking-glass && chmod 6
 ```
 
 ## Testing it out...
+- [VFIO - EDID Emulator Review](https://www.youtube.com/watch?v=_freOfQCpYU)
 - DP/HDMI/DVI/VGA Dummy Plug (EDID Emulator)
     - [#1 - DP](https://www.amazon.com/dp/B071CGCTMY)
     - [#2 - HDMI](https://www.amazon.com/dp/B07FB8GJ1Z)
