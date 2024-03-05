@@ -492,8 +492,10 @@ touch /dev/shm/looking-glass && chown user:kvm /dev/shm/looking-glass && chmod 6
 
 ## Testing it out...
 - DP/HDMI/DVI/VGA Dummy Plug (EDID Emulator)
-    - [#1](https://www.amazon.com/dp/B071CGCTMY)
-    - [#2](https://www.amazon.com/dp/B07YLP1GG4)
+    - [#1 - DP](https://www.amazon.com/dp/B071CGCTMY)
+    - [#2 - HDMI](https://www.amazon.com/dp/B07FB8GJ1Z)
+    - [#3 - DVI](https://www.amazon.com/dp/B077CKX6ZK)
+    - [#4 - VGA](https://www.amazon.com/dp/B075ZMVGQS)
 - USB Type C to DP Adapter <---> DP/HDMI/DVI/VGA Dummy Plug (EDID Emulator)
     - [Adapter](https://www.amazon.com/dp/B0836FFKGD)
     - [#1 Dummy Plug](https://www.amazon.com/dp/B071CGCTMY)
