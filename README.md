@@ -278,15 +278,20 @@ sudo apt update && sudo apt upgrade -y && sudo apt autoremove -y && sudo apt ins
 
 ### Make custom QEMU .patch file
 ```
-cd $HOME/Downloads
+cd $HOME/Downloads && git clone https://gitlab.com/qemu-project/qemu.git -b v8.2.1 --depth 1 --recursive && cd qemu/
 
-git clone https://gitlab.com/qemu-project/qemu.git -b v8.2.1 --depth 1 --recursive && cd qemu/
+# Edit all compromised strings within the source code...
+grep -Rn '"QEMU ' "$HOME/Downloads/qemu"
+grep -Rn '"QEMU' "$HOME/Downloads/qemu"
+grep -Rn '"QEMU Virtual Machine"' "$HOME/Downloads/qemu"
+grep -Rn '"QEMU Virtual CPU version "' "$HOME/Downloads/qemu"
+grep -Rn '"KVM/Linux       "' "$HOME/Downloads/qemu"
+grep -Rn '"KVMKVMKVM\0\0\0"' "$HOME/Downloads/qemu"
+grep -Rn '"BOCHS "' "$HOME/Downloads/qemu"
+grep -Rn '"BXPC    "' "$HOME/Downloads/qemu"
+grep -Rn '\[STR_SERIALNUMBER\]' "$HOME/Downloads/qemu"
 
-Edit all compromised strings within the source code...
-grep -Rn "$HOME/Downloads/qemu" -e '"QEMU '
-grep -Rn "$HOME/Downloads/qemu" -e '"QEMU'
-
-git diff > QEMU_8.2.1.patch
+git diff > qemu8.2.1.patch
 ```
 
 ### Downloading & Building QEMU w/patch
