@@ -279,7 +279,7 @@ sudo apt update && sudo apt upgrade -y && sudo apt autoremove -y && sudo apt ins
 
 ### Make custom QEMU .patch file
 ```
-cd $HOME/Downloads && git clone https://gitlab.com/qemu-project/qemu.git -b v8.2.1 --depth 1 --recursive && cd qemu/
+cd $HOME/Downloads && git clone --depth 1 --branch v8.2.1 --recursive https://gitlab.com/qemu-project/qemu.git && cd qemu/
 
 # Edit all compromised strings within the source code...
 grep -Rn '"QEMU ' "$HOME/Downloads/qemu"
@@ -297,7 +297,7 @@ git diff > qemu8.2.1.patch
 
 ### Downloading & Building QEMU w/patch
 ```
-cd $HOME/Downloads && git clone https://gitlab.com/qemu-project/qemu.git -b v8.2.1 --depth 1 --recursive
+cd $HOME/Downloads && git clone --depth 1 --branch v8.2.1 --recursive https://gitlab.com/qemu-project/qemu.git
 
 cd qemu/ && git apply qemu8.2.1.patch && cd .. && mkdir qemu_build && cd qemu_build && ../qemu/configure --target-list=x86_64-softmmu,x86_64-linux-user --prefix=/usr && make -j $(nproc) && sudo make install
 
