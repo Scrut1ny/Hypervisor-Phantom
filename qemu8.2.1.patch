@@ -599,6 +599,19 @@ index 81bfff9..33dcea0 100644
      memset(&outbuf[32], 0, 4);
  
      return SCSI_INQUIRY_LEN;
+diff --git a/hw/usb/canokey.c b/hw/usb/canokey.c
+index b306eeb..5858692 100644
+--- a/hw/usb/canokey.c
++++ b/hw/usb/canokey.c
+@@ -36,7 +36,7 @@ enum {
+ static const USBDescStrings desc_strings = {
+     [STR_MANUFACTURER]     = "canokeys.org",
+     [STR_PRODUCT]          = "CanoKey QEMU",
+-    [STR_SERIALNUMBER]     = "0"
++    [STR_SERIALNUMBER]     = "FCJ2QY972L"
+ };
+ 
+ static const USBDescDevice desc_device_canokey = {
 diff --git a/hw/usb/dev-audio.c b/hw/usb/dev-audio.c
 index d5ac1f8..c8406ba 100644
 --- a/hw/usb/dev-audio.c
@@ -670,7 +683,7 @@ index bdd6d1f..ac67b0e 100644
      device_class_set_props(dc, usb_keyboard_properties);
      set_bit(DEVICE_CATEGORY_INPUT, dc->categories);
 diff --git a/hw/usb/dev-hub.c b/hw/usb/dev-hub.c
-index 5703e0e..2fbbed2 100644
+index 5703e0e..6efee2e 100644
 --- a/hw/usb/dev-hub.c
 +++ b/hw/usb/dev-hub.c
 @@ -104,9 +104,9 @@ enum {
@@ -682,7 +695,7 @@ index 5703e0e..2fbbed2 100644
 -    [STR_SERIALNUMBER] = "314159",
 +    [STR_MANUFACTURER] = "MSI",
 +    [STR_PRODUCT]      = "USB Hub",
-+    [STR_SERIALNUMBER] = "931554",
++    [STR_SERIALNUMBER] = "HLFES41M5R",
  };
  
  static const USBDescIface desc_iface_hub = {
@@ -696,7 +709,7 @@ index 5703e0e..2fbbed2 100644
      uc->find_device    = usb_hub_find_device;
      uc->handle_reset   = usb_hub_handle_reset;
 diff --git a/hw/usb/dev-mtp.c b/hw/usb/dev-mtp.c
-index 1cac1cd..ee85cf1 100644
+index 1cac1cd..0c88b15 100644
 --- a/hw/usb/dev-mtp.c
 +++ b/hw/usb/dev-mtp.c
 @@ -247,8 +247,8 @@ OBJECT_DECLARE_SIMPLE_TYPE(MTPState, USB_MTP)
@@ -710,6 +723,15 @@ index 1cac1cd..ee85cf1 100644
  #define MTP_WRITE_BUF_SZ  (512 * KiB)
  
  enum {
+@@ -264,7 +264,7 @@ enum {
+ static const USBDescStrings desc_strings = {
+     [STR_MANUFACTURER] = MTP_MANUFACTURER,
+     [STR_PRODUCT]      = MTP_PRODUCT,
+-    [STR_SERIALNUMBER] = "34617",
++    [STR_SERIALNUMBER] = "R23NI1BTDH",
+     [STR_MTP]          = "MTP",
+     [STR_CONFIG_FULL]  = "Full speed config (usb 1.1)",
+     [STR_CONFIG_HIGH]  = "High speed config (usb 2.0)",
 @@ -2091,7 +2091,7 @@ static void usb_mtp_class_initfn(ObjectClass *klass, void *data)
      USBDeviceClass *uc = USB_DEVICE_CLASS(klass);
  
@@ -767,22 +789,24 @@ index 2c33e36..6ac3f46 100644
      uc->handle_reset   = usb_net_handle_reset;
      uc->handle_control = usb_net_handle_control;
 diff --git a/hw/usb/dev-serial.c b/hw/usb/dev-serial.c
-index 63047d7..b09ceab 100644
+index 63047d7..5faf24c 100644
 --- a/hw/usb/dev-serial.c
 +++ b/hw/usb/dev-serial.c
-@@ -119,9 +119,9 @@ enum {
+@@ -119,10 +119,10 @@ enum {
  };
  
  static const USBDescStrings desc_strings = {
 -    [STR_MANUFACTURER]    = "QEMU",
 -    [STR_PRODUCT_SERIAL]  = "QEMU USB SERIAL",
 -    [STR_PRODUCT_BRAILLE] = "QEMU USB BAUM BRAILLE",
+-    [STR_SERIALNUMBER]    = "1",
 +    [STR_MANUFACTURER]    = "MSI",
 +    [STR_PRODUCT_SERIAL]  = "USB SERIAL",
 +    [STR_PRODUCT_BRAILLE] = "USB BAUM BRAILLE",
-     [STR_SERIALNUMBER]    = "1",
++    [STR_SERIALNUMBER]    = "O7L0CKYLL8",
  };
  
+ static const USBDescIface desc_iface0 = {
 @@ -666,7 +666,7 @@ static void usb_serial_class_initfn(ObjectClass *klass, void *data)
      DeviceClass *dc = DEVICE_CLASS(klass);
      USBDeviceClass *uc = USB_DEVICE_CLASS(klass);
@@ -802,7 +826,7 @@ index 63047d7..b09ceab 100644
      device_class_set_props(dc, braille_properties);
  }
 diff --git a/hw/usb/dev-smartcard-reader.c b/hw/usb/dev-smartcard-reader.c
-index be0a4fc..5319330 100644
+index be0a4fc..1138c43 100644
 --- a/hw/usb/dev-smartcard-reader.c
 +++ b/hw/usb/dev-smartcard-reader.c
 @@ -80,8 +80,8 @@ OBJECT_DECLARE_SIMPLE_TYPE(USBCCIDState, USB_CCID_DEV)
@@ -816,17 +840,19 @@ index be0a4fc..5319330 100644
  #define CCID_INTERFACE_NAME             "CCID Interface"
  #define CCID_SERIAL_NUMBER_STRING       "1"
  /*
-@@ -419,8 +419,8 @@ enum {
+@@ -419,9 +419,9 @@ enum {
  };
  
  static const USBDescStrings desc_strings = {
 -    [STR_MANUFACTURER]  = "QEMU",
 -    [STR_PRODUCT]       = "QEMU USB CCID",
+-    [STR_SERIALNUMBER]  = "1",
 +    [STR_MANUFACTURER]  = "MSI",
 +    [STR_PRODUCT]       = "MSI USB CCID",
-     [STR_SERIALNUMBER]  = "1",
++    [STR_SERIALNUMBER]  = "JMR4DD1GP9",
      [STR_INTERFACE]     = "CCID Interface",
  };
+ 
 @@ -1443,7 +1443,7 @@ static void ccid_class_initfn(ObjectClass *klass, void *data)
      HotplugHandlerClass *hc = HOTPLUG_HANDLER_CLASS(klass);
  
@@ -837,20 +863,22 @@ index be0a4fc..5319330 100644
      uc->handle_reset   = ccid_handle_reset;
      uc->handle_control = ccid_handle_control;
 diff --git a/hw/usb/dev-storage.c b/hw/usb/dev-storage.c
-index a496c81..63a68d5 100644
+index a496c81..6cd1ecc 100644
 --- a/hw/usb/dev-storage.c
 +++ b/hw/usb/dev-storage.c
-@@ -47,8 +47,8 @@ enum {
+@@ -47,9 +47,9 @@ enum {
  };
  
  static const USBDescStrings desc_strings = {
 -    [STR_MANUFACTURER] = "QEMU",
 -    [STR_PRODUCT]      = "QEMU USB HARDDRIVE",
+-    [STR_SERIALNUMBER] = "1",
 +    [STR_MANUFACTURER] = "MSI",
 +    [STR_PRODUCT]      = "USB HARDDRIVE",
-     [STR_SERIALNUMBER] = "1",
++    [STR_SERIALNUMBER] = "32P7U9M3IM",
      [STR_CONFIG_FULL]  = "Full speed config (usb 1.1)",
      [STR_CONFIG_HIGH]  = "High speed config (usb 2.0)",
+     [STR_CONFIG_SUPER] = "Super speed config (usb 3.0)",
 @@ -591,7 +591,7 @@ static void usb_msd_class_initfn_common(ObjectClass *klass, void *data)
      DeviceClass *dc = DEVICE_CLASS(klass);
      USBDeviceClass *uc = USB_DEVICE_CLASS(klass);
@@ -861,31 +889,37 @@ index a496c81..63a68d5 100644
      uc->cancel_packet  = usb_msd_cancel_io;
      uc->handle_attach  = usb_desc_attach;
 diff --git a/hw/usb/dev-uas.c b/hw/usb/dev-uas.c
-index f013ded..fd506fa 100644
+index f013ded..8af4b0a 100644
 --- a/hw/usb/dev-uas.c
 +++ b/hw/usb/dev-uas.c
-@@ -171,7 +171,7 @@ enum {
+@@ -171,9 +171,9 @@ enum {
  };
  
  static const USBDescStrings desc_strings = {
 -    [STR_MANUFACTURER] = "QEMU",
 +    [STR_MANUFACTURER] = "MSI",
      [STR_PRODUCT]      = "USB Attached SCSI HBA",
-     [STR_SERIALNUMBER] = "27842",
+-    [STR_SERIALNUMBER] = "27842",
++    [STR_SERIALNUMBER] = "DE952DSQV7",
      [STR_CONFIG_HIGH]  = "High speed config (usb 2.0)",
+     [STR_CONFIG_SUPER] = "Super speed config (usb 3.0)",
+ };
 diff --git a/hw/usb/dev-wacom.c b/hw/usb/dev-wacom.c
-index 7177c17..836bd4a 100644
+index 7177c17..f881cf2 100644
 --- a/hw/usb/dev-wacom.c
 +++ b/hw/usb/dev-wacom.c
-@@ -64,7 +64,7 @@ enum {
+@@ -64,9 +64,9 @@ enum {
  };
  
  static const USBDescStrings desc_strings = {
 -    [STR_MANUFACTURER]     = "QEMU",
 +    [STR_MANUFACTURER]     = "MSI",
      [STR_PRODUCT]          = "Wacom PenPartner",
-     [STR_SERIALNUMBER]     = "1",
+-    [STR_SERIALNUMBER]     = "1",
++    [STR_SERIALNUMBER]     = "GY4P2KZI3U",
  };
+ 
+ static const uint8_t qemu_wacom_hid_report_descriptor[] = {
 @@ -231,7 +231,7 @@ static int usb_mouse_poll(USBWacomState *s, uint8_t *buf, int len)
  
      if (!s->mouse_grabbed) {
@@ -949,18 +983,21 @@ index fc93429..f06e8ff 100644
      device_class_set_props(dc, u2f_passthru_properties);
      set_bit(DEVICE_CATEGORY_MISC, dc->categories);
 diff --git a/hw/usb/u2f.c b/hw/usb/u2f.c
-index 5600124..b7aad75 100644
+index 5600124..411108e 100644
 --- a/hw/usb/u2f.c
 +++ b/hw/usb/u2f.c
-@@ -46,7 +46,7 @@ enum {
+@@ -46,9 +46,9 @@ enum {
  };
  
  static const USBDescStrings desc_strings = {
 -    [STR_MANUFACTURER]     = "QEMU",
 +    [STR_MANUFACTURER]     = "MSI",
      [STR_PRODUCT]          = "U2F USB key",
-     [STR_SERIALNUMBER]     = "0",
+-    [STR_SERIALNUMBER]     = "0",
++    [STR_SERIALNUMBER]     = "CON6ER79FK",
      [STR_CONFIG]           = "U2F key config",
+     [STR_INTERFACE]        = "U2F key interface"
+ };
 @@ -322,7 +322,7 @@ static void u2f_key_class_init(ObjectClass *klass, void *data)
      DeviceClass *dc = DEVICE_CLASS(klass);
      USBDeviceClass *uc = USB_DEVICE_CLASS(klass);
