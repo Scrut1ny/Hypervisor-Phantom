@@ -407,7 +407,6 @@ lspci -k | grep -E "vfio-pci|NVIDIA"
 * [Domain XML format](https://libvirt.org/formatdomain.html)
 ```
   <os>
-    <bootmenu enable="no"/>
     <smbios mode="host"/>
   </os>
   <features>
