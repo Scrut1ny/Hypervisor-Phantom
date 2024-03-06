@@ -284,8 +284,8 @@ cd $HOME/Downloads && git clone https://gitlab.com/qemu-project/qemu.git -b v8.2
 # Edit all compromised strings within the source code...
 grep -Rn '"QEMU ' "$HOME/Downloads/qemu"
 grep -Rn '"QEMU' "$HOME/Downloads/qemu"
-grep -Rn '"QEMU Virtual Machine"' "$HOME/Downloads/qemu"
-grep -Rn '"QEMU Virtual CPU version "' "$HOME/Downloads/qemu"
+grep -Rn 'Virtual Machine"' "$HOME/Downloads/qemu"
+grep -Rn 'Virtual CPU version "' "$HOME/Downloads/qemu"
 grep -Rn '"KVM/Linux       "' "$HOME/Downloads/qemu"
 grep -Rn '"KVMKVMKVM\\0\\0\\0"' "$HOME/Downloads/qemu"
 grep -Rn 'ACPI_BUILD_APPNAME6 "BOCHS "' "$HOME/Downloads/qemu"
