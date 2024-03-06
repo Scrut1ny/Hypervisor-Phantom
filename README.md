@@ -287,8 +287,8 @@ grep -Rn '"QEMU Virtual Machine"' "$HOME/Downloads/qemu"
 grep -Rn '"QEMU Virtual CPU version "' "$HOME/Downloads/qemu"
 grep -Rn '"KVM/Linux       "' "$HOME/Downloads/qemu"
 grep -Rn '"KVMKVMKVM\\0\\0\\0"' "$HOME/Downloads/qemu"
-grep -Rn '"BOCHS "' "$HOME/Downloads/qemu"
-grep -Rn '"BXPC    "' "$HOME/Downloads/qemu"
+grep -Rn 'ACPI_BUILD_APPNAME6 "BOCHS "' "$HOME/Downloads/qemu"
+grep -Rn 'ACPI_BUILD_APPNAME8 "BXPC    "' "$HOME/Downloads/qemu"
 grep -Rn '\[STR_SERIALNUMBER\]' "$HOME/Downloads/qemu"
 
 git diff > qemu8.2.1.patch
