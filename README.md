@@ -163,6 +163,7 @@ XXXX-XX-XX XX:XX:XX.XXX-XXXX [BROWSER LOCK] [INFO] Number of display devices con
 - hdcpSupported
 - multiMonitorAllowedForensic
 - multipleMonitorDetectConfig
+- runningOnVM
 - usbDetectConfig
 - vmAllowedForensic
 - vmDetectConfig
