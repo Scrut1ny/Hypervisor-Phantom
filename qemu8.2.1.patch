@@ -82,7 +82,7 @@ index 35aff46..c688bfe 100644
      w += 6;
  
 diff --git a/hw/arm/sbsa-ref.c b/hw/arm/sbsa-ref.c
-index f3c9704..06b9e23 100644
+index f3c9704..69a426a 100644
 --- a/hw/arm/sbsa-ref.c
 +++ b/hw/arm/sbsa-ref.c
 @@ -900,7 +900,7 @@ static void sbsa_ref_class_init(ObjectClass *oc, void *data)
@@ -90,7 +90,7 @@ index f3c9704..06b9e23 100644
  
      mc->init = sbsa_ref_init;
 -    mc->desc = "QEMU 'SBSA Reference' ARM Virtual Machine";
-+    mc->desc = "MSI 'SBSA Reference' ARM Machine";
++    mc->desc = "MSI 'SBSA Reference' ARM Real Machine";
      mc->default_cpu_type = ARM_CPU_TYPE_NAME("neoverse-n1");
      mc->max_cpus = 512;
      mc->pci_allow_0_address = true;
@@ -108,7 +108,7 @@ index 8bc35a4..34905d8 100644
      aml_append(dev, aml_name_decl("_STA", aml_int(0xB)));
      aml_append(dev, aml_name_decl("_CCA", aml_int(1)));
 diff --git a/hw/arm/virt.c b/hw/arm/virt.c
-index be2856c..df76204 100644
+index be2856c..1b08326 100644
 --- a/hw/arm/virt.c
 +++ b/hw/arm/virt.c
 @@ -88,7 +88,7 @@
@@ -116,7 +116,7 @@ index be2856c..df76204 100644
          MachineClass *mc = MACHINE_CLASS(oc); \
          virt_machine_##major##_##minor##_options(mc); \
 -        mc->desc = "QEMU " # major "." # minor " ARM Virtual Machine"; \
-+        mc->desc = "QEMU " # major "." # minor " ARM Machine"; \
++        mc->desc = "MSI  " # major "." # minor " ARM Real Machine"; \
          if (latest) { \
              mc->alias = "virt"; \
          } \
@@ -125,15 +125,15 @@ index be2856c..df76204 100644
      size_t smbios_tables_len, smbios_anchor_len;
      struct smbios_phys_mem_area mem_array;
 -    const char *product = "QEMU Virtual Machine";
-+    const char *product = "AMD Machine";
++    const char *product = "MSI Real Machine";
  
      if (kvm_enabled()) {
 -        product = "KVM Virtual Machine";
-+        product = "AMD Real Machine";
++        product = "MSI Real Machine";
      }
  
 -    smbios_set_defaults("QEMU", product,
-+    smbios_set_defaults("AMD", product,
++    smbios_set_defaults("MSI", product,
                          vmc->smbios_old_sys_ver ? "1.0" : mc->name, false,
                          true, SMBIOS_ENTRY_POINT_TYPE_64);
  
@@ -168,7 +168,7 @@ index 7362daa..6aa2d02 100644
      /* device present, functioning, decoding, not shown in UI */
      aml_append(dev, aml_name_decl("_STA", aml_int(0xB)));
 diff --git a/hw/i386/pc.c b/hw/i386/pc.c
-index 29b9964..433471c 100644
+index 29b9964..4dc43c6 100644
 --- a/hw/i386/pc.c
 +++ b/hw/i386/pc.c
 @@ -74,9 +74,9 @@
@@ -178,9 +178,9 @@ index 29b9964..433471c 100644
 -    { "qemu32-" TYPE_X86_CPU, "model-id", "QEMU Virtual CPU version " v, },\
 -    { "qemu64-" TYPE_X86_CPU, "model-id", "QEMU Virtual CPU version " v, },\
 -    { "athlon-" TYPE_X86_CPU, "model-id", "QEMU Virtual CPU version " v, },
-+    { "MSI32-" TYPE_X86_CPU, "model-id", "CPU version " v, },\
-+    { "MSI64-" TYPE_X86_CPU, "model-id", "CPU version " v, },\
-+    { "athlon-" TYPE_X86_CPU, "model-id", "CPU version " v, },
++    { "AMD32-" TYPE_X86_CPU, "model-id", "AMD Real CPU version " v, },\
++    { "AMD64-" TYPE_X86_CPU, "model-id", "AMD Real CPU version " v, },\
++    { "athlon-" TYPE_X86_CPU, "model-id", "AMD Real CPU version " v, },
  
  GlobalProperty pc_compat_8_1[] = {};
  const size_t pc_compat_8_1_len = G_N_ELEMENTS(pc_compat_8_1);
@@ -191,9 +191,9 @@ index 29b9964..433471c 100644
 -    { "qemu64" "-" TYPE_X86_CPU, "family", "6" },
 -    { "qemu64" "-" TYPE_X86_CPU, "model", "6" },
 -    { "qemu64" "-" TYPE_X86_CPU, "stepping", "3" },
-+    { "MSI64" "-" TYPE_X86_CPU, "family", "6" },
-+    { "MSI64" "-" TYPE_X86_CPU, "model", "6" },
-+    { "MSI64" "-" TYPE_X86_CPU, "stepping", "3" },
++    { "AMD64" "-" TYPE_X86_CPU, "family", "6" },
++    { "AMD64" "-" TYPE_X86_CPU, "model", "6" },
++    { "AMD64" "-" TYPE_X86_CPU, "stepping", "3" },
      { TYPE_X86_CPU, "x-vendor-cpuid-only", "off" },
      { "ICH9-LPC", ACPI_PM_PROP_ACPI_PCIHP_BRIDGE, "off" },
      { "ICH9-LPC", "x-keep-pci-slot-hpc", "true" },
@@ -205,10 +205,10 @@ index 29b9964..433471c 100644
 -    { "qemu64" "-" TYPE_X86_CPU, "abm", "on" },
 -    { "qemu64" "-" TYPE_X86_CPU, "popcnt", "on" },
 -    { "qemu32" "-" TYPE_X86_CPU, "popcnt", "on" },
-+    { "MSI64" "-" TYPE_X86_CPU, "sse4a", "on" },
-+    { "MSI64" "-" TYPE_X86_CPU, "abm", "on" },
-+    { "MSI64" "-" TYPE_X86_CPU, "popcnt", "on" },
-+    { "MSI32" "-" TYPE_X86_CPU, "popcnt", "on" },
++    { "AMD64" "-" TYPE_X86_CPU, "sse4a", "on" },
++    { "AMD64" "-" TYPE_X86_CPU, "abm", "on" },
++    { "AMD64" "-" TYPE_X86_CPU, "popcnt", "on" },
++    { "AMD32" "-" TYPE_X86_CPU, "popcnt", "on" },
      { "Opteron_G2" "-" TYPE_X86_CPU, "rdtscp", "on" },
      { "Opteron_G3" "-" TYPE_X86_CPU, "rdtscp", "on" },
      { "Opteron_G4" "-" TYPE_X86_CPU, "rdtscp", "on" },
@@ -217,7 +217,7 @@ index 29b9964..433471c 100644
      PC_CPU_MODEL_IDS("2.3.0")
      { TYPE_X86_CPU, "arat", "off" },
 -    { "qemu64" "-" TYPE_X86_CPU, "min-level", "4" },
-+    { "MSI64" "-" TYPE_X86_CPU, "min-level", "4" },
++    { "AMD64" "-" TYPE_X86_CPU, "min-level", "4" },
      { "kvm64" "-" TYPE_X86_CPU, "min-level", "5" },
      { "pentium3" "-" TYPE_X86_CPU, "min-level", "2" },
      { "n270" "-" TYPE_X86_CPU, "min-level", "5" },
@@ -408,7 +408,7 @@ index 950506f..25d7177 100644
      return &s->chip;
  }
 diff --git a/hw/input/virtio-input-hid.c b/hw/input/virtio-input-hid.c
-index 45e4d4c..1bf74df 100644
+index 45e4d4c..1e898e4 100644
 --- a/hw/input/virtio-input-hid.c
 +++ b/hw/input/virtio-input-hid.c
 @@ -16,10 +16,10 @@
@@ -419,15 +419,15 @@ index 45e4d4c..1bf74df 100644
 -#define VIRTIO_ID_NAME_MOUSE        "QEMU Virtio Mouse"
 -#define VIRTIO_ID_NAME_TABLET       "QEMU Virtio Tablet"
 -#define VIRTIO_ID_NAME_MULTITOUCH   "QEMU Virtio MultiTouch"
-+#define VIRTIO_ID_NAME_KEYBOARD     "Virtio Keyboard"
-+#define VIRTIO_ID_NAME_MOUSE        "Virtio Mouse"
-+#define VIRTIO_ID_NAME_TABLET       "Virtio Tablet"
-+#define VIRTIO_ID_NAME_MULTITOUCH   "Virtio MultiTouch"
++#define VIRTIO_ID_NAME_KEYBOARD     "Keyboard"
++#define VIRTIO_ID_NAME_MOUSE        "Mouse"
++#define VIRTIO_ID_NAME_TABLET       "Tablet"
++#define VIRTIO_ID_NAME_MULTITOUCH   "MultiTouch"
  
  /* ----------------------------------------------------------------- */
  
 diff --git a/hw/loongarch/virt.c b/hw/loongarch/virt.c
-index 4b7dc67..8e87b3a 100644
+index 4b7dc67..578352e 100644
 --- a/hw/loongarch/virt.c
 +++ b/hw/loongarch/virt.c
 @@ -314,13 +314,13 @@ static void virt_build_smbios(LoongArchMachineState *lams)
@@ -435,19 +435,19 @@ index 4b7dc67..8e87b3a 100644
      uint8_t *smbios_tables, *smbios_anchor;
      size_t smbios_tables_len, smbios_anchor_len;
 -    const char *product = "QEMU Virtual Machine";
-+    const char *product = "MSI Real Machine";
++    const char *product = "AMD Real Machine";
  
      if (!lams->fw_cfg) {
          return;
      }
  
 -    smbios_set_defaults("QEMU", product, mc->name, false,
-+    smbios_set_defaults("MSI", product, mc->name, false,
++    smbios_set_defaults("AMD", product, mc->name, false,
                          true, SMBIOS_ENTRY_POINT_TYPE_64);
  
      smbios_get_tables(ms, NULL, 0, &smbios_tables, &smbios_tables_len,
 diff --git a/hw/m68k/virt.c b/hw/m68k/virt.c
-index 2e49e26..86bc2c2 100644
+index 2e49e26..3eedb77 100644
 --- a/hw/m68k/virt.c
 +++ b/hw/m68k/virt.c
 @@ -301,7 +301,7 @@ static void virt_init(MachineState *machine)
@@ -455,7 +455,7 @@ index 2e49e26..86bc2c2 100644
  {
      MachineClass *mc = MACHINE_CLASS(oc);
 -    mc->desc = "QEMU M68K Virtual Machine";
-+    mc->desc = "MSI M68K Machine";
++    mc->desc = "AMD M68K Real Machine";
      mc->init = virt_init;
      mc->default_cpu_type = M68K_CPU_TYPE_NAME("m68040");
      mc->max_cpus = 1;
@@ -464,7 +464,7 @@ index 2e49e26..86bc2c2 100644
          MachineClass *mc = MACHINE_CLASS(oc); \
          virt_machine_##major##_##minor##_options(mc); \
 -        mc->desc = "QEMU " # major "." # minor " M68K Virtual Machine"; \
-+        mc->desc = "MSI " # major "." # minor " M68K Machine"; \
++        mc->desc = "AMD  " # major "." # minor " M68K Real Machine"; \
          if (latest) { \
              mc->alias = "virt"; \
          } \
@@ -995,7 +995,7 @@ index ff2a310..690a610 100644
  #define ACPI_BUILD_TABLE_FILE "etc/acpi/tables"
  #define ACPI_BUILD_RSDP_FILE "etc/acpi/rsdp"
 diff --git a/target/i386/cpu.c b/target/i386/cpu.c
-index cd16cb8..9398945 100644
+index cd16cb8..187694d 100644
 --- a/target/i386/cpu.c
 +++ b/target/i386/cpu.c
 @@ -2209,7 +2209,7 @@ static const X86CPUDefinition builtin_x86_defs[] = {
@@ -1003,25 +1003,43 @@ index cd16cb8..9398945 100644
              CPUID_EXT3_LAHF_LM | CPUID_EXT3_SVM,
          .xlevel = 0x8000000A,
 -        .model_id = "QEMU Virtual CPU version " QEMU_HW_VERSION,
-+        .model_id = "CPU version " QEMU_HW_VERSION,
++        .model_id = "AMD Real CPU version " QEMU_HW_VERSION,
      },
      {
          .name = "phenom",
+@@ -2324,7 +2324,7 @@ static const X86CPUDefinition builtin_x86_defs[] = {
+              VMX_CPU_BASED_UNCOND_IO_EXITING | VMX_CPU_BASED_USE_IO_BITMAPS |
+              VMX_CPU_BASED_MONITOR_EXITING | VMX_CPU_BASED_PAUSE_EXITING,
+         .xlevel = 0x80000008,
+-        .model_id = "Common KVM processor"
++        .model_id = "Common AMD processor"
+     },
+     {
+         .name = "qemu32",
 @@ -2338,7 +2338,7 @@ static const X86CPUDefinition builtin_x86_defs[] = {
          .features[FEAT_1_ECX] =
              CPUID_EXT_SSE3,
          .xlevel = 0x80000004,
 -        .model_id = "QEMU Virtual CPU version " QEMU_HW_VERSION,
-+        .model_id = "CPU version " QEMU_HW_VERSION,
++        .model_id = "AMD Real CPU version " QEMU_HW_VERSION,
      },
      {
          .name = "kvm32",
+@@ -2368,7 +2368,7 @@ static const X86CPUDefinition builtin_x86_defs[] = {
+              VMX_CPU_BASED_USE_IO_BITMAPS | VMX_CPU_BASED_MONITOR_EXITING |
+              VMX_CPU_BASED_PAUSE_EXITING | VMX_CPU_BASED_USE_MSR_BITMAPS,
+         .xlevel = 0x80000008,
+-        .model_id = "Common 32-bit KVM processor"
++        .model_id = "Common 32-bit AMD processor"
+     },
+     {
+         .name = "coreduo",
 @@ -2464,7 +2464,7 @@ static const X86CPUDefinition builtin_x86_defs[] = {
          .features[FEAT_8000_0001_EDX] =
              CPUID_EXT2_MMXEXT | CPUID_EXT2_3DNOW | CPUID_EXT2_3DNOWEXT,
          .xlevel = 0x80000008,
 -        .model_id = "QEMU Virtual CPU version " QEMU_HW_VERSION,
-+        .model_id = "CPU version " QEMU_HW_VERSION,
++        .model_id = "AMD Real CPU version " QEMU_HW_VERSION,
      },
      {
          .name = "n270",
@@ -1034,6 +1052,15 @@ index cd16cb8..9398945 100644
                              &error_abort);
  }
  
+@@ -7189,7 +7189,7 @@ static void x86_cpu_hyperv_realize(X86CPU *cpu)
+ 
+     /* Hyper-V vendor id */
+     if (!cpu->hyperv_vendor) {
+-        object_property_set_str(OBJECT(cpu), "hv-vendor-id", "Microsoft Hv",
++        object_property_set_str(OBJECT(cpu), "hv-vendor-id", "AuthenticAMD",
+                                 &error_abort);
+     }
+     len = strlen(cpu->hyperv_vendor);
 diff --git a/target/i386/kvm/kvm.c b/target/i386/kvm/kvm.c
 index 4ce8055..20678c7 100644
 --- a/target/i386/kvm/kvm.c
