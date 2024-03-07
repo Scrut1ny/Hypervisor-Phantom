@@ -82,7 +82,7 @@ index 35aff46..c688bfe 100644
      w += 6;
  
 diff --git a/hw/arm/sbsa-ref.c b/hw/arm/sbsa-ref.c
-index f3c9704..69a426a 100644
+index f3c9704..06b9e23 100644
 --- a/hw/arm/sbsa-ref.c
 +++ b/hw/arm/sbsa-ref.c
 @@ -900,7 +900,7 @@ static void sbsa_ref_class_init(ObjectClass *oc, void *data)
@@ -90,7 +90,7 @@ index f3c9704..69a426a 100644
  
      mc->init = sbsa_ref_init;
 -    mc->desc = "QEMU 'SBSA Reference' ARM Virtual Machine";
-+    mc->desc = "MSI 'SBSA Reference' ARM Real Machine";
++    mc->desc = "MSI 'SBSA Reference' ARM Machine";
      mc->default_cpu_type = ARM_CPU_TYPE_NAME("neoverse-n1");
      mc->max_cpus = 512;
      mc->pci_allow_0_address = true;
@@ -108,7 +108,7 @@ index 8bc35a4..34905d8 100644
      aml_append(dev, aml_name_decl("_STA", aml_int(0xB)));
      aml_append(dev, aml_name_decl("_CCA", aml_int(1)));
 diff --git a/hw/arm/virt.c b/hw/arm/virt.c
-index be2856c..1b08326 100644
+index be2856c..ec9c196 100644
 --- a/hw/arm/virt.c
 +++ b/hw/arm/virt.c
 @@ -88,7 +88,7 @@
@@ -116,7 +116,7 @@ index be2856c..1b08326 100644
          MachineClass *mc = MACHINE_CLASS(oc); \
          virt_machine_##major##_##minor##_options(mc); \
 -        mc->desc = "QEMU " # major "." # minor " ARM Virtual Machine"; \
-+        mc->desc = "MSI  " # major "." # minor " ARM Real Machine"; \
++        mc->desc = "MSI  " # major "." # minor " ARM Machine"; \
          if (latest) { \
              mc->alias = "virt"; \
          } \
@@ -125,11 +125,11 @@ index be2856c..1b08326 100644
      size_t smbios_tables_len, smbios_anchor_len;
      struct smbios_phys_mem_area mem_array;
 -    const char *product = "QEMU Virtual Machine";
-+    const char *product = "MSI Real Machine";
++    const char *product = "MSI Machine";
  
      if (kvm_enabled()) {
 -        product = "KVM Virtual Machine";
-+        product = "MSI Real Machine";
++        product = "MSI Machine";
      }
  
 -    smbios_set_defaults("QEMU", product,
@@ -168,7 +168,7 @@ index 7362daa..6aa2d02 100644
      /* device present, functioning, decoding, not shown in UI */
      aml_append(dev, aml_name_decl("_STA", aml_int(0xB)));
 diff --git a/hw/i386/pc.c b/hw/i386/pc.c
-index 29b9964..4dc43c6 100644
+index 29b9964..709e8d8 100644
 --- a/hw/i386/pc.c
 +++ b/hw/i386/pc.c
 @@ -74,9 +74,9 @@
@@ -178,9 +178,9 @@ index 29b9964..4dc43c6 100644
 -    { "qemu32-" TYPE_X86_CPU, "model-id", "QEMU Virtual CPU version " v, },\
 -    { "qemu64-" TYPE_X86_CPU, "model-id", "QEMU Virtual CPU version " v, },\
 -    { "athlon-" TYPE_X86_CPU, "model-id", "QEMU Virtual CPU version " v, },
-+    { "AMD32-" TYPE_X86_CPU, "model-id", "AMD Real CPU version " v, },\
-+    { "AMD64-" TYPE_X86_CPU, "model-id", "AMD Real CPU version " v, },\
-+    { "athlon-" TYPE_X86_CPU, "model-id", "AMD Real CPU version " v, },
++    { "AMD32-" TYPE_X86_CPU, "model-id", "AMD CPU version " v, },\
++    { "AMD64-" TYPE_X86_CPU, "model-id", "AMD CPU version " v, },\
++    { "athlon-" TYPE_X86_CPU, "model-id", "AMD CPU version " v, },
  
  GlobalProperty pc_compat_8_1[] = {};
  const size_t pc_compat_8_1_len = G_N_ELEMENTS(pc_compat_8_1);
@@ -427,7 +427,7 @@ index 45e4d4c..1e898e4 100644
  /* ----------------------------------------------------------------- */
  
 diff --git a/hw/loongarch/virt.c b/hw/loongarch/virt.c
-index 4b7dc67..578352e 100644
+index 4b7dc67..4e31b0b 100644
 --- a/hw/loongarch/virt.c
 +++ b/hw/loongarch/virt.c
 @@ -314,13 +314,13 @@ static void virt_build_smbios(LoongArchMachineState *lams)
@@ -435,7 +435,7 @@ index 4b7dc67..578352e 100644
      uint8_t *smbios_tables, *smbios_anchor;
      size_t smbios_tables_len, smbios_anchor_len;
 -    const char *product = "QEMU Virtual Machine";
-+    const char *product = "AMD Real Machine";
++    const char *product = "AMD Machine";
  
      if (!lams->fw_cfg) {
          return;
@@ -447,7 +447,7 @@ index 4b7dc67..578352e 100644
  
      smbios_get_tables(ms, NULL, 0, &smbios_tables, &smbios_tables_len,
 diff --git a/hw/m68k/virt.c b/hw/m68k/virt.c
-index 2e49e26..3eedb77 100644
+index 2e49e26..a82aec3 100644
 --- a/hw/m68k/virt.c
 +++ b/hw/m68k/virt.c
 @@ -301,7 +301,7 @@ static void virt_init(MachineState *machine)
@@ -455,7 +455,7 @@ index 2e49e26..3eedb77 100644
  {
      MachineClass *mc = MACHINE_CLASS(oc);
 -    mc->desc = "QEMU M68K Virtual Machine";
-+    mc->desc = "AMD M68K Real Machine";
++    mc->desc = "AMD M68K Machine";
      mc->init = virt_init;
      mc->default_cpu_type = M68K_CPU_TYPE_NAME("m68040");
      mc->max_cpus = 1;
@@ -464,7 +464,7 @@ index 2e49e26..3eedb77 100644
          MachineClass *mc = MACHINE_CLASS(oc); \
          virt_machine_##major##_##minor##_options(mc); \
 -        mc->desc = "QEMU " # major "." # minor " M68K Virtual Machine"; \
-+        mc->desc = "AMD  " # major "." # minor " M68K Real Machine"; \
++        mc->desc = "AMD  " # major "." # minor " M68K Machine"; \
          if (latest) { \
              mc->alias = "virt"; \
          } \
@@ -584,6 +584,19 @@ index 5bbbef6..3cdfdfa 100644
      info.partition_number = cpu_to_be32(0);
      info.mad_version = cpu_to_be32(1);
      info.os_type = cpu_to_be32(2);
+diff --git a/hw/smbios/smbios.c b/hw/smbios/smbios.c
+index 2a90601..083f841 100644
+--- a/hw/smbios/smbios.c
++++ b/hw/smbios/smbios.c
+@@ -615,7 +615,7 @@ static void smbios_build_type_0_table(void)
+ 
+     t->bios_characteristics = cpu_to_le64(0x08); /* Not supported */
+     t->bios_characteristics_extension_bytes[0] = 0;
+-    t->bios_characteristics_extension_bytes[1] = 0x14; /* TCD/SVVP | VM */
++    t->bios_characteristics_extension_bytes[1] = 0x08; /* TCD/SVVP | VM */
+     if (type0.uefi) {
+         t->bios_characteristics_extension_bytes[1] |= 0x08; /* |= UEFI */
+     }
 diff --git a/hw/ufs/lu.c b/hw/ufs/lu.c
 index 81bfff9..33dcea0 100644
 --- a/hw/ufs/lu.c
@@ -600,7 +613,7 @@ index 81bfff9..33dcea0 100644
  
      return SCSI_INQUIRY_LEN;
 diff --git a/hw/usb/canokey.c b/hw/usb/canokey.c
-index b306eeb..5858692 100644
+index b306eeb..84de9ab 100644
 --- a/hw/usb/canokey.c
 +++ b/hw/usb/canokey.c
 @@ -36,7 +36,7 @@ enum {
@@ -608,7 +621,7 @@ index b306eeb..5858692 100644
      [STR_MANUFACTURER]     = "canokeys.org",
      [STR_PRODUCT]          = "CanoKey QEMU",
 -    [STR_SERIALNUMBER]     = "0"
-+    [STR_SERIALNUMBER]     = "FCJ2QY972L"
++    [STR_SERIALNUMBER]     = "WJZ80LK9IX"
  };
  
  static const USBDescDevice desc_device_canokey = {
@@ -683,7 +696,7 @@ index bdd6d1f..ac67b0e 100644
      device_class_set_props(dc, usb_keyboard_properties);
      set_bit(DEVICE_CATEGORY_INPUT, dc->categories);
 diff --git a/hw/usb/dev-hub.c b/hw/usb/dev-hub.c
-index 5703e0e..6efee2e 100644
+index 5703e0e..8b2442f 100644
 --- a/hw/usb/dev-hub.c
 +++ b/hw/usb/dev-hub.c
 @@ -104,9 +104,9 @@ enum {
@@ -695,7 +708,7 @@ index 5703e0e..6efee2e 100644
 -    [STR_SERIALNUMBER] = "314159",
 +    [STR_MANUFACTURER] = "MSI",
 +    [STR_PRODUCT]      = "USB Hub",
-+    [STR_SERIALNUMBER] = "HLFES41M5R",
++    [STR_SERIALNUMBER] = "CYPMOHAX7I",
  };
  
  static const USBDescIface desc_iface_hub = {
@@ -709,7 +722,7 @@ index 5703e0e..6efee2e 100644
      uc->find_device    = usb_hub_find_device;
      uc->handle_reset   = usb_hub_handle_reset;
 diff --git a/hw/usb/dev-mtp.c b/hw/usb/dev-mtp.c
-index 1cac1cd..0c88b15 100644
+index 1cac1cd..80f85f7 100644
 --- a/hw/usb/dev-mtp.c
 +++ b/hw/usb/dev-mtp.c
 @@ -247,8 +247,8 @@ OBJECT_DECLARE_SIMPLE_TYPE(MTPState, USB_MTP)
@@ -728,7 +741,7 @@ index 1cac1cd..0c88b15 100644
      [STR_MANUFACTURER] = MTP_MANUFACTURER,
      [STR_PRODUCT]      = MTP_PRODUCT,
 -    [STR_SERIALNUMBER] = "34617",
-+    [STR_SERIALNUMBER] = "R23NI1BTDH",
++    [STR_SERIALNUMBER] = "U3T04YC1U0",
      [STR_MTP]          = "MTP",
      [STR_CONFIG_FULL]  = "Full speed config (usb 1.1)",
      [STR_CONFIG_HIGH]  = "High speed config (usb 2.0)",
@@ -789,7 +802,7 @@ index 2c33e36..6ac3f46 100644
      uc->handle_reset   = usb_net_handle_reset;
      uc->handle_control = usb_net_handle_control;
 diff --git a/hw/usb/dev-serial.c b/hw/usb/dev-serial.c
-index 63047d7..5faf24c 100644
+index 63047d7..e2522a3 100644
 --- a/hw/usb/dev-serial.c
 +++ b/hw/usb/dev-serial.c
 @@ -119,10 +119,10 @@ enum {
@@ -803,7 +816,7 @@ index 63047d7..5faf24c 100644
 +    [STR_MANUFACTURER]    = "MSI",
 +    [STR_PRODUCT_SERIAL]  = "USB SERIAL",
 +    [STR_PRODUCT_BRAILLE] = "USB BAUM BRAILLE",
-+    [STR_SERIALNUMBER]    = "O7L0CKYLL8",
++    [STR_SERIALNUMBER]    = "9JQFAHO1VK",
  };
  
  static const USBDescIface desc_iface0 = {
@@ -826,7 +839,7 @@ index 63047d7..5faf24c 100644
      device_class_set_props(dc, braille_properties);
  }
 diff --git a/hw/usb/dev-smartcard-reader.c b/hw/usb/dev-smartcard-reader.c
-index be0a4fc..1138c43 100644
+index be0a4fc..ba915a8 100644
 --- a/hw/usb/dev-smartcard-reader.c
 +++ b/hw/usb/dev-smartcard-reader.c
 @@ -80,8 +80,8 @@ OBJECT_DECLARE_SIMPLE_TYPE(USBCCIDState, USB_CCID_DEV)
@@ -849,7 +862,7 @@ index be0a4fc..1138c43 100644
 -    [STR_SERIALNUMBER]  = "1",
 +    [STR_MANUFACTURER]  = "MSI",
 +    [STR_PRODUCT]       = "MSI USB CCID",
-+    [STR_SERIALNUMBER]  = "JMR4DD1GP9",
++    [STR_SERIALNUMBER]  = "IB313F56DP",
      [STR_INTERFACE]     = "CCID Interface",
  };
  
@@ -863,7 +876,7 @@ index be0a4fc..1138c43 100644
      uc->handle_reset   = ccid_handle_reset;
      uc->handle_control = ccid_handle_control;
 diff --git a/hw/usb/dev-storage.c b/hw/usb/dev-storage.c
-index a496c81..6cd1ecc 100644
+index a496c81..078c13b 100644
 --- a/hw/usb/dev-storage.c
 +++ b/hw/usb/dev-storage.c
 @@ -47,9 +47,9 @@ enum {
@@ -875,7 +888,7 @@ index a496c81..6cd1ecc 100644
 -    [STR_SERIALNUMBER] = "1",
 +    [STR_MANUFACTURER] = "MSI",
 +    [STR_PRODUCT]      = "USB HARDDRIVE",
-+    [STR_SERIALNUMBER] = "32P7U9M3IM",
++    [STR_SERIALNUMBER] = "30S9AAI27I",
      [STR_CONFIG_FULL]  = "Full speed config (usb 1.1)",
      [STR_CONFIG_HIGH]  = "High speed config (usb 2.0)",
      [STR_CONFIG_SUPER] = "Super speed config (usb 3.0)",
@@ -889,7 +902,7 @@ index a496c81..6cd1ecc 100644
      uc->cancel_packet  = usb_msd_cancel_io;
      uc->handle_attach  = usb_desc_attach;
 diff --git a/hw/usb/dev-uas.c b/hw/usb/dev-uas.c
-index f013ded..8af4b0a 100644
+index f013ded..efe45bf 100644
 --- a/hw/usb/dev-uas.c
 +++ b/hw/usb/dev-uas.c
 @@ -171,9 +171,9 @@ enum {
@@ -900,12 +913,12 @@ index f013ded..8af4b0a 100644
 +    [STR_MANUFACTURER] = "MSI",
      [STR_PRODUCT]      = "USB Attached SCSI HBA",
 -    [STR_SERIALNUMBER] = "27842",
-+    [STR_SERIALNUMBER] = "DE952DSQV7",
++    [STR_SERIALNUMBER] = "T231G29DYR",
      [STR_CONFIG_HIGH]  = "High speed config (usb 2.0)",
      [STR_CONFIG_SUPER] = "Super speed config (usb 3.0)",
  };
 diff --git a/hw/usb/dev-wacom.c b/hw/usb/dev-wacom.c
-index 7177c17..f881cf2 100644
+index 7177c17..0d33636 100644
 --- a/hw/usb/dev-wacom.c
 +++ b/hw/usb/dev-wacom.c
 @@ -64,9 +64,9 @@ enum {
@@ -916,7 +929,7 @@ index 7177c17..f881cf2 100644
 +    [STR_MANUFACTURER]     = "MSI",
      [STR_PRODUCT]          = "Wacom PenPartner",
 -    [STR_SERIALNUMBER]     = "1",
-+    [STR_SERIALNUMBER]     = "GY4P2KZI3U",
++    [STR_SERIALNUMBER]     = "PZK830WZWW",
  };
  
  static const uint8_t qemu_wacom_hid_report_descriptor[] = {
@@ -983,7 +996,7 @@ index fc93429..f06e8ff 100644
      device_class_set_props(dc, u2f_passthru_properties);
      set_bit(DEVICE_CATEGORY_MISC, dc->categories);
 diff --git a/hw/usb/u2f.c b/hw/usb/u2f.c
-index 5600124..411108e 100644
+index 5600124..e310bad 100644
 --- a/hw/usb/u2f.c
 +++ b/hw/usb/u2f.c
 @@ -46,9 +46,9 @@ enum {
@@ -994,7 +1007,7 @@ index 5600124..411108e 100644
 +    [STR_MANUFACTURER]     = "MSI",
      [STR_PRODUCT]          = "U2F USB key",
 -    [STR_SERIALNUMBER]     = "0",
-+    [STR_SERIALNUMBER]     = "CON6ER79FK",
++    [STR_SERIALNUMBER]     = "CJ3BR1HWMW",
      [STR_CONFIG]           = "U2F key config",
      [STR_INTERFACE]        = "U2F key interface"
  };
@@ -1032,7 +1045,7 @@ index ff2a310..690a610 100644
  #define ACPI_BUILD_TABLE_FILE "etc/acpi/tables"
  #define ACPI_BUILD_RSDP_FILE "etc/acpi/rsdp"
 diff --git a/target/i386/cpu.c b/target/i386/cpu.c
-index cd16cb8..187694d 100644
+index cd16cb8..1dc89c1 100644
 --- a/target/i386/cpu.c
 +++ b/target/i386/cpu.c
 @@ -2209,7 +2209,7 @@ static const X86CPUDefinition builtin_x86_defs[] = {
@@ -1040,7 +1053,7 @@ index cd16cb8..187694d 100644
              CPUID_EXT3_LAHF_LM | CPUID_EXT3_SVM,
          .xlevel = 0x8000000A,
 -        .model_id = "QEMU Virtual CPU version " QEMU_HW_VERSION,
-+        .model_id = "AMD Real CPU version " QEMU_HW_VERSION,
++        .model_id = "AMD CPU version " QEMU_HW_VERSION,
      },
      {
          .name = "phenom",
@@ -1058,7 +1071,7 @@ index cd16cb8..187694d 100644
              CPUID_EXT_SSE3,
          .xlevel = 0x80000004,
 -        .model_id = "QEMU Virtual CPU version " QEMU_HW_VERSION,
-+        .model_id = "AMD Real CPU version " QEMU_HW_VERSION,
++        .model_id = "AMD CPU version " QEMU_HW_VERSION,
      },
      {
          .name = "kvm32",
@@ -1076,7 +1089,7 @@ index cd16cb8..187694d 100644
              CPUID_EXT2_MMXEXT | CPUID_EXT2_3DNOW | CPUID_EXT2_3DNOWEXT,
          .xlevel = 0x80000008,
 -        .model_id = "QEMU Virtual CPU version " QEMU_HW_VERSION,
-+        .model_id = "AMD Real CPU version " QEMU_HW_VERSION,
++        .model_id = "AMD CPU version " QEMU_HW_VERSION,
      },
      {
          .name = "n270",
