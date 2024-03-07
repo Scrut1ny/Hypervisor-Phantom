@@ -484,10 +484,10 @@ f /dev/shm/looking-glass 0660 user kvm -
 
 ### Granting Permissions 
 ```
-touch /dev/shm/looking-glass && chown user:kvm /dev/shm/looking-glass && chmod 660 /dev/shm/looking-glass
+touch /dev/shm/looking-glass && chown $USER:kvm /dev/shm/looking-glass && chmod 660 /dev/shm/looking-glass
 ```
 
-### Downloading/Build/Install LookingGlass
+### Download/Build/Install LookingGlass
 ```
 curl -sSL https://looking-glass.io/artifact/stable/source -o latest.tar.gz && tar -zxvf latest.tar.gz && rm -rf latest.tar.gz
 
