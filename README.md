@@ -454,6 +454,7 @@ lspci -k | grep -E "vfio-pci|NVIDIA"
 
 ## Looking Glass Setup Guide
 
+- [Client usage](https://looking-glass.io/docs/B6/usage/#)
 - *KVM (Kernel-based Virtual Machine) configured for VGA PCI Pass-through without an attached physical monitor, keyboard or mouse.*
 
 ### Add this to your .XML file in the devices section:
