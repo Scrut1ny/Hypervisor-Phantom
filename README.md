@@ -472,11 +472,11 @@ sudo apt update && sudo apt upgrade -y && sudo apt autoremove -y && sudo apt ins
 
 ### Downloading/Build/Install LookingGlass
 ```
-git clone --recursive https://github.com/gnif/LookingGlass.git
+curl -sSL https://looking-glass.io/artifact/stable/source -o latest.tar.gz && tar -zxvf latest.tar.gz && rm -rf latest.tar.gz
 
-cd LookingGlass/ && mkdir client/build && cd client/build && cmake ../ && make && sudo make install
+cd looking-glass-* && mkdir client/build && cd client/build && cmake ../ && make && sudo make install
 
-./looking-glass-client
+./looking-glass-client -s
 ```
 
 ### Create a new file
