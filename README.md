@@ -307,6 +307,34 @@ sudo mv -f qemu-system-x86_64 /bin
 ## QEMU RDTSC VM_Exit Kernal Patch
 * [RDTSC-KVM-Handler](https://github.com/Gyztor/kernel-rdtsc-patch)
 
+### Dependencies
+
+- Arch
+```
+sudo pacman -S base-devel bc coreutils cpio gettext initramfs kmod libelf ncurses pahole perl python rsync tar xz
+```
+
+- Debian
+```
+sudo apt install bc binutils bison dwarves flex gcc git gnupg2 gzip libelf-dev libncurses5-dev libssl-dev make openssl pahole perl-base rsync tar xz-utils
+```
+
+- Fedora
+```
+sudo dnf install binutils ncurses-devel \
+    /usr/include/{libelf.h,openssl/pkcs7.h} \
+    /usr/bin/{bc,bison,flex,gcc,git,gpg2,gzip,make,openssl,pahole,perl,rsync,tar,xz,zstd}
+```
+
+### Download latest Kernal release
+- [Linux Kernel Website](https://kernel.org/)
+- [Linux Kernal GitHub](https://github.com/torvalds/linux/tags)
+
+### Extracting the tarball
+```
+tar -xf linux-*.tar && cd linux-*/
+```
+
 ## PCIe Passthrough (Debian Guide)
 * [YT Guide #1](https://www.youtube.com/watch?v=g--fe8_kEcw)
 * [YT Guide #2](https://www.youtube.com/watch?v=KVDUs019IB8)
