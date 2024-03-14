@@ -200,7 +200,7 @@ Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
 - [Vbox Source Code](https://www.virtualbox.org/browser/vbox/trunk#src/VBox/Devices)
 - [Vbox Build Instructions](https://www.virtualbox.org/wiki/Linux%20build%20instructions)
 
-### Install Prerequisites (Debian)
+### Dependencies
 ```
 sudo apt update && sudo apt upgrade -y && sudo apt autoremove -y && sudo apt install -y acpica-tools chrpath doxygen g++-multilib libasound2-dev libcap-dev libcurl4-openssl-dev libdevmapper-dev libidl-dev libopus-dev libpam0g-dev libpulse-dev libqt5opengl5-dev libqt5x11extras5-dev qttools5-dev libsdl1.2-dev libsdl-ttf2.0-dev libssl-dev libvpx-dev libxcursor-dev libxinerama-dev libxml2-dev libxml2-utils libxmu-dev libxrandr-dev make nasm python3-dev python-dev qttools5-dev-tools texlive texlive-fonts-extra texlive-latex-extra unzip xsltproc default-jdk libstdc++5 libxslt1-dev linux-kernel-headers makeself mesa-common-dev subversion yasm zlib1g-dev glslang-tools ia32-libs libc6-dev-i386 lib32gcc1 lib32stdc++6
 ```
@@ -272,7 +272,7 @@ virt-manager
 ## QEMU Strings Patch [smbios, ACPI Tables, USB, etc...]
 * [qemu-patch-bypass](https://github.com/zhaodice/qemu-anti-detection)
 
-### Installing Prerequisites (Debian)
+### Dependencies
 ```
 sudo apt update && sudo apt upgrade -y && sudo apt autoremove -y && sudo apt install -y binutils-mingw-w64 binutils-mingw-w64-i686 binutils-mingw-w64-x86-64 build-essential clang g++-mingw-w64 g++-mingw-w64-i686 g++-mingw-w64-x86-64 gcc-mingw-w64 gcc-mingw-w64-i686 gcc-mingw-w64-x86-64 git git-email gnutls-bin libaio-dev libbluetooth-dev libbrlapi-dev libbz2-dev libcacard-dev libcap-dev libcap-ng-dev libcurl4-gnutls-dev libfdt-dev libglib2.0-dev libgtk-3-dev libibverbs-dev libiscsi-dev libjpeg8-dev liblzo2-dev libncurses5-dev libncursesw5-dev libnfs-dev libnuma-dev libpam0g-dev libpixman-1-dev librbd-dev librdmacm-dev libseccomp-dev libsnappy-dev libsasl2-dev libsdl1.2-dev libsdl2-dev libsdl2-image-dev libspice-protocol-dev libspice-server-dev libusb-1.0-0-dev libusb-dev libusbredirparser-dev libusbredirparser1 libvde-dev libvdeplug-dev libvirglrenderer-dev libvte-2.91-dev libxen-dev libxml2-dev libz-mingw-w64-dev libzstd-dev ninja-build valgrind win-iconv-mingw-w64-dev xfslibs-dev zlib1g-dev
 ```
@@ -494,7 +494,7 @@ lspci -k | grep -E "vfio-pci|NVIDIA"
 ```
 ![image](https://github.com/Scrut1ny/Hypervisor-Phantom/assets/53458032/c2400987-64fa-4a00-87c7-f2b6b6b4047f)
 
-### Installing Prerequisites
+### Dependencies
 ```
 sudo apt update && sudo apt upgrade -y && sudo apt autoremove -y && sudo apt install -y binutils-dev cmake fonts-dejavu-core libfontconfig-dev gcc g++ pkg-config libegl-dev libgl-dev libgles-dev libspice-protocol-dev nettle-dev libx11-dev libxcursor-dev libxi-dev libxinerama-dev libxpresent-dev libxss-dev libxkbcommon-dev libwayland-dev wayland-protocols libpipewire-0.3-dev libpulse-dev libsamplerate0-dev
 ```
