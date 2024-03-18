@@ -37,6 +37,8 @@
 <details>
 <summary>QEMU Anti Detection</summary>
 
+* [areweanticheatyet](https://areweanticheatyet.com/)
+
 | Type | Engine | Bypassed |
 |-|-|-|
 | **Anti-Cheat** | Anti Cheat Expert(ACE) | ✅ |
