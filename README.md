@@ -31,6 +31,8 @@
 - DP or HDMI (Male) to VGA (Female) Adapter <---> VGA (Male) to DP or HDMI (Male) Adapter
     - [#1](https://www.amazon.com/dp/B01GPMRYNM)
     - [#2](https://www.amazon.com/dp/B083P358V6)
+- Video Capture Card
+    - [#1](https://www.amazon.com/dp/B0C2MDTY8P)
 
 </details>
 
