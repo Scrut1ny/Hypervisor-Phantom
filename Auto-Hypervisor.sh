@@ -39,7 +39,7 @@ function configs() {
     case "$cpu_vendor" in
         AuthenticAMD) iommu_setting="amd_iommu=on";;
         GenuineIntel) iommu_setting="intel_iommu=on";;
-        *) echo "  [\!] Warning: Unknown CPU vendor."
+        *) echo "  [!] Warning: Unknown CPU vendor."
            return 1;;
     esac
 
@@ -67,7 +67,7 @@ function configs() {
             sudo mkinitcpio -P > /dev/null 2>&1
             ;;
         *)
-            clear && echo -e "\n  [\!] Distribution not recognized or not supported by this script."
+            clear && echo -e "\n  [!] Distribution not recognized or not supported by this script."
             return 1
             ;;
     esac
@@ -88,16 +88,16 @@ function QEMU() {
             ;;
         Fedora)
             # Dependencies & Prerequisites
-            echo "  [\!] Distribution not supported yet, in progress."
+            echo "  [!] Distribution not supported yet, in progress."
             # yum install virt-manager
             ;;
         Arch)
             # Dependencies & Prerequisites
-            echo "  [\!] Distribution not supported yet, in progress."
+            echo "  [!] Distribution not supported yet, in progress."
             # sudo pacman -S virt-manager
             ;;
         *)
-            echo "  [\!] Distribution not recognized or not supported by this script."
+            echo "  [!] Distribution not recognized or not supported by this script."
             return 1
             ;;
     esac
@@ -124,7 +124,7 @@ function QEMU() {
     cd .. && sudo rm -rf qemu qemu_build
 
     # Message
-    echo -e "\n  [\!] Logout for changes to take effect.\n"
+    echo -e "\n  [!] Logout for changes to take effect.\n"
 }
 
 
@@ -144,6 +144,10 @@ function Looking_Glass() {
             # Build & Install LG
             echo -e "\n  [+] Building & Installing Looking Glass\n"
             cd looking-glass-* && mkdir client/build && cd client/build && cmake ../ && make -j $(nproc) && sudo make install
+
+            # Cleanup
+            echo -e "\n  [+] Cleaning up\n"
+            cd ../../../ && sudo rm -rf looking-glass-*
 
             # Make & configure LG config file
             echo -e "\n  [+] Creating '10-looking-glass.conf'\n"
@@ -173,9 +177,9 @@ alias lg='if [ ! -e /dev/shm/looking-glass ]; then \
     touch /dev/shm/looking-glass; \
     sudo chown $USER:kvm /dev/shm/looking-glass; \
     chmod 660 /dev/shm/looking-glass; \
-    echo -e "  [+] Looking Glass shared memory setup completed."; \
+    /usr/local/bin/looking-glass-client; \
 else \
-    echo -e "  [*] /dev/shm/looking-glass already exists."; \
+    /usr/local/bin/looking-glass-client; \
 fi'
 
 EOF
@@ -191,15 +195,18 @@ EOF
 
             # Apply bashrc changes
             source ~/.bashrc
+
+            # Message for user
+            echo -e "\n  [!] A new bashrc entry was made for launching Looking Glass.\n       Just type 'lg' in the terminal.\n"
             ;;
         Fedora)
-            echo -e "\n  [\!] Distribution not supported yet, in progress."
+            echo -e "\n  [!] Distribution not supported yet, in progress."
             ;;
         Arch)
-            echo -e "\n  [\!] Distribution not supported yet, in progress."
+            echo -e "\n  [!] Distribution not supported yet, in progress."
             ;;
         *)
-            echo -e "\n  [\!] Distribution not recognized or not supported by this script."
+            echo -e "\n  [!] Distribution not recognized or not supported by this script."
             return 1
             ;;
     esac
@@ -220,7 +227,7 @@ system_check() {
         echo -e "\n  Distro Detected: \033[32mArch\033[0m\n  ---------------------------"
         distro="Arch"
     else
-        echo -e "\n  [\!] Your distribution is not specifically supported by this script."
+        echo -e "\n  [!] Your distribution is not specifically supported by this script."
     fi
 
     echo -e "  CPU(s): \033[32m$(LC_ALL=C lscpu | awk '/^CPU\(s\):/ {print $2}')\033[0m"
@@ -233,7 +240,7 @@ system_check() {
     virtualization_status=$(LC_ALL=C lscpu | grep 'Virtualization' | awk '{print $2}')
 
     if [ -z "$virtualization_status" ]; then
-        echo -e "  [\!] Virtualization: \033[31mNot enabled. Please go to the UEFI/BIOS settings and enable Virtualization!\033[0m"
+        echo -e "  [!] Virtualization: \033[31mNot enabled. Please go to the UEFI/BIOS settings and enable Virtualization!\033[0m"
     else
         echo -e "  Virtualization: \033[32m$virtualization_status\033[0m"
     fi
@@ -262,7 +269,7 @@ menu() {
                 clear && QEMU
                 ;;
             3)
-                clear && echo -e "\n  [\!] Not supported yet, in progress."
+                clear && echo -e "\n  [!] Not supported yet, in progress."
                 ;;
             4)
                 clear && Looking_Glass
