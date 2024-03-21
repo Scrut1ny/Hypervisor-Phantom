@@ -19,7 +19,7 @@
 </details>
 
 <details>
-<summary>Bypassing HDCP (High-bandwidth Digital Content Protection)</summary>
+<summary>Bypassing HDCP</summary>
 
 - [HDCP Versions](https://en.wikipedia.org/wiki/High-bandwidth_Digital_Content_Protection#Versions)
 
