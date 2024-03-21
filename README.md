@@ -564,6 +564,16 @@ cd looking-glass-* && mkdir client/build && cd client/build && cmake ../ && make
 
 </details>
 
+<details>
+<summary>Useful Software</summary>
+
+Linux:
+    - [NormCap](https://github.com/dynobo/normcap)
+Windows:
+    - [ShareX](https://github.com/ShareX/ShareX)
+
+</details>
+
 ## Spoofed Hardware/Firmware/Software Information
 <details>
 <summary>Expand - ⤵️</summary>
