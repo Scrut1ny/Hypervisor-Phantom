@@ -23,16 +23,23 @@
 
 - [HDCP Versions](https://en.wikipedia.org/wiki/High-bandwidth_Digital_Content_Protection#Versions)
 
-## Bypass Methods
+WORKING BYPASS METHOD AS OF 20240320:
+Isolated GPU --> HDMI Cable --> HDMI Splitter (Strips/Downgrades HDCP) --> HDMI Cable --> HDMI to USB Video Capture Device
+
+Amazon Product Links:
+[HDMI Splitter](https://www.amazon.com/dp/B004F9LVXC)
+[Video Capture Card](https://www.amazon.com/dp/B0C2MDTY8P)
+[x2 - HDMI Cable](https://www.amazon.com/dp/B07X37CG9V)
+
+## Equipment
 - HDMI Splitter 1 in 2 Out
-    - [#1](https://www.amazon.com/dp/B07VP37KMB)
-    - [#2](https://www.amazon.com/dp/B07TZRXKYG)
-    - [#3](https://www.amazon.com/dp/B08T62MKH1)
+    - [#1](https://www.amazon.com/dp/B004F9LVXC)
+    - [#2](https://www.amazon.com/dp/B07VP37KMB)
+    - [#3](https://www.amazon.com/dp/B07TZRXKYG)
+    - [#4](https://www.amazon.com/dp/B08T62MKH1)
 - DP or HDMI (Male) to VGA (Female) Adapter <---> VGA (Male) to DP or HDMI (Male) Adapter
     - [#1](https://www.amazon.com/dp/B01GPMRYNM)
     - [#2](https://www.amazon.com/dp/B083P358V6)
-- Video Capture Card
-    - [#1](https://www.amazon.com/dp/B0C2MDTY8P)
 
 </details>
 
