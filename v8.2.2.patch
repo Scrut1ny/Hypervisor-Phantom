@@ -469,7 +469,7 @@ index 2e49e26..a82aec3 100644
              mc->alias = "virt"; \
          } \
 diff --git a/hw/nvme/ctrl.c b/hw/nvme/ctrl.c
-index f026245..b4d13a7 100644
+index 76fe039..b786cb8 100644
 --- a/hw/nvme/ctrl.c
 +++ b/hw/nvme/ctrl.c
 @@ -8164,7 +8164,7 @@ static void nvme_init_ctrl(NvmeCtrl *n, PCIDevice *pci_dev)
@@ -495,7 +495,7 @@ index 7aa2f21..2671265 100644
  
      qemu_fdt_setprop(fdt, "/", "model", model, sizeof(model));
 diff --git a/hw/riscv/virt-acpi-build.c b/hw/riscv/virt-acpi-build.c
-index 7331248..1a60c15 100644
+index 171d56a..7aa0428 100644
 --- a/hw/riscv/virt-acpi-build.c
 +++ b/hw/riscv/virt-acpi-build.c
 @@ -100,7 +100,7 @@ static void acpi_dsdt_add_cpus(Aml *scope, RISCVVirtState *s)
@@ -585,10 +585,10 @@ index 5bbbef6..3cdfdfa 100644
      info.mad_version = cpu_to_be32(1);
      info.os_type = cpu_to_be32(2);
 diff --git a/hw/smbios/smbios.c b/hw/smbios/smbios.c
-index 2a90601..083f841 100644
+index 8a44d3f..d5cc63b 100644
 --- a/hw/smbios/smbios.c
 +++ b/hw/smbios/smbios.c
-@@ -615,7 +615,7 @@ static void smbios_build_type_0_table(void)
+@@ -627,7 +627,7 @@ static void smbios_build_type_0_table(void)
  
      t->bios_characteristics = cpu_to_le64(0x08); /* Not supported */
      t->bios_characteristics_extension_bytes[0] = 0;
@@ -1045,7 +1045,7 @@ index ff2a310..690a610 100644
  #define ACPI_BUILD_TABLE_FILE "etc/acpi/tables"
  #define ACPI_BUILD_RSDP_FILE "etc/acpi/rsdp"
 diff --git a/target/i386/cpu.c b/target/i386/cpu.c
-index cd16cb8..1dc89c1 100644
+index a66e5a3..d4a4d04 100644
 --- a/target/i386/cpu.c
 +++ b/target/i386/cpu.c
 @@ -2209,7 +2209,7 @@ static const X86CPUDefinition builtin_x86_defs[] = {
@@ -1102,7 +1102,7 @@ index cd16cb8..1dc89c1 100644
                              &error_abort);
  }
  
-@@ -7189,7 +7189,7 @@ static void x86_cpu_hyperv_realize(X86CPU *cpu)
+@@ -7191,7 +7191,7 @@ static void x86_cpu_hyperv_realize(X86CPU *cpu)
  
      /* Hyper-V vendor id */
      if (!cpu->hyperv_vendor) {
@@ -1112,7 +1112,7 @@ index cd16cb8..1dc89c1 100644
      }
      len = strlen(cpu->hyperv_vendor);
 diff --git a/target/i386/kvm/kvm.c b/target/i386/kvm/kvm.c
-index 4ce8055..20678c7 100644
+index a0bc9ea..4a63f30 100644
 --- a/target/i386/kvm/kvm.c
 +++ b/target/i386/kvm/kvm.c
 @@ -1855,7 +1855,7 @@ int kvm_arch_init_vcpu(CPUState *cs)
