@@ -26,10 +26,10 @@
 ## WORKING BYPASS METHOD AS OF 20240320:
 Isolated GPU --> HDMI Cable --> HDMI Splitter (Strips/Downgrades HDCP) --> HDMI Cable --> HDMI to USB Video Capture Device
 
-Amazon Product Links:
-[HDMI Splitter](https://www.amazon.com/dp/B004F9LVXC)
-[Video Capture Card](https://www.amazon.com/dp/B0C2MDTY8P)
-[x2 - HDMI Cable](https://www.amazon.com/dp/B07X37CG9V)
+## Amazon Product Links:
+- [HDMI Splitter](https://www.amazon.com/dp/B004F9LVXC)
+- [Video Capture Card](https://www.amazon.com/dp/B0C2MDTY8P)
+- [x2 - HDMI Cable](https://www.amazon.com/dp/B07X37CG9V)
 
 ## Equipment
 - HDMI Splitter 1 in 2 Out
