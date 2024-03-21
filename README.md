@@ -567,9 +567,9 @@ cd looking-glass-* && mkdir client/build && cd client/build && cmake ../ && make
 <details>
 <summary>Useful Software</summary>
 
-Linux:
+- Linux:
     - [NormCap](https://github.com/dynobo/normcap)
-Windows:
+- Windows:
     - [ShareX](https://github.com/ShareX/ShareX)
 
 </details>
