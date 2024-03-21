@@ -80,11 +80,11 @@ function QEMU() {
     case "${distro}" in
         Debian)
             # Dependencies & Prerequisites
-            echo -e "\n  [+] Installing QEMU Dependencies\n"
-            sudo apt install -y virt-manager libvirt-clients libvirt-daemon-system libvirt-daemon-config-network bridge-utils ovmf
+            echo -e "\n  [+] Installing QEMU Dependencies"
+            sudo apt install -y virt-manager libvirt-clients libvirt-daemon-system libvirt-daemon-config-network bridge-utils ovmf > /dev/null 2>&1
             sudo usermod -a -G kvm,libvirt $(whoami)
             sudo systemctl enable libvirtd && sudo systemctl start libvirtd
-            sudo virsh net-autostart default
+            sudo virsh net-autostart default > /dev/null 2>&1
             ;;
         Fedora)
             # Dependencies & Prerequisites
@@ -103,28 +103,30 @@ function QEMU() {
     esac
 
     # Downloading QEMU & Applying custom patch
-    echo -e "\n  [+] Downloading QEMU Source & Applying Custom Patch\n"
-    git clone --depth 1 --branch v8.2.1 --recursive https://gitlab.com/qemu-project/qemu.git > /dev/null 2>&1
-    cd qemu/ && curl https://raw.githubusercontent.com/Scrut1ny/Hypervisor-Phantom/main/qemu8.2.1.patch -o qemu8.2.1.patch && git apply qemu8.2.1.patch
+    echo -e "\n  [+] Downloading QEMU Source & Applying Custom Patch"
+    git clone --depth 1 --branch v8.2.2 --recursive https://gitlab.com/qemu-project/qemu.git > /dev/null 2>&1
+    cd qemu/ && curl https://raw.githubusercontent.com/Scrut1ny/Hypervisor-Phantom/main/v8.2.2.patch -o v8.2.2.patch > /dev/null 2>&1 && git apply v8.2.2.patch
 
     # Spoofing all serials numbers
     echo -e "\n  [+] Spoofing all serial numbers\n"
     find "$(pwd)/hw/usb" -type f -exec grep -l '\[STR_SERIALNUMBER\]' {} + | while IFS= read -r file; do
         NEW_SERIAL=$(tr -dc 'A-Z0-9' </dev/urandom | head -c 10)
         sed -i "s/\(\[STR_SERIALNUMBER\] *= *\"\)[^\"]*/\1$NEW_SERIAL/" "$file"
-        echo -e "\e[32m + Modified:\e[0m '$file' with new serial: \e[32m$NEW_SERIAL\e[0m"
+        echo -e "\e[32m  Modified:\e[0m '$file' with new serial: \e[32m$NEW_SERIAL\e[0m"
     done
 
     # Building & Installing QEMU
-    echo -e "\n  [+] Building & Installing QEMU\n"
-    cd .. && mkdir qemu_build && cd qemu_build && ../qemu/configure --target-list=x86_64-softmmu,x86_64-linux-user --prefix=/usr && make -j $(nproc) && sudo make install
+    echo -e "\n  [+] Building & Installing QEMU"
+    cd .. && mkdir qemu_build && cd qemu_build && ../qemu/configure --target-list=x86_64-softmmu,x86_64-linux-user --prefix=/usr > /dev/null 2>&1 && make -j $(nproc) > /dev/null 2>&1 && sudo make install
 
     # Cleanup
-    echo -e "\n  [+] Cleaning up\n"
+    echo -e "\n  [+] Cleaning up"
     cd .. && sudo rm -rf qemu qemu_build
 
     # Message
-    echo -e "\n  [!] Logout for changes to take effect.\n"
+    echo -e "\n  [!] Logout for changes to take effect."
+
+    read -p "Press enter to continue"
 }
 
 
@@ -177,9 +179,9 @@ alias lg='if [ ! -e /dev/shm/looking-glass ]; then \
     touch /dev/shm/looking-glass; \
     sudo chown $USER:kvm /dev/shm/looking-glass; \
     chmod 660 /dev/shm/looking-glass; \
-    /usr/local/bin/looking-glass-client; \
+    /usr/local/bin/looking-glass-client -S -K -1 -a; \
 else \
-    /usr/local/bin/looking-glass-client; \
+    /usr/local/bin/looking-glass-client -S -K -1 -a; \
 fi'
 
 EOF
