@@ -215,15 +215,15 @@ function Get-UpperRandomString {
 # Physical Drives (SATA/NVMe)
 foreach ($PortNumber in 0..9) {
     foreach ($BusNumber in 0..9) {
-		foreach ($LogicalUnitIdNumber in 0..9) {
-			$registryPath = "HKLM:\HARDWARE\DEVICEMAP\Scsi\Scsi Port $PortNumber\Scsi Bus $BusNumber\Target Id 0\Logical Unit Id $LogicalUnitIdNumber"
+	foreach ($LogicalUnitIdNumber in 0..9) {
+		$registryPath = "HKLM:\HARDWARE\DEVICEMAP\Scsi\Scsi Port $PortNumber\Scsi Bus $BusNumber\Target Id 0\Logical Unit Id $LogicalUnitIdNumber"
 
-			if (Test-Path -Path $registryPath) {
-				$NewString = Get-UpperRandomString
-				Set-ItemProperty -Path "$registryPath" -Name 'Identifier' -Type String -Value "NVMe    Samsung SSD 980 FXO7" -Force
-				Set-ItemProperty -Path "$registryPath" -Name 'SerialNumber' -Type String -Value "$NewString" -Force
-			}
+		if (Test-Path -Path $registryPath) {
+			$NewString = Get-UpperRandomString
+			Set-ItemProperty -Path "$registryPath" -Name 'Identifier' -Type String -Value "NVMe    Samsung SSD 980 FXO7" -Force
+			Set-ItemProperty -Path "$registryPath" -Name 'SerialNumber' -Type String -Value "$NewString" -Force
 		}
+	}
     }
 }
 
