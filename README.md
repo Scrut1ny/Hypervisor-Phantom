@@ -51,7 +51,7 @@ Isolated GPU --> HDMI Cable --> HDMI Splitter (Strips/Downgrades HDCP) --> HDMI 
 | Type | Engine | Bypassed |
 |-|-|-|
 | **Anti-Cheat** | Anti Cheat Expert(ACE) | ✅ |
-| **Anti-Cheat** | BattlEye (BE) | ✅ |
+| **Anti-Cheat** | BattlEye (BE) | ✅ (With RDTSC VM Force Exit Kernal Patch) |
 | **Anti-Cheat** | Easy Anti-Cheat(EAC) | ✅ |
 | **Anti-Cheat** | Gepard Shield | ✅ (With RDTSC VM Force Exit Kernal Patch) |
 | **Anti-Cheat** | Mhyprot | ✅ |
