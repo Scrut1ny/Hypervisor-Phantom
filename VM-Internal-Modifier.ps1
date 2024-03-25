@@ -169,27 +169,23 @@ Rename-Computer -NewName "DESKTOP-$RandomString" -Force *>$null
 # ==================================================
 
 
-# Generate random values for month, day, year, hour, minute, and second
-$month = Get-Random -Minimum 1 -Maximum 13
-$day = Get-Random -Minimum 1 -Maximum 32
-$year = Get-Random -Minimum 2011 -Maximum 2023
-$hour = Get-Random -Minimum 0 -Maximum 24
-$minute = Get-Random -Minimum 0 -Maximum 60
-$second = Get-Random -Minimum 0 -Maximum 60
-
-# Construct the DateTime object
-$dateTime = Get-Date -Year $year -Month $month -Day $day -Hour $hour -Minute $minute -Second $second
-
-# Convert the DateTime object to Unix timestamp and LDAP/FILETIME timestamp
-$unixTimestamp = [int]((Get-Date $dateTime).ToUniversalTime()-[datetime]'1970-01-01 00:00:00').TotalSeconds
-$LDAP_FILETIME_timestamp = ($unixTimestamp + 11644473600) * 10000000
-
-# Set the Custom Inputted Date & Time in the registry
 try {
-    Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion" -Name "InstallDate" -Value "$unixTimestamp" -Force
-    Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion" -Name "InstallTime" -Value "$LDAP_FILETIME_timestamp" -Force
+    # Generating a random date between Jan 1, 2011, and Dec 31, 2022
+    $start = [datetime]::new(2011, 1, 1)
+    $end = [datetime]::new(2022, 12, 31)
+    $randomDate = $start.AddSeconds((Get-Random -Maximum (($end - $start).TotalSeconds)))
+
+    # Converting the DateTime object to Unix timestamp
+    $unixTimestamp = [int][double]::Parse(($randomDate.ToUniversalTime() - [datetime]'1970-01-01T00:00:00').TotalSeconds)
+
+    # Calculating LDAP/FILETIME timestamp directly
+    $LDAP_FILETIME_timestamp = ($unixTimestamp + 11644473600) * 10000000
+
+    # Setting custom inputted Date & Time in the registry
+    Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion" -Name "InstallDate" -Value $unixTimestamp -Force
+    Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion" -Name "InstallTime" -Value $LDAP_FILETIME_timestamp -Force
 } catch {
-    Write-Error "  # Failed to set registry values: $_"
+    Write-Error "Failed to set registry values: $_"
 }
 
 
