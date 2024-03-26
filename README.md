@@ -637,7 +637,7 @@ cd looking-glass-* && mkdir client/build && cd client/build && cmake ../ && make
 ## Common Error Solutions
 
 <details>
-<summary>Unable to complete install: 'internal error: cannot load AppArmor profile 'libvirt-<UUID>''</summary>
+<summary>Unable to complete install: 'internal error: cannot load AppArmor profile '{UUID}''</summary>
 
 - Set security_driver = "none" in /etc/libvirt/qemu.conf
 
