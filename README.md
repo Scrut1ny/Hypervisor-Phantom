@@ -290,7 +290,7 @@ sudo apt update && sudo apt upgrade -y && sudo apt autoremove -y && sudo apt ins
 
 ### Make custom QEMU .patch file
 ```
-cd $HOME/Downloads && git clone --depth 1 --branch v8.2.1 --recursive https://gitlab.com/qemu-project/qemu.git && cd qemu/
+cd $HOME/Downloads && git clone --depth 1 --branch v8.2.2 --recursive https://gitlab.com/qemu-project/qemu.git && cd qemu/
 
 # Edit all compromised strings within the source code...
 grep -Rn '"QEMU ' "$HOME/Downloads/qemu"
@@ -303,14 +303,14 @@ grep -Rn 'ACPI_BUILD_APPNAME6 "BOCHS "' "$HOME/Downloads/qemu"
 grep -Rn 'ACPI_BUILD_APPNAME8 "BXPC    "' "$HOME/Downloads/qemu"
 grep -Rn '\[STR_SERIALNUMBER\]' "$HOME/Downloads/qemu"
 
-git diff > v8.2.1.patch
+git diff > v8.2.2.patch
 ```
 
 ### Downloading & Building QEMU w/patch
 ```
-cd $HOME/Downloads && git clone --depth 1 --branch v8.2.1 --recursive https://gitlab.com/qemu-project/qemu.git
+cd $HOME/Downloads && git clone --depth 1 --branch v8.2.2 --recursive https://gitlab.com/qemu-project/qemu.git
 
-cd qemu/ && git apply v8.2.1.patch && cd .. && mkdir qemu_build && cd qemu_build && ../qemu/configure --target-list=x86_64-softmmu,x86_64-linux-user --prefix=/usr && make -j $(nproc) && sudo make install
+cd qemu/ && git apply v8.2.2.patch && cd .. && mkdir qemu_build && cd qemu_build && ../qemu/configure --target-list=x86_64-softmmu,x86_64-linux-user --prefix=/usr && make -j $(nproc) && sudo make install
 
 sudo mv -f qemu-system-x86_64 /bin
 ```
