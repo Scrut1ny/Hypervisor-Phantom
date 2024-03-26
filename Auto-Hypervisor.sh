@@ -85,10 +85,10 @@ function QEMU() {
             # Dependencies & Prerequisites
             echo -e "\n  [+] Installing QEMU Dependencies"
             {
-                sudo apt install -y git virt-manager libvirt-clients libvirt-daemon-system libvirt-daemon-config-network bridge-utils ovmf > /dev/null 2>&1
+                sudo apt install -y git virt-manager libvirt-clients libvirt-daemon-system libvirt-daemon-config-network bridge-utils ovmf
                 sudo usermod -a -G kvm,libvirt $(whoami)
                 sudo systemctl enable libvirtd && sudo systemctl start libvirtd
-                sudo virsh net-autostart default > /dev/null 2>&1
+                sudo virsh net-autostart default
             } >/dev/null 2>&1
             ;;
         Fedora)
@@ -109,10 +109,12 @@ function QEMU() {
 
     # Downloading QEMU & Applying custom patch
     echo -e "\n  [+] Downloading QEMU Source"
-    git clone --depth 1 --branch v8.2.2 --recursive https://gitlab.com/qemu-project/qemu.git > /dev/null 2>&1
+    {
+        git clone --depth 1 --branch v8.2.2 --recursive https://gitlab.com/qemu-project/qemu.git
+        cd qemu/ && curl https://raw.githubusercontent.com/Scrut1ny/Hypervisor-Phantom/main/v8.2.2.patch -o v8.2.2.patch && git apply v8.2.2.patch
+    } >/dev/null 2>&1
     echo -e "\n  [+] Applying Custom QEMU Patch"
-    cd qemu/ && curl https://raw.githubusercontent.com/Scrut1ny/Hypervisor-Phantom/main/v8.2.2.patch -o v8.2.2.patch > /dev/null 2>&1 && git apply v8.2.2.patch
-
+    
     # Spoofing all serials numbers
     echo -e "\n  [+] Spoofing all serial numbers\n"
     find "$(pwd)/hw/usb" -type f -exec grep -l '\[STR_SERIALNUMBER\]' {} + | while IFS= read -r file; do
@@ -123,7 +125,9 @@ function QEMU() {
 
     # Building & Installing QEMU
     echo -e "\n  [+] Building & Installing QEMU"
-    cd .. && mkdir qemu_build && cd qemu_build && ../qemu/configure --target-list=x86_64-softmmu,x86_64-linux-user --prefix=/usr > /dev/null 2>&1 && make -j $(nproc) > /dev/null 2>&1 && sudo make install
+    {
+        cd .. && mkdir qemu_build && cd qemu_build && ../qemu/configure --target-list=x86_64-softmmu,x86_64-linux-user --prefix=/usr && make -j $(nproc) && sudo make install
+    } >/dev/null 2>&1
 
     # Cleanup
     echo -e "\n  [+] Cleaning up"
