@@ -71,6 +71,9 @@ function configs() {
             return 1
             ;;
     esac
+    
+    echo -e "\n  [!] REBOOT for changes to take effect."
+    echo -e "\n  [+] \033[0;32mDone\033[0m" && sleep 4
 }
 
 
@@ -81,10 +84,12 @@ function QEMU() {
         Debian)
             # Dependencies & Prerequisites
             echo -e "\n  [+] Installing QEMU Dependencies"
-            sudo apt install -y virt-manager libvirt-clients libvirt-daemon-system libvirt-daemon-config-network bridge-utils ovmf > /dev/null 2>&1
-            sudo usermod -a -G kvm,libvirt $(whoami)
-            sudo systemctl enable libvirtd && sudo systemctl start libvirtd
-            sudo virsh net-autostart default > /dev/null 2>&1
+            {
+                sudo apt install -y git virt-manager libvirt-clients libvirt-daemon-system libvirt-daemon-config-network bridge-utils ovmf > /dev/null 2>&1
+                sudo usermod -a -G kvm,libvirt $(whoami)
+                sudo systemctl enable libvirtd && sudo systemctl start libvirtd
+                sudo virsh net-autostart default > /dev/null 2>&1
+            } >/dev/null 2>&1
             ;;
         Fedora)
             # Dependencies & Prerequisites
@@ -103,8 +108,9 @@ function QEMU() {
     esac
 
     # Downloading QEMU & Applying custom patch
-    echo -e "\n  [+] Downloading QEMU Source & Applying Custom Patch"
+    echo -e "\n  [+] Downloading QEMU Source"
     git clone --depth 1 --branch v8.2.2 --recursive https://gitlab.com/qemu-project/qemu.git > /dev/null 2>&1
+    echo -e "\n  [+] Applying Custom QEMU Patch"
     cd qemu/ && curl https://raw.githubusercontent.com/Scrut1ny/Hypervisor-Phantom/main/v8.2.2.patch -o v8.2.2.patch > /dev/null 2>&1 && git apply v8.2.2.patch
 
     # Spoofing all serials numbers
@@ -125,8 +131,7 @@ function QEMU() {
 
     # Message
     echo -e "\n  [!] Logout for changes to take effect."
-
-    read -p "Press enter to continue"
+    echo -e "\n  [+] \033[0;32mDone\033[0m" && sleep 4
 }
 
 
@@ -137,41 +142,55 @@ function Looking_Glass() {
         Debian)
             # Dependencies
             echo -e "\n  [+] Installing Looking Glass Dependencies"
-            sudo apt install -y binutils-dev cmake fonts-dejavu-core libfontconfig-dev gcc g++ pkg-config libegl-dev libgl-dev libgles-dev libspice-protocol-dev nettle-dev libx11-dev libxcursor-dev libxi-dev libxinerama-dev libxpresent-dev libxss-dev libxkbcommon-dev libwayland-dev wayland-protocols libpipewire-0.3-dev libpulse-dev libsamplerate0-dev
+            {
+                sudo apt install -y binutils-dev cmake fonts-dejavu-core libfontconfig-dev gcc g++ pkg-config libegl-dev libgl-dev libgles-dev libspice-protocol-dev nettle-dev libx11-dev libxcursor-dev libxi-dev libxinerama-dev libxpresent-dev libxss-dev libxkbcommon-dev libwayland-dev wayland-protocols libpipewire-0.3-dev libpulse-dev libsamplerate0-dev > /dev/null 2>&1
+            } >/dev/null 2>&1
+            ;;
+        Fedora)
+            echo -e "\n  [!] Distribution not supported yet, in progress."
+            ;;
+        Arch)
+            echo -e "\n  [!] Distribution not supported yet, in progress."
+            ;;
+        *)
+            echo -e "\n  [!] Distribution not recognized or not supported by this script."
+            return 1
+            ;;
+    esac
+    
+    # Download Latest LG Version
+    echo -e "\n  [+] Installing Looking Glass"
+    {
+        curl -sSL https://looking-glass.io/artifact/stable/source -o latest.tar.gz && tar -zxvf latest.tar.gz && rm -rf latest.tar.gz
+    } >/dev/null 2>&1
             
-            # Download Latest LG Version
-            echo -e "\n  [+] Installing Looking Glass"
-            curl -sSL https://looking-glass.io/artifact/stable/source -o latest.tar.gz && tar -zxvf latest.tar.gz && rm -rf latest.tar.gz
+    # Build & Install LG
+    echo -e "\n  [+] Building & Installing Looking Glass"
+    {
+        cd looking-glass-* && mkdir client/build && cd client/build && cmake ../ && make -j $(nproc) && sudo make install
+    } >/dev/null 2>&1
+            
+    # Cleanup
+    echo -e "\n  [+] Cleaning up"
+    cd ../../../ && sudo rm -rf looking-glass-*
+            
+    # Make & configure LG config file
+    echo -e "\n  [+] Creating '10-looking-glass.conf'"
+    CONF_FILE="/etc/tmpfiles.d/10-looking-glass.conf"
+    USERNAME=${SUDO_USER:-$(whoami)}
+            
+    {
+        echo "f /dev/shm/looking-glass 0660 $USERNAME kvm -" | sudo tee "$CONF_FILE" > /dev/null
+    } >/dev/null
 
-            # Build & Install LG
-            echo -e "\n  [+] Building & Installing Looking Glass"
-            cd looking-glass-* && mkdir client/build && cd client/build && cmake ../ && make -j $(nproc) && sudo make install
+    # Grant LG permissions
+    echo -e "\n  [+] Granting Looking Glass Permissions"
+    {
+        touch /dev/shm/looking-glass && sudo chown $USER:kvm /dev/shm/looking-glass && chmod 660 /dev/shm/looking-glass
+    } >/dev/null
 
-            # Cleanup
-            echo -e "\n  [+] Cleaning up"
-            cd ../../../ && sudo rm -rf looking-glass-*
-
-            # Make & configure LG config file
-            echo -e "\n  [+] Creating '10-looking-glass.conf'"
-            CONF_FILE="/etc/tmpfiles.d/10-looking-glass.conf"
-            USERNAME=${SUDO_USER:-$(whoami)}
-            {
-                cat > "$CONF_FILE" << EOF
-# Type Path              Mode UID  GID Age Argument
-
-f /dev/shm/looking-glass 0660 $USERNAME kvm -
-EOF
-            } >/dev/null
-
-            # Grant LG permissions
-            echo -e "\n  [+] Granting Looking Glass Permissions"
-            {
-                touch /dev/shm/looking-glass && sudo chown $USER:kvm /dev/shm/looking-glass && chmod 660 /dev/shm/looking-glass
-            } >/dev/null
-
-            # Command to append to .bashrc
-            entry_to_add=$(
-            cat <<'EOF'
+    # Command to append to .bashrc
+    entry_to_add=$(cat <<'EOF'
 
 # Alias lg for Looking Glass shared memory setup
 # This command sequence sets up /dev/shm/looking-glass with the appropriate permissions.
@@ -185,33 +204,22 @@ else \
 fi'
 
 EOF
-)
+    )
 
-            # Check if the alias already exists in .bashrc to avoid duplicates
-            if grep -q "alias lg=" ~/.bashrc; then
-                echo -e "  [\*] The lg alias already exists in .bashrc."
-            else
-                # Append the formatted entry to .bashrc
-                echo "$entry_to_add" >> ~/.bashrc
-            fi
+    # Check if the alias already exists in .bashrc to avoid duplicates
+    if grep -q "alias lg=" ~/.bashrc; then
+        echo -e "\n  [*] The lg alias already exists in .bashrc."
+    else
+        # Append the formatted entry to .bashrc
+        echo "$entry_to_add" >> ~/.bashrc
+    fi
 
-            # Apply bashrc changes
-            source ~/.bashrc
+    # Apply bashrc changes
+    source ~/.bashrc
 
-            # Message for user
-            echo -e "\n  [!] A new bashrc entry was made for launching Looking Glass.\n       Just type 'lg' in the terminal.\n"
-            ;;
-        Fedora)
-            echo -e "\n  [!] Distribution not supported yet, in progress."
-            ;;
-        Arch)
-            echo -e "\n  [!] Distribution not supported yet, in progress."
-            ;;
-        *)
-            echo -e "\n  [!] Distribution not recognized or not supported by this script."
-            return 1
-            ;;
-    esac
+    # Message for user
+    echo -e "\n  [+] A new bashrc entry was made for launching Looking Glass.\n      Just type 'lg' in the terminal."
+    echo -e "\n  [+] \033[0;32mDone\033[0m" && sleep 4
 }
 
 
@@ -222,31 +230,9 @@ function Kernal_Patch() {
         Debian)
             # Dependencies
             echo -e "\n  [+] Installing Linux Kernal Compiling Dependencies"
-            sudo apt install -y build-essential libncurses-dev bison flex libssl-dev libelf-dev git bc > /dev/null 2>&1
-            
-            # Get the Kernel Source
-            echo -e "\n  [+] Downloading Linux Kernal"
-            git clone https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-            cd linux
-            git checkout v$(uname -r)
-
-            # Prepare the Kernel Configuration
-            echo -e "\n  [+] Copied current kernel config"
-            cp /boot/config-$(uname -r) .config
-            make oldconfig
-
-            # Apply Your Custom Patches
-            echo -e "\n  [+] Applying custom patch"
-            patch -p1 < /path/to/svm.patch
-            patch -p1 < /path/to/vmx.patch
-
-            # Build the Kernel
-            echo -e "\n  [+] Building the Kernal"
-            make -j$(nproc) > /dev/null 2>&1
-
-            # Install the Kernel Modules & the Kernel
-            echo -e "\n  [+] Installing/Applying Kernal patches"
-            sudo make modules_install && sudo make install
+            {
+                sudo apt install -y build-essential libncurses-dev bison flex libssl-dev libelf-dev git bc
+            } >/dev/null 2>&1
             ;;
         Fedora)
             clear && echo -e "\n  [+] Updating Grub Config and initramfs image"
@@ -259,6 +245,30 @@ function Kernal_Patch() {
             return 1
             ;;
     esac
+    
+    # Get the Kernel Source
+    echo -e "\n  [+] Downloading Linux Kernal"
+    git clone https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+    cd linux
+    git checkout v$(uname -r)
+
+    # Prepare the Kernel Configuration
+    echo -e "\n  [+] Copied current kernel config"
+    cp /boot/config-$(uname -r) .config
+    make oldconfig
+
+    # Apply Your Custom Patches
+    echo -e "\n  [+] Applying custom patch"
+    patch -p1 < /path/to/svm.patch
+    patch -p1 < /path/to/vmx.patch
+
+    # Build the Kernel
+    echo -e "\n  [+] Building the Kernal"
+    make -j$(nproc) > /dev/null 2>&1
+
+    # Install the Kernel Modules & the Kernel
+    echo -e "\n  [+] Installing/Applying Kernal patches"
+    sudo make modules_install && sudo make install
 }
 
 
@@ -334,11 +344,6 @@ menu() {
     done
 }
 
-
-if [ "$(id -u)" -ne 0 ]; then
-    echo "\n  [-] This script must be run as root" 1>&2
-    exit 1
-fi
 
 menu
 
