@@ -136,23 +136,23 @@ function Looking_Glass() {
     case "${distro}" in
         Debian)
             # Dependencies
-            echo -e "\n  [+] Installing Looking Glass Dependencies\n"
+            echo -e "\n  [+] Installing Looking Glass Dependencies"
             sudo apt install -y binutils-dev cmake fonts-dejavu-core libfontconfig-dev gcc g++ pkg-config libegl-dev libgl-dev libgles-dev libspice-protocol-dev nettle-dev libx11-dev libxcursor-dev libxi-dev libxinerama-dev libxpresent-dev libxss-dev libxkbcommon-dev libwayland-dev wayland-protocols libpipewire-0.3-dev libpulse-dev libsamplerate0-dev
             
             # Download Latest LG Version
-            echo -e "\n  [+] Installing Looking Glass\n"
+            echo -e "\n  [+] Installing Looking Glass"
             curl -sSL https://looking-glass.io/artifact/stable/source -o latest.tar.gz && tar -zxvf latest.tar.gz && rm -rf latest.tar.gz
 
             # Build & Install LG
-            echo -e "\n  [+] Building & Installing Looking Glass\n"
+            echo -e "\n  [+] Building & Installing Looking Glass"
             cd looking-glass-* && mkdir client/build && cd client/build && cmake ../ && make -j $(nproc) && sudo make install
 
             # Cleanup
-            echo -e "\n  [+] Cleaning up\n"
+            echo -e "\n  [+] Cleaning up"
             cd ../../../ && sudo rm -rf looking-glass-*
 
             # Make & configure LG config file
-            echo -e "\n  [+] Creating '10-looking-glass.conf'\n"
+            echo -e "\n  [+] Creating '10-looking-glass.conf'"
             CONF_FILE="/etc/tmpfiles.d/10-looking-glass.conf"
             USERNAME=${SUDO_USER:-$(whoami)}
             {
@@ -164,7 +164,7 @@ EOF
             } >/dev/null
 
             # Grant LG permissions
-            echo -e "\n  [+] Granting Looking Glass Permissions\n"
+            echo -e "\n  [+] Granting Looking Glass Permissions"
             {
                 touch /dev/shm/looking-glass && sudo chown $USER:kvm /dev/shm/looking-glass && chmod 660 /dev/shm/looking-glass
             } >/dev/null
@@ -209,6 +209,53 @@ EOF
             ;;
         *)
             echo -e "\n  [!] Distribution not recognized or not supported by this script."
+            return 1
+            ;;
+    esac
+}
+
+
+
+function Kernal_Patch() {
+    # Handle different distributions
+    case "${distro}" in
+        Debian)
+            # Dependencies
+            echo -e "\n  [+] Installing Linux Kernal Compiling Dependencies"
+            sudo apt install -y build-essential libncurses-dev bison flex libssl-dev libelf-dev git bc > /dev/null 2>&1
+            
+            # Get the Kernel Source
+            echo -e "\n  [+] Downloading Linux Kernal"
+            git clone https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+            cd linux
+            git checkout v$(uname -r)
+
+            # Prepare the Kernel Configuration
+            echo -e "\n  [+] Copied current kernel config"
+            cp /boot/config-$(uname -r) .config
+            make oldconfig
+
+            # Apply Your Custom Patches
+            echo -e "\n  [+] Applying custom patch"
+            patch -p1 < /path/to/svm.patch
+            patch -p1 < /path/to/vmx.patch
+
+            # Build the Kernel
+            echo -e "\n  [+] Building the Kernal"
+            make -j$(nproc) > /dev/null 2>&1
+
+            # Install the Kernel Modules & the Kernel
+            echo -e "\n  [+] Installing/Applying Kernal patches"
+            sudo make modules_install && sudo make install
+            ;;
+        Fedora)
+            clear && echo -e "\n  [+] Updating Grub Config and initramfs image"
+            ;;
+        Arch)
+            clear && echo -e "\n  [+] Updating Grub Config and initramfs image"
+            ;;
+        *)
+            clear && echo -e "\n  [!] Distribution not recognized or not supported by this script."
             return 1
             ;;
     esac
@@ -272,6 +319,7 @@ menu() {
                 ;;
             3)
                 clear && echo -e "\n  [!] Not supported yet, in progress."
+                Kernal_Patch
                 ;;
             4)
                 clear && Looking_Glass
