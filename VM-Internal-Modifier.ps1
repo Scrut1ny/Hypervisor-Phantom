@@ -123,16 +123,28 @@ function vmware {
 
 function QEMU {
 	# DSDT
-	Rename-Item -Path "HKLM:\HARDWARE\ACPI\DSDT\BOCHS_" -NewName "ALASKA" -Force
-	Rename-Item -Path "HKLM:\HARDWARE\ACPI\DSDT\ALASKA\BXPC____" -NewName "A_M_I_" -Force
-
+	if (Test-Path -Path "HKLM:\HARDWARE\ACPI\DSDT\BOCHS_") {
+	    Rename-Item -Path "HKLM:\HARDWARE\ACPI\DSDT\BOCHS_" -NewName "ALASKA" -Force
+	}
+	if (Test-Path -Path "HKLM:\HARDWARE\ACPI\DSDT\ALASKA\BXPC____") {
+	    Rename-Item -Path "HKLM:\HARDWARE\ACPI\DSDT\ALASKA\BXPC____" -NewName "A_M_I_" -Force
+	}
+	
 	# FADT
-	Rename-Item -Path "HKLM:\HARDWARE\ACPI\FADT\BOCHS_" -NewName "ALASKA" -Force
-	Rename-Item -Path "HKLM:\HARDWARE\ACPI\FADT\ALASKA\BXPC____" -NewName "A_M_I_" -Force
-
+	if (Test-Path -Path "HKLM:\HARDWARE\ACPI\FADT\BOCHS_") {
+	    Rename-Item -Path "HKLM:\HARDWARE\ACPI\FADT\BOCHS_" -NewName "ALASKA" -Force
+	}
+	if (Test-Path -Path "HKLM:\HARDWARE\ACPI\FADT\ALASKA\BXPC____") {
+	    Rename-Item -Path "HKLM:\HARDWARE\ACPI\FADT\ALASKA\BXPC____" -NewName "A_M_I_" -Force
+	}
+	
 	# RSDT
-	Rename-Item -Path "HKLM:\HARDWARE\ACPI\RSDT\BOCHS_" -NewName "ALASKA" -Force
-	Rename-Item -Path "HKLM:\HARDWARE\ACPI\RSDT\ALASKA\BXPC____" -NewName "A_M_I_" -Force
+	if (Test-Path -Path "HKLM:\HARDWARE\ACPI\RSDT\BOCHS_") {
+	    Rename-Item -Path "HKLM:\HARDWARE\ACPI\RSDT\BOCHS_" -NewName "ALASKA" -Force
+	}
+	if (Test-Path -Path "HKLM:\HARDWARE\ACPI\RSDT\ALASKA\BXPC____") {
+	    Rename-Item -Path "HKLM:\HARDWARE\ACPI\RSDT\ALASKA\BXPC____" -NewName "A_M_I_" -Force
+	}
 
  	# System
  	Set-ItemProperty -Path "HKLM:\HARDWARE\DESCRIPTION\System" -Name "SystemBiosVersion" -Value "ALASKA - 1072009", "1.C0", "American Megatrends - 50020" -Force
