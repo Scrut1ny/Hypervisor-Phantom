@@ -672,8 +672,6 @@ systemctl restart libvirtd
 
 * [Exam Simulation](https://vueop.startpractice.com/)
 
-![bypassed3](https://github.com/Scrut1ny/Hypervisor-Phantom/assets/53458032/061ba19a-5fd8-4a43-bead-17bbe0b83225)
-![bypassed](https://github.com/Scrut1ny/Hypervisor-Phantom/assets/53458032/59e47bc0-93bf-464e-a7ec-21cf1176c6b8)
-![bypassed1](https://github.com/Scrut1ny/Hypervisor-Phantom/assets/53458032/68487380-218b-487a-a260-a54a4dfda2e6)
+https://github.com/Scrut1ny/Hypervisor-Phantom/assets/53458032/c7f0901b-bb61-4806-9efc-655ea50b5547
 
 </details>
