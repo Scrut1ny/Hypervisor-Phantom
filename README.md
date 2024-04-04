@@ -24,7 +24,7 @@
 - [HDCP Versions](https://en.wikipedia.org/wiki/High-bandwidth_Digital_Content_Protection#Versions)
 
 ## WORKING BYPASS METHOD AS OF 20240320:
-Isolated GPU --> HDMI Cable --> HDMI Splitter (Strips/Downgrades HDCP) w/EDID Emulator --> HDMI Cable --> HDMI to USB Video Capture Device
+Isolated GPU --> HDMI Cable --> HDMI Splitter (Strips/Downgrades HDCP) w/EDID Emulator --> HDMI Cable --> HDMI to USB Video Capture Device --> USB Port on PC
 
 ## Budget Bypass Kit:
 - [HDMI Splitter](https://www.amazon.com/dp/B004F9LVXC)
