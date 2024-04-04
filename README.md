@@ -29,11 +29,11 @@ Isolated GPU --> HDMI Cable --> HDMI Splitter (Strips/Downgrades HDCP) w/EDID Em
 ## Amazon Product Links:
 - [HDMI Splitter](https://www.amazon.com/dp/B004F9LVXC)
 - [Video Capture Card](https://www.amazon.com/dp/B0C2MDTY8P)
+- [HDMI 2.0 4K EDID Emulator](https://www.amazon.com/dp/B0CRRWQ7XS)
 - [x2 - HDMI Cable](https://www.amazon.com/dp/B07X37CG9V)
-- EDID Emulator
 
 ## Equipment
-- HDMI Splitter 1 in 2 Out
+- HDMI Splitter 1x2
     - [#1](https://www.amazon.com/dp/B004F9LVXC)
     - [#2](https://www.amazon.com/dp/B07VP37KMB)
     - [#3](https://www.amazon.com/dp/B07TZRXKYG)
