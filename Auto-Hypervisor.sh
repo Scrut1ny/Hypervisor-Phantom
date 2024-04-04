@@ -334,7 +334,6 @@ menu() {
                 ;;
             3)
                 clear && echo -e "\n  [!] Not supported yet, in progress."
-                Kernal_Patch
                 ;;
             4)
                 clear && Looking_Glass
