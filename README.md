@@ -26,21 +26,22 @@
 ## WORKING BYPASS METHOD AS OF 20240320:
 Isolated GPU --> HDMI Cable --> HDMI Splitter (Strips/Downgrades HDCP) w/EDID Emulator --> HDMI Cable --> HDMI to USB Video Capture Device
 
-## Amazon Product Links:
+## Budget Bypass Kit:
 - [HDMI Splitter](https://www.amazon.com/dp/B004F9LVXC)
 - [Video Capture Card](https://www.amazon.com/dp/B0C2MDTY8P)
 - [HDMI 2.0 4K EDID Emulator](https://www.amazon.com/dp/B0CRRWQ7XS)
 - [x2 - HDMI Cable](https://www.amazon.com/dp/B07X37CG9V)
 
 ## Equipment
-- HDMI Splitter 1x2
-    - [#1](https://www.amazon.com/dp/B004F9LVXC)
-    - [#2](https://www.amazon.com/dp/B07VP37KMB)
-    - [#3](https://www.amazon.com/dp/B07TZRXKYG)
-    - [#4](https://www.amazon.com/dp/B08T62MKH1)
-- DP or HDMI (Male) to VGA (Female) Adapter <---> VGA (Male) to DP or HDMI (Male) Adapter
-    - [#1](https://www.amazon.com/dp/B01GPMRYNM)
-    - [#2](https://www.amazon.com/dp/B083P358V6)
+- Capture Card(s)
+    - [Elgato 4K Pro](https://www.amazon.com/dp/B0CSJPDYDN)
+- 1x2 HDMI Splitter(s)
+    - [ViewHD](https://www.amazon.com/dp/B004F9LVXC)
+    - [EZCOO](https://www.amazon.com/dp/B07VP37KMB)
+    - [EZCOO](https://www.amazon.com/dp/B07TZRXKYG)
+    - [HBAVLINK](https://www.amazon.com/dp/B08T62MKH1)
+- EDID Emulator
+    - [HD-EWB](https://www.amazon.com/dp/B0CRRWQ7XS)
 
 </details>
 
