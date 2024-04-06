@@ -25,6 +25,7 @@
 
 ## WORKING BYPASS METHOD AS OF 20240320:
 Isolated GPU --> HDMI Cable --> HDMI Splitter (Strips/Downgrades HDCP) w/EDID Emulator --> HDMI Cable --> HDMI to USB Video Capture Device --> USB Port on PC
+![hdcp](https://github.com/Scrut1ny/Hypervisor-Phantom/assets/53458032/f479e9a1-29c3-4536-b77c-cbf85d8f4972)
 
 ## Budget Bypass Kit:
 - [HDMI Splitter](https://www.amazon.com/dp/B004F9LVXC)
