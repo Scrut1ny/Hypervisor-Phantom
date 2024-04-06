@@ -24,8 +24,7 @@
 ## Bypassing HDCP Visual Graph:
 ![hdcp](https://github.com/Scrut1ny/Hypervisor-Phantom/assets/53458032/f479e9a1-29c3-4536-b77c-cbf85d8f4972)
 
-> [!TIP]
-> - [HDCP Versions](https://en.wikipedia.org/wiki/High-bandwidth_Digital_Content_Protection#Versions)
+- [HDCP Versions](https://en.wikipedia.org/wiki/High-bandwidth_Digital_Content_Protection#Versions)
 
 ## Capture Card Format Support:
 ![image](https://github.com/Scrut1ny/Hypervisor-Phantom/assets/53458032/17cfcbe5-0700-440c-af12-3c1dd0157ff1)
