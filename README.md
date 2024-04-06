@@ -38,6 +38,8 @@
 ## Equipment
 - Capture Card(s)
     - [Elgato 4K Pro](https://www.amazon.com/dp/B0CSJPDYDN)
+    - [Elgato HD60 X](https://www.amazon.com/dp/B09V1KJ3J4)
+    - [AXHDCAP 4K HDMI Video Capture Card](https://www.amazon.com/dp/B0C2MDTY8P)
 - 1x2 HDMI Splitter(s)
     - [ViewHD](https://www.amazon.com/dp/B004F9LVXC)
     - [EZCOO](https://www.amazon.com/dp/B07VP37KMB)
