@@ -707,12 +707,13 @@ systemctl restart libvirtd
 - Note taking is not allowed with pen and paper.
 - Your exam session is recorded.
 
-* [Exam Simulation](https://vueop.startpractice.com/)
-
-https://github.com/Scrut1ny/Hypervisor-Phantom/assets/53458032/c7f0901b-bb61-4806-9efc-655ea50b5547
-
+## CompTIA Certification Information:
 ![image](https://github.com/Scrut1ny/Hypervisor-Phantom/assets/53458032/8fc02891-5e0d-45e4-be50-953d81d7d41c)
 
 - [Which CompTIA Certifications Must Be Renewed?](https://help.comptia.org/hc/en-us/articles/13923899954196-Which-CompTIA-Certifications-Must-Be-Renewed)
+
+## Example of OnVue setup process in action:
+https://github.com/Scrut1ny/Hypervisor-Phantom/assets/53458032/c7f0901b-bb61-4806-9efc-655ea50b5547
+- [Exam Simulation](https://vueop.startpractice.com/)
 
 </details>
