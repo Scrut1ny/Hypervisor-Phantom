@@ -45,8 +45,12 @@
     - [EZCOO](https://www.amazon.com/dp/B07VP37KMB)
     - [EZCOO](https://www.amazon.com/dp/B07TZRXKYG)
     - [HBAVLINK](https://www.amazon.com/dp/B08T62MKH1)
-- EDID Emulator
-    - [HD-EWB](https://www.amazon.com/dp/B0CRRWQ7XS)
+- EDID Emulator(s)
+    - HDMI 
+        - [HD-EWB](https://www.amazon.com/dp/B0CRRWQ7XS)
+        - [EVanlak 4K UHD](https://www.amazon.com/dp/B07YMTKJCR)
+    - DP
+        - [EVanlak 4K](https://www.amazon.com/dp/B07YLP1GG4)
 
 </details>
 
