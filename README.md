@@ -687,17 +687,17 @@ systemctl restart libvirtd
 
 ### Before Your Exam:
 
-- Know the Exam Rules: Ignorance isn't an excuse for breaking rules.
-- Room Setup: A clean, quiet space is ideal. Open spaces are fine if you ensure privacy. Background noise like alarms or construction is generally okay, but voices may prompt a room check.
-- Preparation: Clear your desk except for necessary items. Apply for accommodations if needed for health reasons. Use the restroom and moderate your water intake before starting. Avoid using work computers due to potential restrictions. Ensure your computer has an external microphone, as headphones are not allowed.
+- ***Know the Exam Rules***: Ignorance isn't an excuse for breaking rules.
+- ***Room Setup***: A clean, quiet space is ideal. Open spaces are fine if you ensure privacy. Background noise like alarms or construction is generally okay, but voices may prompt a room check.
+- ***Preparation***: Clear your desk except for necessary items. Apply for accommodations if needed for health reasons. Use the restroom and moderate your water intake before starting. Avoid using work computers due to potential restrictions. Ensure your computer has an external microphone, as headphones are not allowed.
 
 ### Common Mistakes:
 
-- Strict Rule Enforcement: Proctors strictly follow rules; personal circumstances (e.g., needing a restroom break) aren't considered exceptions.
-- Technical Readiness: Have your laptop charger plugged in. Starting your exam means you cannot leave for any reason, including to grab your charger.
-- Exam Start: The exam is considered started once you see the "Welcome" screen. Don’t leave your seat, use your phone, or fetch items after this point.
-- Avoid Distractions: Don’t touch your phone or read questions aloud to prevent suspicion of cheating.
-- Proper Closure: After finishing, ensure you exit the application completely to end the exam session.
+- ***Strict Rule Enforcement***: Proctors strictly follow rules; personal circumstances (e.g., needing a restroom break) aren't considered exceptions.
+- ***Technical Readiness***: Have your laptop charger plugged in. Starting your exam means you cannot leave for any reason, including to grab your charger.
+- ***Exam Start***: The exam is considered started once you see the "Welcome" screen. Don’t leave your seat, use your phone, or fetch items after this point.
+- ***Avoid Distractions***: Don’t touch your phone or read questions aloud to prevent suspicion of cheating.
+- ***Proper Closure***: After finishing, ensure you exit the application completely to end the exam session.
 
 ### General Info:
 
