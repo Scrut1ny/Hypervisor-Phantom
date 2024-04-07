@@ -678,13 +678,38 @@ systemctl restart libvirtd
 
 </details>
 
-## Screen Shots
+## Misc. Stuff
 
 <details>
 <summary>Pearson VUE (OnVUE)</summary>
 
+## Pearson OnVue Online Exam Tips
+
+### Before Your Exam:
+    - Know the Exam Rules: Ignorance isn't an excuse for breaking rules.
+    - Room Setup: A clean, quiet space is ideal. Open spaces are fine if you ensure privacy. Background noise like alarms or construction is generally okay, but voices may prompt a room check.
+    - Preparation: Clear your desk except for necessary items. Apply for accommodations if needed for health reasons. Use the restroom and moderate your water intake before starting. Avoid using work computers due to potential restrictions. Ensure your computer has an external microphone, as headphones are not allowed.
+
+### Common Mistakes:
+    - Strict Rule Enforcement: Proctors strictly follow rules; personal circumstances (e.g., needing a restroom break) aren't considered exceptions.
+    - Technical Readiness: Have your laptop charger plugged in. Starting your exam means you cannot leave for any reason, including to grab your charger.
+    - Exam Start: The exam is considered started once you see the "Welcome" screen. Don’t leave your seat, use your phone, or fetch items after this point.
+    - Avoid Distractions: Don’t touch your phone or read questions aloud to prevent suspicion of cheating.
+    - Proper Closure: After finishing, ensure you exit the application completely to end the exam session.
+
+### General Info:
+    - Proctors can't assist with exam content or scoring.
+    - When unsure about rules, use the chat feature to ask.
+    - Proctors do monitor you with help from AI to detect unusual behaviors.
+    - Note taking is not allowed with pen and paper.
+    - Your exam session is recorded.
+
 * [Exam Simulation](https://vueop.startpractice.com/)
 
 https://github.com/Scrut1ny/Hypervisor-Phantom/assets/53458032/c7f0901b-bb61-4806-9efc-655ea50b5547
+
+![image](https://github.com/Scrut1ny/Hypervisor-Phantom/assets/53458032/8fc02891-5e0d-45e4-be50-953d81d7d41c)
+
+- [Which CompTIA Certifications Must Be Renewed?](https://help.comptia.org/hc/en-us/articles/13923899954196-Which-CompTIA-Certifications-Must-Be-Renewed)
 
 </details>
