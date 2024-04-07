@@ -716,4 +716,8 @@ systemctl restart libvirtd
 https://github.com/Scrut1ny/Hypervisor-Phantom/assets/53458032/c7f0901b-bb61-4806-9efc-655ea50b5547
 - [Exam Simulation](https://vueop.startpractice.com/)
 
+## ChatGPT prompt for studying
+```
+I'm going to provide a question with possible answers, I need you to only tell me the correct answer(s). Just say the answer; no explanations.
+```
 </details>
