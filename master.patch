@@ -232,7 +232,7 @@ index e8cb2dac92..aaaa7b9f41 100644
      } else {
          snprintf(s->drive_serial_str, sizeof(s->drive_serial_str),
 -                 "QM%05d", s->drive_serial);
-+                 "85DC7QRGXXSHW5TXQQBS", s->drive_serial);
++                 "85DC7QRGXXSHW5T%05d", s->drive_serial);
      }
      if (dev->model) {
          pstrcpy(s->drive_model_str, sizeof(s->drive_model_str), dev->model);
