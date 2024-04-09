@@ -315,6 +315,7 @@ grep -Rn '"KVMKVMKVM\\0\\0\\0"' "$HOME/Downloads/qemu"
 grep -Rn 'ACPI_BUILD_APPNAME6 "BOCHS "' "$HOME/Downloads/qemu"
 grep -Rn 'ACPI_BUILD_APPNAME8 "BXPC    "' "$HOME/Downloads/qemu"
 grep -Rn '\[STR_SERIALNUMBER\]' "$HOME/Downloads/qemu"
+grep -Rn '"QM%05d"' "$HOME/Downloads/qemu"
 
 git diff > v8.2.2.patch
 ```
