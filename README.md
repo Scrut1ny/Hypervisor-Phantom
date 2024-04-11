@@ -62,6 +62,8 @@
     - How to: `⚙️` > `VPN settings` > `Local network sharing` ✅
 
 ![image](https://github.com/Scrut1ny/Hypervisor-Phantom/assets/53458032/e7f3c075-bd87-4abe-a88f-8897fc9be19d)
+![image](https://github.com/Scrut1ny/Hypervisor-Phantom/assets/53458032/d0b09a31-78d4-491f-9688-1a3fe9dbd779)
+![image](https://github.com/Scrut1ny/Hypervisor-Phantom/assets/53458032/21993e06-2719-4c3e-89d5-d1557f84ee29)
 
 </details>
 
