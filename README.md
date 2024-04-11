@@ -684,7 +684,7 @@ systemctl restart libvirtd
 <details>
 <summary>Pearson VUE (OnVUE)</summary>
 
-## Pearson OnVue Online Exam Tips
+## Pearson OnVUE Online Exam Tips
 
 ### Before Your Exam:
 
