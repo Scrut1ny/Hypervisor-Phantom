@@ -61,9 +61,7 @@
 - For the VPN connection to get properly natted/bridged you must enable the setting `Local network sharing` option!
     - How to: `⚙️` > `VPN settings` > `Local network sharing` ✅
 
-![image](https://github.com/Scrut1ny/Hypervisor-Phantom/assets/53458032/9cb8a142-cfbb-48cd-aa5c-13555a1edc64)
-![image](https://github.com/Scrut1ny/Hypervisor-Phantom/assets/53458032/abf70bef-d680-4601-b2e2-3664ff812b1e)
-![image](https://github.com/Scrut1ny/Hypervisor-Phantom/assets/53458032/db2685d8-f037-4352-855c-adfc268c546a)
+![image](https://github.com/Scrut1ny/Hypervisor-Phantom/assets/53458032/e7f3c075-bd87-4abe-a88f-8897fc9be19d)
 
 </details>
 
