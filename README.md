@@ -55,6 +55,17 @@
 </details>
 
 <details>
+<summary>VPN + Hypervisor Natting/Bridging</summary>
+
+## Mullvad VPN + QEMU
+- For the VPN connection to get properly natted/bridged you must enable the setting `Local network sharing` option!
+    - How to: `⚙️` > `VPN settings` > `Local network sharing` ✅
+
+![image](https://github.com/Scrut1ny/Hypervisor-Phantom/assets/53458032/e1c2bca4-e232-4103-9b22-aa53c9762bd6)
+
+</details>
+
+<details>
 <summary>QEMU Anti Detection</summary>
 
 * [areweanticheatyet](https://areweanticheatyet.com/)
