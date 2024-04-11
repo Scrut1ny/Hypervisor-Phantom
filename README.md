@@ -31,8 +31,12 @@
 
 ## Budget Bypass Kit:
 - [HDMI Splitter](https://www.amazon.com/dp/B004F9LVXC)
+    - Bypasses HDCP 1.0-2.2 ✅
 - [Video Capture Card](https://www.amazon.com/dp/B0C2MDTY8P)
 - [HDMI 2.0 4K EDID Emulator](https://www.amazon.com/dp/B0CRRWQ7XS)
+    - EDID copy & emulation ✅
+    - Bi-directional design ✅
+    - HDCP pass-through ✅
 - [x2 - HDMI Cable](https://www.amazon.com/dp/B07X37CG9V)
 
 ## Equipment
