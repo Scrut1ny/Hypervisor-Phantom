@@ -33,7 +33,8 @@
 - [HDMI Splitter](https://www.amazon.com/dp/B004F9LVXC)
     - Bypasses HDCP 1.0-2.2 ✅
 - [Video Capture Card](https://www.amazon.com/dp/B0C2MDTY8P)
-- [HDMI 2.0 4K EDID Emulator](https://www.amazon.com/dp/B0CRRWQ7XS)
+- [HDMI to HDMI 2.0 EDID Emulator](https://www.amazon.com/dp/B0CRRWQ7XS)
+- [DP 1.2 to HDMI 2.0 EDID Emulator](https://www.amazon.com/dp/B0C3H763FG)
     - EDID copy & emulation ✅
     - Bi-directional design ✅
     - HDCP pass-through ✅
