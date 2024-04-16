@@ -702,6 +702,16 @@ systemctl restart libvirtd
 ## Misc. Stuff
 
 <details>
+<summary>CompTIA Certification Stuff</summary>
+
+## CompTIA Certification Information:
+![image](https://github.com/Scrut1ny/Hypervisor-Phantom/assets/53458032/8fc02891-5e0d-45e4-be50-953d81d7d41c)
+
+- [Which CompTIA Certifications Must Be Renewed?](https://help.comptia.org/hc/en-us/articles/13923899954196-Which-CompTIA-Certifications-Must-Be-Renewed)
+
+</details>
+
+<details>
 <summary>Pearson VUE (OnVUE)</summary>
 
 ## Pearson OnVUE Online Exam Tips
@@ -727,11 +737,6 @@ systemctl restart libvirtd
 - Proctors do monitor you with help from AI to detect unusual behaviors.
 - Note taking is not allowed with pen and paper.
 - Your exam session is recorded.
-
-## CompTIA Certification Information:
-![image](https://github.com/Scrut1ny/Hypervisor-Phantom/assets/53458032/8fc02891-5e0d-45e4-be50-953d81d7d41c)
-
-- [Which CompTIA Certifications Must Be Renewed?](https://help.comptia.org/hc/en-us/articles/13923899954196-Which-CompTIA-Certifications-Must-Be-Renewed)
 
 ## Example video of the OnVUE setup process:
 https://github.com/Scrut1ny/Hypervisor-Phantom/assets/53458032/c7f0901b-bb61-4806-9efc-655ea50b5547
