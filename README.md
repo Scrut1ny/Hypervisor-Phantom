@@ -60,6 +60,14 @@
 </details>
 
 <details>
+<summary>Virtual Cameras</summary>
+
+## Bring live video from your smartphone, remote computer, or friends directly into OBS or other studio software.
+- [VDO.Ninja](https://vdo.ninja/)
+
+</details>
+
+<details>
 <summary>VPN + Hypervisor</summary>
 
 - ***IMPORTANT***: Ensure not to add a custom DNS configuration to the guest system on the hypervisor if your host system's VPN uses custom DNS block lists. Doing so may result in your guest hypervisor system losing its internet connection!
@@ -708,6 +716,13 @@ systemctl restart libvirtd
 ![image](https://github.com/Scrut1ny/Hypervisor-Phantom/assets/53458032/8fc02891-5e0d-45e4-be50-953d81d7d41c)
 
 - [Which CompTIA Certifications Must Be Renewed?](https://help.comptia.org/hc/en-us/articles/13923899954196-Which-CompTIA-Certifications-Must-Be-Renewed)
+
+## Exam Dump Websites
+- [dumpscollection](https://dumpscollection.net/)
+- [dumpsolutions](https://dumpsolutions.com/)
+- [dumps-files](https://www.dumps-files.com/)
+- [allfreedumps](https://www.allfreedumps.com/)
+- [downloadfreepdf](https://www.downloadfreepdf.net/)
 
 </details>
 
