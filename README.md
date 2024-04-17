@@ -60,10 +60,15 @@
 </details>
 
 <details>
-<summary>Virtual Cameras</summary>
+<summary>Virtual Video & Audio</summary>
 
 ## Bring live video from your smartphone, remote computer, or friends directly into OBS or other studio software.
 - [VDO.Ninja](https://vdo.ninja/)
+
+## VB-CABLE Virtual Audio Device
+- [VB-AUDIO Software](https://vb-audio.com/Cable/index.htm)
+    - [Windows Download](https://download.vb-audio.com/Download_CABLE/VBCABLE_Driver_Pack43.zip)
+    - [macOS Download](https://download.vb-audio.com/Download_MAC/VBCable_MACDriver_Pack108.zip)
 
 </details>
 
