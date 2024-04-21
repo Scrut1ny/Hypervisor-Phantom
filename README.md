@@ -776,3 +776,35 @@ https://github.com/Scrut1ny/Hypervisor-Phantom/assets/53458032/c7f0901b-bb61-480
 I'm going to provide a question with possible answers, I need you to only tell me the correct answer(s). Just say the answer; no explanations.
 ```
 </details>
+
+<details>
+<summary>Schedule an exam (OnVUE) Steps</summary>
+
+- [Log in](https://login.comptia.org/)
+
+## Step 1
+![image](https://github.com/Scrut1ny/Hypervisor-Phantom/assets/53458032/acd53451-a073-473e-95c7-8ac3e518f9d1)
+
+## Step 2
+![image](https://github.com/Scrut1ny/Hypervisor-Phantom/assets/53458032/a9b2a8f3-d0db-4c63-a5d1-7c71b93acea6)
+![image](https://github.com/Scrut1ny/Hypervisor-Phantom/assets/53458032/cfe34125-ed6e-4eae-bb8b-820d48a49d51)
+
+## Step 3
+![image](https://github.com/Scrut1ny/Hypervisor-Phantom/assets/53458032/ab081b25-7bdb-4f13-8ff8-01d0d633e318)
+
+## Step 4
+![image](https://github.com/Scrut1ny/Hypervisor-Phantom/assets/53458032/591ebba6-1e08-4f4a-b8ce-d382f73448e9)
+
+## Step 5
+![image](https://github.com/Scrut1ny/Hypervisor-Phantom/assets/53458032/26d6a696-8073-48af-b861-a64e40ac82e5)
+
+## Step 6
+![image](https://github.com/Scrut1ny/Hypervisor-Phantom/assets/53458032/6ff38292-34ea-420e-a0cd-960f0989d94a)
+
+## Step 7
+![image](https://github.com/Scrut1ny/Hypervisor-Phantom/assets/53458032/c4286480-0eb8-4ad3-b4aa-ef5fa581cb6d)
+
+## Step 8
+![image](https://github.com/Scrut1ny/Hypervisor-Phantom/assets/53458032/2d4c33ed-781c-48c2-b9cc-0ac0aff6b693)
+
+</details>
