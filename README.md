@@ -356,6 +356,12 @@ grep -Rn '"QM%05d"' "$HOME/Downloads/qemu"
 git diff > v8.2.2.patch
 ```
 
+- ACPI_BUILD_APPNAME6 "ALASKA"
+- ACPI_BUILD_APPNAME8 "A M I "
+
+- ACPI_BUILD_APPNAME6 "DELL  "
+- ACPI_BUILD_APPNAME8 "Dell Inc"
+
 ### Downloading & Building QEMU w/patch
 ```
 cd $HOME/Downloads && git clone --depth 1 --branch v8.2.2 --recursive https://gitlab.com/qemu-project/qemu.git
