@@ -11,9 +11,9 @@
 | ProctorU | ✅ | [FF Addon](https://s3-us-west-2.amazonaws.com/proctoru-assets/extension/firefox-extension-latest.xpi) or [Chrome Addon](https://chrome.google.com/webstore/detail/proctoru/goobgennebinldhonaajgafidboenlkl) | ✅ | 🤨 |
 | ProctorU: Guardian Browser |  | [Link](https://guardian.meazurelearning.com/) | ✅ | 😤 |
 | Proctorio | ✅ | [Link](https://getproctorio.com/) | ✅ | 😂 |
-| Examity |  |  | ❔ |  |
-| Respondus (LockDown Browser) | ✅ | [Link](https://download.respondus.com/lockdown/download.php) | ❔ |  |
-| Kryterion |  |  | ❔ |  |
+| Examity |  |  | ✅ |  |
+| Respondus (LockDown Browser) | ✅ | [Link](https://download.respondus.com/lockdown/download.php) | ✅ |  |
+| Kryterion |  |  | ✅ |  |
 | Honorlock | ✅ | [Link](https://app.honorlock.com/install/extension) | ✅ | 😂 |
 
 </details>
