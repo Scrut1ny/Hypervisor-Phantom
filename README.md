@@ -772,6 +772,8 @@ Connect the capture card device back to your Linux host system now and open OBS,
 
 ## Elgato Gaming Hardware Drivers
 
+- [Article](https://help.elgato.com/hc/en-us/articles/360027961152-Elgato-Gaming-Hardware-Drivers)
+
 | Device                     | Driver Status                                |
 |----------------------------|----------------------------------------------|
 | Elgato Cam Link            | No driver since it's a UVC device |
