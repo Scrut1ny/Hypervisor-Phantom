@@ -721,6 +721,38 @@ systemctl restart libvirtd
 
 </details>
 
+<details>
+<summary>Error starting domain: internal error: qemu unexpectedly closed the monitor:</summary>
+
+```
+Error starting domain: internal error: qemu unexpectedly closed the monitor: 2021-08-02T17:52:25.005284Z qemu-system-x86_64: backing store size 0x2000000 does not match ‘size’ option 0x4000000
+```
+
+## Step 1:
+```
+rm /dev/shm/looking-glass
+```
+
+## Step 2:
+```
+    <shmem name="looking-glass">
+      <model type="ivshmem-plain"/>
+      <size unit="M">128</size>
+      <address type="pci" domain="0x0000" bus="0x10" slot="0x01" function="0x0"/>
+    </shmem>
+```
+
+- Change memory number size to 32, 64, 128, etc. (whatever needed)
+
+## Step 3:
+```
+touch /dev/shm/looking-glass && sudo chown $USER:kvm /dev/shm/looking-glass && chmod 660 /dev/shm/looking-glass
+```
+
+- Now try to run your hypervisor again.
+
+</details>
+
 ## Misc. Stuff
 
 <details>
