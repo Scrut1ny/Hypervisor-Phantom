@@ -753,6 +753,44 @@ touch /dev/shm/looking-glass && sudo chown $USER:kvm /dev/shm/looking-glass && c
 
 </details>
 
+<details>
+<summary>Elgato HD60 X - OBS Black Screen</summary>
+
+> [!TIP]
+> Some of Elgato's capture cards, leveraging UVC (USB Video Class) technology, operate seamlessly without requiring additional drivers. As UVC devices, they adhere to a standard protocol for transmitting video and audio data over USB connections. This plug-and-play functionality ensures compatibility with various operating systems, enabling effortless setup and use for capturing high-quality video content.
+
+## Step 1:
+Download & Install the latest `4K CAPTURE UTILITY` software from [Elgato downloads page](https://www.elgato.com/us/en/s/downloads)
+
+## Step 2:
+Open `Elgato 4K Capture Utility` software and let the software initialize the UVC device and firmware.
+
+## Step 3:
+Now select the settings icon on the top right of the software utility, and select `Check for Updates...`. (It should do it automatically already, but just make sure the firmware is on the latest version available.)
+
+## Step 4 (for Linux users):
+Connect the capture card device back to your Linux host system now and open OBS, you should now see a valid output instead of a black screen.
+
+## Elgato Gaming Hardware Drivers
+
+| Device                     | Driver Status                                |
+|----------------------------|----------------------------------------------|
+| Elgato Cam Link            | No driver since it's a UVC device            |
+| Elgato Cam Link 4K         | No driver since it's a UVC device            |
+| Elgato Cam Link Pro        | Latest Elgato Cam Link Pro Drivers for Windows |
+| Elgato Game Capture HD     | Latest Elgato Game Capture HD Drivers for Windows |
+| Elgato Game Capture HD60   | Latest Elgato Game Capture HD60 Drivers for Windows |
+| Elgato Game Capture HD60 S | Latest Elgato Game Capture  HD60 S Drivers for Windows |
+| Elgato Game Capture HD60 S+| No driver since it's a UVC device            |
+| Elgato Game Capture HD60 Pro| Latest Elgato Game Capture HD60 Pro Drivers |
+| Elgato Game Capture HD60 X | No driver since it's a UVC device            |
+| Elgato Game Capture 4K60 Pro | Latest Elgato Game Capture 4K60 Pro Drivers |
+| Elgato Game Capture 4K60 Pro MK.2 | Latest Elgato Game Capture 4K60 Pro MK.2 Drivers |
+| Elgato Game Capture 4K60 S+ | Latest Elgato Game Capture 4K60 S+ Drivers |
+| Elgato 4K Pro              | Latest Elgato 4K Pro Drivers                 |
+
+</details>
+
 ## Misc. Stuff
 
 <details>
