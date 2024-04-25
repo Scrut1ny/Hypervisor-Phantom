@@ -774,19 +774,19 @@ Connect the capture card device back to your Linux host system now and open OBS,
 
 | Device                     | Driver Status                                |
 |----------------------------|----------------------------------------------|
-| Elgato Cam Link            | No driver since it's a UVC device            |
-| Elgato Cam Link 4K         | No driver since it's a UVC device            |
-| Elgato Cam Link Pro        | Latest Elgato Cam Link Pro Drivers for Windows |
-| Elgato Game Capture HD     | Latest Elgato Game Capture HD Drivers for Windows |
-| Elgato Game Capture HD60   | Latest Elgato Game Capture HD60 Drivers for Windows |
-| Elgato Game Capture HD60 S | Latest Elgato Game Capture  HD60 S Drivers for Windows |
-| Elgato Game Capture HD60 S+| No driver since it's a UVC device            |
-| Elgato Game Capture HD60 Pro| Latest Elgato Game Capture HD60 Pro Drivers |
-| Elgato Game Capture HD60 X | No driver since it's a UVC device            |
-| Elgato Game Capture 4K60 Pro | Latest Elgato Game Capture 4K60 Pro Drivers |
-| Elgato Game Capture 4K60 Pro MK.2 | Latest Elgato Game Capture 4K60 Pro MK.2 Drivers |
-| Elgato Game Capture 4K60 S+ | Latest Elgato Game Capture 4K60 S+ Drivers |
-| Elgato 4K Pro              | Latest Elgato 4K Pro Drivers                 |
+| Elgato Cam Link            | No driver since it's a UVC device |
+| Elgato Cam Link 4K         | No driver since it's a UVC device |
+| Elgato Cam Link Pro        | [Latest Elgato Cam Link Pro Drivers for Windows](https://gc-updates.elgato.com/windows/drivers/cam-link-pro/download.php) |
+| Elgato Game Capture HD     | [Latest Elgato Game Capture HD Drivers for Windows](https://gc-updates.elgato.com/windows/drivers/hd/download.php) |
+| Elgato Game Capture HD60   | [Latest Elgato Game Capture HD60 Drivers for Windows](https://gc-updates.elgato.com/windows/drivers/hd60/download.php) |
+| Elgato Game Capture HD60 S | [Latest Elgato Game Capture  HD60 S Drivers for Windows](https://gc-updates.elgato.com/windows/drivers/hd60-s/download.php) |
+| Elgato Game Capture HD60 S+| No driver since it's a UVC device |
+| Elgato Game Capture HD60 Pro| [Latest Elgato Game Capture HD60 Pro Drivers](https://gc-updates.elgato.com/windows/drivers/hd60-pro/download.php) |
+| Elgato Game Capture HD60 X | No driver since it's a UVC device |
+| Elgato Game Capture 4K60 Pro | [Latest Elgato Game Capture 4K60 Pro Drivers](https://gc-updates.elgato.com/windows/drivers/4k_hd60-pro/download.php) |
+| Elgato Game Capture 4K60 Pro MK.2 | [Latest Elgato Game Capture 4K60 Pro MK.2 Drivers](https://gc-updates.elgato.com/windows/drivers/4k60-pro-mk2/download.php) |
+| Elgato Game Capture 4K60 S+ | [Latest Elgato Game Capture 4K60 S+ Drivers](https://gc-updates.elgato.com/windows/drivers/4k60-s-plus/download.php) |
+| Elgato 4K Pro              | [Latest Elgato 4K Pro Drivers](https://edge.elgato.com/egc/windows/drivers/4K_Pro/Elgato_4KPro_1.1.0.202.exe) |
 
 </details>
 
