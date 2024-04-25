@@ -42,7 +42,7 @@
 
 ## Equipment
 - Capture Card(s)
-    - [Elgato 4K Pro](https://www.amazon.com/dp/B0CSJPDYDN)
+    - [Elgato Cam Link](https://www.amazon.com/dp/B07K3FN5MR)
     - [Elgato HD60 X](https://www.amazon.com/dp/B09V1KJ3J4)
     - [AXHDCAP 4K HDMI Video Capture Card](https://www.amazon.com/dp/B0C2MDTY8P)
 - 1x2 HDMI Splitter(s)
@@ -754,7 +754,7 @@ touch /dev/shm/looking-glass && sudo chown $USER:kvm /dev/shm/looking-glass && c
 </details>
 
 <details>
-<summary>Elgato HD60 X - OBS Black Screen</summary>
+<summary>Elgato Capture Card - OBS Black Screen</summary>
 
 - Some of Elgato's capture cards, leveraging UVC (USB Video Class) technology, operate seamlessly without requiring additional drivers. As UVC devices, they adhere to a standard protocol for transmitting video and audio data over USB connections. This plug-and-play functionality ensures compatibility with various operating systems, enabling effortless setup and use for capturing high-quality video content.
 
