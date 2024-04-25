@@ -756,8 +756,8 @@ touch /dev/shm/looking-glass && sudo chown $USER:kvm /dev/shm/looking-glass && c
 <details>
 <summary>Elgato HD60 X - OBS Black Screen</summary>
 
-[!TIP]
-Some of Elgato's capture cards, leveraging UVC (USB Video Class) technology, operate seamlessly without requiring additional drivers. As UVC devices, they adhere to a standard protocol for transmitting video and audio data over USB connections. This plug-and-play functionality ensures compatibility with various operating systems, enabling effortless setup and use for capturing high-quality video content.
+> [!TIP]
+> Some of Elgato's capture cards, leveraging UVC (USB Video Class) technology, operate seamlessly without requiring additional drivers. As UVC devices, they adhere to a standard protocol for transmitting video and audio data over USB > connections. This plug-and-play functionality ensures compatibility with various operating systems, enabling effortless setup and use for capturing high-quality video content.
 
 ## Step 1:
 Download & Install the latest `4K CAPTURE UTILITY` software from [Elgato downloads page](https://www.elgato.com/us/en/s/downloads)
