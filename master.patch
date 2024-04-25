@@ -155,7 +155,7 @@ index d802d2787f..08650b8666 100644
      /* device present, functioning, decoding, not shown in UI */
      aml_append(dev, aml_name_decl("_STA", aml_int(0xB)));
 diff --git a/hw/i386/pc.c b/hw/i386/pc.c
-index 5c21b0c4db..5d18a4a861 100644
+index 08c7de416f..4939edc794 100644
 --- a/hw/i386/pc.c
 +++ b/hw/i386/pc.c
 @@ -74,9 +74,9 @@
@@ -169,9 +169,9 @@ index 5c21b0c4db..5d18a4a861 100644
 +    { "AMD64-" TYPE_X86_CPU, "model-id", "AMD CPU version " v, },\
 +    { "athlon-" TYPE_X86_CPU, "model-id", "AMD CPU version " v, },
  
- GlobalProperty pc_compat_8_2[] = {};
- const size_t pc_compat_8_2_len = G_N_ELEMENTS(pc_compat_8_2);
-@@ -114,9 +114,9 @@ GlobalProperty pc_compat_6_1[] = {
+ GlobalProperty pc_compat_9_0[] = {
+     { TYPE_X86_CPU, "guest-phys-bits", "0" },
+@@ -120,9 +120,9 @@ GlobalProperty pc_compat_6_1[] = {
  const size_t pc_compat_6_1_len = G_N_ELEMENTS(pc_compat_6_1);
  
  GlobalProperty pc_compat_6_0[] = {
@@ -184,7 +184,7 @@ index 5c21b0c4db..5d18a4a861 100644
      { TYPE_X86_CPU, "x-vendor-cpuid-only", "off" },
      { "ICH9-LPC", ACPI_PM_PROP_ACPI_PCIHP_BRIDGE, "off" },
      { "ICH9-LPC", "x-keep-pci-slot-hpc", "true" },
-@@ -245,10 +245,10 @@ GlobalProperty pc_compat_2_4[] = {
+@@ -251,10 +251,10 @@ GlobalProperty pc_compat_2_4[] = {
      { "Broadwell-noTSX-" TYPE_X86_CPU, "abm", "off" },
      { "host" "-" TYPE_X86_CPU, "host-cache-info", "on" },
      { TYPE_X86_CPU, "check", "off" },
@@ -199,7 +199,7 @@ index 5c21b0c4db..5d18a4a861 100644
      { "Opteron_G2" "-" TYPE_X86_CPU, "rdtscp", "on" },
      { "Opteron_G3" "-" TYPE_X86_CPU, "rdtscp", "on" },
      { "Opteron_G4" "-" TYPE_X86_CPU, "rdtscp", "on" },
-@@ -259,7 +259,7 @@ const size_t pc_compat_2_4_len = G_N_ELEMENTS(pc_compat_2_4);
+@@ -265,7 +265,7 @@ const size_t pc_compat_2_4_len = G_N_ELEMENTS(pc_compat_2_4);
  GlobalProperty pc_compat_2_3[] = {
      PC_CPU_MODEL_IDS("2.3.0")
      { TYPE_X86_CPU, "arat", "off" },
@@ -208,6 +208,7 @@ index 5c21b0c4db..5d18a4a861 100644
      { "kvm64" "-" TYPE_X86_CPU, "min-level", "5" },
      { "pentium3" "-" TYPE_X86_CPU, "min-level", "2" },
      { "n270" "-" TYPE_X86_CPU, "min-level", "5" },
+
 diff --git a/hw/ide/atapi.c b/hw/ide/atapi.c
 index 73ec373184..a8e344fcdf 100644
 --- a/hw/ide/atapi.c
