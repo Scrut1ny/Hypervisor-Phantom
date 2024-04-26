@@ -789,6 +789,27 @@ Connect the capture card device back to your Linux host system now and open OBS,
 - [allfreedumps](https://www.allfreedumps.com/)
 - [downloadfreepdf](https://www.downloadfreepdf.net/)
 
+## Search Engine Prompts
+
+- Security+
+```
+CompTIA Security+ SY0-701 Quizlet
+```
+
+- Network+
+```
+CompTIA Network+ N10-008 Quizlet
+```
+
+- A+
+```
+CompTIA A+ 220-1101 Quizlet
+```
+
+```
+CompTIA A+ 220-1102 Quizlet
+```
+
 </details>
 
 <details>
