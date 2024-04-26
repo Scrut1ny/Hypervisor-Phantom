@@ -783,29 +783,34 @@ Connect the capture card device back to your Linux host system now and open OBS,
 - [Which CompTIA Certifications Must Be Renewed?](https://help.comptia.org/hc/en-us/articles/13923899954196-Which-CompTIA-Certifications-Must-Be-Renewed)
 
 ## Exam Dump Websites
+- [marks4sure](https://www.marks4sure.com/CompTIA.html)
 - [dumpscollection](https://dumpscollection.net/)
-- [dumpsolutions](https://dumpsolutions.com/)
 - [dumps-files](https://www.dumps-files.com/)
 - [allfreedumps](https://www.allfreedumps.com/)
 - [downloadfreepdf](https://www.downloadfreepdf.net/)
 
 ## Search Engine Prompts
 
-- Security+
+### Security+
+- [SY0-601 Q&A](https://www.marks4sure.com/sy0-601-comptia-securityp-exam-2021-questions.html)
+- [SY0-701 Q&A](https://www.marks4sure.com/sy0-701-comptia-securityp-exam-questions.html)
 ```
 CompTIA Security+ SY0-701 Quizlet
 ```
 
-- Network+
+### Network+
+- [N10-008 Q&A](https://www.marks4sure.com/n10-008-comptia-networkp-certification-exam-questions.html)
+- [N10-009 Q&A]()
 ```
 CompTIA Network+ N10-008 Quizlet
 ```
 
-- A+
+### A+
+- [220-1101 Q&A](https://www.marks4sure.com/220-1101-comptia-ap-certification-exam-core-1-questions.html)
+- [220-1102 Q&A](https://www.marks4sure.com/220-1102-comptia-ap-certification-core-2-exam-questions.html)
 ```
 CompTIA A+ 220-1101 Quizlet
 ```
-
 ```
 CompTIA A+ 220-1102 Quizlet
 ```
