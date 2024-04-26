@@ -630,26 +630,6 @@ cd looking-glass-* && mkdir client/build && cd client/build && cmake ../ && make
 
 </details>
 
-## Spoofed Hardware/Firmware/Software Information
-<details>
-<summary>Expand - ⤵️</summary>
-
-| Feature                | VirtualBox | VMware | QEMU |
-|------------------------|------------|--------|-------|
-| **CPUID**              | ✅         | ✅      | ✅    |
-| **SMBIOS**             | ✅         | ✅      | ✅    |
-| **MAC Address**        | ✅         | ✅      | ✅    |
-| **Solid State Drive (SSD)** | ✅         | ✅      | ✅    |
-| **Hard Disk Drive (HDD)** | ✅         | ✅      | ✅    |
-| **DVD/CD-ROM drives**  | ✅         | ✅      | ✅    |
-| **Registry**           | ✅         | ✅      | ✅    |
-| **ACPI Tables**        | ❌         | ❌      | ✅    |
-| **EDID**               | ❌         | ❌      | ✅    |
-| **USB**                | ❌         | ❌      | ✅    |
-| **PCIe Passthrough**   | ❌         | ❌      | ✅    |
-
-</details>
-
 ## References & Help
 <details>
 <summary>General</summary>
