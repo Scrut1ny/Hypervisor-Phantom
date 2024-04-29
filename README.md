@@ -789,9 +789,9 @@ Connect the capture card device back to your Linux host system now and open OBS,
 - [allfreedumps](https://www.allfreedumps.com/)
 - [downloadfreepdf](https://www.downloadfreepdf.net/)
 
-## ChatGPT prompt for studying
+## ChatGPT Prompt
 ```
-I'm going to provide a question with possible answers, I need you to only tell me the correct answer(s). Just say the answer; no explanations.
+I will provide questions with possible answers, I need you to reply with only the correct answer(s). Just state the answer; no explanations.
 ```
 
 ## Search Engine Prompts
