@@ -47,6 +47,7 @@
 - 1x2 HDMI Splitter(s)
     - [OREI](https://www.amazon.com/dp/B005HXFARS)
     - [ViewHD](https://www.amazon.com/dp/B004F9LVXC)
+    - [CORSAHD](https://www.amazon.com/dp/B0CLL5GQXT)
     - [EZCOO](https://www.amazon.com/dp/B07VP37KMB)
     - [EZCOO](https://www.amazon.com/dp/B07TZRXKYG)
     - [HBAVLINK](https://www.amazon.com/dp/B08T62MKH1)
