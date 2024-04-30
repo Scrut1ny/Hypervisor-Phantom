@@ -888,3 +888,44 @@ https://github.com/Scrut1ny/Hypervisor-Phantom/assets/53458032/c7f0901b-bb61-480
 ![image](https://github.com/Scrut1ny/Hypervisor-Phantom/assets/53458032/2d4c33ed-781c-48c2-b9cc-0ac0aff6b693)
 
 </details>
+
+<details>
+<summary>Taking an exam (OnVUE) Steps</summary>
+
+## Step 1
+![image](https://github.com/Scrut1ny/Hypervisor-Phantom/assets/53458032/e34b1f60-ae0d-4fba-8f17-be9938a627fa)
+
+## Step 2
+![image](https://github.com/Scrut1ny/Hypervisor-Phantom/assets/53458032/6c46e8ab-5934-4e33-8cf0-6ba94b25d95f)
+
+## Step 3
+![image](https://github.com/Scrut1ny/Hypervisor-Phantom/assets/53458032/f6b3db7f-0389-4330-8275-2a29c59dfbb5)
+
+## Step 4
+![image](https://github.com/Scrut1ny/Hypervisor-Phantom/assets/53458032/f2cc1514-079e-4d1e-8a40-7a97f79074ff)
+
+## Step 5
+![image](https://github.com/Scrut1ny/Hypervisor-Phantom/assets/53458032/bcd4ffdb-abfc-4b18-9ec9-002597f1eac9)
+
+## Step 6
+![image](https://github.com/Scrut1ny/Hypervisor-Phantom/assets/53458032/2a851ddc-af9b-41e2-a818-3c5df01e32a7)
+
+## Step 7
+![image](https://github.com/Scrut1ny/Hypervisor-Phantom/assets/53458032/64bf7068-cd84-4706-92c9-e078f8fd9f77)
+
+## Step 8
+![image](https://github.com/Scrut1ny/Hypervisor-Phantom/assets/53458032/cb042c65-c8f9-4d46-b218-f6fe0fab8398)
+
+## Step 9
+![image](https://github.com/Scrut1ny/Hypervisor-Phantom/assets/53458032/b0cd79ce-d760-4d02-9425-5c4313d4a18c)
+
+## Step 10
+![image](https://github.com/Scrut1ny/Hypervisor-Phantom/assets/53458032/5cd82e0b-e506-4e7c-ab11-3794f35fafca)
+
+## Step 11
+![image](https://github.com/Scrut1ny/Hypervisor-Phantom/assets/53458032/12cf93ca-6e63-49eb-9cd2-880b429159db)
+
+## Step 12
+![image](https://github.com/Scrut1ny/Hypervisor-Phantom/assets/53458032/9fe10ad0-0b9b-47a5-92e0-eec0f303d25b)
+
+</details>
