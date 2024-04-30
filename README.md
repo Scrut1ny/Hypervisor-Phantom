@@ -29,16 +29,15 @@
 ## Capture Card Format Support:
 ![image](https://github.com/Scrut1ny/Hypervisor-Phantom/assets/53458032/17cfcbe5-0700-440c-af12-3c1dd0157ff1)
 
-## Budget Bypass Kit:
-- [HDMI Splitter](https://www.amazon.com/dp/B004F9LVXC)
-    - Bypasses HDCP 1.0-2.2 ✅
-- [Video Capture Card](https://www.amazon.com/dp/B0C2MDTY8P)
-- [HDMI to HDMI 2.0 EDID Emulator](https://www.amazon.com/dp/B0CRRWQ7XS)
-- [DP 1.2 to HDMI 2.0 EDID Emulator](https://www.amazon.com/dp/B0C3H763FG)
-    - EDID copy & emulation ✅
-    - Bi-directional design ✅
-    - HDCP pass-through ✅
-- [x2 - HDMI Cable](https://www.amazon.com/dp/B07X37CG9V)
+## Cheapo Bypass Kit:
+- 1x2 HDMI Splitter `$13` > [OREI](https://www.amazon.com/dp/B005HXFARS)
+- EDID Emulator `$7` > [EVanlak](https://www.amazon.com/dp/B07YMTKJCR)
+- USB HDMI Capture Card `$9` > [AXHDCAP](https://www.amazon.com/dp/B0C2MDTY8P)
+
+## Elegent Bypass Kit (Recommended):
+- 1x2 HDMI Splitter `$20-30` > [ViewHD](https://www.amazon.com/dp/B004F9LVXC)
+- EDID Emulator `$20` > [HD-EWB](https://www.amazon.com/dp/B0CRRWQ7XS)
+- USB HDMI Capture Card `$130-200` > [Elgato HD60 X](https://www.amazon.com/dp/B09V1KJ3J4)
 
 ## Equipment
 - Capture Card(s)
@@ -46,6 +45,7 @@
     - [Elgato HD60 X](https://www.amazon.com/dp/B09V1KJ3J4)
     - [AXHDCAP 4K HDMI Video Capture Card](https://www.amazon.com/dp/B0C2MDTY8P)
 - 1x2 HDMI Splitter(s)
+    - [OREI](https://www.amazon.com/dp/B005HXFARS)
     - [ViewHD](https://www.amazon.com/dp/B004F9LVXC)
     - [EZCOO](https://www.amazon.com/dp/B07VP37KMB)
     - [EZCOO](https://www.amazon.com/dp/B07TZRXKYG)
@@ -53,9 +53,10 @@
 - EDID Emulator(s)
     - HDMI 
         - [HD-EWB](https://www.amazon.com/dp/B0CRRWQ7XS)
-        - [EVanlak 4K UHD](https://www.amazon.com/dp/B07YMTKJCR)
+        - [EVanlak](https://www.amazon.com/dp/B07YMTKJCR)
     - DP
-        - [EVanlak 4K](https://www.amazon.com/dp/B07YLP1GG4)
+        - [DPH-EWB](https://www.amazon.com/dp/B0C3H763FG)
+        - [EVanlak](https://www.amazon.com/dp/B07YLP1GG4)
 
 </details>
 
