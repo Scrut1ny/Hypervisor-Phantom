@@ -22,7 +22,7 @@
 <summary>Bypassing HDCP</summary>
 
 ## Bypassing HDCP Visual Graph:
-![hdcp](https://github.com/Scrut1ny/Hypervisor-Phantom/assets/53458032/f479e9a1-29c3-4536-b77c-cbf85d8f4972)
+![bypass](https://github.com/Scrut1ny/Hypervisor-Phantom/assets/53458032/589b0f88-f14b-44d8-bf1c-225df4d01e54)
 
 - [HDCP Versions](https://en.wikipedia.org/wiki/High-bandwidth_Digital_Content_Protection#Versions)
 
