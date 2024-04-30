@@ -791,7 +791,7 @@ Connect the capture card device back to your Linux host system now and open OBS,
 
 ## ChatGPT Prompt
 ```
-I will provide questions with possible answers, I need you to reply with only the correct answer(s). Just state the answer; no explanations.
+I'll provide questions with possible answers, I need you to reply with only the correct answer(s). Just state the answer; no explanations.
 ```
 
 ## Search Engine Prompts
