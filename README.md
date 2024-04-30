@@ -2,7 +2,7 @@
 <details>
 <summary>Proctoring Software</summary>
 
-| Software | Browser Extension | System Test | Bypassed | Difficulty |
+| Software | Browser Extension | System Test | Bypassed |
 | - | - | - | - | - |
 | Pafish |  | [Link](https://github.com/a0rtega/pafish/releases/download/v0.6/pafish64.exe) | ✅ |
 | Al-Khaser |  | [Link](https://github.com/LordNoteworthy/al-khaser) | ❔ |
