@@ -34,7 +34,7 @@
 - EDID Emulator `$7` > [EVanlak](https://www.amazon.com/dp/B07YMTKJCR)
 - USB HDMI Capture Card `$9` > [AXHDCAP](https://www.amazon.com/dp/B0C2MDTY8P)
 
-## Elegent Bypass Kit (Recommended):
+## Elegant Bypass Kit (Recommended):
 - 1x2 HDMI Splitter `$20-30` > [ViewHD](https://www.amazon.com/dp/B004F9LVXC)
 - EDID Emulator `$20` > [HD-EWB](https://www.amazon.com/dp/B0CRRWQ7XS)
 - USB HDMI Capture Card `$130-200` > [Elgato HD60 X](https://www.amazon.com/dp/B09V1KJ3J4)
