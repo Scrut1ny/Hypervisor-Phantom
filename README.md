@@ -13,7 +13,7 @@
 | Proctorio | ✅ | [Link](https://getproctorio.com/) | ✅ |
 | Examity | ✅ | [New Platform System Check](https://on.examity.com/V5/systemcheck) or [Chrome Addon]() or [FF Addon](https://addons.mozilla.org/en-US/firefox/addon/examity/) | ✅ |
 | Respondus (LockDown Browser) | ✅ | [Link](https://download.respondus.com/lockdown/download.php) | ✅ |
-| Kryterion |  |  | ✅ |
+| Kryterion |  | [Link](https://www.kryterion.com/systemcheck/) | ✅ |
 | Honorlock | ✅ | [Link](https://app.honorlock.com/install/extension) | ✅ |
 
 </details>
