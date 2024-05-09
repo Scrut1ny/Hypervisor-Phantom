@@ -933,7 +933,7 @@ https://github.com/Scrut1ny/Hypervisor-Phantom/assets/53458032/c7f0901b-bb61-480
 <details>
 <summary>Renewing Multiple Certifications Steps</summary>
 
-[Renew existing certifications](https://www.comptia.org/continuing-education/learn/renewing-multiple-certifications)
+- [Renew existing certifications](https://www.comptia.org/continuing-education/learn/renewing-multiple-certifications)
 
 ![image](https://github.com/Scrut1ny/Hypervisor-Phantom/assets/53458032/784d4707-0920-401b-983c-e7bd7b6b6cc1)
 
