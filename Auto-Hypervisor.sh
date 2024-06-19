@@ -79,12 +79,14 @@ function configs() {
 
 
 function QEMU() {
+
+    clear && echo -e "\n  [+] Installing QEMU Dependencies"
+
     # Handle different distributions
     case "${distro}" in
         Debian)
-            # Dependencies & Prerequisites
-            echo -e "\n  [+] Installing QEMU Dependencies"
             {
+                sudo pip install tomli
                 sudo apt install -y git python3-venv libglib2.0-0 flex bison
                 sudo apt install -y binutils-mingw-w64 binutils-mingw-w64-i686 binutils-mingw-w64-x86-64 clang g++-mingw-w64 g++-mingw-w64-i686 g++-mingw-w64-x86-64 gcc-mingw-w64 gcc-mingw-w64-i686 gcc-mingw-w64-x86-64 git git-email gnutls-bin libaio-dev libbluetooth-dev libbrlapi-dev libbz2-dev libcacard-dev libcap-dev libcap-ng-dev libcurl4-gnutls-dev libfdt-dev libglib2.0-dev libgtk-3-dev libibverbs-dev libiscsi-dev libjpeg8-dev liblzo2-dev libncurses5-dev libncursesw5-dev libnfs-dev libnuma-dev libpam0g-dev libpixman-1-dev librbd-dev librdmacm-dev libseccomp-dev libsnappy-dev libsasl2-dev libsdl1.2-dev libsdl2-dev libsdl2-image-dev libspice-protocol-dev libspice-server-dev libusb-1.0-0-dev libusb-dev libusbredirparser-dev libusbredirparser1 libvde-dev libvdeplug-dev libvirglrenderer-dev libvte-2.91-dev libxen-dev libxml2-dev libz-mingw-w64-dev libzstd-dev ninja-build valgrind win-iconv-mingw-w64-dev xfslibs-dev zlib1g-dev
                 sudo apt install -y virt-manager libvirt-clients libvirt-daemon-system libvirt-daemon-config-network bridge-utils ovmf
@@ -101,7 +103,7 @@ function QEMU() {
         Arch)
             # Dependencies & Prerequisites
             echo "  [!] Distribution not supported yet, in progress."
-            # sudo pacman -S virt-manager
+            # sudo pacman -S git wget base-devel glib2 ninja python
             ;;
         *)
             echo "  [!] Distribution not recognized or not supported by this script."
@@ -112,8 +114,8 @@ function QEMU() {
     # Downloading QEMU & Applying custom patch
     echo -e "\n  [+] Downloading QEMU Source"
     {
-        git clone https://gitlab.com/qemu-project/qemu
-        cd qemu/ && curl https://raw.githubusercontent.com/Scrut1ny/Hypervisor-Phantom/main/master.patch -o master.patch && git apply master.patch
+        git clone https://gitlab.com/qemu-project/qemu.git/
+        cd qemu/ && curl https://raw.githubusercontent.com/Scrut1ny/Hypervisor-Phantom/main/master.patch -o master.patch && git apply --reject master.patch
     } >/dev/null 2>&1
     echo -e "\n  [+] Applying Custom QEMU Patch"
     
@@ -143,11 +145,12 @@ function QEMU() {
 
 
 function Looking_Glass() {
+
+    clear && echo -e "\n  [+] Installing Looking Glass Dependencies"
+
     # Handle different distributions
     case "${distro}" in
         Debian)
-            # Dependencies
-            echo -e "\n  [+] Installing Looking Glass Dependencies"
             {
                 sudo apt install -y binutils-dev cmake fonts-dejavu-core libfontconfig-dev gcc g++ pkg-config libegl-dev libgl-dev libgles-dev libspice-protocol-dev nettle-dev libx11-dev libxcursor-dev libxi-dev libxinerama-dev libxpresent-dev libxss-dev libxkbcommon-dev libwayland-dev wayland-protocols libpipewire-0.3-dev libpulse-dev libsamplerate0-dev > /dev/null 2>&1
             } >/dev/null 2>&1
@@ -231,20 +234,24 @@ EOF
 
 
 function Kernal_Patch() {
-    # Handle different distributions
+
+    clear && echo -e "\n  [+] Installing Linux Kernal Compiling Dependencies"
+    
     case "${distro}" in
         Debian)
-            # Dependencies
-            echo -e "\n  [+] Installing Linux Kernal Compiling Dependencies"
             {
-                sudo apt install -y build-essential libncurses-dev bison flex libssl-dev libelf-dev git bc
+                sudo apt install -y build-essential libncurses-dev bison flex libssl-dev libelf-dev
             } >/dev/null 2>&1
             ;;
         Fedora)
-            clear && echo -e "\n  [+] Updating Grub Config and initramfs image"
+            {
+                echo -e "\n  [!] Distribution not supported yet, in progress."
+            } >/dev/null 2>&1
             ;;
         Arch)
-            clear && echo -e "\n  [+] Updating Grub Config and initramfs image"
+            {
+                echo -e "\n  [!] Distribution not supported yet, in progress."
+            } >/dev/null 2>&1
             ;;
         *)
             clear && echo -e "\n  [!] Distribution not recognized or not supported by this script."
@@ -261,7 +268,6 @@ function Kernal_Patch() {
     # Prepare the Kernel Configuration
     echo -e "\n  [+] Copied current kernel config"
     cp /boot/config-$(uname -r) .config
-    make oldconfig
 
     # Apply Your Custom Patches
     echo -e "\n  [+] Applying custom patch"
