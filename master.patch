@@ -82,20 +82,20 @@ index 35364312c7..573e6f2aae 100644
      w += 6;
  
 diff --git a/hw/arm/sbsa-ref.c b/hw/arm/sbsa-ref.c
-index f5709d6c14..6c0f38fff1 100644
+index e884692f07..0e23186cf5 100644
 --- a/hw/arm/sbsa-ref.c
 +++ b/hw/arm/sbsa-ref.c
-@@ -874,7 +874,7 @@ static void sbsa_ref_class_init(ObjectClass *oc, void *data)
+@@ -890,7 +890,7 @@ static void sbsa_ref_class_init(ObjectClass *oc, void *data)
      };
  
      mc->init = sbsa_ref_init;
 -    mc->desc = "QEMU 'SBSA Reference' ARM Virtual Machine";
 +    mc->desc = "MSI 'SBSA Reference' ARM Machine";
-     mc->default_cpu_type = ARM_CPU_TYPE_NAME("neoverse-n1");
+     mc->default_cpu_type = ARM_CPU_TYPE_NAME("neoverse-n2");
      mc->valid_cpu_types = valid_cpu_types;
      mc->max_cpus = 512;
 diff --git a/hw/arm/virt.c b/hw/arm/virt.c
-index c9119ef384..1c58456f71 100644
+index 3c93c0c0a6..2dc1867787 100644
 --- a/hw/arm/virt.c
 +++ b/hw/arm/virt.c
 @@ -108,7 +108,7 @@ static void arm_virt_compat_set(MachineClass *mc)
@@ -107,7 +107,7 @@ index c9119ef384..1c58456f71 100644
          if (latest) { \
              mc->alias = "virt"; \
          } \
-@@ -1643,13 +1643,13 @@ static void virt_build_smbios(VirtMachineState *vms)
+@@ -1670,13 +1670,13 @@ static void virt_build_smbios(VirtMachineState *vms)
      uint8_t *smbios_tables, *smbios_anchor;
      size_t smbios_tables_len, smbios_anchor_len;
      struct smbios_phys_mem_area mem_array;
@@ -142,10 +142,10 @@ index 2cb819675e..271ff3d408 100644
      if (!info->prefx) {
          info->prefx = 1280;
 diff --git a/hw/i386/fw_cfg.c b/hw/i386/fw_cfg.c
-index d802d2787f..08650b8666 100644
+index 6e0d9945d0..e7b646f14b 100644
 --- a/hw/i386/fw_cfg.c
 +++ b/hw/i386/fw_cfg.c
-@@ -218,7 +218,7 @@ void fw_cfg_add_acpi_dsdt(Aml *scope, FWCfgState *fw_cfg)
+@@ -219,7 +219,7 @@ void fw_cfg_add_acpi_dsdt(Aml *scope, FWCfgState *fw_cfg)
      Aml *dev = aml_device("FWCF");
      Aml *crs = aml_resource_template();
  
@@ -155,10 +155,10 @@ index d802d2787f..08650b8666 100644
      /* device present, functioning, decoding, not shown in UI */
      aml_append(dev, aml_name_decl("_STA", aml_int(0xB)));
 diff --git a/hw/i386/pc.c b/hw/i386/pc.c
-index 08c7de416f..4939edc794 100644
+index 0469af00a7..a08e34de48 100644
 --- a/hw/i386/pc.c
 +++ b/hw/i386/pc.c
-@@ -74,9 +74,9 @@
+@@ -75,9 +75,9 @@
   * depending on QEMU versions up to QEMU 2.4.
   */
  #define PC_CPU_MODEL_IDS(v) \
@@ -170,8 +170,8 @@ index 08c7de416f..4939edc794 100644
 +    { "athlon-" TYPE_X86_CPU, "model-id", "AMD CPU version " v, },
  
  GlobalProperty pc_compat_9_0[] = {
-     { TYPE_X86_CPU, "guest-phys-bits", "0" },
-@@ -120,9 +120,9 @@ GlobalProperty pc_compat_6_1[] = {
+     { TYPE_X86_CPU, "x-l1-cache-per-thread", "false" },
+@@ -123,9 +123,9 @@ GlobalProperty pc_compat_6_1[] = {
  const size_t pc_compat_6_1_len = G_N_ELEMENTS(pc_compat_6_1);
  
  GlobalProperty pc_compat_6_0[] = {
@@ -184,7 +184,7 @@ index 08c7de416f..4939edc794 100644
      { TYPE_X86_CPU, "x-vendor-cpuid-only", "off" },
      { "ICH9-LPC", ACPI_PM_PROP_ACPI_PCIHP_BRIDGE, "off" },
      { "ICH9-LPC", "x-keep-pci-slot-hpc", "true" },
-@@ -251,10 +251,10 @@ GlobalProperty pc_compat_2_4[] = {
+@@ -254,10 +254,10 @@ GlobalProperty pc_compat_2_4[] = {
      { "Broadwell-noTSX-" TYPE_X86_CPU, "abm", "off" },
      { "host" "-" TYPE_X86_CPU, "host-cache-info", "on" },
      { TYPE_X86_CPU, "check", "off" },
@@ -199,7 +199,7 @@ index 08c7de416f..4939edc794 100644
      { "Opteron_G2" "-" TYPE_X86_CPU, "rdtscp", "on" },
      { "Opteron_G3" "-" TYPE_X86_CPU, "rdtscp", "on" },
      { "Opteron_G4" "-" TYPE_X86_CPU, "rdtscp", "on" },
-@@ -265,7 +265,7 @@ const size_t pc_compat_2_4_len = G_N_ELEMENTS(pc_compat_2_4);
+@@ -268,7 +268,7 @@ const size_t pc_compat_2_4_len = G_N_ELEMENTS(pc_compat_2_4);
  GlobalProperty pc_compat_2_3[] = {
      PC_CPU_MODEL_IDS("2.3.0")
      { TYPE_X86_CPU, "arat", "off" },
@@ -209,10 +209,10 @@ index 08c7de416f..4939edc794 100644
      { "pentium3" "-" TYPE_X86_CPU, "min-level", "2" },
      { "n270" "-" TYPE_X86_CPU, "min-level", "5" },
 diff --git a/hw/ide/atapi.c b/hw/ide/atapi.c
-index 73ec373184..a8e344fcdf 100644
+index fcb6cca157..57f8e76d4b 100644
 --- a/hw/ide/atapi.c
 +++ b/hw/ide/atapi.c
-@@ -797,8 +797,8 @@ static void cmd_inquiry(IDEState *s, uint8_t *buf)
+@@ -798,8 +798,8 @@ static void cmd_inquiry(IDEState *s, uint8_t *buf)
          buf[5] = 0;    /* reserved */
          buf[6] = 0;    /* reserved */
          buf[7] = 0;    /* reserved */
@@ -224,10 +224,10 @@ index 73ec373184..a8e344fcdf 100644
          idx = 36;
      }
 diff --git a/hw/ide/core.c b/hw/ide/core.c
-index e8cb2dac92..a01726d851 100644
+index 08d9218455..a305deb14d 100644
 --- a/hw/ide/core.c
 +++ b/hw/ide/core.c
-@@ -2627,20 +2627,20 @@ int ide_init_drive(IDEState *s, IDEDevice *dev, IDEDriveKind kind, Error **errp)
+@@ -2640,20 +2640,20 @@ int ide_init_drive(IDEState *s, IDEDevice *dev, IDEDriveKind kind, Error **errp)
          pstrcpy(s->drive_serial_str, sizeof(s->drive_serial_str), dev->serial);
      } else {
          snprintf(s->drive_serial_str, sizeof(s->drive_serial_str),
@@ -320,7 +320,7 @@ index 76bedc1844..7fc2f72819 100644
      .event = hid_pointer_event,
      .sync  = hid_pointer_sync,
 diff --git a/hw/input/ps2.c b/hw/input/ps2.c
-index 00b695a0b9..5199c8eee9 100644
+index d6f834443d..0cb89dbf71 100644
 --- a/hw/input/ps2.c
 +++ b/hw/input/ps2.c
 @@ -1232,7 +1232,7 @@ static const VMStateDescription vmstate_ps2_mouse = {
@@ -342,10 +342,10 @@ index 00b695a0b9..5199c8eee9 100644
      .event = ps2_mouse_event,
      .sync  = ps2_mouse_sync,
 diff --git a/hw/input/tsc2005.c b/hw/input/tsc2005.c
-index 941f163d36..a3ff9185a1 100644
+index 54a15d2441..d0874fd65f 100644
 --- a/hw/input/tsc2005.c
 +++ b/hw/input/tsc2005.c
-@@ -510,7 +510,7 @@ void *tsc2005_init(qemu_irq pintdav)
+@@ -523,7 +523,7 @@ void *tsc2005_init(qemu_irq pintdav)
      tsc2005_reset(s);
  
      qemu_add_mouse_event_handler(tsc2005_touchscreen_event, s, 1,
@@ -396,17 +396,17 @@ index 45e4d4c75d..1e898e4357 100644
  /* ----------------------------------------------------------------- */
  
 diff --git a/hw/loongarch/virt.c b/hw/loongarch/virt.c
-index 441d764843..7ca4553cac 100644
+index 66cef201ab..0001e24f31 100644
 --- a/hw/loongarch/virt.c
 +++ b/hw/loongarch/virt.c
-@@ -349,13 +349,13 @@ static void virt_build_smbios(LoongArchMachineState *lams)
-     MachineClass *mc = MACHINE_GET_CLASS(lams);
+@@ -550,13 +550,13 @@ static void virt_build_smbios(LoongArchVirtMachineState *lvms)
+     MachineClass *mc = MACHINE_GET_CLASS(lvms);
      uint8_t *smbios_tables, *smbios_anchor;
      size_t smbios_tables_len, smbios_anchor_len;
 -    const char *product = "QEMU Virtual Machine";
 +    const char *product = "AMD Machine";
  
-     if (!lams->fw_cfg) {
+     if (!lvms->fw_cfg) {
          return;
      }
  
@@ -486,19 +486,19 @@ index 19d01f39fa..00ee3f80e5 100644
  
  static
 diff --git a/hw/scsi/scsi-disk.c b/hw/scsi/scsi-disk.c
-index 4bd7af9d0c..5d630883eb 100644
+index a67092db6a..6ea938bdb6 100644
 --- a/hw/scsi/scsi-disk.c
 +++ b/hw/scsi/scsi-disk.c
-@@ -2499,7 +2499,7 @@ static void scsi_realize(SCSIDevice *dev, Error **errp)
+@@ -2521,7 +2521,7 @@ static void scsi_realize(SCSIDevice *dev, Error **errp)
          s->version = g_strdup(qemu_hw_version());
      }
      if (!s->vendor) {
 -        s->vendor = g_strdup("QEMU");
 +        s->vendor = g_strdup("MSI");
      }
-     if (!s->device_id) {
-         if (s->serial) {
-@@ -2552,7 +2552,7 @@ static void scsi_hd_realize(SCSIDevice *dev, Error **errp)
+     if (s->serial && strlen(s->serial) > MAX_SERIAL_LEN) {
+         error_setg(errp, "The serial number can't be longer than %d characters",
+@@ -2585,7 +2585,7 @@ static void scsi_hd_realize(SCSIDevice *dev, Error **errp)
      s->qdev.blocksize = s->qdev.conf.logical_block_size;
      s->qdev.type = TYPE_DISK;
      if (!s->product) {
@@ -507,7 +507,7 @@ index 4bd7af9d0c..5d630883eb 100644
      }
      scsi_realize(&s->qdev, errp);
  }
-@@ -2579,7 +2579,7 @@ static void scsi_cd_realize(SCSIDevice *dev, Error **errp)
+@@ -2612,7 +2612,7 @@ static void scsi_cd_realize(SCSIDevice *dev, Error **errp)
      s->qdev.type = TYPE_ROM;
      s->features |= 1 << SCSI_DISK_F_REMOVABLE;
      if (!s->product) {
@@ -711,7 +711,7 @@ index 7e4a0765ae..e49e1f7af0 100644
      uc->cancel_packet  = usb_mtp_cancel_packet;
      uc->handle_attach  = usb_desc_attach;
 diff --git a/hw/usb/dev-network.c b/hw/usb/dev-network.c
-index 2c33e36cad..6ac3f46405 100644
+index d00d68b21d..953823f538 100644
 --- a/hw/usb/dev-network.c
 +++ b/hw/usb/dev-network.c
 @@ -99,15 +99,15 @@ enum usbstring_idx {
@@ -739,7 +739,7 @@ index 2c33e36cad..6ac3f46405 100644
      [STRING_SERIALNUMBER]       = "1",
  };
  
-@@ -725,7 +725,7 @@ static int ndis_query(USBNetState *s, uint32_t oid,
+@@ -717,7 +717,7 @@ static int ndis_query(USBNetState *s, uint32_t oid,
  
      /* mandatory */
      case OID_GEN_VENDOR_DESCRIPTION:
@@ -748,7 +748,7 @@ index 2c33e36cad..6ac3f46405 100644
          return strlen((char *)outbuf) + 1;
  
      case OID_GEN_VENDOR_DRIVER_VERSION:
-@@ -1426,7 +1426,7 @@ static void usb_net_class_initfn(ObjectClass *klass, void *data)
+@@ -1418,7 +1418,7 @@ static void usb_net_class_initfn(ObjectClass *klass, void *data)
      USBDeviceClass *uc = USB_DEVICE_CLASS(klass);
  
      uc->realize        = usb_net_realize;
@@ -1001,10 +1001,10 @@ index a3784155cb..c39521f08a 100644
  #define ACPI_BUILD_TABLE_FILE "etc/acpi/tables"
  #define ACPI_BUILD_RSDP_FILE "etc/acpi/rsdp"
 diff --git a/target/i386/cpu.c b/target/i386/cpu.c
-index fd6af0d763..c7a19175c5 100644
+index 365852cb99..2ed7d12e9c 100644
 --- a/target/i386/cpu.c
 +++ b/target/i386/cpu.c
-@@ -2209,7 +2209,7 @@ static const X86CPUDefinition builtin_x86_defs[] = {
+@@ -2414,7 +2414,7 @@ static const X86CPUDefinition builtin_x86_defs[] = {
          .features[FEAT_8000_0001_ECX] =
              CPUID_EXT3_LAHF_LM | CPUID_EXT3_SVM,
          .xlevel = 0x8000000A,
@@ -1013,7 +1013,7 @@ index fd6af0d763..c7a19175c5 100644
      },
      {
          .name = "phenom",
-@@ -2324,7 +2324,7 @@ static const X86CPUDefinition builtin_x86_defs[] = {
+@@ -2529,7 +2529,7 @@ static const X86CPUDefinition builtin_x86_defs[] = {
               VMX_CPU_BASED_UNCOND_IO_EXITING | VMX_CPU_BASED_USE_IO_BITMAPS |
               VMX_CPU_BASED_MONITOR_EXITING | VMX_CPU_BASED_PAUSE_EXITING,
          .xlevel = 0x80000008,
@@ -1022,7 +1022,7 @@ index fd6af0d763..c7a19175c5 100644
      },
      {
          .name = "qemu32",
-@@ -2338,7 +2338,7 @@ static const X86CPUDefinition builtin_x86_defs[] = {
+@@ -2543,7 +2543,7 @@ static const X86CPUDefinition builtin_x86_defs[] = {
          .features[FEAT_1_ECX] =
              CPUID_EXT_SSE3,
          .xlevel = 0x80000004,
@@ -1031,7 +1031,7 @@ index fd6af0d763..c7a19175c5 100644
      },
      {
          .name = "kvm32",
-@@ -2368,7 +2368,7 @@ static const X86CPUDefinition builtin_x86_defs[] = {
+@@ -2573,7 +2573,7 @@ static const X86CPUDefinition builtin_x86_defs[] = {
               VMX_CPU_BASED_USE_IO_BITMAPS | VMX_CPU_BASED_MONITOR_EXITING |
               VMX_CPU_BASED_PAUSE_EXITING | VMX_CPU_BASED_USE_MSR_BITMAPS,
          .xlevel = 0x80000008,
@@ -1040,7 +1040,7 @@ index fd6af0d763..c7a19175c5 100644
      },
      {
          .name = "coreduo",
-@@ -2464,7 +2464,7 @@ static const X86CPUDefinition builtin_x86_defs[] = {
+@@ -2669,7 +2669,7 @@ static const X86CPUDefinition builtin_x86_defs[] = {
          .features[FEAT_8000_0001_EDX] =
              CPUID_EXT2_MMXEXT | CPUID_EXT2_3DNOW | CPUID_EXT2_3DNOWEXT,
          .xlevel = 0x80000008,
@@ -1049,7 +1049,7 @@ index fd6af0d763..c7a19175c5 100644
      },
      {
          .name = "n270",
-@@ -5123,7 +5123,7 @@ static void max_x86_cpu_initfn(Object *obj)
+@@ -5339,7 +5339,7 @@ static void max_x86_cpu_initfn(Object *obj)
      object_property_set_str(OBJECT(cpu), "vendor", CPUID_VENDOR_AMD,
                              &error_abort);
      object_property_set_str(OBJECT(cpu), "model-id",
@@ -1058,7 +1058,7 @@ index fd6af0d763..c7a19175c5 100644
                              &error_abort);
  }
  
-@@ -7337,7 +7337,7 @@ static void x86_cpu_hyperv_realize(X86CPU *cpu)
+@@ -7543,7 +7543,7 @@ static void x86_cpu_hyperv_realize(X86CPU *cpu)
  
      /* Hyper-V vendor id */
      if (!cpu->hyperv_vendor) {
@@ -1068,10 +1068,10 @@ index fd6af0d763..c7a19175c5 100644
      }
      len = strlen(cpu->hyperv_vendor);
 diff --git a/target/i386/kvm/kvm.c b/target/i386/kvm/kvm.c
-index c5943605ee..c6a0a9a668 100644
+index 912f5d5a6b..c8f6723e07 100644
 --- a/target/i386/kvm/kvm.c
 +++ b/target/i386/kvm/kvm.c
-@@ -2132,7 +2132,7 @@ int kvm_arch_init_vcpu(CPUState *cs)
+@@ -2167,7 +2167,7 @@ int kvm_arch_init_vcpu(CPUState *cs)
          abort();
  #endif
      } else if (cpu->expose_kvm) {
@@ -1081,7 +1081,7 @@ index c5943605ee..c6a0a9a668 100644
          c->function = KVM_CPUID_SIGNATURE | kvm_base;
          c->eax = KVM_CPUID_FEATURES | kvm_base;
 diff --git a/target/s390x/cpu_models.c b/target/s390x/cpu_models.c
-index 8ed3bb6a27..8ac42edfba 100644
+index efb508cd2e..d180a8f97b 100644
 --- a/target/s390x/cpu_models.c
 +++ b/target/s390x/cpu_models.c
 @@ -87,9 +87,9 @@ static S390CPUDef s390_cpu_defs[] = {
@@ -1097,18 +1097,7 @@ index 8ed3bb6a27..8ac42edfba 100644
  static S390FeatBitmap qemu_max_cpu_feat;
  
  /* features part of a base model but not relevant for finding a base model */
-@@ -561,8 +561,8 @@ S390CPUModel *get_max_cpu_model(Error **errp)
-     if (kvm_enabled()) {
-         kvm_s390_get_host_cpu_model(&max_model, &err);
-     } else {
--        max_model.def = s390_find_cpu_def(QEMU_MAX_CPU_TYPE, QEMU_MAX_CPU_GEN,
--                                          QEMU_MAX_CPU_EC_GA, NULL);
-+        max_model.def = s390_find_cpu_def(AMD_MAX_CPU_TYPE, AMD_MAX_CPU_GEN,
-+                                          AMD_MAX_CPU_EC_GA, NULL);
-         bitmap_copy(max_model.features, qemu_max_cpu_feat, S390_FEAT_MAX);
-     }
-     if (err) {
-@@ -889,7 +889,7 @@ static void s390_qemu_cpu_model_class_init(ObjectClass *oc, void *data)
+@@ -885,7 +885,7 @@ static void s390_qemu_cpu_model_class_init(ObjectClass *oc, void *data)
      S390CPUClass *xcc = S390_CPU_CLASS(oc);
  
      xcc->is_migration_safe = true;
@@ -1117,7 +1106,7 @@ index 8ed3bb6a27..8ac42edfba 100644
                                  qemu_hw_version());
  }
  
-@@ -996,8 +996,8 @@ static void register_types(void)
+@@ -992,8 +992,8 @@ static void register_types(void)
      }
  
      /* initialize the qemu model with the maximum definition ("max" model) */
@@ -1129,10 +1118,10 @@ index 8ed3bb6a27..8ac42edfba 100644
      for (i = 0; i < ARRAY_SIZE(s390_cpu_defs); i++) {
          char *base_name = s390_base_cpu_type_name(s390_cpu_defs[i].name);
 diff --git a/target/s390x/tcg/misc_helper.c b/target/s390x/tcg/misc_helper.c
-index 8764846ce8..0cbb96015e 100644
+index 303f86d363..5a8921933b 100644
 --- a/target/s390x/tcg/misc_helper.c
 +++ b/target/s390x/tcg/misc_helper.c
-@@ -325,18 +325,18 @@ uint32_t HELPER(stsi)(CPUS390XState *env, uint64_t a0, uint64_t r0, uint64_t r1)
+@@ -326,18 +326,18 @@ uint32_t HELPER(stsi)(CPUS390XState *env, uint64_t a0, uint64_t r0, uint64_t r1)
              /* Basic Machine Configuration */
              char type[5] = {};
  
@@ -1157,7 +1146,7 @@ index 8764846ce8..0cbb96015e 100644
              sysib.sysib_121.cpu_addr = cpu_to_be16(env->core_id);
          } else if ((sel1 == 2) && (sel2 == 2)) {
              /* Basic Machine CPUs */
-@@ -351,8 +351,8 @@ uint32_t HELPER(stsi)(CPUS390XState *env, uint64_t a0, uint64_t r0, uint64_t r1)
+@@ -352,8 +352,8 @@ uint32_t HELPER(stsi)(CPUS390XState *env, uint64_t a0, uint64_t r0, uint64_t r1)
      case STSI_R0_FC_LEVEL_2:
          if ((sel1 == 2) && (sel2 == 1)) {
              /* LPAR CPU */
@@ -1168,7 +1157,7 @@ index 8764846ce8..0cbb96015e 100644
              sysib.sysib_221.cpu_addr = cpu_to_be16(env->core_id);
          } else if ((sel1 == 2) && (sel2 == 2)) {
              /* LPAR CPUs */
-@@ -360,7 +360,7 @@ uint32_t HELPER(stsi)(CPUS390XState *env, uint64_t a0, uint64_t r0, uint64_t r1)
+@@ -361,7 +361,7 @@ uint32_t HELPER(stsi)(CPUS390XState *env, uint64_t a0, uint64_t r0, uint64_t r1)
              sysib.sysib_222.total_cpus = cpu_to_be16(total_cpus);
              sysib.sysib_222.conf_cpus = cpu_to_be16(conf_cpus);
              sysib.sysib_222.reserved_cpus = cpu_to_be16(reserved_cpus);
@@ -1177,7 +1166,7 @@ index 8764846ce8..0cbb96015e 100644
              sysib.sysib_222.caf = cpu_to_be32(1000);
              sysib.sysib_222.dedicated_cpus = cpu_to_be16(conf_cpus);
          } else {
-@@ -376,7 +376,7 @@ uint32_t HELPER(stsi)(CPUS390XState *env, uint64_t a0, uint64_t r0, uint64_t r1)
+@@ -377,7 +377,7 @@ uint32_t HELPER(stsi)(CPUS390XState *env, uint64_t a0, uint64_t r0, uint64_t r1)
              sysib.sysib_322.vm[0].reserved_cpus = cpu_to_be16(reserved_cpus);
              sysib.sysib_322.vm[0].caf = cpu_to_be32(1000);
              /* Linux kernel uses this to distinguish us from z/VM */
