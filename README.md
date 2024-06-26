@@ -785,6 +785,18 @@ Connect the capture card device back to your Linux host system now and open OBS,
 
 - [Which CompTIA Certifications Must Be Renewed?](https://help.comptia.org/hc/en-us/articles/13923899954196-Which-CompTIA-Certifications-Must-Be-Renewed)
 
+## Valid Coupon Codes:
+
+- One time use for all. (10%)
+```
+MCGRAW10
+```
+
+- Just for Sec+
+```
+SECURITYVUE
+```
+
 ## Exam Dump Websites
 - [marks4sure](https://www.marks4sure.com/CompTIA.html)
 - [dumpscollection](https://dumpscollection.net/)
