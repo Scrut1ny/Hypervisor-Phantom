@@ -625,10 +625,16 @@ cd looking-glass-* && mkdir client/build && cd client/build && cmake ../ && make
 <details>
 <summary>Useful Software</summary>
 
-- Linux:
-    - [NormCap](https://github.com/dynobo/normcap)
-- Windows:
-    - [ShareX](https://github.com/ShareX/ShareX)
+- OCR (Optical Character Recognition)
+    - Linux:
+        - [NormCap](https://github.com/dynobo/normcap)
+    - Windows:
+        - [ShareX](https://github.com/ShareX/ShareX)
+- RAT (Remote Access/Administration Trojan)
+    - [Quasar](https://github.com/quasar/Quasar)
+- RDP (Remote Desktop Protocal)
+    - [Ammyy Admin](https://www.ammyy.com/)
+    - [MeshCentral](https://github.com/Ylianst/MeshCentral)
 
 </details>
 
