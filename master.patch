@@ -95,19 +95,19 @@ index e884692f07..0e23186cf5 100644
      mc->valid_cpu_types = valid_cpu_types;
      mc->max_cpus = 512;
 diff --git a/hw/arm/virt.c b/hw/arm/virt.c
-index 3c93c0c0a6..2dc1867787 100644
+index b0c68d66a3..a8504c4778 100644
 --- a/hw/arm/virt.c
 +++ b/hw/arm/virt.c
-@@ -108,7 +108,7 @@ static void arm_virt_compat_set(MachineClass *mc)
+@@ -109,7 +109,7 @@ static void arm_virt_compat_set(MachineClass *mc)
          MachineClass *mc = MACHINE_CLASS(oc); \
          arm_virt_compat_set(mc); \
-         virt_machine_##major##_##minor##_options(mc); \
--        mc->desc = "QEMU " # major "." # minor " ARM Virtual Machine"; \
-+        mc->desc = "MSI  " # major "." # minor " ARM Machine"; \
+         MACHINE_VER_SYM(options, virt, __VA_ARGS__)(mc); \
+-        mc->desc = "QEMU " MACHINE_VER_STR(__VA_ARGS__) " ARM Virtual Machine"; \
++        mc->desc = "MSI " MACHINE_VER_STR(__VA_ARGS__) " ARM Machine"; \
+         MACHINE_VER_DEPRECATION(__VA_ARGS__); \
          if (latest) { \
              mc->alias = "virt"; \
-         } \
-@@ -1670,13 +1670,13 @@ static void virt_build_smbios(VirtMachineState *vms)
+@@ -1691,13 +1691,13 @@ static void virt_build_smbios(VirtMachineState *vms)
      uint8_t *smbios_tables, *smbios_anchor;
      size_t smbios_tables_len, smbios_anchor_len;
      struct smbios_phys_mem_area mem_array;
@@ -121,9 +121,9 @@ index 3c93c0c0a6..2dc1867787 100644
  
 -    smbios_set_defaults("QEMU", product,
 +    smbios_set_defaults("MSI", product,
-                         vmc->smbios_old_sys_ver ? "1.0" : mc->name,
-                         true);
+                         vmc->smbios_old_sys_ver ? "1.0" : mc->name);
  
+     /* build the array of physical mem area from base_memmap */
 diff --git a/hw/display/edid-generate.c b/hw/display/edid-generate.c
 index 2cb819675e..271ff3d408 100644
 --- a/hw/display/edid-generate.c
@@ -155,7 +155,7 @@ index 6e0d9945d0..e7b646f14b 100644
      /* device present, functioning, decoding, not shown in UI */
      aml_append(dev, aml_name_decl("_STA", aml_int(0xB)));
 diff --git a/hw/i386/pc.c b/hw/i386/pc.c
-index 0469af00a7..a08e34de48 100644
+index 77415064c6..c8d20d1241 100644
 --- a/hw/i386/pc.c
 +++ b/hw/i386/pc.c
 @@ -75,9 +75,9 @@
@@ -199,15 +199,6 @@ index 0469af00a7..a08e34de48 100644
      { "Opteron_G2" "-" TYPE_X86_CPU, "rdtscp", "on" },
      { "Opteron_G3" "-" TYPE_X86_CPU, "rdtscp", "on" },
      { "Opteron_G4" "-" TYPE_X86_CPU, "rdtscp", "on" },
-@@ -268,7 +268,7 @@ const size_t pc_compat_2_4_len = G_N_ELEMENTS(pc_compat_2_4);
- GlobalProperty pc_compat_2_3[] = {
-     PC_CPU_MODEL_IDS("2.3.0")
-     { TYPE_X86_CPU, "arat", "off" },
--    { "qemu64" "-" TYPE_X86_CPU, "min-level", "4" },
-+    { "AMD64" "-" TYPE_X86_CPU, "min-level", "4" },
-     { "kvm64" "-" TYPE_X86_CPU, "min-level", "5" },
-     { "pentium3" "-" TYPE_X86_CPU, "min-level", "2" },
-     { "n270" "-" TYPE_X86_CPU, "min-level", "5" },
 diff --git a/hw/ide/atapi.c b/hw/ide/atapi.c
 index fcb6cca157..57f8e76d4b 100644
 --- a/hw/ide/atapi.c
@@ -396,7 +387,7 @@ index 45e4d4c75d..1e898e4357 100644
  /* ----------------------------------------------------------------- */
  
 diff --git a/hw/loongarch/virt.c b/hw/loongarch/virt.c
-index 66cef201ab..0001e24f31 100644
+index 8be2d2ff6a..bff6a691d1 100644
 --- a/hw/loongarch/virt.c
 +++ b/hw/loongarch/virt.c
 @@ -550,13 +550,13 @@ static void virt_build_smbios(LoongArchVirtMachineState *lvms)
@@ -410,13 +401,13 @@ index 66cef201ab..0001e24f31 100644
          return;
      }
  
--    smbios_set_defaults("QEMU", product, mc->name, true);
-+    smbios_set_defaults("AMD", product, mc->name, true);
+-    smbios_set_defaults("QEMU", product, mc->name);
++    smbios_set_defaults("AMD", product, mc->name);
  
      smbios_get_tables(ms, SMBIOS_ENTRY_POINT_TYPE_64,
                        NULL, 0,
 diff --git a/hw/m68k/virt.c b/hw/m68k/virt.c
-index 09bc9bdfef..867c34e74c 100644
+index cda199af8f..aba983fff5 100644
 --- a/hw/m68k/virt.c
 +++ b/hw/m68k/virt.c
 @@ -312,7 +312,7 @@ static void virt_init(MachineState *machine)
@@ -428,15 +419,15 @@ index 09bc9bdfef..867c34e74c 100644
      mc->init = virt_init;
      mc->default_cpu_type = M68K_CPU_TYPE_NAME("m68040");
      mc->max_cpus = 1;
-@@ -341,7 +341,7 @@ type_init(virt_machine_register_types)
+@@ -342,7 +342,7 @@ type_init(virt_machine_register_types)
      { \
          MachineClass *mc = MACHINE_CLASS(oc); \
-         virt_machine_##major##_##minor##_options(mc); \
--        mc->desc = "QEMU " # major "." # minor " M68K Virtual Machine"; \
-+        mc->desc = "AMD  " # major "." # minor " M68K Machine"; \
+         MACHINE_VER_SYM(options, virt, __VA_ARGS__)(mc); \
+-        mc->desc = "QEMU " MACHINE_VER_STR(__VA_ARGS__) " M68K Virtual Machine"; \
++        mc->desc = "AMD " MACHINE_VER_STR(__VA_ARGS__) " M68K Machine"; \
+         MACHINE_VER_DEPRECATION(__VA_ARGS__); \
          if (latest) { \
              mc->alias = "virt"; \
-         } \
 diff --git a/hw/nvme/ctrl.c b/hw/nvme/ctrl.c
 index 127c3d2383..0d9016ffaa 100644
 --- a/hw/nvme/ctrl.c
