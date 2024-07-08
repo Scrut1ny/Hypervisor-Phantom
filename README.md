@@ -365,6 +365,9 @@ git diff > v8.2.2.patch
 - ACPI_BUILD_APPNAME6 "DELL  "
 - ACPI_BUILD_APPNAME8 "Dell Inc"
 
+- ACPI_BUILD_APPNAME6 "INTEL "
+- ACPI_BUILD_APPNAME8 "U Rvp   "
+
 ### Downloading & Building QEMU w/patch
 ```
 cd $HOME/Downloads && git clone --depth 1 --branch v8.2.2 --recursive https://gitlab.com/qemu-project/qemu.git
