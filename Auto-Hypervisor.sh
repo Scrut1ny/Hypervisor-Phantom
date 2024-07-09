@@ -119,13 +119,124 @@ function QEMU() {
     } >/dev/null 2>&1
     echo -e "\n  [+] Applying Custom QEMU Patch"
     
-    # Spoofing all USB serial numbers
+
+    ##################################################
+    ## Spoofing USB Serial Number Strings
+    ## 
+    ## qemu/hw/usb/*
+    ##################################################
+
+
     echo -e "\n  [+] Spoofing all serial numbers\n"
+
+    # Find files and process them
     find "$(pwd)/hw/usb" -type f -exec grep -l '\[STR_SERIALNUMBER\]' {} + | while IFS= read -r file; do
-        NEW_SERIAL=$(tr -dc 'A-Z0-9' </dev/urandom | head -c 10)
-        sed -i "s/\(\[STR_SERIALNUMBER\] *= *\"\)[^\"]*/\1$NEW_SERIAL/" "$file"
+        # Generate a new random serial number
+        NEW_SERIAL=$(head /dev/urandom | tr -dc 'A-Z0-9' | head -c 10)
+
+        # Replace the serial number in the file
+        sed -i -E "s/(\[STR_SERIALNUMBER\] *= *\")[^\"]*/\1$NEW_SERIAL/" "$file"
+
+        # Print the modification information
         echo -e "\e[32m  Modified:\e[0m '$file' with new serial: \e[32m$NEW_SERIAL\e[0m"
     done
+
+
+    ##################################################
+    ## Spoofing MAC Address
+    ## 
+    ## 
+    ##################################################
+    
+
+    
+
+
+    ##################################################
+    ## Spoofing Drive Serial Number String
+    ##
+    ## qemu/hw/ide/core.c
+    ##################################################
+
+
+    # Define the core file path
+    core_file="$(pwd)/hw/ide/core.c"
+
+    # Generate a new random serial number
+    NEW_SERIAL=$(head /dev/urandom | tr -dc 'A-Z0-9' | head -c 20)
+
+    # Replace the "QM" string with the new serial number in core.c
+    sed -i -E "s/\"[^\"]*%05d\", s->drive_serial\);/\"$NEW_SERIAL%05d\", s->drive_serial\);/" "$core_file"
+
+    # Print the modification information
+    echo -e "\e[32m  Modified:\e[0m '$core_file' with new serial: \e[32m$NEW_SERIAL\e[0m"
+
+
+    ##################################################
+    ## Spoofing ACPI Table Strings
+    ##
+    ## qemu/include/hw/acpi/aml-build.h
+    ##################################################
+
+
+    # Array of ACPI Pairs
+    pairs=(
+        'DELL  ' 'Dell Inc' # Dell
+        'ALASKA' 'A M I '   # AMD
+        'INTEL ' 'U Rvp   ' # Intel
+        'ACRSYS' 'Acer' # ACER
+        'ASUS' 'ASUS' # ASUS
+        'HPQOEM' 'HPQOEM' # HP
+        'LENOVO' 'ThinkPad' # LENOVO
+        'MSFT' 'Surface' # MICROSOFT
+        'TOSINV' 'Toshiba' # TOSHIBA
+    )
+
+    # Generate a random index to select a pair
+    total_pairs=$((${#pairs[@]} / 2))
+    random_index=$((RANDOM % total_pairs * 2))
+
+    # Extract the randomly selected pair
+    appname6=${pairs[$random_index]}
+    appname8=${pairs[$random_index + 1]}
+
+    # Spoof the file
+    file="$(pwd)/include/hw/acpi/aml-build.h"
+    sed -i "s/^#define ACPI_BUILD_APPNAME6 \".*\"/#define ACPI_BUILD_APPNAME6 \"$appname6\"/" "$file"
+    sed -i "s/^#define ACPI_BUILD_APPNAME8 \".*\"/#define ACPI_BUILD_APPNAME8 \"$appname8\"/" "$file"
+
+    # Print the modifications
+    echo -e "\e[32m  Modified:\e[0m '$file' with new values:"
+    echo -e "  \e[32m#define ACPI_BUILD_APPNAME6 \"$appname6\"\e[0m"
+    echo -e "  \e[32m#define ACPI_BUILD_APPNAME8 \"$appname8\"\e[0m"
+
+
+    ##################################################
+    ## Spoofing CPUID Manufacturer Signature Strings
+    ## https://en.wikipedia.org/wiki/CPUID
+    ## qemu/target/i386/kvm/kvm.c
+    ##################################################
+
+
+    # Define the file path
+    kvm_file="$(pwd)/target/i386/kvm/kvm.c"
+
+    # Array of possible signatures
+    signatures=("AuthenticAMD" "GenuineIntel")
+
+    # Generate a random index to select a signature
+    random_index=$((RANDOM % ${#signatures[@]}))
+    NEW_SIGNATURE=${signatures[$random_index]}
+
+    # Replace the signature string in kvm.c
+    sed -i -E "s/(memcpy\(signature, \")[^\"]*(\", 12\);)/\1$NEW_SIGNATURE\2/" "$kvm_file"
+
+    # Print the modification information
+    echo -e "\e[32m  Modified:\e[0m '$kvm_file' with new signature: \e[32m$NEW_SIGNATURE\e[0m"
+
+
+    ##################################################
+
 
     # Building & Installing QEMU
     echo -e "\n  [+] Building & Installing QEMU"
