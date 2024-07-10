@@ -184,12 +184,12 @@ function QEMU() {
         'DELL  ' 'Dell Inc' # Dell
         'ALASKA' 'A M I '   # AMD
         'INTEL ' 'U Rvp   ' # Intel
-        'ACRSYS' 'Acer' # ACER
-        'ASUS' 'ASUS' # ASUS
-        'HPQOEM' 'HPQOEM' # HP
-        'LENOVO' 'ThinkPad' # LENOVO
-        'MSFT' 'Surface' # MICROSOFT
-        'TOSINV' 'Toshiba' # TOSHIBA
+        ' ASUS ' 'Notebook' # Asus
+        'MSI NB' 'MEGABOOK' # MSI
+        'LENOVO' 'TC-O5Z  ' # Lenovo
+        'LENOVO' 'CB-01   ' # Lenovo
+        'SECCSD' 'LH43STAR' # ???
+        'LGE   ' 'ICL     ' # LG
     )
 
     # Generate a random index to select a pair
