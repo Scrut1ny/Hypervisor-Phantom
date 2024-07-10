@@ -149,7 +149,7 @@ function QEMU() {
     ##################################################
     
 
-    
+
 
 
     ##################################################
@@ -163,7 +163,7 @@ function QEMU() {
     core_file="$(pwd)/hw/ide/core.c"
 
     # Generate a new random serial number
-    NEW_SERIAL=$(head /dev/urandom | tr -dc 'A-Z0-9' | head -c 20)
+    NEW_SERIAL=$(head /dev/urandom | tr -dc 'A-Z0-9' | head -c 15)
 
     # Replace the "QM" string with the new serial number in core.c
     sed -i -E "s/\"[^\"]*%05d\", s->drive_serial\);/\"$NEW_SERIAL%05d\", s->drive_serial\);/" "$core_file"
