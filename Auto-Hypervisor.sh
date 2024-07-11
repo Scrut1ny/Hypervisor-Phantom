@@ -134,7 +134,7 @@ function QEMU() {
         # Generate a new random serial number
         NEW_SERIAL=$(head /dev/urandom | tr -dc 'A-Z0-9' | head -c 10)
 
-        # Replace the serial number in the file
+        # Replace all serial number strings in the files
         sed -i -E "s/(\[STR_SERIALNUMBER\] *= *\")[^\"]*/\1$NEW_SERIAL/" "$file"
 
         # Print the modification information
@@ -165,11 +165,150 @@ function QEMU() {
     # Generate a new random serial number
     NEW_SERIAL=$(head /dev/urandom | tr -dc 'A-Z0-9' | head -c 15)
 
+    # Arrays of model strings
+    IDE_CD_MODELS=(
+        "HL-DT-ST BD-RE WH16NS60"
+        "HL-DT-ST DVDRAM GH24NSC0"
+        "HL-DT-ST BD-RE BH16NS40"
+        "HL-DT-ST DVD+-RW GT80N"
+        "HL-DT-ST DVD-RAM GH22NS30"
+        "HL-DT-ST DVD+RW GCA-4040N"
+        "Pioneer BDR-XD07B"
+        "Pioneer DVR-221LBK"
+        "Pioneer BDR-209DBK"
+        "Pioneer DVR-S21WBK"
+        "Pioneer BDR-XD05B"
+        "ASUS BW-16D1HT"
+        "ASUS DRW-24B1ST"
+        "ASUS SDRW-08D2S-U"
+        "ASUS BC-12D2HT"
+        "ASUS SBW-06D2X-U"
+        "Samsung SH-224FB"
+        "Samsung SE-506BB"
+        "Samsung SH-B123L"
+        "Samsung SE-208GB"
+        "Samsung SN-208DB"
+        "Sony NEC Optiarc AD-5280S"
+        "Sony DRU-870S"
+        "Sony BWU-500S"
+        "Sony NEC Optiarc AD-7261S"
+        "Sony AD-7200S"
+        "Lite-On iHAS124-14"
+        "Lite-On iHBS112-04"
+        "Lite-On eTAU108"
+        "Lite-On iHAS324-17"
+        "Lite-On eBAU108"
+        "HP DVD1260i"
+        "HP DVD640"
+        "HP BD-RE BH30L"
+        "HP DVD Writer 300n"
+        "HP DVD Writer 1265i"
+    )
+
+    IDE_CFATA_MODELS=(
+        "SanDisk Ultra microSDXC UHS-I"
+        "SanDisk Extreme microSDXC UHS-I"
+        "SanDisk High Endurance microSDXC"
+        "SanDisk Industrial microSD"
+        "SanDisk Mobile Ultra microSDHC"
+        "Samsung EVO Select microSDXC"
+        "Samsung PRO Endurance microSDHC"
+        "Samsung PRO Plus microSDXC"
+        "Samsung EVO Plus microSDXC"
+        "Samsung PRO Ultimate microSDHC"
+        "Kingston Canvas React Plus microSD"
+        "Kingston Canvas Go! Plus microSD"
+        "Kingston Canvas Select Plus microSD"
+        "Kingston Industrial microSD"
+        "Kingston Endurance microSD"
+        "Lexar Professional 1066x microSDXC"
+        "Lexar High-Performance 633x microSDHC"
+        "Lexar PLAY microSDXC"
+        "Lexar Endurance microSD"
+        "Lexar Professional 1000x microSDHC"
+        "PNY Elite-X microSD"
+        "PNY PRO Elite microSD"
+        "PNY High Performance microSD"
+        "PNY Turbo Performance microSD"
+        "PNY Premier-X microSD"
+        "Transcend High Endurance microSDXC"
+        "Transcend Ultimate microSDXC"
+        "Transcend Industrial Temp microSD"
+        "Transcend Premium microSDHC"
+        "Transcend Superior microSD"
+        "ADATA Premier Pro microSDXC"
+        "ADATA XPG microSDXC"
+        "ADATA High Endurance microSDXC"
+        "ADATA Premier microSDHC"
+        "ADATA Industrial microSD"
+        "Toshiba Exceria Pro microSDXC"
+        "Toshiba Exceria microSDHC"
+        "Toshiba M203 microSD"
+        "Toshiba N203 microSD"
+        "Toshiba High Endurance microSD"
+    )
+
+    DEFAULT_MODELS=(
+        "Samsung SSD 970 EVO 1TB"
+        "Samsung SSD 860 QVO 2TB"
+        "Samsung SSD 850 PRO 512GB"
+        "Samsung SSD T7 Touch 1TB"
+        "Samsung SSD 840 EVO 250GB"
+        "WD Blue SN570 NVMe SSD 1TB"
+        "WD Black SN850 NVMe SSD 2TB"
+        "WD Green 240GB SSD"
+        "WD My Passport SSD 1TB"
+        "WD Blue 3D NAND 500GB SSD"
+        "Seagate BarraCuda SSD 500GB"
+        "Seagate FireCuda 520 SSD 1TB"
+        "Seagate One Touch SSD 1TB"
+        "Seagate IronWolf 110 SSD 960GB"
+        "Seagate Fast SSD 2TB"
+        "Crucial MX500 1TB 3D NAND SSD"
+        "Crucial P5 Plus NVMe SSD 2TB"
+        "Crucial BX500 480GB 3D NAND SSD"
+        "Crucial X8 Portable SSD 1TB"
+        "Crucial P3 1TB PCIe 3.0 3D NAND NVMe SSD"
+        "Kingston A2000 NVMe SSD 1TB"
+        "Kingston KC2500 NVMe SSD 2TB"
+        "Kingston A400 SSD 480GB"
+        "Kingston HyperX Savage SSD 960GB"
+        "Kingston DataTraveler Vault Privacy 3.0 64GB"
+        "SanDisk Ultra 3D NAND SSD 1TB"
+        "SanDisk Extreme Portable SSD V2 1TB"
+        "SanDisk SSD PLUS 480GB"
+        "SanDisk Ultra 3D 2TB NAND SSD"
+        "SanDisk Extreme Pro 1TB NVMe SSD"
+    )
+
+    # Function to get a random element from an array
+    get_random_element() {
+        local array=("$@")
+        echo "${array[RANDOM % ${#array[@]}]}"
+    }
+
+    # Select random models
+    NEW_IDE_CD_MODEL=$(get_random_element "${IDE_CD_MODELS[@]}")
+    NEW_IDE_CFATA_MODEL=$(get_random_element "${IDE_CFATA_MODELS[@]}")
+    NEW_DEFAULT_MODEL=$(get_random_element "${DEFAULT_MODELS[@]}}")
+
     # Replace the "QM" string with the new serial number in core.c
     sed -i -E "s/\"[^\"]*%05d\", s->drive_serial\);/\"$NEW_SERIAL%05d\", s->drive_serial\);/" "$core_file"
 
+    # Spoof the IDE_CD drive model string
+    sed -i -E "s/\"HL-DT-ST BD-RE WH16NS60\"/\"$NEW_IDE_CD_MODEL\"/" "$core_file"
+
+    # Spoof the IDE_CFATA drive model string
+    sed -i -E "s/\"MicroSD J45S9\"/\"$NEW_IDE_CFATA_MODEL\"/" "$core_file"
+
+    # Spoof the default drive model string
+    sed -i -E "s/\"Samsung SSD 980 500GB\"/\"$NEW_DEFAULT_MODEL\"/" "$core_file"
+
     # Print the modification information
     echo -e "\e[32m  Modified:\e[0m '$core_file' with new serial: \e[32m$NEW_SERIAL\e[0m"
+    echo -e "\e[32m  Modified:\e[0m '$core_file' with new IDE_CD model: \e[32m$NEW_IDE_CD_MODEL\e[0m"
+    echo -e "\e[32m  Modified:\e[0m '$core_file' with new IDE_CFATA model: \e[32m$NEW_IDE_CFATA_MODEL\e[0m"
+    echo -e "\e[32m  Modified:\e[0m '$core_file' with new default model: \e[32m$NEW_DEFAULT_MODEL\e[0m"
 
 
     ##################################################
@@ -200,7 +339,7 @@ function QEMU() {
     appname6=${pairs[$random_index]}
     appname8=${pairs[$random_index + 1]}
 
-    # Spoof the file
+    # Replace the "BOCHS" "BXPC" strings in aml-build.h
     file="$(pwd)/include/hw/acpi/aml-build.h"
     sed -i "s/^#define ACPI_BUILD_APPNAME6 \".*\"/#define ACPI_BUILD_APPNAME6 \"$appname6\"/" "$file"
     sed -i "s/^#define ACPI_BUILD_APPNAME8 \".*\"/#define ACPI_BUILD_APPNAME8 \"$appname8\"/" "$file"
@@ -228,7 +367,7 @@ function QEMU() {
     random_index=$((RANDOM % ${#signatures[@]}))
     NEW_SIGNATURE=${signatures[$random_index]}
 
-    # Replace the signature string in kvm.c
+    # Replace the signature strings in kvm.c
     sed -i -E "s/(memcpy\(signature, \")[^\"]*(\", 12\);)/\1$NEW_SIGNATURE\2/" "$kvm_file"
 
     # Print the modification information
