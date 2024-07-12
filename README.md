@@ -15,7 +15,7 @@
 | Respondus (LockDown Browser) | ✅ | [Link](https://download.respondus.com/lockdown/download.php) | ✅ |
 | Kryterion |  | [Link](https://www.kryterion.com/systemcheck/) | ✅ |
 | Honorlock | ✅ | [Link](https://app.honorlock.com/install/extension) | ✅ |
-| Inspera Exam Portal | | [Link](https://ltu.inspera.com/get-iep) | ✅ |
+| Inspera Exam Portal | | [Link](https://ltu.inspera.com/get-iep) - [Demo Exam Instructions](https://www.ltu.se/en/student-web/your-studies/examination/digital-exam-inspera/instructions-for-pc-and-mac-when-downloading-the-inspera-exam-portal) | ✅ |
 
 </details>
 
