@@ -6,6 +6,7 @@
   <features>
     <acpi/>
     <apic/>
+    <!-- set mode to "passthrough" if you use nested-virtualization to protect against timing attacks -->
     <hyperv mode="custom">
       <relaxed state="on"/>
       <vapic state="on"/>
@@ -15,7 +16,7 @@
       <synic state="on"/>
       <stimer state="on"/>
       <reset state="on"/>
-      <vendor_id state="on" value="AuthenticAMD"/>
+      <vendor_id state="on" value=""/>
       <frequencies state="on"/>
     </hyperv>
     <kvm>
