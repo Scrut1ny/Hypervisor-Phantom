@@ -1,4 +1,4 @@
-<domain>
+<domain xmlns:qemu="http://libvirt.org/schemas/domain/qemu/1.0" type="kvm">
   <!-- ... -->
   <os>
     <smbios mode="host"/>
@@ -37,4 +37,9 @@
     <timer name="hypervclock" present="yes"/>
   </clock>
   <!-- ... -->
+  <qemu:commandline>
+    <qemu:arg value="-smbios"/>
+    <!-- Replace with your output of `# dmidecode -t 17` -->
+    <qemu:arg value="type=17,loc_pfx=DIMM_A1,bank=BANK 0,manufacturer=Corsair,serial=00000000,asset=Not Specified,part=CMWX8GD3200C16W4,speed=3200"/>
+  </qemu:commandline>
 </domain>
