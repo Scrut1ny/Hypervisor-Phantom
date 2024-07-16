@@ -529,7 +529,7 @@ lspci -k | grep -E "vfio-pci|NVIDIA"
       <synic state="on"/>
       <stimer state="on"/>
       <reset state="on"/>
-      <vendor_id state="on" value="AuthenticAMD"/>
+      <vendor_id state="on" value=""/>
       <frequencies state="on"/>
     </hyperv>
     <kvm>
@@ -545,10 +545,7 @@ lspci -k | grep -E "vfio-pci|NVIDIA"
     <feature policy="require" name="topoext"/>
     <feature policy="require" name="svm"/>
   </cpu>
-  <clock offset="utc">
-    <timer name="pit" tickpolicy="delay"/>
-    <timer name="rtc" tickpolicy="catchup" track="guest"/>
-    <timer name="hpet" present="no"/>
+  <clock offset="localtime">
     <timer name="tsc" present="yes" mode="native"/>
     <timer name="hypervclock" present="yes"/>
   </clock>
