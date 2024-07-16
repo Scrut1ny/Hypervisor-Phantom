@@ -1,3 +1,5 @@
+<domain>
+  <!-- ... -->
   <os>
     <smbios mode="host"/>
   </os>
@@ -29,10 +31,9 @@
     <feature policy="require" name="topoext"/>
     <feature policy="require" name="svm"/>
   </cpu>
-  <clock offset="utc">
-    <timer name="pit" tickpolicy="delay"/>
-    <timer name="rtc" tickpolicy="catchup" track="guest"/>
-    <timer name="hpet" present="no"/>
+  <clock offset="localtime">
     <timer name="tsc" present="yes" mode="native"/>
     <timer name="hypervclock" present="yes"/>
   </clock>
+  <!-- ... -->
+</domain>
