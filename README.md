@@ -644,6 +644,7 @@ cd looking-glass-* && mkdir client/build && cd client/build && cmake ../ && make
 <summary>General</summary>
     
 * [https://evasions.checkpoint.com/](https://evasions.checkpoint.com/)
+* [https://r0ttenbeef.github.io/Deploy-Hidden-Virtual-Machine-For-VMProtections-Evasion-And-Dynamic-Analysis/](https://r0ttenbeef.github.io/Deploy-Hidden-Virtual-Machine-For-VMProtections-Evasion-And-Dynamic-Analysis/)
 * [https://bannedit.github.io/Virtual-Machine-Detection-In-The-Browser.html](https://bannedit.github.io/Virtual-Machine-Detection-In-The-Browser.html)
 
 </details>
