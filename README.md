@@ -664,7 +664,8 @@ cd looking-glass-* && mkdir client/build && cd client/build && cmake ../ && make
 
 <details>
 <summary>VMware</summary>
-    
+
+* [https://sanbarrow.com/vmx.html](https://sanbarrow.com/vmx.html)
 * [https://www.hexacorn.com/blog/2014/08/25/protecting-vmware-from-cpuid-hypervisor-detection/](https://www.hexacorn.com/blog/2014/08/25/protecting-vmware-from-cpuid-hypervisor-detection/)
 * [https://rayanfam.com/topics/defeating-malware-anti-vm-techniques-cpuid-based-instructions/](https://rayanfam.com/topics/defeating-malware-anti-vm-techniques-cpuid-based-instructions/)
 * [https://tulach.cc/bypassing-vmprotect-themida-vm-checks-in-vmware/](https://tulach.cc/bypassing-vmprotect-themida-vm-checks-in-vmware/)
