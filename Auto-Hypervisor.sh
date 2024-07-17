@@ -90,8 +90,8 @@ function QEMU() {
                 sudo apt install -y binutils-mingw-w64 binutils-mingw-w64-i686 binutils-mingw-w64-x86-64 clang g++-mingw-w64 g++-mingw-w64-i686 g++-mingw-w64-x86-64 gcc-mingw-w64 gcc-mingw-w64-i686 gcc-mingw-w64-x86-64 git git-email gnutls-bin libaio-dev libbluetooth-dev libbrlapi-dev libbz2-dev libcacard-dev libcap-dev libcap-ng-dev libcurl4-gnutls-dev libfdt-dev libglib2.0-dev libgtk-3-dev libibverbs-dev libiscsi-dev libjpeg8-dev liblzo2-dev libncurses5-dev libncursesw5-dev libnfs-dev libnuma-dev libpam0g-dev libpixman-1-dev librbd-dev librdmacm-dev libseccomp-dev libsnappy-dev libsasl2-dev libsdl1.2-dev libsdl2-dev libsdl2-image-dev libspice-protocol-dev libspice-server-dev libusb-1.0-0-dev libusb-dev libusbredirparser-dev libusbredirparser1 libvde-dev libvdeplug-dev libvirglrenderer-dev libvte-2.91-dev libxen-dev libxml2-dev libz-mingw-w64-dev libzstd-dev ninja-build valgrind win-iconv-mingw-w64-dev xfslibs-dev zlib1g-dev
                 sudo apt install -y virt-manager libvirt-clients libvirt-daemon-system libvirt-daemon-config-network bridge-utils ovmf
                 pip install tomli
-                sudo usermod -a -G kvm,libvirt $(whoami)
-                sudo systemctl enable libvirtd && sudo systemctl start libvirtd
+                sudo usermod -aG kvm,libvirt $(whoami)
+                sudo systemctl enable --now libvirtd.socket
                 sudo virsh net-autostart default
             } >/dev/null 2>&1
             ;;
@@ -102,8 +102,31 @@ function QEMU() {
             ;;
         Arch)
             # Dependencies & Prerequisites
-            echo "  [!] Distribution not supported yet, in progress."
-            # sudo pacman -S git wget base-devel glib2 ninja python
+            sudo pacman -S qemu-base edk2-ovmf libvirt dnsmasq virtmanager
+            # Make dependencies
+            sudo pacman -S git base-devel glib2 ninja python-packaging
+
+            if [ pacman -Qs "iptables-nft" > /dev/null ]; then
+                # switches to iptables compatibility layer because the libvirt package doesn't configure nftables properly
+                sudo sed -i 's/\(firewall_backend *= *\).*/\1iptables/' /etc/libvirt/network.conf
+                sudo systemctl enable --now nftables.service
+            elif [ pacman -Qs "iptables" > /dev/null ]; then
+                git clone https://aur.archlinux.org/ebtales.git
+                cd ebtables
+                makepkg -sirc
+                sudo systemctl enable --now iptables.service
+            elif [ pacman -Qs "nftables" > /dev/null ]; then
+                echo "Nftables without the iptables compatibility layer isn't configured correctly by the libvirt package"
+                echo "More info here: https://bbs.archlinux.org/viewtopic.php?id=284664"
+                sudo systemctl enable --now nftables.service
+            else
+                echo "Firewall implementation unsupported by this script, but may still work with Libvirt. Make sure forwarding is configured properly!"
+            fi
+
+            # setting up libvirt
+            sudo usermod -aG kvm,libvirt $(whoami)
+            sudo systemctl enable --now libvirtd.socket
+            sudo virsh net-autostart default
             ;;
         *)
             echo "  [!] Distribution not recognized or not supported by this script."
@@ -115,7 +138,7 @@ function QEMU() {
     echo -e "\n  [+] Downloading QEMU Source"
     {
         git clone https://gitlab.com/qemu-project/qemu.git/
-        cd qemu/ && curl https://raw.githubusercontent.com/Scrut1ny/Hypervisor-Phantom/main/master.patch -o master.patch && git apply --reject master.patch
+        cd qemu/ && curl https://raw.githubusercontent.com/Scrut1ny/Hypervisor-Phantom/main/master.patch -O && git apply --reject master.patch
     } >/dev/null 2>&1
     echo -e "\n  [+] Applying Custom QEMU Patch"
     
