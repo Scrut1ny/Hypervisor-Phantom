@@ -208,6 +208,32 @@ index 29b9964733..ddb21c139e 100644
      { "kvm64" "-" TYPE_X86_CPU, "min-level", "5" },
      { "pentium3" "-" TYPE_X86_CPU, "min-level", "2" },
      { "n270" "-" TYPE_X86_CPU, "min-level", "5" },
+diff --git a/hw/i386/pc_piix.c b/hw/i386/pc_piix.c
+index eace854335..208d78df4a 100644
+--- a/hw/i386/pc_piix.c
++++ b/hw/i386/pc_piix.c
+@@ -235,7 +235,7 @@ static void pc_init1(MachineState *machine,
+     if (pcmc->smbios_defaults) {
+         MachineClass *mc = MACHINE_GET_CLASS(machine);
+         /* These values are guest ABI, do not change */
+-        smbios_set_defaults("QEMU", mc->desc,
++        smbios_set_defaults("Unknown", mc->desc,
+                             mc->name, pcmc->smbios_legacy_mode,
+                             pcmc->smbios_uuid_encoded,
+                             pcms->smbios_entry_point_type);
+diff --git a/hw/i386/pc_q35.c b/hw/i386/pc_q35.c
+index 4f3e5412f6..1c2eab07eb 100644
+--- a/hw/i386/pc_q35.c
++++ b/hw/i386/pc_q35.c
+@@ -203,7 +203,7 @@ static void pc_q35_init(MachineState *machine)
+ 
+     if (pcmc->smbios_defaults) {
+         /* These values are guest ABI, do not change */
+-        smbios_set_defaults("QEMU", mc->desc,
++        smbios_set_defaults("Unknown", mc->desc,
+                             mc->name, pcmc->smbios_legacy_mode,
+                             pcmc->smbios_uuid_encoded,
+                             pcms->smbios_entry_point_type);
 diff --git a/hw/ide/atapi.c b/hw/ide/atapi.c
 index dcc39df9a4..9e606fc158 100644
 --- a/hw/ide/atapi.c
