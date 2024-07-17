@@ -98,21 +98,22 @@
 
 * [areweanticheatyet](https://areweanticheatyet.com/)
 
-| Type | Engine | Bypassed |
-|-|-|-|
-| **Anti-Cheat** | Anti Cheat Expert(ACE) | ✅ |
-| **Anti-Cheat** | BattlEye (BE) | ✅ (With RDTSC VM Force Exit Kernal Patch) |
-| **Anti-Cheat** | Easy Anti-Cheat(EAC) | ✅ |
-| **Anti-Cheat** | Gepard Shield | ✅ (With RDTSC VM Force Exit Kernal Patch) |
-| **Anti-Cheat** | Mhyprot | ✅ |
-| **Anti-Cheat** | nProtect GameGuard(NP) | ✅ |
-| **Anti-Cheat** | Roblex | ‼️(The application encountered an unrecoverable error) |
-| **Anti-Cheat** | Vanguard | ‼️(1: Incorrect function) |
-| **Encrypt** | Enigma Protector | ✅ |
-| **Encrypt** | Safegine Shielden | ✅ |
-| **Encrypt** | Themida | ✅ |
-| **Encrypt** | VMProtect | ✅ |
-| **Encrypt** | VProtect | ✅ |
+| Type | Engine | Bypassed | Used By |
+|-|-|-|-|
+| **Anti-Cheat** | Anti-Cheat Expert (ACE) | ✅ | Primarily Mobile Games |
+| **Anti-Cheat** | BattlEye (BE) | ✅ (With RDTSC VM Force Exit Kernal Patch) | Desktop Games |
+| **Anti-Cheat** | Easy Anti-Cheat (EAC) | ✅ | Desktop Games |
+| **Anti-Cheat** | Gepard Shield | ✅ (With RDTSC VM Force Exit Kernal Patch) |  |
+| **Anti-Cheat** | Hyperion | ✅ | Roblox |
+| **Anti-Cheat** | Mhyprot | ✅ | Genshin Impact |
+| **Anti-Cheat** | nProtect GameGuard (NP) | ✅ | Desktop Games |
+| **Anti-Cheat** | RICOCHET | ✅ | Call of Duty Games |
+| **Anti-Cheat** | Vanguard | ‼️(1: Incorrect function) | Valorant |
+| **Encrypt** | Enigma Protector | ✅ |  |
+| **Encrypt** | Safegine Shielden | ✅ |  |
+| **Encrypt** | Themida | ✅ |  |
+| **Encrypt** | VMProtect | ✅ |  |
+| **Encrypt** | VProtect | ✅ |  |
 
 - ‼️ Some games cannot run under this environment, but I'm not sure whether qemu has been detected. The game doesn't say "Virtual machine detected" specifically.
 
