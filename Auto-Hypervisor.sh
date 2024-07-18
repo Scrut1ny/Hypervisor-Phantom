@@ -508,9 +508,9 @@ EOF
 
 
 
-function Kernal_Patch() {
+function Kernel_Patch() {
 
-    clear && echo -e "\n  [+] Installing Linux Kernal Compiling Dependencies"
+    clear && echo -e "\n  [+] Installing Linux Kernel Compiling Dependencies"
     
     case "${distro}" in
         Debian)
@@ -535,7 +535,7 @@ function Kernal_Patch() {
     esac
     
     # Get the Kernel Source
-    echo -e "\n  [+] Downloading Linux Kernal"
+    echo -e "\n  [+] Downloading Linux Kernel"
     git clone https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
     cd linux
     git checkout v$(uname -r)
@@ -550,11 +550,11 @@ function Kernal_Patch() {
     patch -p1 < /path/to/vmx.patch
 
     # Build the Kernel
-    echo -e "\n  [+] Building the Kernal"
+    echo -e "\n  [+] Building the Kernel"
     make -j$(nproc) > /dev/null 2>&1
 
     # Install the Kernel Modules & the Kernel
-    echo -e "\n  [+] Installing/Applying Kernal patches"
+    echo -e "\n  [+] Installing/Applying Kernel patches"
     sudo make modules_install && sudo make install
 }
 
@@ -616,7 +616,7 @@ menu() {
                 ;;
             3)
                 clear && echo -e "\n  [!] Not supported yet, in progress."
-                # Kernal_Patch
+                # Kernel_Patch
                 ;;
             4)
                 clear && Looking_Glass
