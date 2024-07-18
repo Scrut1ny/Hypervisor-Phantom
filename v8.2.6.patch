@@ -140,7 +140,7 @@ index 8bc35a483..e032b51bc 100644
  {
      Aml *dev = aml_device("FWCF");
 -    aml_append(dev, aml_name_decl("_HID", aml_string("QEMU0002")));
-+    aml_append(dev, aml_name_decl("_HID", aml_string("AMD1337")));
++    aml_append(dev, aml_name_decl("_HID", aml_string("AMD90210")));
      /* device present, functioning, decoding, not shown in UI */
      aml_append(dev, aml_name_decl("_STA", aml_int(0xB)));
      aml_append(dev, aml_name_decl("_CCA", aml_int(1)));
@@ -628,7 +628,7 @@ index 171d56a6a..74ac3a66f 100644
  {
      Aml *dev = aml_device("FWCF");
 -    aml_append(dev, aml_name_decl("_HID", aml_string("QEMU0002")));
-+    aml_append(dev, aml_name_decl("_HID", aml_string("MSI1337")));
++    aml_append(dev, aml_name_decl("_HID", aml_string("AMD90210")));
  
      /* device present, functioning, decoding, not shown in UI */
      aml_append(dev, aml_name_decl("_STA", aml_int(0xB)));
@@ -664,7 +664,7 @@ index fc4b77fdb..0dc83191f 100644
          r->buf[7] = 0x10 | (r->req.bus->info->tcq ? 0x02 : 0); /* Sync, TCQ.  */
 -        memcpy(&r->buf[8], "QEMU    ", 8);
 -        memcpy(&r->buf[16], "QEMU TARGET     ", 16);
-+        memcpy(&r->buf[8], "Samsung ", 8);
++        memcpy(&r->buf[8], "MSI     ", 8);
 +        memcpy(&r->buf[16], "MSI TARGET      ", 16);
          pstrcpy((char *) &r->buf[32], 4, qemu_hw_version());
      }
@@ -1210,7 +1210,7 @@ index cb93f6678..e0f7cb07f 100644
  #include "standard-headers/linux/types.h"
  
 -#define FW_CFG_ACPI_DEVICE_ID	"QEMU0002"
-+#define FW_CFG_ACPI_DEVICE_ID	"MSI1337"
++#define FW_CFG_ACPI_DEVICE_ID	"AMD90210"
  
  /* selector key values for "well-known" fw_cfg entries */
  #define FW_CFG_SIGNATURE	0x00
@@ -1236,7 +1236,7 @@ index 7bcdf0eeb..cb790741b 100644
  #define FW_CFG_DMA_CTL_WRITE   0x10
  
 -#define FW_CFG_DMA_SIGNATURE 0x51454d5520434647ULL /* "QEMU CFG" */
-+#define FW_CFG_DMA_SIGNATURE 0x4b494e4720434647ULL /* "KING CFG" */
++#define FW_CFG_DMA_SIGNATURE 0x414d492042494f53ULL /* "AMI UEFI" */
  
  #define BIOS_CFG_DMA_ADDR_HIGH  0x514
  #define BIOS_CFG_DMA_ADDR_LOW   0x518
