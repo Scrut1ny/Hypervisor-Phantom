@@ -59,7 +59,7 @@ index 35aff46b4b..c688bfe965 100644
      memset(p, 0, 0x3000);
  
 -    strcpy((void *) (p + 0), "QEMU N800");
-+    strcpy((void *) (p + 0), "N800");
++    strcpy((void *) (p + 0), "Nokia N800");
  
      strcpy((void *) (p + 8), "F5");
  
@@ -68,7 +68,7 @@ index 35aff46b4b..c688bfe965 100644
      stw_p(w++, OMAP_TAG_LCD);			/* u16 tag */
      stw_p(w++, 36);				/* u16 len */
 -    strcpy((void *) w, "QEMU LCD panel");	/* char panel_name[16] */
-+    strcpy((void *) w, "LCD panel");	/* char panel_name[16] */
++    strcpy((void *) w, "Samsung LCD panel");	/* char panel_name[16] */
      w += 8;
      strcpy((void *) w, "blizzard");		/* char ctrl_name[16] */
      w += 8;
@@ -77,7 +77,7 @@ index 35aff46b4b..c688bfe965 100644
      strcpy((void *) w, "hw-build");		/* char component[12] */
      w += 6;
 -    strcpy((void *) w, "QEMU ");
-+    strcpy((void *) w, "MSI");
++    strcpy((void *) w, "Nokia");
      pstrcat((void *) w, 12, qemu_hw_version()); /* char version[12] */
      w += 6;
  
@@ -90,7 +90,7 @@ index f3c9704693..8a1a739926 100644
  
      mc->init = sbsa_ref_init;
 -    mc->desc = "QEMU 'SBSA Reference' ARM Virtual Machine";
-+    mc->desc = "AMD 'SBSA Reference' AMD Machine";
++    mc->desc = "Qualcomm 'Reference' ARM SoC";
      mc->default_cpu_type = ARM_CPU_TYPE_NAME("neoverse-n1");
      mc->max_cpus = 512;
      mc->pci_allow_0_address = true;
