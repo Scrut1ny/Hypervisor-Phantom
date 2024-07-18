@@ -520,7 +520,7 @@ index 6691f5edb8..5202635d95 100644
      }
      if (!s->vendor) {
 -        s->vendor = g_strdup("QEMU");
-+        s->vendor = g_strdup("MSI");
++        s->vendor = g_strdup("Samsung");
      }
      if (!s->device_id) {
          if (s->serial) {
@@ -1179,7 +1179,7 @@ index 6aa7907438..78cdbd6be8 100644
              char type[5] = {};
  
 -            ebcdic_put(sysib.sysib_111.manuf, "QEMU            ", 16);
-+            ebcdic_put(sysib.sysib_111.manuf, "FUCK            ", 16);
++            ebcdic_put(sysib.sysib_111.manuf, "MSI             ", 16);
              /* same as machine type number in STORE CPU ID, but in EBCDIC */
              snprintf(type, ARRAY_SIZE(type), "%X", cpu->model->def->type);
              ebcdic_put(sysib.sysib_111.type, type, 4);
@@ -1187,15 +1187,15 @@ index 6aa7907438..78cdbd6be8 100644
 -            ebcdic_put(sysib.sysib_111.model, "QEMU            ", 16);
 -            ebcdic_put(sysib.sysib_111.sequence, "QEMU            ", 16);
 -            ebcdic_put(sysib.sysib_111.plant, "QEMU", 4);
-+            ebcdic_put(sysib.sysib_111.model, "FUCK            ", 16);
-+            ebcdic_put(sysib.sysib_111.sequence, "FUCK            ", 16);
-+            ebcdic_put(sysib.sysib_111.plant, "FUCK", 4);
++            ebcdic_put(sysib.sysib_111.model, "MSI              ", 16);
++            ebcdic_put(sysib.sysib_111.sequence, "MSI              ", 16);
++            ebcdic_put(sysib.sysib_111.plant, "MSI ", 4);
          } else if ((sel1 == 2) && (sel2 == 1)) {
              /* Basic Machine CPU */
 -            ebcdic_put(sysib.sysib_121.sequence, "QEMUQEMUQEMUQEMU", 16);
 -            ebcdic_put(sysib.sysib_121.plant, "QEMU", 4);
-+            ebcdic_put(sysib.sysib_121.sequence, "FUCKFUCKFUCKFUCK", 16);
-+            ebcdic_put(sysib.sysib_121.plant, "FUCK", 4);
++            ebcdic_put(sysib.sysib_121.sequence, "MSIMSIMSIMSIMSI ", 16);
++            ebcdic_put(sysib.sysib_121.plant, "MSI ", 4);
              sysib.sysib_121.cpu_addr = cpu_to_be16(env->core_id);
          } else if ((sel1 == 2) && (sel2 == 2)) {
              /* Basic Machine CPUs */
@@ -1205,8 +1205,8 @@ index 6aa7907438..78cdbd6be8 100644
              /* LPAR CPU */
 -            ebcdic_put(sysib.sysib_221.sequence, "QEMUQEMUQEMUQEMU", 16);
 -            ebcdic_put(sysib.sysib_221.plant, "QEMU", 4);
-+            ebcdic_put(sysib.sysib_221.sequence, "FUCKFUCKFUCKFUCK", 16);
-+            ebcdic_put(sysib.sysib_221.plant, "FUCK", 4);
++            ebcdic_put(sysib.sysib_221.sequence, "MSIMSIMSIMSIMSI ", 16);
++            ebcdic_put(sysib.sysib_221.plant, "MSI", 4);
              sysib.sysib_221.cpu_addr = cpu_to_be16(env->core_id);
          } else if ((sel1 == 2) && (sel2 == 2)) {
              /* LPAR CPUs */
@@ -1215,7 +1215,7 @@ index 6aa7907438..78cdbd6be8 100644
              sysib.sysib_222.conf_cpus = cpu_to_be16(conf_cpus);
              sysib.sysib_222.reserved_cpus = cpu_to_be16(reserved_cpus);
 -            ebcdic_put(sysib.sysib_222.name, "QEMU    ", 8);
-+            ebcdic_put(sysib.sysib_222.name, "FUCK    ", 8);
++            ebcdic_put(sysib.sysib_222.name, "MSI     ", 8);
              sysib.sysib_222.caf = cpu_to_be32(1000);
              sysib.sysib_222.dedicated_cpus = cpu_to_be16(conf_cpus);
          } else {
@@ -1224,7 +1224,7 @@ index 6aa7907438..78cdbd6be8 100644
              sysib.sysib_322.vm[0].caf = cpu_to_be32(1000);
              /* Linux kernel uses this to distinguish us from z/VM */
 -            ebcdic_put(sysib.sysib_322.vm[0].cpi, "KVM/Linux       ", 16);
-+            ebcdic_put(sysib.sysib_322.vm[0].cpi, "FUCK/You        ", 16);
++            ebcdic_put(sysib.sysib_322.vm[0].cpi, "MSI             ", 16);
              sysib.sysib_322.vm[0].ext_name_encoding = 2; /* UTF-8 */
  
              /* If our VM has a name, use the real name */
