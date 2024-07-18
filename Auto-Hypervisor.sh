@@ -137,8 +137,10 @@ function QEMU() {
     # Downloading QEMU & Applying custom patch
     echo -e "\n  [+] Downloading QEMU Source"
     {
-        git clone https://gitlab.com/qemu-project/qemu.git/
-        cd qemu/ && curl https://raw.githubusercontent.com/Scrut1ny/Hypervisor-Phantom/main/master.patch -O && git apply --reject master.patch
+        # git clone https://gitlab.com/qemu-project/qemu.git/
+        # cd qemu/ && curl https://raw.githubusercontent.com/Scrut1ny/Hypervisor-Phantom/main/master.patch -o master.patch && git apply --reject master.patch
+        git clone --branch stable-8.2 https://gitlab.com/qemu-project/qemu.git
+        cd qemu/ && curl https://raw.githubusercontent.com/Scrut1ny/Hypervisor-Phantom/main/v8.2.6.patch -o v8.2.6.patch && git apply --reject v8.2.6.patch
     } >/dev/null 2>&1
     echo -e "\n  [+] Applying Custom QEMU Patch"
     
@@ -150,7 +152,7 @@ function QEMU() {
     ##################################################
 
 
-    echo -e "\n  [+] Spoofing all serial numbers\n"
+    echo -e "\n  [+] Spoofing all Models & Serial Numbers\n"
 
     # Find files and process them
     find "$(pwd)/hw/usb" -type f -exec grep -l '\[STR_SERIALNUMBER\]' {} + | while IFS= read -r file; do
