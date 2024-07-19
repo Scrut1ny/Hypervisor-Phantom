@@ -383,15 +383,15 @@ index 8a0579bff4..f3d372a499 100644
          switch (kind) {
          case IDE_CD:
 -            strcpy(s->drive_model_str, "QEMU DVD-ROM");
-+            strcpy(s->drive_model_str, "Sony BWU-500S");
++            strcpy(s->drive_model_str, "HL-DT-ST BD-RE WH16NS60");
              break;
          case IDE_CFATA:
 -            strcpy(s->drive_model_str, "QEMU MICRODRIVE");
-+            strcpy(s->drive_model_str, "ADATA High Endurance microSDXC");
++            strcpy(s->drive_model_str, "MicroSD J45S9");
              break;
          default:
 -            strcpy(s->drive_model_str, "QEMU HARDDISK");
-+            strcpy(s->drive_model_str, "Kingston HyperX Savage SSD 960GB");
++            strcpy(s->drive_model_str, "Samsung SSD 980 500GB");
              break;
          }
      }
