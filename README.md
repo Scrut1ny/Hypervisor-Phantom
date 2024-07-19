@@ -1,6 +1,6 @@
 ## Info & Guide
 <details>
-<summary>Proctoring Software</summary>
+<summary>Exam Software</summary>
 
 | Software | Browser Extension | System Test | Bypassed |
 | - | - | - | - |
@@ -21,7 +21,7 @@
 
 
 <details>
-<summary>Anti-Cheats</summary>
+<summary>Anti-Cheat Software</summary>
 
 * [areweanticheatyet](https://areweanticheatyet.com/)
 
