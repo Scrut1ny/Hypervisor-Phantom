@@ -367,7 +367,7 @@ index dcc39df9a4..9e606fc158 100644
          idx = 36;
      }
 diff --git a/hw/ide/core.c b/hw/ide/core.c
-index 8a0579bff4..8f4483bebf 100644
+index 8a0579bff4..f3d372a499 100644
 --- a/hw/ide/core.c
 +++ b/hw/ide/core.c
 @@ -2630,20 +2630,20 @@ int ide_init_drive(IDEState *s, BlockBackend *blk, IDEDriveKind kind,
@@ -375,7 +375,7 @@ index 8a0579bff4..8f4483bebf 100644
      } else {
          snprintf(s->drive_serial_str, sizeof(s->drive_serial_str),
 -                 "QM%05d", s->drive_serial);
-+                 "9U3NYD5OCI5W4W3%05d", s->drive_serial);
++                 "JLLZ4MW5ZU880CC%05d", s->drive_serial);
      }
      if (model) {
          pstrcpy(s->drive_model_str, sizeof(s->drive_model_str), model);
@@ -383,15 +383,15 @@ index 8a0579bff4..8f4483bebf 100644
          switch (kind) {
          case IDE_CD:
 -            strcpy(s->drive_model_str, "QEMU DVD-ROM");
-+            strcpy(s->drive_model_str, "HL-DT-ST BD-RE WH16NS60");
++            strcpy(s->drive_model_str, "Sony BWU-500S");
              break;
          case IDE_CFATA:
 -            strcpy(s->drive_model_str, "QEMU MICRODRIVE");
-+            strcpy(s->drive_model_str, "MicroSD J45S9");
++            strcpy(s->drive_model_str, "ADATA High Endurance microSDXC");
              break;
          default:
 -            strcpy(s->drive_model_str, "QEMU HARDDISK");
-+            strcpy(s->drive_model_str, "Samsung SSD 980 500GB");
++            strcpy(s->drive_model_str, "Kingston HyperX Savage SSD 960GB");
              break;
          }
      }
@@ -826,7 +826,7 @@ index 81bfff9b4e..33dcea06c8 100644
  
      return SCSI_INQUIRY_LEN;
 diff --git a/hw/usb/canokey.c b/hw/usb/canokey.c
-index b306eeb20e..be30bb456b 100644
+index b306eeb20e..766b85434a 100644
 --- a/hw/usb/canokey.c
 +++ b/hw/usb/canokey.c
 @@ -36,7 +36,7 @@ enum {
@@ -834,7 +834,7 @@ index b306eeb20e..be30bb456b 100644
      [STR_MANUFACTURER]     = "canokeys.org",
      [STR_PRODUCT]          = "CanoKey QEMU",
 -    [STR_SERIALNUMBER]     = "0"
-+    [STR_SERIALNUMBER]     = "I93KQJYSKS"
++    [STR_SERIALNUMBER]     = "QT04N99XAY"
  };
  
  static const USBDescDevice desc_device_canokey = {
@@ -963,7 +963,7 @@ index bdd6d1ffaf..40027a5fd8 100644
      device_class_set_props(dc, usb_keyboard_properties);
      set_bit(DEVICE_CATEGORY_INPUT, dc->categories);
 diff --git a/hw/usb/dev-hub.c b/hw/usb/dev-hub.c
-index 5703e0e826..d8d72748ca 100644
+index 5703e0e826..4ef42282cf 100644
 --- a/hw/usb/dev-hub.c
 +++ b/hw/usb/dev-hub.c
 @@ -104,9 +104,9 @@ enum {
@@ -975,7 +975,7 @@ index 5703e0e826..d8d72748ca 100644
 -    [STR_SERIALNUMBER] = "314159",
 +    [STR_MANUFACTURER] = "MSI",
 +    [STR_PRODUCT]      = "USB Hub",
-+    [STR_SERIALNUMBER] = "S98QTVDGDI",
++    [STR_SERIALNUMBER] = "3FQLPA9YOH",
  };
  
  static const USBDescIface desc_iface_hub = {
@@ -989,7 +989,7 @@ index 5703e0e826..d8d72748ca 100644
      uc->find_device    = usb_hub_find_device;
      uc->handle_reset   = usb_hub_handle_reset;
 diff --git a/hw/usb/dev-mtp.c b/hw/usb/dev-mtp.c
-index 1cac1cd435..965efc2a7c 100644
+index 1cac1cd435..24e41f2831 100644
 --- a/hw/usb/dev-mtp.c
 +++ b/hw/usb/dev-mtp.c
 @@ -247,8 +247,8 @@ OBJECT_DECLARE_SIMPLE_TYPE(MTPState, USB_MTP)
@@ -1008,7 +1008,7 @@ index 1cac1cd435..965efc2a7c 100644
      [STR_MANUFACTURER] = MTP_MANUFACTURER,
      [STR_PRODUCT]      = MTP_PRODUCT,
 -    [STR_SERIALNUMBER] = "34617",
-+    [STR_SERIALNUMBER] = "03M9AN1GSY",
++    [STR_SERIALNUMBER] = "0LTS8RUFGL",
      [STR_MTP]          = "MTP",
      [STR_CONFIG_FULL]  = "Full speed config (usb 1.1)",
      [STR_CONFIG_HIGH]  = "High speed config (usb 2.0)",
@@ -1069,7 +1069,7 @@ index 2c33e36cad..6ac3f46405 100644
      uc->handle_reset   = usb_net_handle_reset;
      uc->handle_control = usb_net_handle_control;
 diff --git a/hw/usb/dev-serial.c b/hw/usb/dev-serial.c
-index 63047d79cf..0afe2bf57d 100644
+index 63047d79cf..3b8124d297 100644
 --- a/hw/usb/dev-serial.c
 +++ b/hw/usb/dev-serial.c
 @@ -119,10 +119,10 @@ enum {
@@ -1083,7 +1083,7 @@ index 63047d79cf..0afe2bf57d 100644
 +    [STR_MANUFACTURER]    = "MSI",
 +    [STR_PRODUCT_SERIAL]  = "USB SERIAL",
 +    [STR_PRODUCT_BRAILLE] = "USB BAUM BRAILLE",
-+    [STR_SERIALNUMBER]    = "FHW6LQKGGP",
++    [STR_SERIALNUMBER]    = "410JW2BPNL",
  };
  
  static const USBDescIface desc_iface0 = {
@@ -1106,7 +1106,7 @@ index 63047d79cf..0afe2bf57d 100644
      device_class_set_props(dc, braille_properties);
  }
 diff --git a/hw/usb/dev-smartcard-reader.c b/hw/usb/dev-smartcard-reader.c
-index be0a4fc3bc..5be272caa3 100644
+index be0a4fc3bc..11ebb6f22f 100644
 --- a/hw/usb/dev-smartcard-reader.c
 +++ b/hw/usb/dev-smartcard-reader.c
 @@ -80,8 +80,8 @@ OBJECT_DECLARE_SIMPLE_TYPE(USBCCIDState, USB_CCID_DEV)
@@ -1129,7 +1129,7 @@ index be0a4fc3bc..5be272caa3 100644
 -    [STR_SERIALNUMBER]  = "1",
 +    [STR_MANUFACTURER]  = "MSI",
 +    [STR_PRODUCT]       = "MSI USB CCID",
-+    [STR_SERIALNUMBER]  = "OYK4KODF69",
++    [STR_SERIALNUMBER]  = "TXF5VADA0F",
      [STR_INTERFACE]     = "CCID Interface",
  };
  
@@ -1143,7 +1143,7 @@ index be0a4fc3bc..5be272caa3 100644
      uc->handle_reset   = ccid_handle_reset;
      uc->handle_control = ccid_handle_control;
 diff --git a/hw/usb/dev-storage.c b/hw/usb/dev-storage.c
-index a496c811a7..83c27552b8 100644
+index a496c811a7..973097b308 100644
 --- a/hw/usb/dev-storage.c
 +++ b/hw/usb/dev-storage.c
 @@ -47,9 +47,9 @@ enum {
@@ -1155,7 +1155,7 @@ index a496c811a7..83c27552b8 100644
 -    [STR_SERIALNUMBER] = "1",
 +    [STR_MANUFACTURER] = "MSI",
 +    [STR_PRODUCT]      = "USB HARDDRIVE",
-+    [STR_SERIALNUMBER] = "LQB60EOIMK",
++    [STR_SERIALNUMBER] = "WIXYHI6Q5A",
      [STR_CONFIG_FULL]  = "Full speed config (usb 1.1)",
      [STR_CONFIG_HIGH]  = "High speed config (usb 2.0)",
      [STR_CONFIG_SUPER] = "Super speed config (usb 3.0)",
@@ -1169,7 +1169,7 @@ index a496c811a7..83c27552b8 100644
      uc->cancel_packet  = usb_msd_cancel_io;
      uc->handle_attach  = usb_desc_attach;
 diff --git a/hw/usb/dev-uas.c b/hw/usb/dev-uas.c
-index f013ded91e..b647f126ec 100644
+index f013ded91e..dec4137ded 100644
 --- a/hw/usb/dev-uas.c
 +++ b/hw/usb/dev-uas.c
 @@ -171,9 +171,9 @@ enum {
@@ -1180,12 +1180,12 @@ index f013ded91e..b647f126ec 100644
 +    [STR_MANUFACTURER] = "MSI",
      [STR_PRODUCT]      = "USB Attached SCSI HBA",
 -    [STR_SERIALNUMBER] = "27842",
-+    [STR_SERIALNUMBER] = "MVQU1JJ0QG",
++    [STR_SERIALNUMBER] = "KZ0CJGQUVP",
      [STR_CONFIG_HIGH]  = "High speed config (usb 2.0)",
      [STR_CONFIG_SUPER] = "Super speed config (usb 3.0)",
  };
 diff --git a/hw/usb/dev-wacom.c b/hw/usb/dev-wacom.c
-index 7177c17f03..970ee0ee5b 100644
+index 7177c17f03..af4c89f1ae 100644
 --- a/hw/usb/dev-wacom.c
 +++ b/hw/usb/dev-wacom.c
 @@ -64,9 +64,9 @@ enum {
@@ -1196,7 +1196,7 @@ index 7177c17f03..970ee0ee5b 100644
 +    [STR_MANUFACTURER]     = "MSI",
      [STR_PRODUCT]          = "Wacom PenPartner",
 -    [STR_SERIALNUMBER]     = "1",
-+    [STR_SERIALNUMBER]     = "EWYY9U33W5",
++    [STR_SERIALNUMBER]     = "AWM2VYGADV",
  };
  
  static const uint8_t qemu_wacom_hid_report_descriptor[] = {
@@ -1263,7 +1263,7 @@ index fc93429c9c..f06e8ffc98 100644
      device_class_set_props(dc, u2f_passthru_properties);
      set_bit(DEVICE_CATEGORY_MISC, dc->categories);
 diff --git a/hw/usb/u2f.c b/hw/usb/u2f.c
-index 56001249a4..850f2fe23f 100644
+index 56001249a4..595df67aec 100644
 --- a/hw/usb/u2f.c
 +++ b/hw/usb/u2f.c
 @@ -46,9 +46,9 @@ enum {
@@ -1274,7 +1274,7 @@ index 56001249a4..850f2fe23f 100644
 +    [STR_MANUFACTURER]     = "MSI",
      [STR_PRODUCT]          = "U2F USB key",
 -    [STR_SERIALNUMBER]     = "0",
-+    [STR_SERIALNUMBER]     = "MSWYYWU4MK",
++    [STR_SERIALNUMBER]     = "UTZJ3VDAW3",
      [STR_CONFIG]           = "U2F key config",
      [STR_INTERFACE]        = "U2F key interface"
  };
@@ -1366,7 +1366,7 @@ index f1a53fea8d..e48e1dc7eb 100644
  
  #define PCI_VENDOR_ID_SYNOPSYS           0x16C3
 diff --git a/include/standard-headers/linux/qemu_fw_cfg.h b/include/standard-headers/linux/qemu_fw_cfg.h
-index cb93f6678d..a4543c0470 100644
+index cb93f6678d..2758140576 100644
 --- a/include/standard-headers/linux/qemu_fw_cfg.h
 +++ b/include/standard-headers/linux/qemu_fw_cfg.h
 @@ -4,7 +4,7 @@
@@ -1378,6 +1378,15 @@ index cb93f6678d..a4543c0470 100644
  
  /* selector key values for "well-known" fw_cfg entries */
  #define FW_CFG_SIGNATURE	0x00
+@@ -71,7 +71,7 @@ struct fw_cfg_file {
+ #define FW_CFG_DMA_CTL_SELECT	0x08
+ #define FW_CFG_DMA_CTL_WRITE	0x10
+ 
+-#define FW_CFG_DMA_SIGNATURE    0x51454d5520434647ULL /* "QEMU CFG" */
++#define FW_CFG_DMA_SIGNATURE    0x51454d5520434647ULL /* "KING CFG" */
+ 
+ /* Control as first field allows for different structures selected by this
+  * field, which might be useful in the future
 diff --git a/migration/rdma.c b/migration/rdma.c
 index 143008a28a..83985fa12a 100644
 --- a/migration/rdma.c
