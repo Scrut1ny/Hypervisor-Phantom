@@ -383,15 +383,15 @@ index 8a0579bff4..f3d372a499 100644
          switch (kind) {
          case IDE_CD:
 -            strcpy(s->drive_model_str, "QEMU DVD-ROM");
-+            strcpy(s->drive_model_str, "HL-DT-ST BD-RE WH16NS60");
++            strcpy(s->drive_model_str, "Sony BWU-500S");
              break;
          case IDE_CFATA:
 -            strcpy(s->drive_model_str, "QEMU MICRODRIVE");
-+            strcpy(s->drive_model_str, "MicroSD J45S9");
++            strcpy(s->drive_model_str, "ADATA High Endurance microSDXC");
              break;
          default:
 -            strcpy(s->drive_model_str, "QEMU HARDDISK");
-+            strcpy(s->drive_model_str, "Samsung SSD 980 500GB");
++            strcpy(s->drive_model_str, "Kingston HyperX Savage SSD 960GB");
              break;
          }
      }
@@ -648,7 +648,7 @@ index 2aa0aecfab..2a10c9e7b1 100644
      strpadcpy((char *)id->sn, sizeof(id->sn), n->params.serial, ' ');
  
 diff --git a/hw/nvram/fw_cfg.c b/hw/nvram/fw_cfg.c
-index 4e4524673a..2dedad4bba 100644
+index 4e4524673a..fcd92486ac 100644
 --- a/hw/nvram/fw_cfg.c
 +++ b/hw/nvram/fw_cfg.c
 @@ -56,7 +56,7 @@
@@ -656,7 +656,7 @@ index 4e4524673a..2dedad4bba 100644
  #define FW_CFG_DMA_CTL_WRITE   0x10
  
 -#define FW_CFG_DMA_SIGNATURE 0x51454d5520434647ULL /* "QEMU CFG" */
-+#define FW_CFG_DMA_SIGNATURE 0x4b494e4720434647ULL /* "KING CFG" */
++#define FW_CFG_DMA_SIGNATURE 0x4b494e4720434647ULL /* "QEMU CFG" */
  
  struct FWCfgEntry {
      uint32_t len;
@@ -1366,7 +1366,7 @@ index f1a53fea8d..e48e1dc7eb 100644
  
  #define PCI_VENDOR_ID_SYNOPSYS           0x16C3
 diff --git a/include/standard-headers/linux/qemu_fw_cfg.h b/include/standard-headers/linux/qemu_fw_cfg.h
-index cb93f6678d..2758140576 100644
+index cb93f6678d..a4543c0470 100644
 --- a/include/standard-headers/linux/qemu_fw_cfg.h
 +++ b/include/standard-headers/linux/qemu_fw_cfg.h
 @@ -4,7 +4,7 @@
@@ -1378,15 +1378,6 @@ index cb93f6678d..2758140576 100644
  
  /* selector key values for "well-known" fw_cfg entries */
  #define FW_CFG_SIGNATURE	0x00
-@@ -71,7 +71,7 @@ struct fw_cfg_file {
- #define FW_CFG_DMA_CTL_SELECT	0x08
- #define FW_CFG_DMA_CTL_WRITE	0x10
- 
--#define FW_CFG_DMA_SIGNATURE    0x51454d5520434647ULL /* "QEMU CFG" */
-+#define FW_CFG_DMA_SIGNATURE    0x51454d5520434647ULL /* "KING CFG" */
- 
- /* Control as first field allows for different structures selected by this
-  * field, which might be useful in the future
 diff --git a/migration/rdma.c b/migration/rdma.c
 index 143008a28a..83985fa12a 100644
 --- a/migration/rdma.c
