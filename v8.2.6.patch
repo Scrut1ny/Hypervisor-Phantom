@@ -1311,7 +1311,7 @@ index cb93f6678d..ee53126569 100644
  #include "standard-headers/linux/types.h"
  
 -#define FW_CFG_ACPI_DEVICE_ID	"QEMU0002"
-+#define FW_CFG_ACPI_DEVICE_ID	"AMI6969"
++#define FW_CFG_ACPI_DEVICE_ID	"AMI69420"
  
  /* selector key values for "well-known" fw_cfg entries */
  #define FW_CFG_SIGNATURE	0x00
