@@ -81,6 +81,13 @@
   <qemu:commandline>
     <qemu:arg value="-smbios"/>
     <!-- Replace with your output of `# dmidecode -t 17` -->
-    <qemu:arg value="type=17,loc_pfx=DIMM_A1,bank=BANK 0,manufacturer=Corsair,serial=00000000,asset=Not Specified,part=CMWX8GD3200C16W4,speed=3200"/>
+    <qemu:arg value="type=17,manufacturer=KINGSTON,loc_pfx=DDR4,speed=3200,serial=XXXXXX,part=XXXX"/>
   </qemu:commandline>
+  <qemu:override>
+    <qemu:device alias="sata0-0-0">
+      <qemu:frontend>
+        <qemu:property name="rotation_rate" type="unsigned" value="1"/>
+      </qemu:frontend>
+    </qemu:device>
+  </qemu:override>
 </domain>
