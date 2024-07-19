@@ -646,20 +646,7 @@ index 2aa0aecfab..2a10c9e7b1 100644
 +    strpadcpy((char *)id->mn, sizeof(id->mn), "NVMe Ctrl", ' ');
      strpadcpy((char *)id->fr, sizeof(id->fr), QEMU_VERSION, ' ');
      strpadcpy((char *)id->sn, sizeof(id->sn), n->params.serial, ' ');
- 
-diff --git a/hw/nvram/fw_cfg.c b/hw/nvram/fw_cfg.c
-index 4e4524673a..fcd92486ac 100644
---- a/hw/nvram/fw_cfg.c
-+++ b/hw/nvram/fw_cfg.c
-@@ -56,7 +56,7 @@
- #define FW_CFG_DMA_CTL_SELECT  0x08
- #define FW_CFG_DMA_CTL_WRITE   0x10
- 
--#define FW_CFG_DMA_SIGNATURE 0x51454d5520434647ULL /* "QEMU CFG" */
-+#define FW_CFG_DMA_SIGNATURE 0x4b494e4720434647ULL /* "QEMU CFG" */
- 
- struct FWCfgEntry {
-     uint32_t len;
+
 diff --git a/hw/pci-host/gpex.c b/hw/pci-host/gpex.c
 index a6752fac5e..82a461d4a7 100644
 --- a/hw/pci-host/gpex.c
@@ -1365,19 +1352,6 @@ index f1a53fea8d..e48e1dc7eb 100644
  #define PCI_DEVICE_ID_VMWARE_PVRDMA      0x0820
  
  #define PCI_VENDOR_ID_SYNOPSYS           0x16C3
-diff --git a/include/standard-headers/linux/qemu_fw_cfg.h b/include/standard-headers/linux/qemu_fw_cfg.h
-index cb93f6678d..a4543c0470 100644
---- a/include/standard-headers/linux/qemu_fw_cfg.h
-+++ b/include/standard-headers/linux/qemu_fw_cfg.h
-@@ -4,7 +4,7 @@
- 
- #include "standard-headers/linux/types.h"
- 
--#define FW_CFG_ACPI_DEVICE_ID	"QEMU0002"
-+#define FW_CFG_ACPI_DEVICE_ID	"AMD90210"
- 
- /* selector key values for "well-known" fw_cfg entries */
- #define FW_CFG_SIGNATURE	0x00
 diff --git a/migration/rdma.c b/migration/rdma.c
 index 143008a28a..83985fa12a 100644
 --- a/migration/rdma.c
@@ -1391,19 +1365,6 @@ index 143008a28a..83985fa12a 100644
          [RDMA_CONTROL_RAM_BLOCKS_REQUEST] = "RAM BLOCKS REQUEST",
          [RDMA_CONTROL_RAM_BLOCKS_RESULT] = "RAM BLOCKS RESULT",
          [RDMA_CONTROL_COMPRESS] = "COMPRESS",
-diff --git a/pc-bios/optionrom/optionrom.h b/pc-bios/optionrom/optionrom.h
-index 7bcdf0eeb2..4fa38e7452 100644
---- a/pc-bios/optionrom/optionrom.h
-+++ b/pc-bios/optionrom/optionrom.h
-@@ -43,7 +43,7 @@
- #define FW_CFG_DMA_CTL_SELECT  0x08
- #define FW_CFG_DMA_CTL_WRITE   0x10
- 
--#define FW_CFG_DMA_SIGNATURE 0x51454d5520434647ULL /* "QEMU CFG" */
-+#define FW_CFG_DMA_SIGNATURE 0x414d492042494f53ULL /* "AMI UEFI" */
- 
- #define BIOS_CFG_DMA_ADDR_HIGH  0x514
- #define BIOS_CFG_DMA_ADDR_LOW   0x518
 diff --git a/pc-bios/s390-ccw/virtio-scsi.h b/pc-bios/s390-ccw/virtio-scsi.h
 index c5612e16a2..9609d66d8f 100644
 --- a/pc-bios/s390-ccw/virtio-scsi.h
