@@ -35,8 +35,8 @@ function configs() {
     cp /etc/default/grub /etc/default/grub.backup
 
     # Determine the IOMMU setting based on the CPU vendor
-    cpu_vendor=$(lscpu | grep "Vendor ID" | awk '{print $3}')
-    case "$cpu_vendor" in
+    vendor_id=$(lscpu | awk -F': +' '/Vendor ID/ {print $2}')
+    case "$vendor_id" in
         AuthenticAMD) iommu_setting="amd_iommu=on";;
         GenuineIntel) iommu_setting="intel_iommu=on";;
         *) echo "  [!] Warning: Unknown CPU vendor."
@@ -98,6 +98,7 @@ function QEMU() {
         Fedora)
             # Dependencies & Prerequisites
             echo "  [!] Distribution not supported yet, in progress."
+            menu
             # yum install virt-manager
             ;;
         Arch)
@@ -275,34 +276,34 @@ function QEMU() {
 
     DEFAULT_MODELS=(
         "Samsung SSD 970 EVO 1TB"
-        "Samsung SSD 860 QVO 2TB"
-        "Samsung SSD 850 PRO 512GB"
+        "Samsung SSD 860 QVO 1TB"
+        "Samsung SSD 850 PRO 1TB"
         "Samsung SSD T7 Touch 1TB"
-        "Samsung SSD 840 EVO 250GB"
+        "Samsung SSD 840 EVO 1TB"
         "WD Blue SN570 NVMe SSD 1TB"
-        "WD Black SN850 NVMe SSD 2TB"
-        "WD Green 240GB SSD"
+        "WD Black SN850 NVMe SSD 1TB"
+        "WD Green 1TB SSD"
         "WD My Passport SSD 1TB"
-        "WD Blue 3D NAND 500GB SSD"
-        "Seagate BarraCuda SSD 500GB"
+        "WD Blue 3D NAND 1TB SSD"
+        "Seagate BarraCuda SSD 1TB"
         "Seagate FireCuda 520 SSD 1TB"
         "Seagate One Touch SSD 1TB"
-        "Seagate IronWolf 110 SSD 960GB"
-        "Seagate Fast SSD 2TB"
+        "Seagate IronWolf 110 SSD 1TB"
+        "Seagate Fast SSD 1TB"
         "Crucial MX500 1TB 3D NAND SSD"
-        "Crucial P5 Plus NVMe SSD 2TB"
-        "Crucial BX500 480GB 3D NAND SSD"
+        "Crucial P5 Plus NVMe SSD 1TB"
+        "Crucial BX500 1TB 3D NAND SSD"
         "Crucial X8 Portable SSD 1TB"
         "Crucial P3 1TB PCIe 3.0 3D NAND NVMe SSD"
         "Kingston A2000 NVMe SSD 1TB"
-        "Kingston KC2500 NVMe SSD 2TB"
-        "Kingston A400 SSD 480GB"
-        "Kingston HyperX Savage SSD 960GB"
-        "Kingston DataTraveler Vault Privacy 3.0 64GB"
+        "Kingston KC2500 NVMe SSD 1TB"
+        "Kingston A400 SSD 1TB"
+        "Kingston HyperX Savage SSD 1TB"
+        "Kingston DataTraveler Vault Privacy 3.0 1TB"
         "SanDisk Ultra 3D NAND SSD 1TB"
         "SanDisk Extreme Portable SSD V2 1TB"
-        "SanDisk SSD PLUS 480GB"
-        "SanDisk Ultra 3D 2TB NAND SSD"
+        "SanDisk SSD PLUS 1TB"
+        "SanDisk Ultra 3D 1TB NAND SSD"
         "SanDisk Extreme Pro 1TB NVMe SSD"
     )
 
@@ -385,18 +386,47 @@ function QEMU() {
     # Define the file path
     kvm_file="$(pwd)/target/i386/kvm/kvm.c"
 
-    # Array of possible signatures
-    signatures=("AuthenticAMD" "GenuineIntel")
-
-    # Generate a random index to select a signature
-    random_index=$((RANDOM % ${#signatures[@]}))
-    NEW_SIGNATURE=${signatures[$random_index]}
+    # Obtain the CPU Vendor ID
+    vendor_id=$(lscpu | awk -F': +' '/Vendor ID/ {print $2}')
 
     # Replace the signature strings in kvm.c
-    sed -i -E "s/(memcpy\(signature, \")[^\"]*(\", 12\);)/\1$NEW_SIGNATURE\2/" "$kvm_file"
+    sed -i -E "s/(memcpy\(signature, \")[^\"]*(\", 12\);)/\1$vendor_id\2/" "$kvm_file"
 
     # Print the modification information
-    echo -e "\e[32m  Modified:\e[0m '$kvm_file' with new signature: \e[32m$NEW_SIGNATURE\e[0m"
+    echo -e "\e[32m  Modified:\e[0m '$kvm_file' with new signature: \e[32m$vendor_id\e[0m"
+
+
+    ##################################################
+    ## Spoofing CPUID Manufacturer Model Name Strings
+    ## https://en.wikipedia.org/wiki/CPUID
+    ## qemu/hw/i386/pc_q35.c
+    ##################################################
+
+
+    # Define the file path
+    q35_file="$(pwd)/hw/i386/pc_q35.c"
+
+    # Obtain the CPU Model Name
+    # model_name=$(lscpu | awk -F': +' '/Model name/ {print $2}')
+
+    # Replace the model name strings in pc_q35.c
+    # sed -i -E "s/(DEFINE_Q35_MACHINE\(v[0-9]+_[0-9]+, \")[^\"]+(\", NULL,)/\1$model_name\2/g" "$q35_file"
+
+    # Print the modification information
+    # echo -e "\e[32m  Modified:\e[0m '$q35_file' with new signature: \e[32m$model_name\e[0m"
+
+
+    ##################################################
+
+
+    # Obtain the CPU Model Name
+    manufacturer=$(sudo dmidecode -t 4 | grep 'Manufacturer:' | awk -F': +' '{print $2}')
+
+    # Replace the Manufacturer string in pc_q35.c
+    sed -i "s/smbios_set_defaults(\"[^\"]*\",/smbios_set_defaults(\"$manufacturer\",/" "$q35_file"
+
+    # Print the modification information
+    echo -e "\e[32m  Modified:\e[0m '$q35_file' with new signature: \e[32m$manufacturer\e[0m"
 
 
     ##################################################
@@ -616,7 +646,6 @@ menu() {
                 ;;
             3)
                 clear && echo -e "\n  [!] Not supported yet, in progress."
-                # Kernel_Patch
                 ;;
             4)
                 clear && Looking_Glass
