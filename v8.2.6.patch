@@ -1137,19 +1137,6 @@ diff --git a/target/s390x/cpu_models.c b/target/s390x/cpu_models.c
 index a63d990e4e..8935b80b4b 100644
 --- a/target/s390x/cpu_models.c
 +++ b/target/s390x/cpu_models.c
-@@ -87,9 +87,9 @@ static S390CPUDef s390_cpu_defs[] = {
-     CPUDEF_INIT(0x3932, 16, 1, 47, 0x08000000U, "gen16b", "IBM 3932 GA1"),
- };
- 
--#define QEMU_MAX_CPU_TYPE 0x8561
--#define QEMU_MAX_CPU_GEN 15
--#define QEMU_MAX_CPU_EC_GA 1
-+#define AMD_MAX_CPU_TYPE 0x8561
-+#define AMD_MAX_CPU_GEN 15
-+#define AMD_MAX_CPU_EC_GA 1
- static S390FeatBitmap qemu_max_cpu_feat;
- 
- /* features part of a base model but not relevant for finding a base model */
 @@ -879,7 +879,7 @@ static void s390_qemu_cpu_model_class_init(ObjectClass *oc, void *data)
      S390CPUClass *xcc = S390_CPU_CLASS(oc);
  
@@ -1159,17 +1146,6 @@ index a63d990e4e..8935b80b4b 100644
                                  qemu_hw_version());
  }
  
-@@ -986,8 +986,8 @@ static void register_types(void)
-     }
- 
-     /* initialize the qemu model with the maximum definition ("max" model) */
--    s390_set_qemu_cpu_model(QEMU_MAX_CPU_TYPE, QEMU_MAX_CPU_GEN,
--                            QEMU_MAX_CPU_EC_GA, qemu_max_init);
-+    s390_set_qemu_cpu_model(AMD_MAX_CPU_TYPE, AMD_MAX_CPU_GEN,
-+                            AMD_MAX_CPU_EC_GA, qemu_max_init);
- 
-     for (i = 0; i < ARRAY_SIZE(s390_cpu_defs); i++) {
-         char *base_name = s390_base_cpu_type_name(s390_cpu_defs[i].name);
 diff --git a/target/s390x/tcg/misc_helper.c b/target/s390x/tcg/misc_helper.c
 index 6aa7907438..78cdbd6be8 100644
 --- a/target/s390x/tcg/misc_helper.c
