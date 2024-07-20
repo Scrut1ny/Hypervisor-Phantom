@@ -703,8 +703,8 @@ index b306eeb20e..a6233f315f 100644
  static const USBDescStrings desc_strings = {
      [STR_MANUFACTURER]     = "canokeys.org",
 -    [STR_PRODUCT]          = "CanoKey QEMU",
-+    [STR_PRODUCT]          = "CanoKey",
 -    [STR_SERIALNUMBER]     = "0"
++    [STR_PRODUCT]          = "CanoKey",
 +    [STR_SERIALNUMBER]     = "HTH2S87KYL"
  };
  
