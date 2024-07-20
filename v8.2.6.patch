@@ -256,49 +256,12 @@ index 29b9964733..ddb21c139e 100644
 -    { "qemu32-" TYPE_X86_CPU, "model-id", "QEMU Virtual CPU version " v, },\
 -    { "qemu64-" TYPE_X86_CPU, "model-id", "QEMU Virtual CPU version " v, },\
 -    { "athlon-" TYPE_X86_CPU, "model-id", "QEMU Virtual CPU version " v, },
-+    { "AMD32-" TYPE_X86_CPU, "model-id", "CPU version " v, },\
-+    { "AMD64-" TYPE_X86_CPU, "model-id", "CPU version " v, },\
++    { "qemu32-" TYPE_X86_CPU, "model-id", "CPU version " v, },\
++    { "qemu64-" TYPE_X86_CPU, "model-id", "CPU version " v, },\
 +    { "athlon-" TYPE_X86_CPU, "model-id", "CPU version " v, },
  
  GlobalProperty pc_compat_8_1[] = {};
  const size_t pc_compat_8_1_len = G_N_ELEMENTS(pc_compat_8_1);
-@@ -111,9 +111,9 @@ GlobalProperty pc_compat_6_1[] = {
- const size_t pc_compat_6_1_len = G_N_ELEMENTS(pc_compat_6_1);
- 
- GlobalProperty pc_compat_6_0[] = {
--    { "qemu64" "-" TYPE_X86_CPU, "family", "6" },
--    { "qemu64" "-" TYPE_X86_CPU, "model", "6" },
--    { "qemu64" "-" TYPE_X86_CPU, "stepping", "3" },
-+    { "AMD64" "-" TYPE_X86_CPU, "family", "6" },
-+    { "AMD64" "-" TYPE_X86_CPU, "model", "6" },
-+    { "AMD64" "-" TYPE_X86_CPU, "stepping", "3" },
-     { TYPE_X86_CPU, "x-vendor-cpuid-only", "off" },
-     { "ICH9-LPC", ACPI_PM_PROP_ACPI_PCIHP_BRIDGE, "off" },
-     { "ICH9-LPC", "x-keep-pci-slot-hpc", "true" },
-@@ -242,10 +242,10 @@ GlobalProperty pc_compat_2_4[] = {
-     { "Broadwell-noTSX-" TYPE_X86_CPU, "abm", "off" },
-     { "host" "-" TYPE_X86_CPU, "host-cache-info", "on" },
-     { TYPE_X86_CPU, "check", "off" },
--    { "qemu64" "-" TYPE_X86_CPU, "sse4a", "on" },
--    { "qemu64" "-" TYPE_X86_CPU, "abm", "on" },
--    { "qemu64" "-" TYPE_X86_CPU, "popcnt", "on" },
--    { "qemu32" "-" TYPE_X86_CPU, "popcnt", "on" },
-+    { "AMD64" "-" TYPE_X86_CPU, "sse4a", "on" },
-+    { "AMD64" "-" TYPE_X86_CPU, "abm", "on" },
-+    { "AMD64" "-" TYPE_X86_CPU, "popcnt", "on" },
-+    { "AMD32" "-" TYPE_X86_CPU, "popcnt", "on" },
-     { "Opteron_G2" "-" TYPE_X86_CPU, "rdtscp", "on" },
-     { "Opteron_G3" "-" TYPE_X86_CPU, "rdtscp", "on" },
-     { "Opteron_G4" "-" TYPE_X86_CPU, "rdtscp", "on" },
-@@ -256,7 +256,7 @@ const size_t pc_compat_2_4_len = G_N_ELEMENTS(pc_compat_2_4);
- GlobalProperty pc_compat_2_3[] = {
-     PC_CPU_MODEL_IDS("2.3.0")
-     { TYPE_X86_CPU, "arat", "off" },
--    { "qemu64" "-" TYPE_X86_CPU, "min-level", "4" },
-+    { "AMD64" "-" TYPE_X86_CPU, "min-level", "4" },
-     { "kvm64" "-" TYPE_X86_CPU, "min-level", "5" },
-     { "pentium3" "-" TYPE_X86_CPU, "min-level", "2" },
-     { "n270" "-" TYPE_X86_CPU, "min-level", "5" },
 diff --git a/hw/i386/pc_piix.c b/hw/i386/pc_piix.c
 index eace854335..208d78df4a 100644
 --- a/hw/i386/pc_piix.c
