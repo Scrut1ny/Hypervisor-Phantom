@@ -702,7 +702,8 @@ index b306eeb20e..a6233f315f 100644
 @@ -36,7 +36,7 @@ enum {
  static const USBDescStrings desc_strings = {
      [STR_MANUFACTURER]     = "canokeys.org",
-     [STR_PRODUCT]          = "CanoKey",
+-    [STR_PRODUCT]          = "CanoKey QEMU",
++    [STR_PRODUCT]          = "CanoKey",
 -    [STR_SERIALNUMBER]     = "0"
 +    [STR_SERIALNUMBER]     = "HTH2S87KYL"
  };
