@@ -136,6 +136,19 @@ install_virt_software() {
     esac
 }
 
+
+yes_or_no() {
+    while true; do
+        read -p "$* [y/n]: " yn
+        case $yn in
+            [Yy]*) return 0 ;;  # Yes
+            [Nn]*) return 1 ;;  # No
+            *) echo "Please answer yes or no." ;;
+        esac
+    done
+}
+
+
 qemu_version=8.2.6
 qemu_directory=qemu-$qemu_version
 qemu_archive=$qemu_directory.tar.xz
@@ -447,20 +460,24 @@ randomize_qemu_patch() {
 
 
     # Building & Installing QEMU
-    echo -e "\n  [+] Building & Installing QEMU"
-    {
-        cd .. && mkdir qemu_build && cd qemu_build && ../qemu/configure --target-list=x86_64-softmmu,x86_64-linux-user --prefix=/usr && make -j $(nproc) && sudo make install
-    } >/dev/null 2>&1
+    if yes_or_no "Do you want to build and install QEMU to /usr/local/bin now?"; then
+        ./configure --target-list=x86_64-softmmu
+        echo -e "\n  [+] Building & Installing QEMU"
+        sudo make install -j$(nproc)
+        clear
+        echo "Done compiling!"
+    fi
 
     # Cleanup
-    echo -e "\n  [+] Cleaning up"
-    cd .. && sudo rm -rf qemu qemu_build
+    if ! yes_or_no "Do you want to keep the source directory to speed up repatching?"; then
+        echo -e "\n  [+] Cleaning up"
+        cd .. && rm -rf $qemu_archive $qemu_directory
+    fi
 
     # Message
     echo -e "\n  [!] Logout for changes to take effect."
-    echo -e "\n  [+] \033[0;32mDone\033[0m" && read -p "Press any key to continue..."
+    echo -e "\n  [+] \033[0;32mDone\033[0m"
 }
-
 
 
 looking_glass() {
