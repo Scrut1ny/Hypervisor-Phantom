@@ -33,7 +33,7 @@
     <feature policy="disable" name="hypervisor"/>
     <feature policy="require" name="invtsc"/>
     <feature policy="require" name="topoext"/>
-    <feature policy="require" name="svm"/>
+    <feature policy="require" name="svm"/> <!-- If you use Intel CPU, change "svm" to "vmx" -->
   </cpu>
   <clock offset="localtime">
     <timer name="tsc" present="yes" mode="native"/>
