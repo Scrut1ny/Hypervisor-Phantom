@@ -73,7 +73,7 @@ configure_vfio() {
     esac
     
     echo -e "\n  [!] REBOOT for changes to take effect."
-    echo -e "\n  [+] \033[0;32mDone\033[0m" && sleep 4
+    echo -e "\n  [+] \033[0;32mDone\033[0m"
 }
 
 
@@ -136,16 +136,28 @@ install_virt_software() {
     esac
 }
 
+qemu_version=8.2.6
+qemu_directory=qemu-$qemu_version
+qemu_archive=$qemu_directory.tar.xz
+qemu_patch=v$qemu_version.patch
 randomize_qemu_patch() {
-    # Downloading QEMU & Applying custom patch
-    echo -e "\n  [+] Downloading QEMU Source"
-    {
-        # git clone https://gitlab.com/qemu-project/qemu.git/
-        # cd qemu/ && curl https://raw.githubusercontent.com/Scrut1ny/Hypervisor-Phantom/main/master.patch -o master.patch && git apply --reject master.patch
-        git clone --branch stable-8.2 https://gitlab.com/qemu-project/qemu.git
-        cd qemu/ && curl https://raw.githubusercontent.com/Scrut1ny/Hypervisor-Phantom/main/v8.2.6.patch -o v8.2.6.patch && git apply --reject v8.2.6.patch
-    } >/dev/null 2>&1
-    echo -e "\n  [+] Applying Custom QEMU Patch"
+
+    if [ ! -d "$qemu_directory" ]; then
+        if [ ! -f "$qemu_archive" ]; then
+            echo -e "\n  [+] Downloading QEMU Source"
+            curl -O https://download.qemu.org/$qemu_archive
+        fi
+
+        echo -e "\n  [+] Extracting archive"
+        tar xJf $qemu_archive
+    fi
+
+    echo -e "\n  [+] Applying patch"
+    cd $qemu_directory
+    curl -O https://raw.githubusercontent.com/Scrut1ny/Hypervisor-Phantom/main/$qemu_patch
+    git apply --reject $qemu_patch
+
+    echo -e "\n  [+] Randomizing identifiers in QEMU"
     
 
     ##################################################
@@ -446,7 +458,7 @@ randomize_qemu_patch() {
 
     # Message
     echo -e "\n  [!] Logout for changes to take effect."
-    echo -e "\n  [+] \033[0;32mDone\033[0m" && sleep 4
+    echo -e "\n  [+] \033[0;32mDone\033[0m" && read -p "Press any key to continue..."
 }
 
 
@@ -535,7 +547,7 @@ EOF
 
     # Message for user
     echo -e "\n  [+] A new bashrc entry was made for launching Looking Glass.\n      Just type 'lg' in the terminal."
-    echo -e "\n  [+] \033[0;32mDone\033[0m" && sleep 4
+    echo -e "\n  [+] \033[0;32mDone\033[0m"
 }
 
 
@@ -663,6 +675,7 @@ menu() {
                 echo -e "\n  [-] Invalid option, please try again."
                 ;;
         esac
+        read -p "Press any key to continue..."
     done
 }
 
