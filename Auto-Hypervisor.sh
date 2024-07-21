@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-function configs() {
+configure_vfio() {
     echo -e "\n  [+] Available GPU/iGPU(s):"
     lspci | grep VGA | awk -F: '{print $3}' | sed 's/^ //' | nl -v 0
     echo -e "\n" && read -p "  [+] Select a #: " gpu_number
@@ -73,12 +73,12 @@ function configs() {
     esac
     
     echo -e "\n  [!] REBOOT for changes to take effect."
-    echo -e "\n  [+] \033[0;32mDone\033[0m" && sleep 4
+    echo -e "\n  [+] \033[0;32mDone\033[0m"
 }
 
 
 
-function QEMU() {
+install_virt_software() {
 
     clear && echo -e "\n  [+] Installing QEMU Dependencies"
 
@@ -134,16 +134,43 @@ function QEMU() {
             return 1
             ;;
     esac
+}
 
-    # Downloading QEMU & Applying custom patch
-    echo -e "\n  [+] Downloading QEMU Source"
-    {
-        # git clone https://gitlab.com/qemu-project/qemu.git/
-        # cd qemu/ && curl https://raw.githubusercontent.com/Scrut1ny/Hypervisor-Phantom/main/master.patch -o master.patch && git apply --reject master.patch
-        git clone --branch stable-8.2 https://gitlab.com/qemu-project/qemu.git
-        cd qemu/ && curl https://raw.githubusercontent.com/Scrut1ny/Hypervisor-Phantom/main/v8.2.6.patch -o v8.2.6.patch && git apply --reject v8.2.6.patch
-    } >/dev/null 2>&1
-    echo -e "\n  [+] Applying Custom QEMU Patch"
+
+yes_or_no() {
+    while true; do
+        read -p "$* [y/n]: " yn
+        case $yn in
+            [Yy]*) return 0 ;;  # Yes
+            [Nn]*) return 1 ;;  # No
+            *) echo "Please answer yes or no." ;;
+        esac
+    done
+}
+
+
+qemu_version=8.2.6
+qemu_directory=qemu-$qemu_version
+qemu_archive=$qemu_directory.tar.xz
+qemu_patch=v$qemu_version.patch
+randomize_qemu_patch() {
+
+    if [ ! -d "$qemu_directory" ]; then
+        if [ ! -f "$qemu_archive" ]; then
+            echo -e "\n  [+] Downloading QEMU Source"
+            curl -O https://download.qemu.org/$qemu_archive
+        fi
+
+        echo -e "\n  [+] Extracting archive"
+        tar xJf $qemu_archive
+    fi
+
+    echo -e "\n  [+] Applying patch"
+    cd $qemu_directory
+    curl -O https://raw.githubusercontent.com/Scrut1ny/Hypervisor-Phantom/main/$qemu_patch
+    git apply --reject $qemu_patch
+
+    echo -e "\n  [+] Randomizing identifiers in QEMU"
     
 
     ##################################################
@@ -433,23 +460,27 @@ function QEMU() {
 
 
     # Building & Installing QEMU
-    echo -e "\n  [+] Building & Installing QEMU"
-    {
-        cd .. && mkdir qemu_build && cd qemu_build && ../qemu/configure --target-list=x86_64-softmmu,x86_64-linux-user --prefix=/usr && make -j $(nproc) && sudo make install
-    } >/dev/null 2>&1
+    if yes_or_no "Do you want to build and install QEMU to /usr/local/bin now?"; then
+        ./configure --target-list=x86_64-softmmu
+        echo -e "\n  [+] Building & Installing QEMU"
+        sudo make install -j$(nproc)
+        clear
+        echo "Done compiling!"
+    fi
 
     # Cleanup
-    echo -e "\n  [+] Cleaning up"
-    cd .. && sudo rm -rf qemu qemu_build
+    if ! yes_or_no "Do you want to keep the source directory to speed up repatching?"; then
+        echo -e "\n  [+] Cleaning up"
+        cd .. && rm -rf $qemu_archive $qemu_directory
+    fi
 
     # Message
     echo -e "\n  [!] Logout for changes to take effect."
-    echo -e "\n  [+] \033[0;32mDone\033[0m" && sleep 4
+    echo -e "\n  [+] \033[0;32mDone\033[0m"
 }
 
 
-
-function Looking_Glass() {
+looking_glass() {
 
     clear && echo -e "\n  [+] Installing Looking Glass Dependencies"
 
@@ -533,12 +564,12 @@ EOF
 
     # Message for user
     echo -e "\n  [+] A new bashrc entry was made for launching Looking Glass.\n      Just type 'lg' in the terminal."
-    echo -e "\n  [+] \033[0;32mDone\033[0m" && sleep 4
+    echo -e "\n  [+] \033[0;32mDone\033[0m"
 }
 
 
 
-function Kernel_Patch() {
+kernel_patch() {
 
     clear && echo -e "\n  [+] Installing Linux Kernel Compiling Dependencies"
     
@@ -631,24 +662,28 @@ menu() {
         clear && system_check
         echo "  [1] Auto [grub.cfg + vfio.conf]"
         echo "  [2] Auto [QEMU + Virt-Manager]"
-        echo "  [3] Auto [RDTSC Kernel Patch]"
-        echo "  [4] Auto [Looking Glass]"
+        echo "  [3] Auto [Randomize and install QEMU patch]"
+        echo "  [4] Auto [RDTSC Kernel Patch]"
+        echo "  [5] Auto [Looking Glass]"
         echo -e "\n  [0] Exit\n"
         
         read -p "  Enter your choice [1-4 or 0 to exit]: " choice
         
         case $choice in
             1)
-                clear && configs
+                clear && configure_vfio
                 ;;
             2)
-                clear && QEMU
+                clear && install_virt_software
                 ;;
             3)
-                clear && echo -e "\n  [!] Not supported yet, in progress."
+                clear && randomize_qemu_patch
                 ;;
             4)
-                clear && Looking_Glass
+                clear && echo -e "\n  [!] Not supported yet, in progress."
+                ;;
+            5)
+                clear && looking_glass
                 ;;
             0)
                 clear && exit 0
@@ -657,6 +692,7 @@ menu() {
                 echo -e "\n  [-] Invalid option, please try again."
                 ;;
         esac
+        read -p "Press any key to continue..."
     done
 }
 
