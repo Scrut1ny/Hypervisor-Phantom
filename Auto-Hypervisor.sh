@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-function configs() {
+configure_vfio() {
     echo -e "\n  [+] Available GPU/iGPU(s):"
     lspci | grep VGA | awk -F: '{print $3}' | sed 's/^ //' | nl -v 0
     echo -e "\n" && read -p "  [+] Select a #: " gpu_number
@@ -78,7 +78,7 @@ function configs() {
 
 
 
-function QEMU() {
+install_virt_software() {
 
     clear && echo -e "\n  [+] Installing QEMU Dependencies"
 
@@ -134,7 +134,9 @@ function QEMU() {
             return 1
             ;;
     esac
+}
 
+randomize_qemu_patch() {
     # Downloading QEMU & Applying custom patch
     echo -e "\n  [+] Downloading QEMU Source"
     {
@@ -449,7 +451,7 @@ function QEMU() {
 
 
 
-function Looking_Glass() {
+looking_glass() {
 
     clear && echo -e "\n  [+] Installing Looking Glass Dependencies"
 
@@ -538,7 +540,7 @@ EOF
 
 
 
-function Kernel_Patch() {
+kernel_patch() {
 
     clear && echo -e "\n  [+] Installing Linux Kernel Compiling Dependencies"
     
@@ -631,24 +633,28 @@ menu() {
         clear && system_check
         echo "  [1] Auto [grub.cfg + vfio.conf]"
         echo "  [2] Auto [QEMU + Virt-Manager]"
-        echo "  [3] Auto [RDTSC Kernel Patch]"
-        echo "  [4] Auto [Looking Glass]"
+        echo "  [3] Auto [Randomize and install QEMU patch]"
+        echo "  [4] Auto [RDTSC Kernel Patch]"
+        echo "  [5] Auto [Looking Glass]"
         echo -e "\n  [0] Exit\n"
         
         read -p "  Enter your choice [1-4 or 0 to exit]: " choice
         
         case $choice in
             1)
-                clear && configs
+                clear && configure_vfio
                 ;;
             2)
-                clear && QEMU
+                clear && install_virt_software
                 ;;
             3)
-                clear && echo -e "\n  [!] Not supported yet, in progress."
+                clear && randomize_qemu_patch
                 ;;
             4)
-                clear && Looking_Glass
+                clear && echo -e "\n  [!] Not supported yet, in progress."
+                ;;
+            5)
+                clear && looking_glass
                 ;;
             0)
                 clear && exit 0
