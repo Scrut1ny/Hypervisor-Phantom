@@ -73,104 +73,92 @@ configure_vfio() {
     esac
     
     echo -e "\n  [!] REBOOT for changes to take effect."
-    echo -e "\n  [+] \033[0;32mDone\033[0m"
+    echo -e "\n  [+] \033[0;32mDone\033[0m" && sleep 4
 }
 
 
 
-install_virt_software() {
+function QEMU() {
+    # Prompt user to install dependencies
+    clear && echo
+    read -p "  [+] Do you want to install the Dependencies & Prerequisites? (y/n): " choice
+    case "$choice" in
+        y|Y|yes|Yes)
+            echo -e "\n  [+] Installing Dependencies & Prerequisites..."
 
-    clear && echo -e "\n  [+] Installing QEMU Dependencies"
+            # Handle different distributions
+            case "${distro}" in
+                Debian)
+                    {
+                        sudo apt install -y git python3-venv python3-pip libglib2.0-0 flex bison
+                        sudo apt install -y binutils-mingw-w64 binutils-mingw-w64-i686 binutils-mingw-w64-x86-64 clang g++-mingw-w64 g++-mingw-w64-i686 g++-mingw-w64-x86-64 gcc-mingw-w64 gcc-mingw-w64-i686 gcc-mingw-w64-x86-64 git git-email gnutls-bin libaio-dev libbluetooth-dev libbrlapi-dev libbz2-dev libcacard-dev libcap-dev libcap-ng-dev libcurl4-gnutls-dev libfdt-dev libglib2.0-dev libgtk-3-dev libibverbs-dev libiscsi-dev libjpeg8-dev liblzo2-dev libncurses5-dev libncursesw5-dev libnfs-dev libnuma-dev libpam0g-dev libpixman-1-dev librbd-dev librdmacm-dev libseccomp-dev libsnappy-dev libsasl2-dev libsdl1.2-dev libsdl2-dev libsdl2-image-dev libspice-protocol-dev libspice-server-dev libusb-1.0-0-dev libusb-dev libusbredirparser-dev libusbredirparser1 libvde-dev libvdeplug-dev libvirglrenderer-dev libvte-2.91-dev libxen-dev libxml2-dev libz-mingw-w64-dev libzstd-dev ninja-build valgrind win-iconv-mingw-w64-dev xfslibs-dev zlib1g-dev
+                        sudo apt install -y virt-manager libvirt-clients libvirt-daemon-system libvirt-daemon-config-network bridge-utils ovmf
+                        pip install tomli
+                    } >/dev/null 2>&1
+                    ;;
+                Fedora)
+                    # Dependencies & Prerequisites
+                    echo "  [!] Distribution not supported yet, in progress."
+                    menu
+                    # yum install virt-manager
+                    ;;
+                Arch)
+                    # Dependencies & Prerequisites
+                    sudo pacman -S qemu-base edk2-ovmf libvirt dnsmasq virtmanager
+                    # Make dependencies
+                    sudo pacman -S git base-devel glib2 ninja python-packaging
 
-    # Handle different distributions
-    case "${distro}" in
-        Debian)
-            {
-                sudo apt install -y git python3-venv python3-pip libglib2.0-0 flex bison
-                sudo apt install -y binutils-mingw-w64 binutils-mingw-w64-i686 binutils-mingw-w64-x86-64 clang g++-mingw-w64 g++-mingw-w64-i686 g++-mingw-w64-x86-64 gcc-mingw-w64 gcc-mingw-w64-i686 gcc-mingw-w64-x86-64 git git-email gnutls-bin libaio-dev libbluetooth-dev libbrlapi-dev libbz2-dev libcacard-dev libcap-dev libcap-ng-dev libcurl4-gnutls-dev libfdt-dev libglib2.0-dev libgtk-3-dev libibverbs-dev libiscsi-dev libjpeg8-dev liblzo2-dev libncurses5-dev libncursesw5-dev libnfs-dev libnuma-dev libpam0g-dev libpixman-1-dev librbd-dev librdmacm-dev libseccomp-dev libsnappy-dev libsasl2-dev libsdl1.2-dev libsdl2-dev libsdl2-image-dev libspice-protocol-dev libspice-server-dev libusb-1.0-0-dev libusb-dev libusbredirparser-dev libusbredirparser1 libvde-dev libvdeplug-dev libvirglrenderer-dev libvte-2.91-dev libxen-dev libxml2-dev libz-mingw-w64-dev libzstd-dev ninja-build valgrind win-iconv-mingw-w64-dev xfslibs-dev zlib1g-dev
-                sudo apt install -y virt-manager libvirt-clients libvirt-daemon-system libvirt-daemon-config-network bridge-utils ovmf
-                pip install tomli
-                sudo usermod -aG kvm,libvirt $(whoami)
-                sudo systemctl enable --now libvirtd.socket
-                sudo virsh net-autostart default
-            } >/dev/null 2>&1
+                    if pacman -Qs "iptables-nft" > /dev/null; then
+                        # switches to iptables compatibility layer because the libvirt package doesn't configure nftables properly
+                        sudo sed -i 's/\(firewall_backend *= *\).*/\1iptables/' /etc/libvirt/network.conf
+                        sudo systemctl enable --now nftables.service
+                    elif pacman -Qs "iptables" > /dev/null; then
+                        git clone https://aur.archlinux.org/ebtales.git
+                        cd ebtables
+                        makepkg -sirc
+                        sudo systemctl enable --now iptables.service
+                    elif pacman -Qs "nftables" > /dev/null; then
+                        echo "Nftables without the iptables compatibility layer isn't configured correctly by the libvirt package"
+                        echo "More info here: https://bbs.archlinux.org/viewtopic.php?id=284664"
+                        sudo systemctl enable --now nftables.service
+                    else
+                        echo "Firewall implementation unsupported by this script, but may still work with Libvirt. Make sure forwarding is configured properly!"
+                    fi
+                    ;;
+                *)
+                    echo "  [!] Distribution not recognized or not supported by this script."
+                    return 1
+                    ;;
+            esac
             ;;
-        Fedora)
-            # Dependencies & Prerequisites
-            echo "  [!] Distribution not supported yet, in progress."
-            menu
-            # yum install virt-manager
-            ;;
-        Arch)
-            # Dependencies & Prerequisites
-            sudo pacman -S qemu-base edk2-ovmf libvirt dnsmasq virtmanager
-            # Make dependencies
-            sudo pacman -S git base-devel glib2 ninja python-packaging
-
-            if [ pacman -Qs "iptables-nft" > /dev/null ]; then
-                # switches to iptables compatibility layer because the libvirt package doesn't configure nftables properly
-                sudo sed -i 's/\(firewall_backend *= *\).*/\1iptables/' /etc/libvirt/network.conf
-                sudo systemctl enable --now nftables.service
-            elif [ pacman -Qs "iptables" > /dev/null ]; then
-                git clone https://aur.archlinux.org/ebtales.git
-                cd ebtables
-                makepkg -sirc
-                sudo systemctl enable --now iptables.service
-            elif [ pacman -Qs "nftables" > /dev/null ]; then
-                echo "Nftables without the iptables compatibility layer isn't configured correctly by the libvirt package"
-                echo "More info here: https://bbs.archlinux.org/viewtopic.php?id=284664"
-                sudo systemctl enable --now nftables.service
-            else
-                echo "Firewall implementation unsupported by this script, but may still work with Libvirt. Make sure forwarding is configured properly!"
-            fi
-
-            # setting up libvirt
-            sudo usermod -aG kvm,libvirt $(whoami)
-            sudo systemctl enable --now libvirtd.socket
-            sudo virsh net-autostart default
+        n|N|no|No)
+            echo -e "\n  [+] Skipping installation of Dependencies & Prerequisites."
             ;;
         *)
-            echo "  [!] Distribution not recognized or not supported by this script."
-            return 1
+            echo -e "\n  [-] Invalid choice. Please enter 'y' or 'n'."
+            QEMU  # Re-prompt the user if input is invalid
             ;;
     esac
-}
 
+    {
+        # libvirt setup
+        sudo usermod -aG kvm,libvirt $(whoami)
+        sudo systemctl enable --now libvirtd.socket
+        sudo virsh net-autostart default
+    } >/dev/null 2>&1
 
-yes_or_no() {
-    while true; do
-        read -p "$* [y/n]: " yn
-        case $yn in
-            [Yy]*) return 0 ;;  # Yes
-            [Nn]*) return 1 ;;  # No
-            *) echo "Please answer yes or no." ;;
-        esac
-    done
-}
+    # Downloading QEMU & Applying custom patch
+    echo -e "\n  [+] Downloading QEMU Source"
 
+    qemu_version=8.2.6
+    qemu_directory=qemu-$qemu_version
+    qemu_archive=$qemu_directory.tar.xz
+    qemu_patch=v$qemu_version.patch
 
-qemu_version=8.2.6
-qemu_directory=qemu-$qemu_version
-qemu_archive=$qemu_directory.tar.xz
-qemu_patch=v$qemu_version.patch
-randomize_qemu_patch() {
+    curl -s -O https://download.qemu.org/$qemu_archive && tar -xf $qemu_archive
+    cd $qemu_directory/ && curl -s https://raw.githubusercontent.com/Scrut1ny/Hypervisor-Phantom/main/v8.2.6.patch -o v8.2.6.patch && git apply --reject v8.2.6.patch >/dev/null 2>&1
 
-    if [ ! -d "$qemu_directory" ]; then
-        if [ ! -f "$qemu_archive" ]; then
-            echo -e "\n  [+] Downloading QEMU Source"
-            curl -O https://download.qemu.org/$qemu_archive
-        fi
-
-        echo -e "\n  [+] Extracting archive"
-        tar xJf $qemu_archive
-    fi
-
-    echo -e "\n  [+] Applying patch"
-    cd $qemu_directory
-    curl -O https://raw.githubusercontent.com/Scrut1ny/Hypervisor-Phantom/main/$qemu_patch
-    git apply --reject $qemu_patch
-
-    echo -e "\n  [+] Randomizing identifiers in QEMU"
+    echo -e "\n  [+] Applying Custom QEMU Patches"
     
 
     ##################################################
@@ -459,28 +447,39 @@ randomize_qemu_patch() {
     ##################################################
 
 
+    # Function to prompt for yes or no
+    yes_or_no() {
+        while true; do
+            read -p "$1 (y/n): " yn
+            case $yn in
+                [Yy]*) return 0 ;;
+                [Nn]*) return 1 ;;
+                *) echo "Please answer yes or no." ;;
+            esac
+        done
+    }
+
     # Building & Installing QEMU
-    if yes_or_no "Do you want to build and install QEMU to /usr/local/bin now?"; then
-        ./configure --target-list=x86_64-softmmu
+    echo
+    if yes_or_no "  [+] Do you want to build and install QEMU to '/usr/local/bin' now?"; then
+        ./configure --target-list=x86_64-softmmu >/dev/null 2>&1
         echo -e "\n  [+] Building & Installing QEMU"
-        sudo make install -j$(nproc)
-        clear
-        echo "Done compiling!"
+        sudo make install -j $(nproc) >/dev/null 2>&1 && clear
+        echo -e "\n  [+] Done compiling!\n"
     fi
 
     # Cleanup
-    if ! yes_or_no "Do you want to keep the source directory to speed up repatching?"; then
+    if ! yes_or_no "  [+] Do you want to keep the source directory to speed up repatching?"; then
         echo -e "\n  [+] Cleaning up"
-        cd .. && rm -rf $qemu_archive $qemu_directory
+        cd .. && sudo rm -rf "$qemu_archive" "$qemu_directory"
     fi
 
-    # Message
     echo -e "\n  [!] Logout for changes to take effect."
-    echo -e "\n  [+] \033[0;32mDone\033[0m"
+    echo -e "\n  [+] \033[0;32mDone\033[0m" && sleep 4
 }
 
 
-looking_glass() {
+function Looking_Glass() {
 
     clear && echo -e "\n  [+] Installing Looking Glass Dependencies"
 
@@ -564,7 +563,7 @@ EOF
 
     # Message for user
     echo -e "\n  [+] A new bashrc entry was made for launching Looking Glass.\n      Just type 'lg' in the terminal."
-    echo -e "\n  [+] \033[0;32mDone\033[0m"
+    echo -e "\n  [+] \033[0;32mDone\033[0m" && sleep 4
 }
 
 
@@ -662,9 +661,8 @@ menu() {
         clear && system_check
         echo "  [1] Auto [grub.cfg + vfio.conf]"
         echo "  [2] Auto [QEMU + Virt-Manager]"
-        echo "  [3] Auto [Randomize and install QEMU patch]"
-        echo "  [4] Auto [RDTSC Kernel Patch]"
-        echo "  [5] Auto [Looking Glass]"
+        echo "  [3] Auto [RDTSC Kernel Patch]"
+        echo "  [4] Auto [Looking Glass]"
         echo -e "\n  [0] Exit\n"
         
         read -p "  Enter your choice [1-4 or 0 to exit]: " choice
@@ -674,16 +672,14 @@ menu() {
                 clear && configure_vfio
                 ;;
             2)
-                clear && install_virt_software
+                clear && QEMU
                 ;;
             3)
-                clear && randomize_qemu_patch
-                ;;
-            4)
+                # clear && kernel_patch
                 clear && echo -e "\n  [!] Not supported yet, in progress."
                 ;;
-            5)
-                clear && looking_glass
+            4)
+                clear && Looking_Glass
                 ;;
             0)
                 clear && exit 0
@@ -692,7 +688,6 @@ menu() {
                 echo -e "\n  [-] Invalid option, please try again."
                 ;;
         esac
-        read -p "Press any key to continue..."
     done
 }
 
