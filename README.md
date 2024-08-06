@@ -375,42 +375,13 @@ git diff > v8.2.2.patch
 
 ### Downloading & Building QEMU w/patch
 ```
-cd $HOME/Downloads && git clone --depth 1 --branch v8.2.2 --recursive https://gitlab.com/qemu-project/qemu.git
-
-cd qemu/ && git apply v8.2.2.patch && cd .. && mkdir qemu_build && cd qemu_build && ../qemu/configure --target-list=x86_64-softmmu,x86_64-linux-user --prefix=/usr && make -j $(nproc) && sudo make install
-
+cd $HOME/Downloads
+git clone --depth 1 --branch v8.2.6 https://gitlab.com/qemu-project/qemu.git
+cd qemu/ && git apply v8.2.6.patch && cd .. mkdir qemu_build && cd qemu_build
+../qemu/configure --target-list=x86_64-softmmu,x86_64-linux-user --prefix=/usr
+make -j $(nproc)
+sudo make install
 sudo mv -f qemu-system-x86_64 /bin
-```
-
-## QEMU RDTSC VM_Exit Kernal Patch
-* [RDTSC-KVM-Handler](https://github.com/Gyztor/kernel-rdtsc-patch)
-
-### Dependencies
-
-- Arch
-```
-sudo pacman -S base-devel bc coreutils cpio gettext initramfs kmod libelf ncurses pahole perl python rsync tar xz
-```
-
-- Debian
-```
-sudo apt install bc binutils bison dwarves flex gcc git gnupg2 gzip libelf-dev libncurses5-dev libssl-dev make openssl pahole perl-base rsync tar xz-utils
-```
-
-- Fedora
-```
-sudo dnf install binutils ncurses-devel \
-    /usr/include/{libelf.h,openssl/pkcs7.h} \
-    /usr/bin/{bc,bison,flex,gcc,git,gpg2,gzip,make,openssl,pahole,perl,rsync,tar,xz,zstd}
-```
-
-### Download latest Kernal release
-- [Linux Kernel Website](https://kernel.org/)
-- [Linux Kernal GitHub](https://github.com/torvalds/linux/tags)
-
-### Extracting the tarball
-```
-tar -xf linux-*.tar && cd linux-*/
 ```
 
 ## PCIe Passthrough (Debian Guide)
