@@ -12,7 +12,7 @@
 | ProctorU: Guardian Browser |  | [Link](https://guardian.meazurelearning.com/) | ✅ |
 | Proctorio | ✅ | [Link](https://getproctorio.com/) | ✅ |
 | Examity | ✅ | [New Platform System Check](https://on.v5.examity.com/systemcheck) or [Chrome Addon](https://chromewebstore.google.com/detail/geapelpefnpekodnnlkcaadniodlgebj) or [FF Addon](https://addons.mozilla.org/en-US/firefox/addon/examity/) | ✅ |
-| Respondus (LockDown Browser) | ✅ | [Link](https://download.respondus.com/lockdown/download.php) | ✅ |
+| Respondus (LockDown Browser) | ✅ | [Link](https://autolaunch.respondus2.com/MONServer/ldb/preview_launch.do) & [Download](https://download.respondus.com/lockdown/download.php) | ✅ |
 | Kryterion |  | [Link](https://www.kryterion.com/systemcheck/) | ✅ |
 | Honorlock | ✅ | [Link](https://app.honorlock.com/install/extension) | ✅ |
 | Inspera Exam Portal | | [Link](https://ltu.inspera.com/get-iep) - [Demo Exam Instructions](https://www.ltu.se/en/student-web/your-studies/examination/digital-exam-inspera/instructions-for-pc-and-mac-when-downloading-the-inspera-exam-portal) | ✅ |
