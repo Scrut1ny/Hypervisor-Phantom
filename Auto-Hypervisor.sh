@@ -669,7 +669,8 @@ menu() {
         
         case $choice in
             1)
-                clear && configure_vfio
+                # clear && configure_vfio
+                clear && echo -e "\n  [!] Not supported yet, in progress."
                 ;;
             2)
                 clear && QEMU
