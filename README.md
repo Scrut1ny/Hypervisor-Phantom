@@ -489,7 +489,9 @@ lspci -k | grep -E "vfio-pci|NVIDIA"
 </details>
 
 <details>
-<summary>VMM (Virtual Machine Manager) Guide</summary>
+<summary>VMM Guide</summary>
+
+## Virtual Machine Manager Guide
 
 1. Create a new virtual machine
 2. Local install media (ISO image or CDROM)
