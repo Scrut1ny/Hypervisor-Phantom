@@ -156,7 +156,7 @@ function QEMU() {
     qemu_patch=v$qemu_version.patch
 
     curl -s -O https://download.qemu.org/$qemu_archive && tar -xf $qemu_archive
-    cd $qemu_directory/ && curl -s https://raw.githubusercontent.com/Scrut1ny/Hypervisor-Phantom/main/$qemu_patch -o $qemu_patch && git apply --reject $qemu_patch >/dev/null 2>&1
+    cd $qemu_directory/ && curl -s https://raw.githubusercontent.com/Scrut1ny/Hypervisor-Phantom/main/$qemu_patch -o $qemu_patch && patch -fsp1 "$qemu_patch" >/dev/null 2>&1
 
     echo -e "\n  [+] Applying Custom QEMU Patches"
     
