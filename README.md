@@ -327,65 +327,89 @@ Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
 <details>
 <summary>QEMU</summary>
 
-## QEMU + Virt-Manager Setup
+## Virtualization Prerequisites
+#### Arch
 ```
-sudo apt update && sudo apt upgrade -y && sudo apt autoremove -y && sudo apt clean -y
-sudo apt install qemu-system-x86 libvirt-clients libvirt-daemon-system libvirt-daemon-config-network bridge-utils virt-manager ovmf
-sudo usermod -a -G kvm,libvirt $(whoami)
-sudo systemctl enable libvirtd && sudo systemctl start libvirtd && sudo groups $(whoami)
-sudo virsh net-autostart default && sudo virsh net-start default
-virt-manager
+sudo pacman -S --noconfirm qemu-base edk2-ovmf libvirt dnsmasq virt-manager
 ```
-
-## QEMU Strings Patch [smbios, ACPI Tables, USB, etc...]
-* [qemu-patch-bypass](https://github.com/zhaodice/qemu-anti-detection)
-
-### Dependencies
+#### Debian
 ```
-sudo apt update && sudo apt upgrade -y && sudo apt autoremove -y && sudo apt install -y binutils-mingw-w64 binutils-mingw-w64-i686 binutils-mingw-w64-x86-64 build-essential clang g++-mingw-w64 g++-mingw-w64-i686 g++-mingw-w64-x86-64 gcc-mingw-w64 gcc-mingw-w64-i686 gcc-mingw-w64-x86-64 git git-email gnutls-bin libaio-dev libbluetooth-dev libbrlapi-dev libbz2-dev libcacard-dev libcap-dev libcap-ng-dev libcurl4-gnutls-dev libfdt-dev libglib2.0-dev libgtk-3-dev libibverbs-dev libiscsi-dev libjpeg8-dev liblzo2-dev libncurses5-dev libncursesw5-dev libnfs-dev libnuma-dev libpam0g-dev libpixman-1-dev librbd-dev librdmacm-dev libseccomp-dev libsnappy-dev libsasl2-dev libsdl1.2-dev libsdl2-dev libsdl2-image-dev libspice-protocol-dev libspice-server-dev libusb-1.0-0-dev libusb-dev libusbredirparser-dev libusbredirparser1 libvde-dev libvdeplug-dev libvirglrenderer-dev libvte-2.91-dev libxen-dev libxml2-dev libz-mingw-w64-dev libzstd-dev ninja-build valgrind win-iconv-mingw-w64-dev xfslibs-dev zlib1g-dev
+sudo apt -y install qemu-system-x86 ovmf virt-manager libvirt-clients libvirt-daemon-system libvirt-daemon-config-network
+```
+#### Fedora
+```
+sudo dnf -yq install @virtualization
 ```
 
-### Make custom QEMU .patch file
+## Enabling libvirt
+#### Configuring Libvirt
 ```
-cd $HOME/Downloads && git clone --depth 1 --branch v8.2.2 --recursive https://gitlab.com/qemu-project/qemu.git && cd qemu/
+libvirtd_conf='/etc/libvirt/libvirtd.conf'
+sudo sed -i '/unix_sock_group/s/^#//g' "$libvirtd_conf"
+sudo sed -i '/unix_sock_rw_perms/s/^#//g' "$libvirtd_conf"
 
-# Edit all compromised strings within the source code...
-grep -Rn '"QEMU ' "$HOME/Downloads/qemu"
-grep -Rn '"QEMU' "$HOME/Downloads/qemu"
-grep -Rn 'Virtual Machine"' "$HOME/Downloads/qemu"
-grep -Rn 'Virtual CPU version "' "$HOME/Downloads/qemu"
-grep -Rn '"KVM/Linux       "' "$HOME/Downloads/qemu"
-grep -Rn '"KVMKVMKVM\\0\\0\\0"' "$HOME/Downloads/qemu"
-grep -Rn 'ACPI_BUILD_APPNAME6 "BOCHS "' "$HOME/Downloads/qemu"
-grep -Rn 'ACPI_BUILD_APPNAME8 "BXPC    "' "$HOME/Downloads/qemu"
-grep -Rn '\[STR_SERIALNUMBER\]' "$HOME/Downloads/qemu"
-grep -Rn '"QM%05d"' "$HOME/Downloads/qemu"
-grep -Rn 'smbios_set_defaults("QEMU", mc->desc, mc->name);' "$HOME/Downloads/qemu"
-
-git diff > v8.2.2.patch
+qemu_conf='/etc/libvirt/qemu.conf'
+sudo sed -i "s/#user = \"root\"/user = \"$(whoami)\"/" "$qemu_conf"
+sudo sed -i "s/#group = \"root\"/group = \"$(whoami)\"/" "$qemu_conf"
+```
+#### Setting up QEMU/KVM driver
+```
+sudo usermod -aG kvm,libvirt "$(whoami)"
+sudo systemctl enable --now libvirtd.socket
+sudo virsh net-autostart default
 ```
 
-- ACPI_BUILD_APPNAME6 "ALASKA"
-- ACPI_BUILD_APPNAME8 "A M I "
+## Dependencies
+#### Arch
+```
+sudo pacman -S --noconfirm base-devel glib2 ninja python-sphinx python-sphinx_rtd_theme python-packaging dmidecode libusb
+```
+#### Debian
+```
+sudo apt -y install build-essential libglib2.0-dev libfdt-dev libpixman-1-dev zlib1g-dev ninja-build python3-venv libusb-1.0-0-dev
+```
+#### Fedora
+```
+sudo dnf -yq install glib2-devel libfdt-devel pixman-devel zlib-devel bzip2 ninja-build python3 libusb1-devel
+```
 
-- ACPI_BUILD_APPNAME6 "DELL  "
-- ACPI_BUILD_APPNAME8 "Dell Inc"
-
-- ACPI_BUILD_APPNAME6 "INTEL "
-- ACPI_BUILD_APPNAME8 "U Rvp   "
-
-### Downloading & Building QEMU w/patch
+## Setting up QEMU
+#### Download & Extract QEMU
 ```
 cd $HOME/Downloads
-git clone --depth 1 --branch v8.2.6 https://gitlab.com/qemu-project/qemu.git
-cd qemu/ && git apply v8.2.6.patch && cd .. mkdir qemu_build && cd qemu_build
-../qemu/configure --target-list=x86_64-softmmu,x86_64-linux-user --prefix=/usr
-make -j $(nproc)
-sudo make install
-sudo mv -f qemu-system-x86_64 /bin
+curl -sSO "https://download.qemu.org/qemu-8.2.6.tar.xz"
+tar xJf "qemu-8.2.6.tar.xz" && cd "qemu-8.2.6"
+```
+#### Download & Apply Custom Patch for QEMU
+```
+curl -sSO "https://raw.githubusercontent.com/Scrut1ny/Hypervisor-Phantom/main/v8.2.6.patch"
+patch -fsp1 < "v8.2.6.patch"
+```
+#### Spoofing hardcoded USB Serial Numbers
+```
+find "$(pwd)/hw/usb" -type f -exec grep -lE '\[(STR|STRING)_SERIALNUMBER\]' {} + | while IFS= read -r file; do
+    # Generate a new random serial number
+    NEW_SERIAL=$(head /dev/urandom | tr -dc 'A-Z0-9' | head -c 10)
+
+    # Replace all serial number strings in the files
+    sed -i -E "s/(\[(STR|STRING)_SERIALNUMBER\] *= *\")[^\"]*/\1${NEW_SERIAL}/" "$file"
+
+    # Print the modification information
+    echo -e "\e[32m  Modified:\e[0m '$file' with new serial: \e[32m$NEW_SERIAL\e[0m"
+done
+```
+#### More Spoofing
+```
 ```
 
-## PCIe Passthrough (Debian Guide)
+## Building & Installing QEMU
+```
+./configure --target-list=x86_64-softmmu --enable-libusb --disable-werror
+sudo make install -j"$(nproc)"
+```
+
+
+## Extra Help & Guides for PCIe Passthrough
 * [YT Guide #1](https://www.youtube.com/watch?v=g--fe8_kEcw)
 * [YT Guide #2](https://www.youtube.com/watch?v=KVDUs019IB8)
 * [YT Guide #3](https://www.youtube.com/watch?v=jc3PjDX-CGs)
