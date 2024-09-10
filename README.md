@@ -330,7 +330,7 @@ Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
 <details>
 <summary>QEMU/KVM Guide</summary>
 
-## 1. Virtualization Prerequisites
+## 1. Required Virtualization Packages
 #### Arch
 ```
 sudo pacman -S --noconfirm qemu-base edk2-ovmf libvirt dnsmasq virt-manager
