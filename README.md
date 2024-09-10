@@ -325,7 +325,10 @@ Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
 </details>
 
 <details>
-<summary>QEMU</summary>
+<summary>QEMU/KVM & PCIe Passthru</summary>
+
+<details>
+<summary>QEMU/KVM Guide</summary>
 
 ## Virtualization Prerequisites
 #### Arch
@@ -408,8 +411,12 @@ done
 sudo make install -j"$(nproc)"
 ```
 
+</details>
 
-## Extra Help & Guides for PCIe Passthrough
+<details>
+<summary>PCIe Passthru Guide</summary>
+
+## Online PCIe Passthrough Guides
 * [YT Guide #1](https://www.youtube.com/watch?v=g--fe8_kEcw)
 * [YT Guide #2](https://www.youtube.com/watch?v=KVDUs019IB8)
 * [YT Guide #3](https://www.youtube.com/watch?v=jc3PjDX-CGs)
@@ -479,7 +486,10 @@ sudo update-initramfs -c -k $(uname -r) && sudo reboot now
 lspci -k | grep -E "vfio-pci|NVIDIA"
 ```
 
-## QEMU Virt-Manager Setup
+</details>
+
+<details>
+<summary>VMM (Virtual Machine Manager) Guide</summary>
 
 1. Create a new virtual machine
 2. Local install media (ISO image or CDROM)
@@ -551,6 +561,11 @@ lspci -k | grep -E "vfio-pci|NVIDIA"
   </clock>
 ```
 
+</details>
+
+<details>
+<summary>Looking Glass Guide</summary>
+
 ## Looking Glass Setup Guide
 
 - [Client usage](https://looking-glass.io/docs/B6/usage/#)
@@ -607,9 +622,8 @@ cd looking-glass-* && mkdir client/build && cd client/build && cmake ../ && make
 - Connect an additional DisplayPort or HDMI cable from your spare/isolated GPU to your monitor. Alternatively, you can utilize a DisplayPort or HDMI Bidirectional Switch Splitter for convenience.
     - [DP Bidirectional Switch Splitter](https://www.amazon.com/dp/B0C9PDFYH3)
 
-## QEMU General Patches
-* [KVM-Spoofing](https://github.com/A1exxander/KVM-Spoofing)
-
+</details>
+</details>
 </details>
 </details>
 
