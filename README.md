@@ -330,6 +330,13 @@ Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
 <details>
 <summary>QEMU/KVM Guide</summary>
 
+#### Make sure to install `curl`
+```
+Arch - sudo pacman -S --noconfirm curl
+Debian - sudo apt install -y curl
+Fedora - sudo dnf install -y curl
+```
+
 ## 1. Required Virtualization Packages
 #### Arch
 ```
