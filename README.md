@@ -1004,7 +1004,7 @@ security_driver = "none"
 - restart libvirtd service
 
 ```
-systemctl restart libvirtd
+systemctl restart libvirtd.service
 ```
 
 </details>
