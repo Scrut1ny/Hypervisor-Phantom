@@ -1123,6 +1123,9 @@ SECURITYVUE
 - [allfreedumps](https://www.allfreedumps.com/)
 - [downloadfreepdf](https://www.downloadfreepdf.net/)
 
+## Security+
+- [Legit asf dump + pictures](https://quizlet.com/gu/852827306/net-sec-flash-cards/)
+
 ## ChatGPT Prompt
 ```
 I'll provide questions with possible answers, I need you to reply with only the correct answer(s). Just state the answer; no explanations.
