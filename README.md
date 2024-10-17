@@ -1139,6 +1139,9 @@ I'll provide questions with possible answers, I need you to reply with only the 
 ```
 CompTIA Security+ SY0-701 Quizlet
 ```
+![Attack Description](https://github.com/user-attachments/assets/47757ab5-8cc7-47a3-991f-ee82233031b2)
+![Network Infection](https://github.com/user-attachments/assets/63bed5b3-a727-40af-80d2-76e96e73d91d)
+
 
 ### Network+
 - [N10-008 Q&A](https://www.marks4sure.com/n10-008-comptia-networkp-certification-exam-questions.html)
