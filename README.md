@@ -4,7 +4,8 @@
 
 | Software | Browser Extension | System Test | Bypassed |
 | - | - | - | - |
-| Pafish |  | [Link](https://github.com/a0rtega/pafish/releases/download/v0.6/pafish64.exe) | ✅ |
+| VMAware |  | [Link](https://github.com/kernelwernel/VMAware) |  |
+| Pafish |  | [Link](https://github.com/a0rtega/pafish) | ✅ |
 | Al-Khaser |  | [Link](https://github.com/LordNoteworthy/al-khaser) | ❔ |
 | Safe Exam Browser |  | [Link](https://github.com/SafeExamBrowser/seb-win-refactoring) | ✅ |
 | Pearson VUE |  | [Link](https://system-test.onvue.com/system_test?customer=pearson_vue) | ✅ |
