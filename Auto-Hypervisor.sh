@@ -113,7 +113,7 @@ function QEMU() {
                         sudo sed -i 's/\(firewall_backend *= *\).*/\1iptables/' /etc/libvirt/network.conf
                         sudo systemctl enable --now nftables.service
                     elif pacman -Qs "iptables" > /dev/null; then
-                        git clone https://aur.archlinux.org/ebtales.git
+                        git clone https://aur.archlinux.org/ebtables.git
                         cd ebtables
                         makepkg -sirc
                         sudo systemctl enable --now iptables.service
