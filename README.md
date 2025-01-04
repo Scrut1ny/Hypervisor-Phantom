@@ -89,3 +89,30 @@ sudo chmod +x *.sh
 
 
 
+## Exam Software
+<details>
+<summary>Expand for details...</summary>
+
+| Software | System Test | Bypassed |
+| - | - | - |
+| VMAware | [Repo](https://github.com/kernelwernel/VMAware) <><> [Download - x64 - v2.0](https://github.com/kernelwernel/VMAware/releases/download/v2.0/vmaware64.exe) | ❔ |
+| Al-Khaser | [Repo](https://github.com/LordNoteworthy/al-khaser) <><> [Download - x64 - v1.0.0](https://github.com/ayoubfaouzi/al-khaser/releases/download/v1.0.0/al-khaser_x64.7z) | ❔ |
+| Pafish | [Repo](https://github.com/a0rtega/pafish) <><> [Download - x64 - v0.6](https://github.com/a0rtega/pafish/releases/download/v0.6/pafish64.exe) | ❔ |
+
+</details>
+
+| Software | Browser Extension | System Test | Bypassed |
+| - | - | - | - |
+| Safe Exam Browser |  | [Link](https://github.com/SafeExamBrowser/seb-win-refactoring) | ✅ |
+| Pearson VUE |  | [Link](https://system-test.onvue.com/system_test?customer=pearson_vue) | ✅ |
+| ProctorU | ✅ | [FF Addon](https://s3-us-west-2.amazonaws.com/proctoru-assets/extension/firefox-extension-latest.xpi) or [Chrome Addon](https://chrome.google.com/webstore/detail/proctoru/goobgennebinldhonaajgafidboenlkl) | ✅ |
+| ProctorU: Guardian Browser |  | [Link](https://guardian.meazurelearning.com/) | ✅ |
+| Proctorio | ✅ | [Link](https://getproctorio.com/) | ✅ |
+| Examity | ✅ | [New Platform System Check](https://on.v5.examity.com/systemcheck) or [Chrome Addon](https://chromewebstore.google.com/detail/geapelpefnpekodnnlkcaadniodlgebj) or [FF Addon](https://addons.mozilla.org/en-US/firefox/addon/examity/) | ✅ |
+| ExamSoft: Examplify | ✅ | ??? | ✅ |
+| Respondus (LockDown Browser) | ✅ | [Link](https://autolaunch.respondus2.com/MONServer/ldb/preview_launch.do) & [Download](https://download.respondus.com/lockdown/download.php) | ✅ |
+| Kryterion |  | [Link](https://www.kryterion.com/systemcheck/) | ✅ |
+| Honorlock | ✅ | [Link](https://app.honorlock.com/install/extension) | ✅ |
+| Inspera Exam Portal | | [Link](https://ltu.inspera.com/get-iep) - [Demo Exam Instructions](https://www.ltu.se/en/student-web/your-studies/examination/digital-exam-inspera/instructions-for-pc-and-mac-when-downloading-the-inspera-exam-portal) | ✅ |
+
+</details>
