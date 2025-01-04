@@ -16,44 +16,28 @@ Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Cryptography' -Name 'MachineGui
 $startDate = [datetime]::new(2016, 1, 1)
 $endDate = [datetime]::new(2023, 12, 31)
 
-# Try to generate a random date, convert to Unix timestamp and LDAP/FILETIME
-try {
-    # Generate a random date within the defined range
-    $randomDate = $startDate.AddSeconds((Get-Random -Maximum ($endDate - $startDate).TotalSeconds))
+# Generate a random date within the defined range
+$randomDate = $startDate.AddSeconds((Get-Random -Maximum ($endDate - $startDate).TotalSeconds))
 
-    # Convert the random date to Unix timestamp and then to LDAP/FILETIME
-    $unixTimestamp = [int][double]::Parse(($randomDate.ToUniversalTime() - [datetime]'1970-01-01').TotalSeconds)
-    $ldapFileTime = ($unixTimestamp + 11644473600) * 1e7  # Use scientific notation for clarity
-} catch {
-    Write-Error "Failed to generate the random date or convert it: $_"
-    return
-}
+# Convert the random date to Unix timestamp and then to LDAP/FILETIME
+$unixTimestamp = [int][double]::Parse(($randomDate.ToUniversalTime() - [datetime]'1970-01-01').TotalSeconds)
+$ldapFileTime = ($unixTimestamp + 11644473600) * 1e7
 
 # Try to set the InstallDate and InstallTime in the registry
-try {
-    $registryPath = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion"
-    Set-ItemProperty -Path $registryPath -Name "InstallDate" -Value "$unixTimestamp" -Force
-    Set-ItemProperty -Path $registryPath -Name "InstallTime" -Value "$ldapFileTime" -Force
-} catch {
-    Write-Error "Failed to update registry with InstallDate or InstallTime: $_"
-    return
+$registryPath = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion"
+Set-ItemProperty -Path $registryPath -Name "InstallDate" -Value "$unixTimestamp" -Force
+Set-ItemProperty -Path $registryPath -Name "InstallTime" -Value "$ldapFileTime" -Force
+
+# Start the Windows Time service if it's not running
+if ((Get-Service w32time).Status -ne 'Running') {
+    Start-Service w32time
 }
 
-# Try to ensure the Windows Time service is running and configure NTP
-try {
-    # Start the Windows Time service if it's not running
-    if ((Get-Service w32time).Status -ne 'Running') {
-        Start-Service w32time
-    }
-
-    # Configure the NTP settings and resync
-    $ntpServers = "0.pool.ntp.org,1.pool.ntp.org,2.pool.ntp.org,3.pool.ntp.org"
-    w32tm /config /syncfromflags:manual /manualpeerlist:$ntpServers /update
-    Restart-Service w32time -Force
-    w32tm /resync
-} catch {
-    Write-Error "Failed to manage Windows Time service or configure NTP: $_"
-}
+# Configure the NTP settings and resync
+$ntpServers = "0.pool.ntp.org,1.pool.ntp.org,2.pool.ntp.org,3.pool.ntp.org"
+w32tm /config /syncfromflags:manual /manualpeerlist:$ntpServers /update
+Restart-Service w32time -Force
+w32tm /resync
 
 # ==================================
 
