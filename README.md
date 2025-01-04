@@ -631,7 +631,7 @@ https://github.com/Scrut1ny/Hypervisor-Phantom/assets/53458032/c7f0901b-bb61-480
 </details>
 
 <details>
-<summary>Renewing Multiple Certifications Steps</summary>
+<summary>Certification Renewal Info</summary>
 
 - [Renew existing certifications](https://www.comptia.org/continuing-education/learn/renewing-multiple-certifications)
 - [Which CompTIA Certifications Must Be Renewed?](https://help.comptia.org/hc/en-us/articles/13923899954196-Which-CompTIA-Certifications-Must-Be-Renewed)
