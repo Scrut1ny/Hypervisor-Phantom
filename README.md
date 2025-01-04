@@ -113,7 +113,7 @@ sudo chmod +x *.sh
 
 ## 💾 Software
 <details>
-<summary>Expand for details...</summary>
+<summary>HV Detection, Anti-Cheat and Exam Software</summary>
 
 ## Hypervisor detection tools
 
