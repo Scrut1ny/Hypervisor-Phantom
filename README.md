@@ -289,9 +289,6 @@ XXXX-XX-XX XX:XX:XX.XXX-XXXX [BROWSER LOCK] [INFO] Number of display devices con
 ## Bypassing HDCP Diagram:
 ![bypass](https://github.com/Scrut1ny/Hypervisor-Phantom/assets/53458032/589b0f88-f14b-44d8-bf1c-225df4d01e54)
 
-## Capture Card Format Support:
-![image](https://github.com/Scrut1ny/Hypervisor-Phantom/assets/53458032/17cfcbe5-0700-440c-af12-3c1dd0157ff1)
-
 ## Bypass Kits
 
 #### Elegant Bypass Kit (Recommended):
