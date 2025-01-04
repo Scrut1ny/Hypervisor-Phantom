@@ -161,7 +161,7 @@ sudo chmod +x *.sh
 
 
 <details>
-<summary>Software Analysis: Reverse Engineering</summary>
+<summary>Exam Software Analysis: Reverse Engineering</summary>
 
 ## Honorlock
 
