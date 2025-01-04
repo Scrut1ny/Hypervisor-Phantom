@@ -124,13 +124,13 @@ sudo chmod +x *.sh
 | Engine | Used By | Bypassed |
 |--------|---------|----------|
 | Anti-Cheat Expert (ACE) | Primarily Mobile Games | ✅ |
-| BattlEye (BE) | Desktop Games | ✅ (w/Kernal Patch) |
+| BattlEye (BE) | Desktop Games | ✅ (w/Kernal Patch for `R6`) |
 | Easy Anti-Cheat (EAC) | Desktop Games | ✅ |
-| Gepard Shield | PUBG: Battlegrounds | ✅ (w/Kernal Patch) |
+| Gepard Shield | PUBG: Battlegrounds | ✅ |
 | Hyperion | Roblox | ✅ |
 | Mhyprot | Genshin Impact | ✅ |
 | nProtect GameGuard (NP) | Desktop Games | ✅ |
-| RICOCHET | Call of Duty Games | ❔ |
+| RICOCHET | CoD Games | ❔ |
 | Vanguard | Valorant & LoL | ❌ |
 
 </details>
