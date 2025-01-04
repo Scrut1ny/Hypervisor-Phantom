@@ -341,7 +341,7 @@ XXXX-XX-XX XX:XX:XX.XXX-XXXX [BROWSER LOCK] [INFO] Number of display devices con
 
 
 <details>
-<summary>📑 Recommended Tools</summary>
+<summary>Recommended Tools</summary>
 
 - OCR (Optical Character Recognition)
     - Linux:
