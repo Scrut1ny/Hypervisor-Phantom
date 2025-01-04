@@ -282,7 +282,7 @@ XXXX-XX-XX XX:XX:XX.XXX-XXXX [BROWSER LOCK] [INFO] Number of display devices con
 <details>
 <summary>Bypassing HDCP</summary>
 
-### HDCP (High-bandwidth Digital Content Protection)
+#### HDCP (High-bandwidth Digital Content Protection)
 - [HDCP](https://en.wikipedia.org/wiki/High-bandwidth_Digital_Content_Protection)
 - [HDCP: Versions](https://en.wikipedia.org/wiki/High-bandwidth_Digital_Content_Protection#Versions)
 
