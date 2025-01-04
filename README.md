@@ -295,20 +295,20 @@ XXXX-XX-XX XX:XX:XX.XXX-XXXX [BROWSER LOCK] [INFO] Number of display devices con
 ## Bypass Kits
 
 #### Elegant Bypass Kit (Recommended):
-- 1x2 HDMI Splitter - [ViewHD](https://www.amazon.com/dp/B004F9LVXC) - ~`$21.95`
-- EDID Emulator - [4K-EWB - HDMI 2.1 4K EDID Emulator](https://www.amazon.com/dp/B0DB7YDFD6) - ~`$25.00`
-- USB HDMI Capture Card - [Elgato HD60 X](https://www.amazon.com/dp/B09V1KJ3J4) - ~`$159.99`
+- 1x2 HDMI Splitter <> [ViewHD](https://www.amazon.com/dp/B004F9LVXC) - `~$21.95`
+- EDID Emulator <> [4K-EWB - HDMI 2.1 4K EDID Emulator](https://www.amazon.com/dp/B0DB7YDFD6) - `~$25.00`
+- USB HDMI Capture Card <> [Elgato HD60 X](https://www.amazon.com/dp/B09V1KJ3J4) - `~$159.99`
 
 #### Cheap Bypass Kit (Not recommended):
-- 1x2 HDMI Splitter <> [OREI](https://www.amazon.com/dp/B005HXFARS) - ~`$13`
-- EDID Emulator <> [EVanlak](https://www.amazon.com/dp/B07YMTKJCR) - ~`$7`
-- USB HDMI Capture Card <> [AXHDCAP](https://www.amazon.com/dp/B0C2MDTY8P) - ~`$9`
+- 1x2 HDMI Splitter <> [OREI](https://www.amazon.com/dp/B005HXFARS) - `~$13`
+- EDID Emulator <> [EVanlak](https://www.amazon.com/dp/B07YMTKJCR) - `~$7`
+- USB HDMI Capture Card <> [AXHDCAP](https://www.amazon.com/dp/B0C2MDTY8P) - `~$9`
 
 ## Equipment List
 - Capture Card(s)
-    - [Elgato HD60 X](https://www.amazon.com/dp/B09V1KJ3J4) - ~`$159.99`
-    - [Elgato Cam Link](https://www.amazon.com/dp/B07K3FN5MR) - ~`$97.99`
-    - [AXHDCAP 4K HDMI Video Capture Card](https://www.amazon.com/dp/B0C2MDTY8P) - ~`$9.98`
+    - [Elgato HD60 X](https://www.amazon.com/dp/B09V1KJ3J4) - `~$159.99`
+    - [Elgato Cam Link](https://www.amazon.com/dp/B07K3FN5MR) - `~$97.99`
+    - [AXHDCAP 4K HDMI Video Capture Card](https://www.amazon.com/dp/B0C2MDTY8P) - `~$9.98`
 - 1x2 HDMI Splitter(s)
     - [HBAVLINK](https://www.amazon.com/dp/B08T62MKH1)
     - [CORSAHD](https://www.amazon.com/dp/B0CLL5GQXT)
@@ -319,15 +319,15 @@ XXXX-XX-XX XX:XX:XX.XXX-XXXX [BROWSER LOCK] [INFO] Number of display devices con
 - EDID Emulator(s)
     - HDMI
         - Brand: THWT
-            - [4K-EW2 - HDMI 2.1 4K EDID Emulator PRO](https://www.amazon.com/dp/B0DB65Y6VL) - ~`$90.00`
-            - [4K-EWB - HDMI 2.1 4K EDID Emulator](https://www.amazon.com/dp/B0DB7YDFD6) - ~`$25.00`
-            - [HD-EW2 - HDMI 2.0 EDID Emulator 4K PRO](https://www.amazon.com/dp/B0C32ZWBR6) - ~`$90.00`
-            - [HD-EWB - HDMI 2.0 4K EDID Emulator](https://www.amazon.com/dp/B0CRRWQ7XS) - `$20.00`
+            - [4K-EW2 - HDMI 2.1 4K EDID Emulator PRO](https://www.amazon.com/dp/B0DB65Y6VL) - `~$90.00`
+            - [4K-EWB - HDMI 2.1 4K EDID Emulator](https://www.amazon.com/dp/B0DB7YDFD6) - `~$25.00`
+            - [HD-EW2 - HDMI 2.0 EDID Emulator 4K PRO](https://www.amazon.com/dp/B0C32ZWBR6) - `~$90.00`
+            - [HD-EWB - HDMI 2.0 4K EDID Emulator](https://www.amazon.com/dp/B0CRRWQ7XS) - `~$20.00`
     - DP
         - Brand: THWT
-            - [DPH-EW2 - Displayport 1.2 EDID Emulator 4K PRO](https://www.amazon.com/dp/B0C32NJ2NF) - ~`$90.00`
+            - [DPH-EW2 - Displayport 1.2 EDID Emulator 4K PRO](https://www.amazon.com/dp/B0C32NJ2NF) - `~$90.00`
     - DP to HDMI
         - Brand: THWT
-            - [DPH-EWB - Displayport 1.2 to HDMI 2.0 EDID Emulator](https://www.amazon.com/dp/B0C3H763FG) - ~`$20.00`
+            - [DPH-EWB - Displayport 1.2 to HDMI 2.0 EDID Emulator](https://www.amazon.com/dp/B0C3H763FG) - `~$20.00`
 
 </details>
