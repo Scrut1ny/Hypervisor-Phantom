@@ -89,7 +89,7 @@ sudo chmod +x *.sh
 
 
 
-## Software
+## 💾 Software
 <details>
 <summary>Expand for details...</summary>
 
