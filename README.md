@@ -276,6 +276,51 @@ XXXX-XX-XX XX:XX:XX.XXX-XXXX [BROWSER LOCK] [INFO] Number of display devices con
 
 
 
+<details>
+<summary>Virtual Video & Audio</summary>
+
+## Bring live video from your smartphone, remote computer, or friends directly into OBS or other studio software.
+- [VDO.Ninja](https://vdo.ninja/)
+
+## VB-CABLE Virtual Audio Device
+- [VB-AUDIO Software](https://vb-audio.com/Cable/index.htm)
+    - [Windows Download](https://download.vb-audio.com/Download_CABLE/VBCABLE_Driver_Pack43.zip)
+    - [macOS Download](https://download.vb-audio.com/Download_MAC/VBCable_MACDriver_Pack108.zip)
+
+## Virtual Display Driver
+- [Virtual-Display-Driver](https://github.com/itsmikethetech/Virtual-Display-Driver)
+
+</details>
+
+
+
+
+
+
+
+
+<details>
+<summary>VPN + Hypervisor</summary>
+
+- ***IMPORTANT***: Ensure not to add a custom DNS configuration to the guest system on the hypervisor if your host system's VPN uses custom DNS block lists. Doing so may result in your guest hypervisor system losing its internet connection!
+
+## Mullvad VPN + QEMU
+- For the VPN connection to get properly natted/bridged you must enable the setting `Local network sharing` option!
+    - How to: `⚙️` > `VPN settings` > `Local network sharing` ✅
+
+![image](https://github.com/Scrut1ny/Hypervisor-Phantom/assets/53458032/e7f3c075-bd87-4abe-a88f-8897fc9be19d)
+![image](https://github.com/Scrut1ny/Hypervisor-Phantom/assets/53458032/d0b09a31-78d4-491f-9688-1a3fe9dbd779)
+![image](https://github.com/Scrut1ny/Hypervisor-Phantom/assets/53458032/21993e06-2719-4c3e-89d5-d1557f84ee29)
+
+</details>
+
+
+
+
+
+
+
+
 
 ## Advanced: Hardware
 
