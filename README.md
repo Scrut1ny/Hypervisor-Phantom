@@ -308,9 +308,10 @@ XXXX-XX-XX XX:XX:XX.XXX-XXXX [BROWSER LOCK] [INFO] Number of display devices con
 - For the VPN connection to get properly natted/bridged you must enable the setting `Local network sharing` option!
     - How to: `⚙️` > `VPN settings` > `Local network sharing` ✅
 
-![image](https://github.com/Scrut1ny/Hypervisor-Phantom/assets/53458032/e7f3c075-bd87-4abe-a88f-8897fc9be19d)
-![image](https://github.com/Scrut1ny/Hypervisor-Phantom/assets/53458032/d0b09a31-78d4-491f-9688-1a3fe9dbd779)
-![image](https://github.com/Scrut1ny/Hypervisor-Phantom/assets/53458032/21993e06-2719-4c3e-89d5-d1557f84ee29)
+![image](https://github.com/user-attachments/assets/18ba68b4-31ea-4c5e-9ad1-66417001820f)
+![image](https://github.com/user-attachments/assets/36465501-13fa-469b-bb66-f3db6003a64e)
+![image](https://github.com/user-attachments/assets/77890671-d024-491a-8d33-cb38e3503ef4)
+![image](https://github.com/user-attachments/assets/126e06bd-23c0-4cb9-9bfe-5a55fe6689ab)
 
 </details>
 
