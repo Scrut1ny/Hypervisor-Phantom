@@ -56,18 +56,21 @@
   </devices>
 
   <qemu:commandline>
-    <!-- Spoofs RAM SMBIOS-->
+    <!-- Spoofs RAM details in SMBIOS-->
     <qemu:arg value="-smbios"/>
     <qemu:arg value="type=17,loc_pfx=DIMMA2,bank=P0 CHANNEL A,manufacturer=Unknown,serial=Unknown,asset=Not Specified,part=Not Specified,speed=4800"/>
-    <!-- verify using `dmidecode -t 1,2,3` which serials you must set -->
-    <!-- Generic names like Default String do not have to be changed -->
-    <!-- DON'T FORGET THIS IF YOU US SMBIOS MODE HOST! -->
+    <!-- Spoofs DMI Type 1, 2 and 3 serial numbers in SMBIOS -->
     <qemu:arg value="-smbios"/>
-    <qemu:arg value="type=1,serial=To be filled by O.E.M."/>  <!-- often just System Serial Number -->
+    <qemu:arg value="type=1,serial=To be filled by O.E.M."/>
     <qemu:arg value="-smbios"/>
-    <qemu:arg value="type=2,serial=To be filled by O.E.M."/>  <!-- 15 char long random number -->
+    <qemu:arg value="type=2,serial=To be filled by O.E.M."/>
     <qemu:arg value="-smbios"/>
-    <qemu:arg value="type=3,serial=To be filled by O.E.M."/>  <!-- often just Default String -->
+    <qemu:arg value="type=3,serial=To be filled by O.E.M."/>
+    <qemu:arg value="-smbios"/>
+    <!-- LGA 1151: Used for Intel 6th, 7th, 8th, and 9th generation Core processors. -->
+    <!-- LGA 1200: Used for Intel 10th and 11th generation Core processors. -->
+    <!-- LGA 1700: Used for Intel 12th generation Core processors and beyond. -->
+    <qemu:arg value="type=4,sock_pfx=LGA 1151,max-speed=4400,current-speed=3600"/> <!-- Socket Designation, Max CPU Speed, Current CPU Speed -->
   </qemu:commandline>
   <!-- ONLY USE THIS WHEN USING VIRTUAL STORAGE (ex: qcow) AND YOU'RE USING AN SSD -->
   <qemu:override>
