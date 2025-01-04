@@ -362,7 +362,7 @@ XXXX-XX-XX XX:XX:XX.XXX-XXXX [BROWSER LOCK] [INFO] Number of display devices con
 
 
 
-## Advanced: Hardware
+## 🔩 Hardware
 
 <details>
 <summary>Bypassing HDCP</summary>
