@@ -115,7 +115,7 @@ sudo chmod +x *.sh
 <details>
 <summary>HV Detection, Anti-Cheat and Exam Software</summary>
 
-## Hypervisor detection tools
+## Hypervisor Detection Software
 
 | Software | System Test | Bypassed |
 | - | - | - |
