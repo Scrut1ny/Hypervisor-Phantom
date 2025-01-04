@@ -1,0 +1,250 @@
+diff --git a/MdeModulePkg/MdeModulePkg.dec b/MdeModulePkg/MdeModulePkg.dec
+index b9bc704..ab09e56 100644
+--- a/MdeModulePkg/MdeModulePkg.dec
++++ b/MdeModulePkg/MdeModulePkg.dec
+@@ -1878,7 +1878,7 @@
+ 
+   ## Null-terminated Unicode string of the firmware vendor name that is the default name filled into the EFI System Table.
+   # @Prompt Firmware vendor.
+-  gEfiMdeModulePkgTokenSpaceGuid.PcdFirmwareVendor|L"EDK II"|VOID*|0x00010050
++  gEfiMdeModulePkgTokenSpaceGuid.PcdFirmwareVendor|L"American Megatrends"|VOID*|0x00010050
+ 
+   ## Firmware revision that is the default revision filled into the EFI System Table.
+   # @Prompt Firmware revision.
+@@ -2106,7 +2106,7 @@
+ 
+   ## Default OEM ID for ACPI table creation, its length must be 0x6 bytes to follow ACPI specification.
+   # @Prompt Default OEM ID for ACPI table creation.
+-  gEfiMdeModulePkgTokenSpaceGuid.PcdAcpiDefaultOemId|"INTEL "|VOID*|0x30001034
++  gEfiMdeModulePkgTokenSpaceGuid.PcdAcpiDefaultOemId|"ALASKA"|VOID*|0x30001034
+ 
+   ## Default OEM Table ID for ACPI table creation, it is "EDK2    ".
+   #  According to ACPI specification, this field is particularly useful when
+@@ -2114,7 +2114,7 @@
+   #  The OEM assigns each dissimilar table a new OEM Table ID.
+   #  This PCD is ignored for definition block.
+   # @Prompt Default OEM Table ID for ACPI table creation.
+-  gEfiMdeModulePkgTokenSpaceGuid.PcdAcpiDefaultOemTableId|0x20202020324B4445|UINT64|0x30001035
++  gEfiMdeModulePkgTokenSpaceGuid.PcdAcpiDefaultOemTableId|0x2049204D2041|UINT64|0x30001035
+ 
+   ## Default OEM Revision for ACPI table creation.
+   #  According to ACPI specification, for LoadTable() opcode, the OS can also
+diff --git a/OvmfPkg/Bhyve/AcpiTables/Dsdt.asl b/OvmfPkg/Bhyve/AcpiTables/Dsdt.asl
+index 17e2cf6..1d5925d 100644
+--- a/OvmfPkg/Bhyve/AcpiTables/Dsdt.asl
++++ b/OvmfPkg/Bhyve/AcpiTables/Dsdt.asl
+@@ -22,7 +22,7 @@
+  *     Compiler ID      "INTL"
+  *     Compiler Version 0x20150204 (538247684)
+  */
+-DefinitionBlock ("DSDT.aml", "DSDT", 2, "BHYVE", "BVDSDT", 0x00000001)
++DefinitionBlock ("DSDT.aml", "DSDT", 2, "ALASKA", "A M I ", 0x00000001)
+ {
+     Name (_S5, Package (0x02)
+     {
+diff --git a/OvmfPkg/Bhyve/AcpiTables/Facp.aslc b/OvmfPkg/Bhyve/AcpiTables/Facp.aslc
+index b3d703e..1dc0a20 100644
+--- a/OvmfPkg/Bhyve/AcpiTables/Facp.aslc
++++ b/OvmfPkg/Bhyve/AcpiTables/Facp.aslc
+@@ -7,7 +7,7 @@
+ 
+ #include "Platform.h"
+ 
+-#define EFI_ACPI_OEM_TABLE_ID     SIGNATURE_64('B','V','F','A','C','P',' ',' ')
++#define EFI_ACPI_OEM_TABLE_ID     SIGNATURE_64('A',' ','M',' ','I',' ',' ',' ')
+ 
+ EFI_ACPI_3_0_FIXED_ACPI_DESCRIPTION_TABLE FACP = {
+   {
+diff --git a/OvmfPkg/Bhyve/AcpiTables/Hpet.aslc b/OvmfPkg/Bhyve/AcpiTables/Hpet.aslc
+index 73bb784..325cfa6 100644
+--- a/OvmfPkg/Bhyve/AcpiTables/Hpet.aslc
++++ b/OvmfPkg/Bhyve/AcpiTables/Hpet.aslc
+@@ -10,7 +10,7 @@
+ #include "Platform.h"
+ 
+ #define EFI_ACPI_HPET_DESCRIPTION_TABLE_SIGNATURE  SIGNATURE_32('H', 'P', 'E', 'T')
+-#define EFI_ACPI_OEM_TABLE_ID                      SIGNATURE_64('B','V','H','P','E','T',' ',' ')
++#define EFI_ACPI_OEM_TABLE_ID                      SIGNATURE_64('A',' ','M',' ','I',' ',' ',' ')
+ 
+ //
+ // Ensure proper structure formats
+diff --git a/OvmfPkg/Bhyve/AcpiTables/Madt.aslc b/OvmfPkg/Bhyve/AcpiTables/Madt.aslc
+index e8e956e..2a2529e 100644
+--- a/OvmfPkg/Bhyve/AcpiTables/Madt.aslc
++++ b/OvmfPkg/Bhyve/AcpiTables/Madt.aslc
+@@ -15,7 +15,7 @@
+ #include <IndustryStandard/Acpi.h>
+ #include <Platform.h>
+ 
+-#define EFI_ACPI_OEM_TABLE_ID                      SIGNATURE_64('B','V','M','A','D','T',' ',' ')
++#define EFI_ACPI_OEM_TABLE_ID                      SIGNATURE_64('A',' ','M',' ','I',' ',' ',' ')
+ 
+ //
+ // Local APIC address
+diff --git a/OvmfPkg/Bhyve/AcpiTables/Mcfg.aslc b/OvmfPkg/Bhyve/AcpiTables/Mcfg.aslc
+index 62a98d3..9bddc2d 100644
+--- a/OvmfPkg/Bhyve/AcpiTables/Mcfg.aslc
++++ b/OvmfPkg/Bhyve/AcpiTables/Mcfg.aslc
+@@ -7,7 +7,7 @@
+ 
+ #include "Platform.h"
+ 
+-#define EFI_ACPI_OEM_TABLE_ID                      SIGNATURE_64('B','V','M','C','F','G',' ',' ')
++#define EFI_ACPI_OEM_TABLE_ID                      SIGNATURE_64('A',' ','M',' ','I',' ',' ',' ')
+ 
+ #pragma pack(1)
+ 
+diff --git a/OvmfPkg/Bhyve/AcpiTables/Platform.h b/OvmfPkg/Bhyve/AcpiTables/Platform.h
+index 4561adc..1a1ef1c 100644
+--- a/OvmfPkg/Bhyve/AcpiTables/Platform.h
++++ b/OvmfPkg/Bhyve/AcpiTables/Platform.h
+@@ -20,9 +20,9 @@
+ //
+ // ACPI table information used to initialize tables.
+ //
+-#define EFI_ACPI_OEM_ID            'B','H','Y','V','E',' '  // OEMID 6 bytes long
++#define EFI_ACPI_OEM_ID            'A','L','A','S','K','A'  // OEMID 6 bytes long
+ #define EFI_ACPI_OEM_REVISION      0x1
+-#define EFI_ACPI_CREATOR_ID        SIGNATURE_32('B','H','Y','V')
++#define EFI_ACPI_CREATOR_ID        SIGNATURE_32('A','M','I',' ')
+ #define EFI_ACPI_CREATOR_REVISION  0x00000001
+ 
+ #define INT_MODEL        0x01
+diff --git a/OvmfPkg/Bhyve/AcpiTables/Spcr.aslc b/OvmfPkg/Bhyve/AcpiTables/Spcr.aslc
+index ec5114a..539c688 100644
+--- a/OvmfPkg/Bhyve/AcpiTables/Spcr.aslc
++++ b/OvmfPkg/Bhyve/AcpiTables/Spcr.aslc
+@@ -7,7 +7,7 @@
+ 
+ #include "Platform.h"
+ 
+-#define EFI_ACPI_OEM_TABLE_ID     SIGNATURE_64('B','V','S','P','C','R',' ',' ')
++#define EFI_ACPI_OEM_TABLE_ID     SIGNATURE_64('A',' ','M',' ','I',' ',' ',' ')
+ 
+ EFI_ACPI_SERIAL_PORT_CONSOLE_REDIRECTION_TABLE SPCR = {
+   {
+diff --git a/OvmfPkg/Bhyve/BhyveRfbDxe/VbeShim.c b/OvmfPkg/Bhyve/BhyveRfbDxe/VbeShim.c
+index ea7a364..62c82e0 100644
+--- a/OvmfPkg/Bhyve/BhyveRfbDxe/VbeShim.c
++++ b/OvmfPkg/Bhyve/BhyveRfbDxe/VbeShim.c
+@@ -203,11 +203,11 @@ InstallVbeShim (
+   VbeInfo     = &VbeInfoFull->Base;
+   Ptr         = VbeInfoFull->Buffer;
+ 
+-  CopyMem (VbeInfo->Signature, "VESA", 4);
++  CopyMem (VbeInfo->Signature, "VUSA", 4);
+   VbeInfo->VesaVersion = 0x0200;
+ 
+   VbeInfo->OemNameAddress = (UINT32)SegmentC << 12 | (UINT16)((UINTN)Ptr-SegmentC);
+-  CopyMem (Ptr, "FBSD", 5);
++  CopyMem (Ptr, "UEFI", 5);
+   Ptr += 5;
+ 
+   VbeInfo->Capabilities = BIT1 | BIT0; // DAC can be switched into 8-bit mode
+@@ -225,7 +225,7 @@ InstallVbeShim (
+   VbeInfo->OemSoftwareVersion = 0x0200;
+ 
+   VbeInfo->VendorNameAddress = (UINT32)SegmentC << 12 | (UINT16)((UINTN)Ptr-SegmentC);
+-  CopyMem (Ptr, "FBSD", 5);
++  CopyMem (Ptr, "UEFI", 5);
+   Ptr += 5;
+ 
+   VbeInfo->ProductNameAddress = (UINT32)SegmentC << 12 | (UINT16)((UINTN)Ptr-SegmentC);
+diff --git a/OvmfPkg/Bhyve/BhyveX64.dsc b/OvmfPkg/Bhyve/BhyveX64.dsc
+index 3bcbae6..ed9bba1 100644
+--- a/OvmfPkg/Bhyve/BhyveX64.dsc
++++ b/OvmfPkg/Bhyve/BhyveX64.dsc
+@@ -513,7 +513,7 @@
+ 
+   gEfiMdeModulePkgTokenSpaceGuid.PcdConInConnectOnDemand|FALSE
+ 
+-  gEfiMdeModulePkgTokenSpaceGuid.PcdFirmwareVendor|L"BHYVE"
++  gEfiMdeModulePkgTokenSpaceGuid.PcdFirmwareVendor|L"ALASKA"
+   gUefiOvmfPkgTokenSpaceGuid.PcdDebugIoPort|0x2F8
+ 
+ ################################################################################
+diff --git a/OvmfPkg/Bhyve/SmbiosPlatformDxe/SmbiosPlatformDxe.c b/OvmfPkg/Bhyve/SmbiosPlatformDxe/SmbiosPlatformDxe.c
+index ba21393..3957eac 100644
+--- a/OvmfPkg/Bhyve/SmbiosPlatformDxe/SmbiosPlatformDxe.c
++++ b/OvmfPkg/Bhyve/SmbiosPlatformDxe/SmbiosPlatformDxe.c
+@@ -12,9 +12,9 @@
+ #include "SmbiosPlatformDxe.h"
+ 
+ #define TYPE0_STRINGS \
+-  "EFI Development Kit II / OVMF\0"     /* Vendor */ \
+-  "0.0.0\0"                             /* BiosVersion */ \
+-  "02/06/2015\0"                        /* BiosReleaseDate */
++  "American Megatrends Inc.\0"     /* Vendor */ \
++  "1.C0\0"                         /* BiosVersion */ \
++  "02/06/2024\0"                   /* BiosReleaseDate */
+ //
+ // Type definition and contents of the default Type 0 SMBIOS table.
+ //
+diff --git a/OvmfPkg/Include/IndustryStandard/Q35MchIch9.h b/OvmfPkg/Include/IndustryStandard/Q35MchIch9.h
+index db828d3..da87376 100644
+--- a/OvmfPkg/Include/IndustryStandard/Q35MchIch9.h
++++ b/OvmfPkg/Include/IndustryStandard/Q35MchIch9.h
+@@ -20,7 +20,7 @@
+ //
+ // Host Bridge Device ID (DID) value for Q35/MCH
+ //
+-#define INTEL_Q35_MCH_DEVICE_ID  0x29C0
++#define INTEL_Q35_MCH_DEVICE_ID  0x1480 // Changed to AMD MCH from 0x29C0 (intel one)
+ 
+ //
+ // B/D/F/Type: 0/0/0/PCI
+diff --git a/OvmfPkg/QemuVideoDxe/Driver.c b/OvmfPkg/QemuVideoDxe/Driver.c
+index 6feca83..a8d3313 100644
+--- a/OvmfPkg/QemuVideoDxe/Driver.c
++++ b/OvmfPkg/QemuVideoDxe/Driver.c
+@@ -41,31 +41,31 @@ QEMU_VIDEO_CARD  gQemuVideoCardList[] = {
+     L"Cirrus 5446"
+   },{
+     PCI_CLASS_DISPLAY_VGA,
+-    0x1234,
++    0x1022, //0x1234,
+     0x1111,
+     QEMU_VIDEO_BOCHS_MMIO,
+     L"QEMU Standard VGA"
+   },{
+     PCI_CLASS_DISPLAY_OTHER,
+-    0x1234,
++    0x1022, //0x1234,
+     0x1111,
+     QEMU_VIDEO_BOCHS_MMIO,
+     L"QEMU Standard VGA (secondary)"
+   },{
+     PCI_CLASS_DISPLAY_VGA,
+-    0x1b36,
++    0x1022, //0x1b36,
+     0x0100,
+     QEMU_VIDEO_BOCHS,
+     L"QEMU QXL VGA"
+   },{
+     PCI_CLASS_DISPLAY_VGA,
+-    0x1af4,
+-    0x1050,
++    0x1022, //0x1af4,
++    0x1022, //0x1050, - TODO: Replace with correct AMD version
+     QEMU_VIDEO_BOCHS_MMIO,
+     L"QEMU VirtIO VGA"
+   },{
+     PCI_CLASS_DISPLAY_VGA,
+-    0x15ad,
++    0x1022, //0x15ad,
+     0x0405,
+     QEMU_VIDEO_VMWARE_SVGA,
+     L"QEMU VMWare SVGA"
+diff --git a/ShellPkg/ShellPkg.dec b/ShellPkg/ShellPkg.dec
+index 18df262..c0a6962 100644
+--- a/ShellPkg/ShellPkg.dec
++++ b/ShellPkg/ShellPkg.dec
+@@ -123,7 +123,7 @@
+   gEfiShellPkgTokenSpaceGuid.PcdShellScreenLogCount|3|UINT8|0x00000008
+ 
+   ## Unicode string of the shell supplier
+-  gEfiShellPkgTokenSpaceGuid.PcdShellSupplier|L"EDK II"|VOID*|0x00000010
++  gEfiShellPkgTokenSpaceGuid.PcdShellSupplier|L"American Megatrends"|VOID*|0x00000010
+ 
+   ## Do extended decode of USB for determining media type
+   gEfiShellPkgTokenSpaceGuid.PcdUsbExtendedDecode|TRUE|BOOLEAN|0x00000011
