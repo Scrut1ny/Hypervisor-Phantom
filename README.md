@@ -17,7 +17,7 @@ This tool provides an automated setup solution designed to evade detection from 
 ## 📖 Setup Instruction Guide
 
 <details>
-<summary>Expand for more...</summary>
+<summary>Expand for details...</summary>
 
 ```
 # 1. Clone into the repository
@@ -42,7 +42,7 @@ sudo chmod +x *.sh
 ## 📝 Documentation & References
 
 <details>
-<summary>Expand for more...</summary>
+<summary>Expand for details...</summary>
 
 - **Official**
   - [QEMU v9.1.0](https://qemu.readthedocs.io/en/v9.1.0/)
