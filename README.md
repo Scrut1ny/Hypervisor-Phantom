@@ -450,7 +450,7 @@ Select the settings icon on the top right corner of the software utility, and se
 #### Step 4:
 Now, connect the capture card device back to your Linux host system now and open OBS, you should now see an output from your GPU instead of a black screen.
 
-
+</details>
 
 
 
