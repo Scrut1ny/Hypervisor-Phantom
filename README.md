@@ -413,3 +413,39 @@ XXXX-XX-XX XX:XX:XX.XXX-XXXX [BROWSER LOCK] [INFO] Number of display devices con
             - [DPH-EWB - Displayport 1.2 to HDMI 2.0 EDID Emulator](https://www.amazon.com/dp/B0C3H763FG) - `~$20.00`
 
 </details>
+
+
+
+
+
+
+
+<details>
+<summary>Elgato Capture Cards</summary>
+
+- Some of Elgato's capture cards, leveraging UVC (USB Video Class) technology, operate seamlessly without requiring additional drivers. As UVC devices, they adhere to a standard protocol for transmitting video and audio data over USB connections. This plug-and-play functionality ensures compatibility with various operating systems, enabling effortless setup and use for capturing high-quality video content.
+
+## UVC Elgato Capture Cards
+
+- [Article](https://help.elgato.com/hc/en-us/articles/360027961152-Elgato-Gaming-Hardware-Drivers)
+
+| Device                      | Driver Status                     |
+|-----------------------------|-----------------------------------|
+| Elgato Cam Link             | No driver since it's a UVC device |
+| Elgato Cam Link 4K          | No driver since it's a UVC device |
+| Elgato Game Capture HD60 S+ | No driver since it's a UVC device |
+| Elgato Game Capture HD60 X  | No driver since it's a UVC device |
+
+## Linux - OBS Black Screen Issue Solution
+
+##### Step 1:
+Download and Install the latest `4K CAPTURE UTILITY` software from [Elgato downloads page](https://www.elgato.com/us/en/s/downloads) on a `WINDOWS OS`.
+
+#### Step 2:
+Open `Elgato 4K Capture Utility` and let the software initialize the UVC capture card.
+
+#### Step 3:
+Select the settings icon on the top right corner of the software utility, and select `Check for Updates...`. (It should update automatically already, but just make sure the firmware is on the latest version available.)
+
+#### Step 4:
+Now, connect the capture card device back to your Linux host system now and open OBS, you should now see an output from your GPU instead of a black screen.
