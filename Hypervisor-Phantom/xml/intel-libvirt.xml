@@ -1,0 +1,133 @@
+<!-- DO NOT BLINDLY COPY AND PASTE BUT WORK SECTION BY SECTION AND ADJUST TO YOUR HARDWARE -->
+<domain xmlns:qemu="http://libvirt.org/schemas/domain/qemu/1.0" type="kvm"> <!-- Don't forget XMLNS! -->
+  <uuid>5607c162-59e6-4ef4-a454-bd55d24f6465</uuid>
+  <!-- ... -->
+  <memory unit="G">16</memory>  <!-- keep RAM amount at realistic values: 64, 32, 16, 12, and 8 GiB are all common -->
+  <currentMemory unit="G">16</currentMemory>
+  <!-- ... -->
+  <os>
+    <!-- ... -->
+    <loader readonly="yes" secure="yes" type="pflash">/usr/local/share/edk2/x64/OVMF_CODE.edk2-stable202411.secboot.fd</loader>
+    <nvram template="/usr/local/share/edk2/x64/OVMF_VARS.edk2-stable202411.fd"/>
+    <smbios mode="host"/> <!-- Passes through host smbios for mobo. ADJUST SERIALS IN <qemu:commandline>! -->
+  </os>
+
+  <features>
+    <acpi/>
+    <apic/>
+    <pae/>
+    <!-- Disable all enlightenments, if Hyper-V method is not used.
+    Enlightenments on "bare-metal" are extremely suspicious -->
+    <hyperv mode="custom">
+      <relaxed state="off"/>
+      <vapic state="off"/>
+      <spinlocks state="off"/>
+      <!-- If KVM patch is not present,
+      only vendor_id should be enabled -->
+      <!-- <vendor_id state="off" value=""/> -->
+    </hyperv>
+    <kvm>
+      <hidden state="on"/>
+    </kvm>
+    <smm state="on"/>
+    <pmu state="off"/>
+    <ioapic driver="kvm"/>
+    <msrs unknown="fault"/>
+    <!-- ... -->
+  </features>
+
+  <cpu mode="host-passthrough" check="none" migratable="on">
+    <topology sockets="1" dies="1" cores="8" threads="2"/>
+    <!-- Optimize performance -->
+    <cache mode="passthrough"/>
+    <feature policy="require" name="vmx"/>
+    <feature policy="require" name="invtsc"/>
+    <!-- Remove giveaways for HV -->
+    <feature policy="disable" name="hypervisor"/>
+    <feature policy="disable" name="ssbd"/>
+    <feature policy="disable" name="intel-ssbd"/>
+    <feature policy="disable" name="virt-ssbd"/>
+    <!-- Disable RDTSCP for RDTSC patch -->
+    <feature policy="disable" name="rdtscp"/>
+    <feature policy="disable" name="rdpid"/>
+    <!-- Enable CPU features,
+     if host-passthrough isn't used (...) -->
+  </cpu>
+
+  <clock offset="localtime">
+    <timer name="tsc" present="yes" tickpolicy="discard" mode="native"/>
+    <!-- HPET must exist for Vanguard to start (isn't even used by game) -->
+    <timer name="hpet" present="yes"/>
+    <timer name="rtc" present="no"/>
+    <timer name="pit" present="no"/>
+    <!-- obviously only present in VMs -->
+    <timer name="kvmclock" present="no"/>
+    <timer name="hypervclock" present="no"/>
+  </clock>
+
+  <pm> <!-- Emulates suspend functionality present on real hardware -->
+    <suspend-to-mem enabled="yes"/>
+    <suspend-to-disk enabled="yes"/>
+  </pm>
+
+  <devices>
+    <!-- You can compile QEMU multiple times with different patches as long as you point libvirt to the correct one -->
+    <emulator>/usr/local/bin/qemu-system-x86_64</emulator>
+    
+    <!-- If you have a second drive, 
+    you could pass through the controller and have better performance than VirtIO + stay hidden -->
+    <disk type="file" device="disk"> <!-- Use block devices (partitons) for better performance -->
+      <driver name="qemu" type="raw" cache="none" io="native" discard="unmap"/> <!-- use io="threads" in block mode -->
+      <source file="/var/lib/libvirt/images/win10.img"/>
+      <target dev="sda" bus="sata"/> <!-- Use SATA to avoid using the VirtIO driver -->
+      <serial>CAC0_25CA_57AB_841F.</serial> <!-- Set a custom serial for every VM -->
+      <boot order="1"/>
+      <address type="drive" controller="0" bus="0" target="0" unit="0"/>
+    </disk>
+
+    <interface type="network">
+      <mac address="f0:bc:8e:cd:6e:ec"/> <!-- Set a custom MAC address for every VM -->
+      <source network="default"/> <!-- Again, don't use VirtIO -->
+      <model type="e1000e"/>
+      <address type="pci" domain="0x0000" bus="0x01" slot="0x00" function="0x0"/>
+    </interface>
+
+    <tpm model="tpm-tis"> <!-- Software TPM requires the swtpm (and swtpm-tools on some distros) to work -->
+      <backend type='emulator' version='2.0'/>
+    </tpm>
+     
+    <memballoon model="none"/>
+    <!-- This section is meant for Looking Glass: https://looking-glass.io/ -->
+    <shmem name="looking-glass">
+      <model type="ivshmem-plain"/>
+      <!-- 1920x1080 (1080p), 1920x1200 (1200p), 1920x1440 (1440p) = 32 SDR | 64 HDR-->
+      <!-- 3840x2160 (2160p/4K) = 128 SDR | 256 HDR-->
+      <size unit="M">32</size>
+      <address type="pci" domain="0x0000" bus="0x10" slot="0x02" function="0x0"/>
+    </shmem>
+    <!-- other devices -->
+  </devices>
+
+  <qemu:commandline>
+    <!-- Spoofs RAM SMBIOS-->
+    <qemu:arg value="-smbios"/>
+    <qemu:arg value="type=17,loc_pfx=DIMMA2,bank=P0 CHANNEL A,manufacturer=Unknown,serial=Unknown,asset=Not Specified,part=Not Specified,speed=4800"/>
+    <!-- verify using `dmidecode -t 1,2,3` which serials you must set -->
+    <!-- Generic names like Default String do not have to be changed -->
+    <!-- DON'T FORGET THIS IF YOU US SMBIOS MODE HOST! -->
+    <qemu:arg value="-smbios"/>
+    <qemu:arg value="type=1,serial=To be filled by O.E.M."/>  <!-- often just System Serial Number -->
+    <qemu:arg value="-smbios"/>
+    <qemu:arg value="type=2,serial=To be filled by O.E.M."/>  <!-- 15 char long random number -->
+    <qemu:arg value="-smbios"/>
+    <qemu:arg value="type=3,serial=To be filled by O.E.M."/>  <!-- often just Default String -->
+  </qemu:commandline>
+  <!-- ONLY USE THIS WHEN USING VIRTUAL STORAGE (ex: qcow) AND YOU'RE USING AN SSD -->
+  <qemu:override>
+    <qemu:device alias="sata0-0-0">
+      <qemu:frontend>
+        <qemu:property name="rotation_rate" type="unsigned" value="1"/>
+      </qemu:frontend>
+    </qemu:device>
+  </qemu:override>
+</domain>
