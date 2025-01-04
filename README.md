@@ -101,7 +101,7 @@ sudo chmod +x *.sh
 | Al-Khaser | [GitHub Repository Link](https://github.com/LordNoteworthy/al-khaser) <> [Download - x64 - v1.0.0](https://github.com/ayoubfaouzi/al-khaser/releases/download/v1.0.0/al-khaser_x64.7z) <> [Download - x32 - v1.0.0](https://github.com/ayoubfaouzi/al-khaser/releases/download/v1.0.0/al-khaser_x86.7z) | ❔ |
 | Pafish | [GitHub Repository Link](https://github.com/a0rtega/pafish) <> [Download - x64 - v0.6](https://github.com/a0rtega/pafish/releases/download/v0.6/pafish64.exe) <> [Download - x32 - v0.6](https://github.com/a0rtega/pafish/releases/download/v0.6/pafish.exe) | ❔ |
 
-## Exam Softwares
+## Exam Software
 
 | Software | Browser Extension | System Test | Bypassed |
 |----------|-------------------|-------------|----------|
@@ -116,5 +116,21 @@ sudo chmod +x *.sh
 | Proctorio | ✅ | [Link](https://getproctorio.com/) | ✅ |
 | Respondus (LockDown Browser) | ✅ | [Link](https://autolaunch.respondus2.com/MONServer/ldb/preview_launch.do) & [Download](https://download.respondus.com/lockdown/download.php) | ✅ |
 | Safe Exam Browser | | [Link](https://github.com/SafeExamBrowser/seb-win-refactoring) | ✅ |
+
+## Anti-Cheat Software
+
+- [areweanticheatyet](https://areweanticheatyet.com/)
+
+| Engine | Bypassed | Used By |
+|--------|----------|---------|
+| Anti-Cheat Expert (ACE) | ✅ | Primarily Mobile Games |
+| BattlEye (BE) | ✅ (w/Kernal Patch) | Desktop Games |
+| Easy Anti-Cheat (EAC) | ✅ | Desktop Games |
+| Gepard Shield | ✅ (w/Kernal Patch) | |
+| Hyperion | ✅ | Roblox |
+| Mhyprot | ✅ | Genshin Impact |
+| nProtect GameGuard (NP) | ✅ | Desktop Games |
+| RICOCHET | ❔ | Call of Duty Games |
+| Vanguard | ❌ | Valorant & LoL |
 
 </details>
