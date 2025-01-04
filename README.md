@@ -343,9 +343,10 @@ XXXX-XX-XX XX:XX:XX.XXX-XXXX [BROWSER LOCK] [INFO] Number of display devices con
 <details>
 <summary>Recommended Tools</summary>
 
-- OCR (Optical Character Recognition)
+- OCR Powered Screen-Capture Tools
     - Linux:
         - [NormCap](https://github.com/dynobo/normcap)
+        - [TextSnatcher](https://github.com/RajSolai/TextSnatcher)
     - Windows:
         - [ShareX](https://github.com/ShareX/ShareX)
 - RAT (Remote Access/Administration Trojan)
