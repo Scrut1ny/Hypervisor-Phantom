@@ -466,8 +466,6 @@ Now, connect the capture card device back to your Linux host system now and open
 ## CompTIA Certification Information:
 ![image](https://github.com/Scrut1ny/Hypervisor-Phantom/assets/53458032/8fc02891-5e0d-45e4-be50-953d81d7d41c)
 
-- [Which CompTIA Certifications Must Be Renewed?](https://help.comptia.org/hc/en-us/articles/13923899954196-Which-CompTIA-Certifications-Must-Be-Renewed)
-
 ## Valid Coupon Codes:
 
 - One time use for all. (10%)
@@ -639,6 +637,7 @@ https://github.com/Scrut1ny/Hypervisor-Phantom/assets/53458032/c7f0901b-bb61-480
 <summary>Renewing Multiple Certifications Steps</summary>
 
 - [Renew existing certifications](https://www.comptia.org/continuing-education/learn/renewing-multiple-certifications)
+- [Which CompTIA Certifications Must Be Renewed?](https://help.comptia.org/hc/en-us/articles/13923899954196-Which-CompTIA-Certifications-Must-Be-Renewed)
 
 ![image](https://github.com/Scrut1ny/Hypervisor-Phantom/assets/53458032/784d4707-0920-401b-983c-e7bd7b6b6cc1)
 
