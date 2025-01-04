@@ -14,7 +14,7 @@ This tool provides an automated setup solution designed to evade detection from 
 
 
 
-## 📖 Setup Guide
+## 📖 Setup Instruction Guide
 
 <details>
 <summary>Expand for more...</summary>
