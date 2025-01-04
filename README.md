@@ -6,12 +6,7 @@ This tool provides an automated setup solution designed to evade detection from 
 
 </div>
 
-![image](https://github.com/user-attachments/assets/9376a484-816b-4a81-a18d-1f9ae6949a32)
-
-
-
-
-
+![pic](https://github.com/user-attachments/assets/1329110e-62f9-456b-9816-83975d52a9df)
 
 
 
@@ -61,12 +56,6 @@ This tool provides an automated setup solution designed to evade detection from 
   - [https://tulach.cc/bypassing-vmprotect-themida-vm-checks-in-vmware/](https://tulach.cc/bypassing-vmprotect-themida-vm-checks-in-vmware/)
 
 </details>
-
-
-
-
-
-
 
 
 
