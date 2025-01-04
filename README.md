@@ -89,15 +89,19 @@ sudo chmod +x *.sh
 
 
 
-## Exam Software
+## Software
 <details>
 <summary>Expand for details...</summary>
+
+#### Hypervisor detection tools
 
 | Software | System Test | Bypassed |
 | - | - | - |
 | VMAware | [Repo](https://github.com/kernelwernel/VMAware) <><> [Download - x64 - v2.0](https://github.com/kernelwernel/VMAware/releases/download/v2.0/vmaware64.exe) | ❔ |
 | Al-Khaser | [Repo](https://github.com/LordNoteworthy/al-khaser) <><> [Download - x64 - v1.0.0](https://github.com/ayoubfaouzi/al-khaser/releases/download/v1.0.0/al-khaser_x64.7z) | ❔ |
 | Pafish | [Repo](https://github.com/a0rtega/pafish) <><> [Download - x64 - v0.6](https://github.com/a0rtega/pafish/releases/download/v0.6/pafish64.exe) | ❔ |
+
+#### Exam Softwares
 
 | Software | Browser Extension | System Test | Bypassed |
 | - | - | - | - |
