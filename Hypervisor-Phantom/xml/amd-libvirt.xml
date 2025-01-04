@@ -66,6 +66,10 @@
     <qemu:arg value="type=2,serial=To be filled by O.E.M."/>
     <qemu:arg value="-smbios"/>
     <qemu:arg value="type=3,serial=To be filled by O.E.M."/>
+    <!-- AM4: Used for many AMD Ryzen processors. -->
+    <!-- AM5: Used for newer AMD Ryzen processors starting from the Ryzen 7000 series. -->
+    <!-- sTRX4: Used for AMD Ryzen Threadripper processors released after 2019. -->
+    <!-- sWRX8: Used for AMD Ryzen Threadripper Pro processors. -->
     <qemu:arg value="-smbios"/>
     <qemu:arg value="type=4,sock_pfx=AM5,max-speed=4400,current-speed=3600"/> <!-- Socket Designation, Max CPU Speed, Current CPU Speed -->
   </qemu:commandline>
