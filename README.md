@@ -126,7 +126,7 @@ sudo chmod +x *.sh
 | Anti-Cheat Expert (ACE) | Primarily Mobile Games | ✅ |
 | BattlEye (BE) | Desktop Games | ✅ (w/Kernal Patch) |
 | Easy Anti-Cheat (EAC) | Desktop Games | ✅ |
-| Gepard Shield | | ✅ (w/Kernal Patch) |
+| Gepard Shield | PUBG: Battlegrounds | ✅ (w/Kernal Patch) |
 | Hyperion | Roblox | ✅ |
 | Mhyprot | Genshin Impact | ✅ |
 | nProtect GameGuard (NP) | Desktop Games | ✅ |
