@@ -56,9 +56,6 @@
   </devices>
 
   <qemu:commandline>
-    <!-- Spoofs RAM details in SMBIOS-->
-    <qemu:arg value="-smbios"/>
-    <qemu:arg value="type=17,loc_pfx=DIMMA2,bank=P0 CHANNEL A,manufacturer=Unknown,serial=Unknown,asset=Not Specified,part=Not Specified,speed=4800"/>
     <!-- Spoofs DMI Type 1, 2 and 3 serial numbers in SMBIOS -->
     <qemu:arg value="-smbios"/>
     <qemu:arg value="type=1,serial=To be filled by O.E.M.,uuid=5607c162-59e6-4ef4-a454-bd55d24f6465"/>  <!-- Make sure UUID values are matching -->
@@ -71,6 +68,9 @@
     <!-- LGA 1200: Used for Intel 10th and 11th generation Core processors. -->
     <!-- LGA 1700: Used for Intel 12th generation Core processors and beyond. -->
     <qemu:arg value="type=4,sock_pfx=LGA 1151,max-speed=4400,current-speed=3600"/> <!-- Socket Designation, Max CPU Speed, Current CPU Speed -->
+    <!-- Spoofs RAM details in SMBIOS-->
+    <qemu:arg value="-smbios"/>
+    <qemu:arg value="type=17,loc_pfx=DIMMA2,bank=P0 CHANNEL A,manufacturer=Unknown,serial=Unknown,asset=Not Specified,part=Not Specified,speed=4800"/>
   </qemu:commandline>
   <!-- ONLY USE THIS WHEN USING VIRTUAL STORAGE (ex: qcow) AND YOU'RE USING AN SSD -->
   <qemu:override>
