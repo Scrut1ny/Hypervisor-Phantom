@@ -121,16 +121,16 @@ sudo chmod +x *.sh
 
 - [areweanticheatyet](https://areweanticheatyet.com/)
 
-| Engine | Bypassed | Used By |
-|--------|----------|---------|
-| Anti-Cheat Expert (ACE) | ✅ | Primarily Mobile Games |
-| BattlEye (BE) | ✅ (w/Kernal Patch) | Desktop Games |
-| Easy Anti-Cheat (EAC) | ✅ | Desktop Games |
-| Gepard Shield | ✅ (w/Kernal Patch) | |
-| Hyperion | ✅ | Roblox |
-| Mhyprot | ✅ | Genshin Impact |
-| nProtect GameGuard (NP) | ✅ | Desktop Games |
-| RICOCHET | ❔ | Call of Duty Games |
-| Vanguard | ❌ | Valorant & LoL |
+| Engine | Used By | Bypassed |
+|--------|---------|----------|
+| Anti-Cheat Expert (ACE) | Primarily Mobile Games | ✅ |
+| BattlEye (BE) | Desktop Games | ✅ (w/Kernal Patch) |
+| Easy Anti-Cheat (EAC) | Desktop Games | ✅ |
+| Gepard Shield | | ✅ (w/Kernal Patch) |
+| Hyperion | Roblox | ✅ |
+| Mhyprot | Genshin Impact | ✅ |
+| nProtect GameGuard (NP) | Desktop Games | ✅ |
+| RICOCHET | Call of Duty Games | ❔ |
+| Vanguard | Valorant & LoL | ❌ |
 
 </details>
