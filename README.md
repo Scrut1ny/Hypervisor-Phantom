@@ -12,6 +12,33 @@ This tool provides an automated setup solution designed to evade detection from 
 
 
 
+
+
+## 📖 Setup Guide
+
+<details>
+<summary>Expand for more...</summary>
+
+```
+# 1. Clone into the repository
+git clone --single-branch --depth=1 https://github.com/Scrut1ny/Hypervisor-Phantom
+
+# 2. CD into the repository
+cd HV-Phantom
+
+# 3. Set executable permissions
+sudo chmod +x *.sh
+```
+
+</details>
+
+
+
+
+
+
+
+
 ## 📝 Documentation & References
 
 <details>
