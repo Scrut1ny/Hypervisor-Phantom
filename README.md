@@ -340,6 +340,26 @@ XXXX-XX-XX XX:XX:XX.XXX-XXXX [BROWSER LOCK] [INFO] Number of display devices con
 
 
 
+<details>
+<summary>📑 Recommended Tools</summary>
+
+- OCR (Optical Character Recognition)
+    - Linux:
+        - [NormCap](https://github.com/dynobo/normcap)
+    - Windows:
+        - [ShareX](https://github.com/ShareX/ShareX)
+- RAT (Remote Access/Administration Trojan)
+    - [Quasar](https://github.com/quasar/Quasar)
+- RDP (Remote Desktop Protocal)
+    - [Ammyy Admin](https://www.ammyy.com/)
+    - [MeshCentral](https://github.com/Ylianst/MeshCentral)
+
+</details>
+
+
+
+
+
 
 
 ## Advanced: Hardware
