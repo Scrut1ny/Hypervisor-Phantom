@@ -118,7 +118,7 @@ sudo chmod +x *.sh
 <summary>Expand for details...</summary>
 
 - **Opt for a VPN**: Use a VPN to obscure all your internet traffic. However, be cautious with popular VPN services as their IP ranges may be blacklisted by certain exam proctoring or anti-cheat systems.
-- **Allocate Sufficient HV Storage**: Equip your hypervisor with at least `128GB+` of storage. Hypervisors with lower/insufficient storage will/may be more easily identified or flagged by detection/monitoring systems.
+- **Allocate Sufficient HV Storage**: Equip your hypervisor with at least `128GB+` of storage. Hypervisors with lower or insufficient storage are more susceptible to being identified or flagged by detection and monitoring systems.
 - **System Up Time**: Leave the hypervisor running for at least `12+` minutes to bypass a `GetTickCount()` check in a hypervisor detection tool. (This check is honestly pointless, and isn't reliable to rely on.)
 
 </details>
