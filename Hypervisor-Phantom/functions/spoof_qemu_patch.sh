@@ -6,8 +6,8 @@ source "./utils/formatter.sh"
 source "./utils/prompter.sh"
 
 declare -r CPU_VENDOR=$(case "$VENDOR_ID" in
-  AuthenticAMD) echo "amd" ;;
-  GenuineIntel) echo "intel" ;;
+  *AuthenticAMD*) echo "amd" ;;
+  *GenuineIntel*) echo "intel" ;;
   *) fmtr::error "Unknown CPU vendor."; exit 1 ;;
 esac)
 
