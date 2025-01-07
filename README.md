@@ -8,7 +8,15 @@ This tool provides an automated setup solution designed to evade detection from 
 
 ![pic](https://github.com/user-attachments/assets/1329110e-62f9-456b-9816-83975d52a9df)
 
-
+> **⚠️ Legal Disclaimer**  
+> By using this tool, you agree to the following:
+> 
+> - This tool is intended **only for educational, research, and security analysis** purposes.
+> - **The author is not liable** for any damages, legal consequences, or misuse arising from your use of this tool.
+> - You are responsible for ensuring your use complies with all applicable laws. 
+> - Misuse, including cheating or illegal activities, is strictly prohibited.
+> 
+> Use at your own risk. The tool is provided "as-is" without any warranties.
 
 
 
