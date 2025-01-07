@@ -62,7 +62,7 @@ configure_bootloader() {
     sudo sed -i "/etc/default/grub" -f - <<EOF
 s#^\(GRUB_CMDLINE_LINUX_DEFAULT=".*\)"\$#\1 ${IOMMU_SETTING} iommu=pt vfio-pci.ids=${HWID} "#
 EOF
-    sudo update-grub || fmtr::warn "You have to manually update the GRUB config!"
+    sudo grub-mkconfig -o /boot/grub/grub.cfg || fmtr::warn "You have to manually update the GRUB config!"
     fmtr::log "GRUB configuration modified successfully."
   else
     for location in "${SDBOOT_CONF_LOCATIONS[@]}"; do
