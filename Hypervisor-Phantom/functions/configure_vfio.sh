@@ -23,7 +23,7 @@ isolate_gpu() {
     fi
 
     case "$choice" in
-      1) pci_device="$(lspci | grep -i vga | sort)";;
+      1) pci_device="$(lspci | grep -iE 'vga|3d' | sort)";;
       2) pci_device="$(lspci | grep -i "Non-Volatile memory" | sort)";;
       3) pci_device="$(lspci | sort)";;
     esac
