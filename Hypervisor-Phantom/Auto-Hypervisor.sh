@@ -53,7 +53,7 @@ get_memory_info() {
 }
 
 get_gpu_info() {
-  GPU_NAMES=$(lspci | grep -i "vga" | sed -E 's/.*\[(.*)\].*/\1/')
+  GPU_NAMES=$(lspci | grep -iE 'vga|3d' | sed -E 's/.*\[(.*)\].*/\1/')
   if [ -n "$GPU_NAMES" ]; then
     GPU_NAMES=$(echo "$GPU_NAMES" | awk '{printf "├─ %s\n", $0}' | sed '$ s/├─ /└─ /')
   else
