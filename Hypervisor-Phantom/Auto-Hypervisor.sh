@@ -85,8 +85,10 @@ print_system_info() {
 }
 
 check_internet_connection() {
-  if ! ping -c 1 -W 1 9.9.9.9 &>/dev/null; then
-    if ! ping -c 1 -W 1 8.8.8.8 &>/dev/null; then
+  # Try to reach AWS IP check service
+  if ! curl -s --head --request GET https://checkip.amazonaws.com | grep "200 OK" > /dev/null; then
+    # If AWS is unreachable, try Cloudflare CDN test page
+    if ! curl -s --head --request GET https://www.cloudflare.com/cdn-cgi/trace | grep "200 OK" > /dev/null; then
       fmtr::error "No internet connection detected. Please check your network settings."
       echo -e "\n"
       exit 1
