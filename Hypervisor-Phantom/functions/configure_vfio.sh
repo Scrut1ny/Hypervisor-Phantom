@@ -51,8 +51,8 @@ configure_bootloader() {
   fmtr::log "Configuring the bootloader entry config"
 
   declare -r CPU_VENDOR=$(case "$VENDOR_ID" in
-    AuthenticAMD) IOMMU_SETTING="amd_iommu=on" ;;
-    GenuineIntel) IOMMU_SETTING="intel_iommu=on" ;;
+    *AuthenticAMD*) IOMMU_SETTING="amd_iommu=on" ;;
+    *GenuineIntel*) IOMMU_SETTING="intel_iommu=on" ;;
     *) fmtr::error "Unknown CPU vendor."; exit 1 ;;
   esac)
 
