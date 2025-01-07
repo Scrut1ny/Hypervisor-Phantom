@@ -50,12 +50,11 @@ isolate_gpu() {
 configure_bootloader() {
   fmtr::log "Configuring the bootloader entry config"
 
-  vendor_id=$(lscpu | awk -F': +' '/Vendor ID/ {print $2}')
-  case "$vendor_id" in
+  declare -r CPU_VENDOR=$(case "$VENDOR_ID" in
     AuthenticAMD) IOMMU_SETTING="amd_iommu=on" ;;
     GenuineIntel) IOMMU_SETTING="intel_iommu=on" ;;
-    *) fmtr::warn "Unknown CPU vendor."; return 1 ;;
-  esac
+    *) fmtr::error "Unknown CPU vendor."; exit 1 ;;
+  esac)
 
   if [ -f "/etc/default/grub" ]; then
     fmtr::log "GRUB detected."
