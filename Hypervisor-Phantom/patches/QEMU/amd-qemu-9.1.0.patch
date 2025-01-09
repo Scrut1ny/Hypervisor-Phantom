@@ -1304,15 +1304,6 @@ index 85ef745..5b39133 100644
                              &error_abort);
  }
  
-@@ -6289,8 +6275,6 @@ static void x86_cpu_load_model(X86CPU *cpu, X86CPUModel *model)
-     /* legacy-cache defaults to 'off' if CPU model provides cache info */
-     cpu->legacy_cache = !x86_cpu_get_versioned_cache_info(cpu, model);
- 
--    env->features[FEAT_1_ECX] |= CPUID_EXT_HYPERVISOR;
--
-     /* sysenter isn't supported in compatibility mode on AMD,
-      * syscall isn't supported in compatibility mode on Intel.
-      * Normally we advertise the actual CPU vendor, but you can
 @@ -6838,18 +6829,20 @@ void cpu_x86_cpuid(CPUX86State *env, uint32_t index, uint32_t count,
           * CPUID code in kvm_arch_init_vcpu() ignores stuff
           * set here, but we restrict to TCG none the less.
