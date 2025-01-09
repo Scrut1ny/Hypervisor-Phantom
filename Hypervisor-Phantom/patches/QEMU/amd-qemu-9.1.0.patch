@@ -183,32 +183,6 @@ index d450d70..f88fbc4 100644
      }
      if (s->chn[1].type == escc_kbd) {
          s->chn[1].hs = qemu_input_handler_register((DeviceState *)(&s->chn[1]),
-diff --git a/hw/char/serial-pci.c b/hw/char/serial-pci.c
-index f8a1a94..1cc4f4b 100644
---- a/hw/char/serial-pci.c
-+++ b/hw/char/serial-pci.c
-@@ -93,6 +93,8 @@ static void serial_pci_class_initfn(ObjectClass *klass, void *data)
-     pc->realize = serial_pci_realize;
-     pc->exit = serial_pci_exit;
-     pc->vendor_id = PCI_VENDOR_ID_REDHAT;
-+    // Find the serial deviceid on your pc and override here...
-+    // Same with revision
-     pc->device_id = PCI_DEVICE_ID_REDHAT_SERIAL;
-     pc->revision = 1;
-     pc->class_id = PCI_CLASS_COMMUNICATION_SERIAL;
-diff --git a/hw/core/qdev.c b/hw/core/qdev.c
-index f3a996f..c33a93c 100644
---- a/hw/core/qdev.c
-+++ b/hw/core/qdev.c
-@@ -812,7 +812,7 @@ static void device_class_init(ObjectClass *class, void *data)
-      * hotpluggable. Devices that shouldn't be hotpluggable,
-      * should override it in their class_init()
-      */
--    dc->hotpluggable = true;
-+    dc->hotpluggable = false;
-     dc->user_creatable = true;
-     vc->get_id = device_vmstate_if_get_id;
-     rc->get_state = device_get_reset_state;
 diff --git a/hw/display/edid-generate.c b/hw/display/edid-generate.c
 index 2cb8196..95af00f 100644
 --- a/hw/display/edid-generate.c
