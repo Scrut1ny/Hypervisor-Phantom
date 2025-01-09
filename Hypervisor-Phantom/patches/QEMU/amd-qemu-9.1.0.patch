@@ -1308,7 +1308,6 @@ index 85ef745..5b39133 100644
           * CPUID code in kvm_arch_init_vcpu() ignores stuff
           * set here, but we restrict to TCG none the less.
           */
-+        /*
          if (tcg_enabled() && cpu->expose_tcg) {
 -            memcpy(signature, "TCGTCGTCGTCG", 12);
 +            memset(signature, 0, 12);
@@ -1317,13 +1316,11 @@ index 85ef745..5b39133 100644
              *ecx = signature[1];
              *edx = signature[2];
          } else {
-+        */
              *eax = 0;
              *ebx = 0;
              *ecx = 0;
              *edx = 0;
--        }
-+        // }
+         }
          break;
      case 0x40000001:
          *eax = 0;
@@ -1447,16 +1444,3 @@ index 303f86d..a174b73 100644
              sysib.sysib_322.vm[0].ext_name_encoding = 2; /* UTF-8 */
  
              /* If our VM has a name, use the real name */
-diff --git a/tests/unit/test-qdev-global-props.c b/tests/unit/test-qdev-global-props.c
-index c8862ca..67bb047 100644
---- a/tests/unit/test-qdev-global-props.c
-+++ b/tests/unit/test-qdev-global-props.c
-@@ -179,7 +179,7 @@ static void hotplug_class_init(ObjectClass *oc, void *data)
-     DeviceClass *dc = DEVICE_CLASS(oc);
- 
-     dc->realize = NULL;
--    dc->hotpluggable = true;
-+    dc->hotpluggable = false;
- }
- 
- static const TypeInfo hotplug_type = {
