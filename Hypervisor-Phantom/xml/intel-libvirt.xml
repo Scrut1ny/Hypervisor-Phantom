@@ -12,6 +12,59 @@
     <smbios mode="host"/> <!-- Passes through host smbios for mobo. ADJUST SERIALS IN <qemu:commandline>! -->
   </os>
 
+  <features>
+    <acpi/>
+    <apic/>
+    <pae/>
+    <!-- Disable all enlightenments, if Hyper-V method is not used.
+    Enlightenments on "bare-metal" are extremely suspicious -->
+    <hyperv mode="custom">
+      <relaxed state="off"/>
+      <vapic state="off"/>
+      <spinlocks state="off"/>
+      <!-- If KVM patch is not present,
+      only vendor_id should be enabled -->
+      <!-- <vendor_id state="off" value=""/> -->
+    </hyperv>
+    <kvm>
+      <hidden state="on"/>
+    </kvm>
+    <smm state="on"/>
+    <pmu state="off"/>
+    <ioapic driver="kvm"/>
+    <msrs unknown="fault"/>
+    <!-- ... -->
+  </features>
+
+  <cpu mode="host-passthrough" check="none" migratable="on">
+    <topology sockets="1" dies="1" cores="8" threads="2"/>
+    <!-- Optimize performance -->
+    <cache mode="passthrough"/>
+    <feature policy="require" name="vmx"/>
+    <feature policy="require" name="invtsc"/>
+    <!-- Remove giveaways for HV -->
+    <feature policy="disable" name="hypervisor"/>
+    <feature policy="disable" name="ssbd"/>
+    <feature policy="disable" name="intel-ssbd"/>
+    <feature policy="disable" name="virt-ssbd"/>
+    <!-- Disable RDTSCP for RDTSC patch -->
+    <feature policy="disable" name="rdtscp"/>
+    <feature policy="disable" name="rdpid"/>
+    <!-- Enable CPU features,
+     if host-passthrough isn't used (...) -->
+  </cpu>
+
+  <clock offset="localtime">
+    <timer name="tsc" present="yes" tickpolicy="discard" mode="native"/>
+    <!-- HPET must exist for Vanguard to start (isn't even used by game) -->
+    <timer name="hpet" present="yes"/>
+    <timer name="rtc" present="no"/>
+    <timer name="pit" present="no"/>
+    <!-- obviously only present in VMs -->
+    <timer name="kvmclock" present="no"/>
+    <timer name="hypervclock" present="no"/>
+  </clock>
+
   <pm> <!-- Emulates suspend functionality present on real hardware -->
     <suspend-to-mem enabled="yes"/>
     <suspend-to-disk enabled="yes"/>
@@ -56,6 +109,8 @@
   </devices>
 
   <qemu:commandline>
+    <qemu:arg value="-smbios"/>
+    <qemu:arg value="type=0,uefi=true"/>  <!-- Enable UEFI Feature, requires new qemu patch... -->
     <!-- Spoofs DMI Type 1, 2 and 3 serial numbers in SMBIOS -->
     <qemu:arg value="-smbios"/>
     <qemu:arg value="type=1,serial=To be filled by O.E.M.,uuid=5607c162-59e6-4ef4-a454-bd55d24f6465"/>  <!-- Make sure UUID values are matching -->
