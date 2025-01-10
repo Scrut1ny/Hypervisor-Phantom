@@ -22,6 +22,12 @@
       <relaxed state="off"/>
       <vapic state="off"/>
       <spinlocks state="off"/>
+      <vpindex state="off"/>
+      <runtime state="off"/>
+      <synic state="off"/>
+      <stimer state="off"/>
+      <reset state="off"/>
+      <frequencies state="off"/>
       <!-- If KVM patch is not present,
       only vendor_id should be enabled -->
       <!-- <vendor_id state="off" value=""/> -->
