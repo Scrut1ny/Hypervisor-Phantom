@@ -126,7 +126,7 @@ index 1a381e9..291c74d 100644
  
      if (kvm_enabled()) {
 -        product = "KVM Virtual Machine";
-+        product = "KVM Machine";
++        product = "AMD Machine";
      }
  
 -    smbios_set_defaults("QEMU", product,
