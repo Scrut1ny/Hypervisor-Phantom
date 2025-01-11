@@ -180,19 +180,6 @@ index ba21393..3957eac 100644
  //
  // Type definition and contents of the default Type 0 SMBIOS table.
  //
-diff --git a/OvmfPkg/Include/IndustryStandard/Q35MchIch9.h b/OvmfPkg/Include/IndustryStandard/Q35MchIch9.h
-index db828d3..da87376 100644
---- a/OvmfPkg/Include/IndustryStandard/Q35MchIch9.h
-+++ b/OvmfPkg/Include/IndustryStandard/Q35MchIch9.h
-@@ -20,7 +20,7 @@
- //
- // Host Bridge Device ID (DID) value for Q35/MCH
- //
--#define INTEL_Q35_MCH_DEVICE_ID  0x29C0
-+#define INTEL_Q35_MCH_DEVICE_ID  0x1480 // Changed to AMD MCH from 0x29C0 (intel one)
- 
- //
- // B/D/F/Type: 0/0/0/PCI
 diff --git a/ShellPkg/ShellPkg.dec b/ShellPkg/ShellPkg.dec
 index 18df262..c0a6962 100644
 --- a/ShellPkg/ShellPkg.dec
