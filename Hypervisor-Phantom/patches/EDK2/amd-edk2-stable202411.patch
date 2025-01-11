@@ -193,48 +193,6 @@ index db828d3..da87376 100644
  
  //
  // B/D/F/Type: 0/0/0/PCI
-diff --git a/OvmfPkg/QemuVideoDxe/Driver.c b/OvmfPkg/QemuVideoDxe/Driver.c
-index 6feca83..a8d3313 100644
---- a/OvmfPkg/QemuVideoDxe/Driver.c
-+++ b/OvmfPkg/QemuVideoDxe/Driver.c
-@@ -41,31 +41,31 @@ QEMU_VIDEO_CARD  gQemuVideoCardList[] = {
-     L"Cirrus 5446"
-   },{
-     PCI_CLASS_DISPLAY_VGA,
--    0x1234,
-+    0x1022, //0x1234,
-     0x1111,
-     QEMU_VIDEO_BOCHS_MMIO,
-     L"QEMU Standard VGA"
-   },{
-     PCI_CLASS_DISPLAY_OTHER,
--    0x1234,
-+    0x1022, //0x1234,
-     0x1111,
-     QEMU_VIDEO_BOCHS_MMIO,
-     L"QEMU Standard VGA (secondary)"
-   },{
-     PCI_CLASS_DISPLAY_VGA,
--    0x1b36,
-+    0x1022, //0x1b36,
-     0x0100,
-     QEMU_VIDEO_BOCHS,
-     L"QEMU QXL VGA"
-   },{
-     PCI_CLASS_DISPLAY_VGA,
--    0x1af4,
--    0x1050,
-+    0x1022, //0x1af4,
-+    0x1022, //0x1050, - TODO: Replace with correct AMD version
-     QEMU_VIDEO_BOCHS_MMIO,
-     L"QEMU VirtIO VGA"
-   },{
-     PCI_CLASS_DISPLAY_VGA,
--    0x15ad,
-+    0x1022, //0x15ad,
-     0x0405,
-     QEMU_VIDEO_VMWARE_SVGA,
-     L"QEMU VMWare SVGA"
 diff --git a/ShellPkg/ShellPkg.dec b/ShellPkg/ShellPkg.dec
 index 18df262..c0a6962 100644
 --- a/ShellPkg/ShellPkg.dec
