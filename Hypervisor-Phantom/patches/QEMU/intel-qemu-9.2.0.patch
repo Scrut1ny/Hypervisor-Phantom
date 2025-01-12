@@ -216,7 +216,7 @@ index 0e44946..b8b4d5e 100644
      Aml *crs = aml_resource_template();
  
 -    aml_append(dev, aml_name_decl("_HID", aml_string("QEMU0002")));
-+    aml_append(dev, aml_name_decl("_HID", aml_string("PNP0A03")));
++    aml_append(dev, aml_name_decl("_HID", aml_string("UEFI0002")));
  
      /* device present, functioning, decoding, not shown in UI */
      aml_append(dev, aml_name_decl("_STA", aml_int(0xB)));
@@ -455,7 +455,7 @@ index 9a923b7..da5ce8a 100644
      Aml *dev = aml_device("PEVT");
  
 -    aml_append(dev, aml_name_decl("_HID", aml_string("QEMU0001")));
-+    aml_append(dev, aml_name_decl("_HID", aml_string("PNP0A03")));
++    aml_append(dev, aml_name_decl("_HID", aml_string("UEFI0001")));
  
      crs = aml_resource_template();
      aml_append(crs,
@@ -481,7 +481,7 @@ index 2e6ef89..b57515d 100644
  {
      Aml *dev = aml_device("FWCF");
 -    aml_append(dev, aml_name_decl("_HID", aml_string("QEMU0002")));
-+    aml_append(dev, aml_name_decl("_HID", aml_string("PNP0A03")));
++    aml_append(dev, aml_name_decl("_HID", aml_string("UEFI0002")));
      /* device present, functioning, decoding, not shown in UI */
      aml_append(dev, aml_name_decl("_STA", aml_int(0xB)));
      aml_append(dev, aml_name_decl("_CCA", aml_int(1)));
@@ -1111,7 +1111,7 @@ index cb93f66..2c2fd16 100644
  #include "standard-headers/linux/types.h"
  
 -#define FW_CFG_ACPI_DEVICE_ID	"QEMU0002"
-+#define FW_CFG_ACPI_DEVICE_ID	"PNP0A03"
++#define FW_CFG_ACPI_DEVICE_ID	"UEFI0002"
  
  /* selector key values for "well-known" fw_cfg entries */
  #define FW_CFG_SIGNATURE	0x00
