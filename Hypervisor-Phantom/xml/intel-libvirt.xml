@@ -22,12 +22,6 @@
       <relaxed state="off"/>
       <vapic state="off"/>
       <spinlocks state="off"/>
-      <vpindex state="off"/>
-      <runtime state="off"/>
-      <synic state="off"/>
-      <stimer state="off"/>
-      <reset state="off"/>
-      <frequencies state="off"/>
       <!-- If KVM patch is not present,
       only vendor_id should be enabled -->
       <!-- <vendor_id state="off" value=""/> -->
@@ -71,73 +65,171 @@
     <timer name="hypervclock" present="no"/>
   </clock>
 
-  <pm> <!-- Emulates suspend functionality present on real hardware -->
+  <!--
+  <> https://libvirt.org/formatdomain.html#power-management
+
+  Emulates power management features found on physical systems (Suspend-to-Memory and Suspend-to-Disk).
+
+  Suspend-to-Memory (suspend-to-mem): This feature simulates the ability for the
+  virtual machine to suspend (i.e., hibernate) to RAM, much like how a physical
+  machine can be put into a sleep state. When this option is enabled, the guest
+  operating system can perform a suspend-to-RAM operation, preserving the machine’s
+  state in memory and allowing for a quicker resume.
+
+  Suspend-to-Disk (suspend-to-disk): This feature simulates the ability for the VM
+  to hibernate to disk, similar to how a physical machine can enter hibernation
+  mode, saving the machine's current state (all running processes, memory contents)
+  to disk and shutting down. When resumed, the system restores to its exact previous state.
+  -->
+  <pm>
     <suspend-to-mem enabled="yes"/>
     <suspend-to-disk enabled="yes"/>
   </pm>
 
+
+
+
+
   <devices>
-    <!-- You can compile QEMU multiple times with different patches as long as you point libvirt to the correct one -->
+    <!-- Points to patched QEMU emulator binary (modify path if needed!) -->
     <emulator>/usr/local/bin/qemu-system-x86_64</emulator>
-    
-    <!-- If you have a second drive, 
-    you could pass through the controller and have better performance than VirtIO + stay hidden -->
+
+
+
+
+
+    <!--
+    <> https://libvirt.org/formatdomain.html#hard-drives-floppy-disks-cdroms
+
+    If you have a second drive, you could pass through the controller and have better performance than VirtIO + stay hidden
+    -->
     <disk type="file" device="disk"> <!-- Use block devices (partitons) for better performance -->
       <driver name="qemu" type="raw" cache="none" io="native" discard="unmap"/> <!-- use io="threads" in block mode -->
       <source file="/var/lib/libvirt/images/win10.img"/>
       <target dev="sda" bus="sata"/> <!-- Use SATA to avoid using the VirtIO driver -->
-      <serial>CAC0_25CA_57AB_841F.</serial> <!-- Set a custom serial for every VM -->
+      <serial>CAC0_25CA_57AB_841F.</serial> <!-- Spoof drive serial # -->
       <boot order="1"/>
       <address type="drive" controller="0" bus="0" target="0" unit="0"/>
     </disk>
 
+
+
+
+    <!--
+    <> https://libvirt.org/formatdomain.html#network-interfaces
+    -->
     <interface type="network">
-      <mac address="f0:bc:8e:cd:6e:ec"/> <!-- Set a custom MAC address for every VM -->
-      <source network="default"/> <!-- Again, don't use VirtIO -->
+      <mac address="D8:F1:3F:B3:75:4E"/> <!-- Set fully randomized MAC address every instance -->
+      <source network="default"/> <!-- DO NOT USE "VirtIO" -->
       <model type="e1000e"/>
       <address type="pci" domain="0x0000" bus="0x01" slot="0x00" function="0x0"/>
     </interface>
 
-    <tpm model="tpm-tis"> <!-- Software TPM requires the swtpm (and swtpm-tools on some distros) to work -->
+
+
+
+
+    <!--
+    https://libvirt.org/formatdomain.html#tpm-device
+
+    Software TPM requires the swtpm (and swtpm-tools on some distros) to work.
+
+    Arch   - https://archlinux.org/packages/extra/x86_64/swtpm/
+    Debian - https://packages.debian.org/sid/swtpm
+    Fedora - https://packages.fedoraproject.org/pkgs/swtpm/swtpm/
+
+    Note: If you're trying to bypass Valorant/League of Legends Vanguard Anti-Cheat, you must enable TPM
+    as these games require it to run properly. Vanguard specifically checks for the presence of a TPM
+    module to prevent cheating and secure the game environment.
+    -->
+    <tpm model="tpm-tis">
       <backend type='emulator' version='2.0'/>
     </tpm>
-     
+
+
+
+
+
+    <!--
+    <> https://libvirt.org/formatdomain.html#memory-balloon-device
+
+    Disable memory ballooning to prevent detection of virtualized environment.
+    The memory balloon device is a giveaway of virtualization, as it allows the
+    hypervisor to dynamically adjust the guest's memory. Disabling it makes the
+    VM's memory allocation appear more similar to a bare-metal system.
+    -->
     <memballoon model="none"/>
-    <!-- This section is meant for Looking Glass: https://looking-glass.io/ -->
+
+
+
+
+
+    <!--
+    <> https://libvirt.org/formatdomain.html#shared-memory-device
+    <> https://looking-glass.io/docs/B6/install/#ivshmem
+
+    1920x1080 (1080p), 1920x1200 (1200p), 1920x1440 (1440p) = 32 SDR | 64 HDR
+    3840x2160 (2160p/4K) = 128 SDR | 256 HDR
+    -->
     <shmem name="looking-glass">
       <model type="ivshmem-plain"/>
-      <!-- 1920x1080 (1080p), 1920x1200 (1200p), 1920x1440 (1440p) = 32 SDR | 64 HDR-->
-      <!-- 3840x2160 (2160p/4K) = 128 SDR | 256 HDR-->
       <size unit="M">32</size>
       <address type="pci" domain="0x0000" bus="0x10" slot="0x02" function="0x0"/>
     </shmem>
-    <!-- other devices -->
   </devices>
 
+
+
+
+  <!--
+  <> https://www.qemu.org/docs/master/system/qemu-manpage.html#hxtool-4
+  -->
   <qemu:commandline>
+
+
     <qemu:arg value="-smbios"/>
     <qemu:arg value="type=0,uefi=true"/>  <!-- Enable UEFI Feature, requires new qemu patch... -->
-    <!-- Spoofs DMI Type 1, 2 and 3 serial numbers in SMBIOS -->
+
+
+    <!-- Spoofs SMBIOS DMI Type 1, 2 and 3 details
+    Type 1 <> https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_3.2.0.pdf#%5B%7B%22num%22%3A85%2C%22gen%22%3A0%7D%2C%7B%22name%22%3A%22XYZ%22%7D%2C70%2C212%2C0%5D
+    Type 2 <> https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_3.2.0.pdf#%5B%7B%22num%22%3A91%2C%22gen%22%3A0%7D%2C%7B%22name%22%3A%22XYZ%22%7D%2C70%2C206%2C0%5D
+    Type 3 <> https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_3.2.0.pdf#%5B%7B%22num%22%3A99%2C%22gen%22%3A0%7D%2C%7B%22name%22%3A%22XYZ%22%7D%2C70%2C178%2C0%5D
+    -->
     <qemu:arg value="-smbios"/>
     <qemu:arg value="type=1,serial=To be filled by O.E.M.,uuid=5607c162-59e6-4ef4-a454-bd55d24f6465"/>  <!-- Make sure UUID values are matching -->
     <qemu:arg value="-smbios"/>
     <qemu:arg value="type=2,serial=To be filled by O.E.M."/>
     <qemu:arg value="-smbios"/>
     <qemu:arg value="type=3,serial=To be filled by O.E.M."/>
+
+
+    <!-- Spoofs SMBIOS DMI Type 4 details
+    <> https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_3.2.0.pdf#%5B%7B%22num%22%3A114%2C%22gen%22%3A0%7D%2C%7B%22name%22%3A%22XYZ%22%7D%2C70%2C583%2C0%5D
+    -->
     <qemu:arg value="-smbios"/>
-    <!-- LGA 1151: Used for Intel 6th, 7th, 8th, and 9th generation Core processors. -->
-    <!-- LGA 1200: Used for Intel 10th and 11th generation Core processors. -->
-    <!-- LGA 1700: Used for Intel 12th generation Core processors and beyond. -->
-    <qemu:arg value="type=4,sock_pfx=LGA 1151,max-speed=4400,current-speed=3600"/> <!-- Socket Designation, Max CPU Speed, Current CPU Speed -->
-    <!-- Spoofs RAM details in SMBIOS-->
+    <qemu:arg value="type=4,sock_pfx=LGA1151,max-speed=4400,current-speed=3600"/>
+
+
+    <!-- Spoofs SMBIOS DMI Type 17 details
+    <> https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_3.2.0.pdf#%5B%7B%22num%22%3A258%2C%22gen%22%3A0%7D%2C%7B%22name%22%3A%22XYZ%22%7D%2C70%2C597%2C0%5D
+    -->
     <qemu:arg value="-smbios"/>
     <qemu:arg value="type=17,loc_pfx=DIMMA2,bank=P0 CHANNEL A,manufacturer=Unknown,serial=Unknown,asset=Not Specified,part=Not Specified,speed=4800"/>
+
+
   </qemu:commandline>
+
+
+
+
+
   <!-- ONLY USE THIS WHEN USING VIRTUAL STORAGE (ex: qcow) AND YOU'RE USING AN SSD -->
   <qemu:override>
     <qemu:device alias="sata0-0-0">
       <qemu:frontend>
         <qemu:property name="rotation_rate" type="unsigned" value="1"/>
+        <qemu:property name="discard_granularity" type="unsigned" value="0"/>
       </qemu:frontend>
     </qemu:device>
   </qemu:override>
