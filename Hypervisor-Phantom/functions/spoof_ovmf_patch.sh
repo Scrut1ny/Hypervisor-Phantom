@@ -38,7 +38,7 @@ install_req_pkgs() {
       CHECK_CMD="dpkg -l"
       ;;
     Fedora)
-      REQUIRED_PKGS=("gcc" "gcc-c++" "make" "acpica-tools" "git" "nasm" "python3")
+      REQUIRED_PKGS=("gcc" "gcc-c++" "make" "acpica-tools" "git" "nasm" "python3" "libuuid-devel")
       PKG_MANAGER="dnf"
       INSTALL_CMD="sudo dnf -y install"
       CHECK_CMD="rpm -q"
