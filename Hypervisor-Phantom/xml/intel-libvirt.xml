@@ -62,8 +62,6 @@
 
   <clock offset="localtime">
     <timer name="tsc" present="yes" tickpolicy="discard" mode="native"/>
-    <!-- HPET must exist for Vanguard to start (isn't even used by game) -->
-    <timer name="hpet" present="yes"/>
     <timer name="rtc" present="no"/>
     <timer name="pit" present="no"/>
     <!-- obviously only present in VMs -->
