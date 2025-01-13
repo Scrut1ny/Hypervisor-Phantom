@@ -38,7 +38,6 @@
     <smm state="on"/>
     <pmu state="off"/>
     <ioapic driver="kvm"/>
-    <msrs unknown="fault"/>
   </features>
 
   <cpu mode="host-passthrough" check="none" migratable="on">
