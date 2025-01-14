@@ -167,7 +167,26 @@
 
 
 
+    <!--
+    <> https://libvirt.org/formatdomain.html#video-devices
 
+    Set the video model to "none" to prevent detection of a virtualized environment.
+    Virtualized video devices can be a giveaway of a hypervisor, especially if the vendor ID is not spoofed.
+    
+    Setting the video model to "none" ensures that no virtual video device is presented to the guest, which
+    can help avoid detection of the underlying hypervisor.
+    
+    Additionally, if you're using the Looking Glass shared-memory-device program, setting the video model to
+    "none" is necessary to ensure proper functionality, as Looking Glass relies on a direct framebuffer access method.
+    -->
+    <video>
+      <model type="none"/>
+    </video>
+
+
+
+
+    
     <!--
     <> https://libvirt.org/formatdomain.html#shared-memory-device
     <> https://looking-glass.io/docs/B6/install/#ivshmem
