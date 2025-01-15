@@ -50,7 +50,6 @@
     <!-- Remove giveaways for HV -->
     <feature policy="disable" name="hypervisor"/>
     <feature policy="disable" name="ssbd"/>
-    <feature policy="disable" name="intel-ssbd"/>
     <feature policy="disable" name="virt-ssbd"/>
     <!-- Disable RDTSCP for RDTSC patch -->
     <feature policy="disable" name="rdtscp"/>
