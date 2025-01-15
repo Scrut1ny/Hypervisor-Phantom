@@ -86,6 +86,8 @@ sudo chmod +x *.sh
   - [418885-kvm-detection-fixes.html](https://www.unknowncheats.me/forum/escape-from-tarkov/418885-kvm-detection-fixes.html) 
 - **Git Repos**
   - [pve-patch](https://github.com/Distance10086/pve-patch)
+  - [pve-anti-detection](https://github.com/lixiaoliu666/pve-anti-detection)
+  - [proxmox-ve-anti-detection](https://github.com/zhaodice/proxmox-ve-anti-detection)
   - [kvm-hidden](https://gitlab.com/DonnerPartyOf1/kvm-hidden)
   - [KVM-Spoofing](https://github.com/A1exxander/KVM-Spoofing)
   - [linux-5.15-hardened-kvm-svm-qemu-win10](https://alt.deliktas.de/git/adeliktas/linux-5.15-hardened-kvm-svm-qemu-win10)
