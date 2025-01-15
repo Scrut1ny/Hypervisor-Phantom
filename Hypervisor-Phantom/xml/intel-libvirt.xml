@@ -33,12 +33,11 @@
       <!-- <vendor_id state="off" value=""/> -->
     </hyperv>
     <kvm>
-      <hidden state="on"/>
+      <hidden state="on"/> <!-- Hide the KVM hypervisor from standard MSR based discovery -->
     </kvm>
     <smm state="on"/>
     <pmu state="off"/>
     <ioapic driver="kvm"/>
-    <msrs unknown="fault"/>
     <!-- ... -->
   </features>
 
