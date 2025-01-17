@@ -107,6 +107,32 @@ if ($Hypervisor -eq "vbox") {
     }
 }
 elseif ($Hypervisor -eq "vmware") {
+
+	# Phoenix BIOS Editor
+ 	# https://theretroweb.com/drivers/208
+ 	
+  	# hypervisor.cpuid.v0 = "FALSE"
+	# board-id.reflectHost = "TRUE"
+	# hw.model.reflectHost = "TRUE"
+	# serialNumber.reflectHost = "TRUE"
+	# smbios.reflectHost = "TRUE"
+	# SMBIOS.noOEMStrings = "TRUE"
+	# isolation.tools.getPtrLocation.disable = "TRUE"
+	# isolation.tools.setPtrLocation.disable = "TRUE"
+	# isolation.tools.setVersion.disable = "TRUE"
+	# isolation.tools.getVersion.disable = "TRUE"
+	# monitor_control.disable_directexec = "TRUE"
+	# monitor_control.disable_chksimd = "TRUE"
+	# monitor_control.disable_ntreloc = "TRUE"
+	# monitor_control.disable_selfmod = "TRUE"
+	# monitor_control.disable_reloc = "TRUE"
+	# monitor_control.disable_btinout = "TRUE"
+	# monitor_control.disable_btmemspace = "TRUE"
+	# monitor_control.disable_btpriv = "TRUE"
+	# monitor_control.disable_btseg = "TRUE"
+	# monitor_control.restrict_backdoor = "TRUE"
+
+
 	# vmware-kvm.exe [OPTIONS] vmx-file.vmx
 	# acpi.passthru.slic = "TRUE"
 	# acpi.passthru.slicvendor = "TRUE"
