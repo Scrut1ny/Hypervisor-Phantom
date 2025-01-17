@@ -17,9 +17,10 @@ readonly EDK2_VERSION="edk2-stable202411"
 readonly EDK2_DIR="$EDK2_VERSION"
 readonly PATCH_DIR="../../patches/EDK2"
 readonly OVMF_PATCH="${CPU_VENDOR}-${EDK2_VERSION}.patch"
-readonly DEST_DIR="/usr/local/share/edk2/x64"
-readonly CODE_DEST="${DEST_DIR}/OVMF_CODE.${EDK2_VERSION}.secboot.fd"
-readonly VAR_DEST="${DEST_DIR}/OVMF_VARS.${EDK2_VERSION}.fd"
+readonly DEST_DIR="/usr/share/edk2/x64/"
+readonly CODE_DEST_SECBOOT="${DEST_DIR}/OVMF_CODE.secboot.4m.fd"
+readonly CODE_DEST="${DEST_DIR}/OVMF_CODE.4m.fd"
+readonly VAR_DEST="${DEST_DIR}/OVMF_VARS.4m.fd"
 
 install_req_pkgs() {
   fmtr::log "Checking for missing packages"
@@ -38,7 +39,7 @@ install_req_pkgs() {
       CHECK_CMD="dpkg -l"
       ;;
     Fedora)
-      REQUIRED_PKGS=("gcc" "gcc-c++" "make" "acpica-tools" "git" "nasm" "python3" "libuuid-devel")
+      REQUIRED_PKGS=("gcc" "gcc-c++" "make" "acpica-tools" "git" "nasm" "python3")
       PKG_MANAGER="dnf"
       INSTALL_CMD="sudo dnf -y install"
       CHECK_CMD="rpm -q"
@@ -49,17 +50,13 @@ install_req_pkgs() {
       ;;
   esac
 
-  # List to store missing packages
   MISSING_PKGS=()
-
-  # Check each required package
   for PKG in "${REQUIRED_PKGS[@]}"; do
     if ! $CHECK_CMD $PKG &>/dev/null; then
       MISSING_PKGS+=("$PKG")
     fi
   done
 
-  # If no packages are missing, notify the user
   if [ ${#MISSING_PKGS[@]} -eq 0 ]; then
     fmtr::log "All required packages for EKD2 are already installed."
     return 0
@@ -67,7 +64,6 @@ install_req_pkgs() {
 
   fmtr::warn "The required packages are missing: ${MISSING_PKGS[@]}"
   if prmt::yes_or_no "$(fmtr::ask 'Install the missing packages for EDK2?')"; then
-    # Install missing packages
     $INSTALL_CMD "${MISSING_PKGS[@]}" &>> "$LOG_FILE"
     if [ $? -eq 0 ]; then
       fmtr::log "Successfully installed missing packages: ${MISSING_PKGS[@]}"
@@ -125,7 +121,7 @@ compile_ovmf() {
 
   make -C BaseTools &>> "$LOG_FILE"; source edksetup.sh &>> "$LOG_FILE"
 
-  fmtr::log "Compiling OVMF"
+  fmtr::log "Compiling OVMF with secure boot"
   build \
     --platform='OvmfPkg/OvmfPkgX64.dsc' \
     --arch='X64' \
@@ -137,10 +133,23 @@ compile_ovmf() {
     &>> "$LOG_FILE"
 
   sudo mkdir -p "$DEST_DIR"
-  sudo cp "Build/OvmfX64/RELEASE_GCC5/FV/OVMF_CODE.fd" "$CODE_DEST"
+  sudo cp "Build/OvmfX64/RELEASE_GCC5/FV/OVMF_CODE.fd" "$CODE_DEST_SECBOOT"
   sudo cp "Build/OvmfX64/RELEASE_GCC5/FV/OVMF_VARS.fd" "$VAR_DEST"
-  sudo chown '0:0' "$CODE_DEST" "$VAR_DEST"
-  sudo chmod '755' "$CODE_DEST" "$VAR_DEST"
+
+  fmtr::log "Compiling OVMF without secure boot"
+  build \
+    --platform='OvmfPkg/OvmfPkgX64.dsc' \
+    --arch='X64' \
+    --buildtarget='RELEASE' \
+    --tagname='GCC5' \
+    -n0 \
+    -sq \
+    &>> "$LOG_FILE"
+
+  sudo cp "Build/OvmfX64/RELEASE_GCC5/FV/OVMF_CODE.fd" "$CODE_DEST"
+
+  sudo chown '0:0' "$CODE_DEST_SECBOOT" "$CODE_DEST" "$VAR_DEST"
+  sudo chmod '755' "$CODE_DEST_SECBOOT" "$CODE_DEST" "$VAR_DEST"
 }
 
 cleanup() {
