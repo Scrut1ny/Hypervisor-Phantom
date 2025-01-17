@@ -7,8 +7,8 @@
   <!-- ... -->
   <os>
     <!-- ... -->
-    <loader readonly="yes" secure="yes" type="pflash">/usr/local/share/edk2/x64/OVMF_CODE.edk2-stable202411.secboot.fd</loader>
-    <nvram template="/usr/local/share/edk2/x64/OVMF_VARS.edk2-stable202411.fd"/>
+    <loader readonly="yes" secure="yes" type="pflash">/usr/share/edk2/x64/OVMF_CODE.4m.fd</loader>
+    <nvram template="/usr/share/edk2/x64/OVMF_VARS.4m.fd"/>
     <smbios mode="host"/> <!-- Passes through host smbios for mobo. ADJUST SERIALS IN <qemu:commandline>! -->
   </os>
 
