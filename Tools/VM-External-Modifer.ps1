@@ -135,6 +135,7 @@ elseif ($Hypervisor -eq "vmware") {
 	# scsi0:0.productID = "Samsung SSD 980 500GB"
 	# scsi0:0.vendorID = "Samsung"
 
+	# ethernet0.address = "24:C3:43:A6:BF:8E"
 
 	# vmware-kvm.exe [OPTIONS] vmx-file.vmx
 	# acpi.passthru.slic = "TRUE"
