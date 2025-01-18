@@ -4,8 +4,8 @@
 
 
 if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
-    Start-Process powershell -ArgumentList "-NoProfile -ExecutionPolicy Bypass -Command `"cd '$($PWD.Path)' ; & '$($myInvocation.InvocationName)'`"" -Verb RunAs
-    Exit
+	Start-Process powershell -ArgumentList "-NoProfile -ExecutionPolicy Bypass -Command `"cd '$($PWD.Path)' ; & '$($myInvocation.InvocationName)'`"" -Verb RunAs
+	Exit
 }
 
 
@@ -14,23 +14,23 @@ if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
 # ==================================================
 
 
+$CPUID_String = (Get-CimInstance -ClassName Win32_Processor).Manufacturer
 $Hypervisor = Read-Host "`n  # Enter a hypervisor 'vmware' or 'vbox'"
-$CPUID_String = Read-Host "`n  # Enter a CPUID string 'GenuineIntel' or 'AuthenticAMD'"
 
 if ($Hypervisor -eq "vbox") {
-    $VBoxManager = "$env:ProgramFiles\Oracle\VirtualBox\VBoxManage.exe"
-    Write-Host "`n  # Available VMs:`n"
-    & $VBoxManager list vms
+	$VBoxManager = "$env:ProgramFiles\Oracle\VirtualBox\VBoxManage.exe"
+    	Write-Host "`n  # Available VMs:`n"
+    	& $VBoxManager list vms
 
-    $VM = Read-Host "`n  # Enter VM Name"
-	$VDI = "$env:USERPROFILE\VirtualBox VMs\$VM\$VM.vdi"
+    	$VM = Read-Host "`n  # Enter VM Name"
+    	$VDI = "$env:USERPROFILE\VirtualBox VMs\$VM\$VM.vdi"
 
-    if (-not (Test-Path $VBoxManager)) {
-        Write-Host "  # VirtualBox is not installed." -ForegroundColor Red
-        exit 1
-    }
+    	if (-not (Test-Path $VBoxManager)) {
+        	Write-Host "  # VirtualBox is not installed." -ForegroundColor Red
+        	exit 1
+    	}
 
-    try {
+    	try {
 		# ===== Misc. =====
 		& $VBoxManager modifyvm $VM --clipboard-mode "bidirectional" --drag-and-drop "bidirectional"
 		& $VBoxManager modifyvm $VM --mouse "ps2" --keyboard "ps2"
@@ -100,11 +100,11 @@ if ($Hypervisor -eq "vbox") {
 		& $VBoxManager setextradata $VM "VBoxInternal/Devices/ahci/0/Config/Port1/ATAPIVendorId" "Slimtype"
 
 		# & $VBoxManager startvm $VM
-        Write-Host "`n  # Success" -ForegroundColor Green
-    }
-    catch {
-        Write-Host "`n  # An error occurred: $_" -ForegroundColor Red
-    }
+        	Write-Host "`n  # Success" -ForegroundColor Green
+    	}
+    	catch {
+        	Write-Host "`n  # An error occurred: $_" -ForegroundColor Red
+    	}
 }
 elseif ($Hypervisor -eq "vmware") {
 
@@ -139,7 +139,7 @@ elseif ($Hypervisor -eq "vmware") {
 	
 }
 else {
-    Write-Host "`n  # Invalid hypervisor selected. Please choose 'vmware' or 'vbox'." -ForegroundColor Red
+	Write-Host "`n  # Invalid hypervisor selected. Please choose 'vmware' or 'vbox'." -ForegroundColor Red
 }
 
 
