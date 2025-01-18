@@ -132,6 +132,9 @@ elseif ($Hypervisor -eq "vmware") {
 	# monitor_control.disable_btseg = "TRUE"
 	# monitor_control.restrict_backdoor = "TRUE"
 
+	# scsi0:0.productID = "Samsung SSD 980 500GB"
+	# scsi0:0.vendorID = "Samsung"
+
 
 	# vmware-kvm.exe [OPTIONS] vmx-file.vmx
 	# acpi.passthru.slic = "TRUE"
