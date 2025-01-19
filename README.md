@@ -355,6 +355,8 @@ XXXX-XX-XX XX:XX:XX.XXX-XXXX [BROWSER LOCK] [INFO] Number of display devices con
 - RDP (Remote Desktop Protocal)
     - [Ammyy Admin](https://www.ammyy.com/)
     - [MeshCentral](https://github.com/Ylianst/MeshCentral)
+- Monitor Asset Manager
+    - [Monitor Asset Manager](https://www.entechtaiwan.com/util/moninfo.shtm)
 
 </details>
 
