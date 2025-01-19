@@ -137,11 +137,28 @@ spoof_serial_numbers() {
     echo "${file_log}${value_log}" | tee -a "$LOG_FILE"
   }
 
-  readarray -t files < <(find "$(pwd)/hw/usb" -type f -exec grep -lE '\[(STR|STRING)_SERIALNUMBER\]' {} +)
+  # Define the patterns to look for
+  local patterns=("STRING_SERIALNUMBER" "STR_SERIALNUMBER" "STR_SERIAL_MOUSE" "STR_SERIAL_TABLET" "STR_SERIAL_KEYBOARD" "STR_SERIAL_COMPAT")
+
+  # Create a regex pattern by joining the patterns with |
+  local regex_pattern=$(IFS="|"; echo "${patterns[*]}")
+
+  # Find and process files containing the specified patterns
+  readarray -t files < <(find "$(pwd)/hw/usb" -type f -exec grep -lE "\[(${regex_pattern})\]" {} +)
+
   for file in "${files[@]}"; do
-    local new_serial="$(get_random_serial 10)"
-    sed -i -E "s/(\[(STR|STRING)_SERIALNUMBER\] *= *\")[^\"]*/\1${new_serial}/" "$file"
-    print_modified "$file" "$new_serial"
+    local new_content=()
+    while IFS= read -r line; do
+      if [[ $line =~ \[(${regex_pattern})\] ]]; then
+        local new_serial="$(get_random_serial 10)"
+        line=$(echo "$line" | sed -E "s/(\[(${regex_pattern})\] *= *\")[^\"]*/\1${new_serial}/")
+        print_modified "$file" "$new_serial"
+      fi
+      new_content+=("$line")
+    done < "$file"
+
+    # Write the modified content back to the file
+    printf "%s\n" "${new_content[@]}" > "$file"
   done
 }
 
