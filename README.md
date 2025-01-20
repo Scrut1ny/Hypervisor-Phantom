@@ -67,7 +67,7 @@ sudo chmod +x *.sh
 
 - **Official**
   - [QEMU’s documentation](https://qemu.readthedocs.io/en/master/)
-    - [Man Page (command args)](https://qemu.readthedocs.io/en/v9.1.0/system/qemu-manpage.html)
+    - [Man Page (command args)](https://qemu.readthedocs.io/en/master/system/qemu-manpage.html)
     - [Hyper-V Enlightenments](https://www.qemu.org/docs/master/system/i386/hyperv.html)
   - [KVM for x86 systems (Linux Kernel)](https://www.kernel.org/doc/html/next/virt/kvm/x86/index.html)
   - [Domain XML format](https://libvirt.org/formatdomain.html)
