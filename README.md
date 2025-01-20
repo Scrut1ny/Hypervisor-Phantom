@@ -66,20 +66,21 @@ sudo chmod +x *.sh
 <summary>Expand for details...</summary>
 
 - **Official**
-  - [QEMU v9.1.0](https://qemu.readthedocs.io/en/v9.1.0/)
+  - [QEMU’s documentation](https://qemu.readthedocs.io/en/master/)
     - [Man Page (command args)](https://qemu.readthedocs.io/en/v9.1.0/system/qemu-manpage.html)
     - [Hyper-V Enlightenments](https://www.qemu.org/docs/master/system/i386/hyperv.html)
   - [KVM for x86 systems (Linux Kernel)](https://www.kernel.org/doc/html/next/virt/kvm/x86/index.html)
   - [Domain XML format](https://libvirt.org/formatdomain.html)
   - [ACPI System Management Bus Interface Specification](https://uefi.org/specs/ACPI/6.5/13_System_Mgmt_Bus_Interface_Specification.html)
   - [System Management BIOS (SMBIOS) Reference Specification](https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_3.2.0.pdf)
+  - [PCILookup](https://www.pcilookup.com/)
 - **General**
   - [https://evasions.checkpoint.com/](https://evasions.checkpoint.com/)
   - [https://r0ttenbeef.github.io/](https://r0ttenbeef.github.io/Deploy-Hidden-Virtual-Machine-For-VMProtections-Evasion-And-Dynamic-Analysis/)
   - [https://secret.club/](https://secret.club/)
     - [how-anti-cheats-detect-system-emulation.html](https://secret.club/2020/04/13/how-anti-cheats-detect-system-emulation.html)
     - [battleye-hypervisor-detection.html](https://secret.club/2020/01/12/battleye-hypervisor-detection.html)
-- **Reddit Posts**
+- **Reddit**
   - [spoof_and_make_your_vm_undetectable_no_more](https://www.reddit.com/r/VFIO/comments/i071qx/spoof_and_make_your_vm_undetectable_no_more/)
   - [be_is_banning_kvm_on_r6](https://www.reddit.com/r/VFIO/comments/hts1o1/be_is_banning_kvm_on_r6/)
 - **Unknowncheats**
