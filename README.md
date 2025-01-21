@@ -102,6 +102,7 @@ sudo chmod +x *.sh
   - [https://github.com/nsmfoo/antivmdetection](https://github.com/nsmfoo/antivmdetection)
 - **VMware**
   - [https://sanbarrow.com/vmx.html](https://sanbarrow.com/vmx.html)
+  - [https://sammwy.com/blog/hide-vm-from-detection](https://sammwy.com/blog/hide-vm-from-detection)
   - [https://www.hexacorn.com/blog/2014/08/25/protecting-vmware-from-cpuid-hypervisor-detection/](https://www.hexacorn.com/blog/2014/08/25/protecting-vmware-from-cpuid-hypervisor-detection/)
   - [https://rayanfam.com/topics/defeating-malware-anti-vm-techniques-cpuid-based-instructions/](https://rayanfam.com/topics/defeating-malware-anti-vm-techniques-cpuid-based-instructions/)
   - [https://tulach.cc/bypassing-vmprotect-themida-vm-checks-in-vmware/](https://tulach.cc/bypassing-vmprotect-themida-vm-checks-in-vmware/)
