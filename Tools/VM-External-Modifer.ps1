@@ -125,6 +125,13 @@ elseif ($Hypervisor -eq "vmware") {
 
         # Entries to add to the .vmx file
         $entries = @"
+cpuid.disable_apicExtRegs = "TRUE"               # Disable extended registers to hide APIC information
+
+# Mask the CPU identification (modify these values as needed)
+cpuid.1.eax = "0---:----:----:----:----:----:----:----"
+cpuid.1.ecx = "0---:----:----:----:----:----:----:----"
+cpuid.1.edx = "0---:----:----:----:----:----:----:----"
+
 hypervisor.cpuid.v0 = "FALSE"                    # Disable the hypervisor signature in CPUID
 board-id.reflectHost = "TRUE"                    # Reflect the host board ID to the guest
 hw.model.reflectHost = "TRUE"                    # Reflect the host hardware model to the guest
@@ -139,6 +146,7 @@ isolation.tools.getVersion.disable = "TRUE"      # Disable the ability to get th
 
 monitor_control.virtual_rdtsc = "false"          # Disable the use of the virtual timestamp counter (RDTSC) instruction
 monitor_control.restrict_backdoor = "true"       # Restrict the usage of the VMware backdoor I/O port
+monitor_control.enable_fullcpuid="TRUE"          # Provide full CPUID information
 monitor_control.disable_directexec = "true"      # Disable direct execution of guest code
 monitor_control.disable_chksimd = "true"         # Disable checks for SIMD (Single Instruction, Multiple Data) instructions
 monitor_control.disable_ntreloc = "true"         # Disable relocation of non-transactional code
