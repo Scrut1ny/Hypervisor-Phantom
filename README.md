@@ -168,7 +168,7 @@ sudo chmod +x *.sh
 | Engine | Used By | Bypassed |
 |--------|---------|----------|
 | Anti-Cheat Expert (ACE) | Primarily Mobile Games | ✅ |
-| BattlEye (BE) | Desktop Games | ✅ (w/Kernal Patch for `R6`) |
+| BattlEye (BE) | Desktop Games | ✅ (w/Kernal Patch for `R6, Destiny 2, Marvel Rivals...`) |
 | Easy Anti-Cheat (EAC) | Desktop Games | ✅ |
 | Gepard Shield | PUBG: Battlegrounds | ✅ |
 | Hyperion | Roblox | ✅ |
