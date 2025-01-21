@@ -245,12 +245,18 @@ spoof_drive_serial_number() {
 
 spoof_acpi_table_strings() {
   local pairs=(
-    'DELL  ' 'Dell Inc' 'ALASKA' 'A M I '
-    'INTEL ' 'U Rvp   ' ' ASUS ' 'Notebook'
+    'DELL  ' 'Dell Inc' ' ASUS ' 'Notebook'
     'MSI NB' 'MEGABOOK' 'LENOVO' 'TC-O5Z  '
     'LENOVO' 'CB-01   ' 'SECCSD' 'LH43STAR'
     'LGE   ' 'ICL     '
   )
+
+  if [[ "$CPU_VENDOR" == "amd" ]]; then
+    pairs+=('ALASKA' 'A M I ')
+  elif [[ "$CPU_VENDOR" == "intel" ]]; then
+    pairs+=('INTEL ' 'U Rvp   ')
+  fi
+
   local total_pairs=$(( ${#pairs[@]} / 2 ))
   local random_index=$(( RANDOM % total_pairs * 2 ))
 
