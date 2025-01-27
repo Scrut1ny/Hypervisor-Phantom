@@ -84,13 +84,6 @@ print_system_info() {
   echo -e "\n  ────────────────────────────────\n"
 }
 
-check_internet_connection() {
-  if ! ping -c 1 8.8.8.8 &> /dev/null; then
-    fmtr::error "No internet connection."
-    exit 1
-  fi
-}
-
 main_menu() {
   local options=(
     "Exit"
@@ -106,7 +99,6 @@ main_menu() {
   while true; do
     clear
     fmtr::box_text "Hypervisor Phantom" && print_system_info
-    check_internet_connection
 
     for (( i=1; i < ${#options[@]}; i++ )); do
       fmtr::format_text '  ' "[${i}]" " ${options[${i}]}" "$TEXT_BRIGHT_YELLOW"
