@@ -15,28 +15,31 @@ readonly SRC_DIR="src"
 readonly QEMU_VERSION="9.2.0"
 readonly QEMU_DIR="qemu-${QEMU_VERSION}"
 readonly QEMU_ARCHIVE="${QEMU_DIR}.tar.xz"
+readonly QEMU_SIG="${QEMU_ARCHIVE}.sig"
 readonly QEMU_URL="https://download.qemu.org/${QEMU_ARCHIVE}"
+readonly QEMU_SIG_URL="${QEMU_URL}.sig"
 readonly PATCH_DIR="../../patches/QEMU"
 readonly QEMU_PATCH="${CPU_VENDOR}-${QEMU_DIR}.patch"
+readonly GPG_KEY="CEACC9E15534EBABB82D3FA03353C9CEF108B584"
 
 install_req_pkgs() {
   fmtr::log "Checking for missing packages"
 
   case "$DISTRO" in
     Arch)
-      REQUIRED_PKGS=("base-devel" "dmidecode" "glib2" "libusb" "ninja" "python-packaging" "python-sphinx" "python-sphinx_rtd_theme")
+      REQUIRED_PKGS=("base-devel" "dmidecode" "glib2" "libusb" "ninja" "python-packaging" "python-sphinx" "python-sphinx_rtd_theme" "gnupg")
       PKG_MANAGER="pacman"
       INSTALL_CMD="sudo pacman -S --noconfirm"
       CHECK_CMD="pacman -Q"
       ;;
     Debian)
-      REQUIRED_PKGS=("build-essential" "libfdt-dev" "libglib2.0-dev" "libpixman-1-dev" "libusb-1.0-0-dev" "ninja-build" "python3-venv" "zlib1g-dev")
+      REQUIRED_PKGS=("build-essential" "libfdt-dev" "libglib2.0-dev" "libpixman-1-dev" "libusb-1.0-0-dev" "ninja-build" "python3-venv" "zlib1g-dev" "gnupg")
       PKG_MANAGER="apt"
       INSTALL_CMD="sudo apt -y install"
       CHECK_CMD="dpkg -l"
       ;;
     Fedora)
-      REQUIRED_PKGS=("bzip2" "glib2-devel" "libfdt-devel" "libusb1-devel" "ninja-build" "pixman-devel" "python3" "zlib-devel")
+      REQUIRED_PKGS=("bzip2" "glib2-devel" "libfdt-devel" "libusb1-devel" "ninja-build" "pixman-devel" "python3" "zlib-devel" "gnupg2")
       PKG_MANAGER="dnf"
       INSTALL_CMD="sudo dnf -yq install"
       CHECK_CMD="rpm -q"
@@ -91,8 +94,21 @@ acquire_qemu_source() {
     fmtr::info "Old directory deleted. Re-downloading..."
   fi
 
-  fmtr::info "Downloading QEMU source archive..."
+  fmtr::info "Downloading QEMU source archive and signature..."
   curl -sSO "$QEMU_URL" || { fmtr::fatal "Failed to download QEMU source archive."; exit 1; }
+  curl -sSO "$QEMU_SIG_URL" || { fmtr::fatal "Failed to download QEMU signature file."; exit 1; }
+
+  fmtr::log "Verifying source authenticity..."
+  if ! gpg --keyserver keys.openpgp.org --recv-keys "$GPG_KEY" &>> "$LOG_FILE"; then
+    fmtr::fatal "Failed to import QEMU signing key"
+    exit 1
+  fi
+
+  if ! gpg --verify "$QEMU_SIG" "$QEMU_ARCHIVE" &>> "$LOG_FILE"; then
+    fmtr::fatal "Signature verification FAILED! Archive may be compromised."
+    exit 1
+  fi
+  fmtr::log "Signature verification successful"
 
   fmtr::info "Extracting QEMU source archive..."
   tar xJf "$QEMU_ARCHIVE" || { fmtr::fatal "Failed to extract QEMU archive."; exit 1; }
@@ -296,7 +312,7 @@ compile_qemu() {
 
 cleanup() {
   fmtr::log "Cleaning up"
-  cd .. && sudo rm -rf "$QEMU_ARCHIVE" "$QEMU_DIR"
+  cd .. && sudo rm -rf "$QEMU_ARCHIVE" "$QEMU_DIR" "$QEMU_SIG"
   cd .. && sudo rmdir --ignore-fail-on-non-empty "$SRC_DIR"
 }
 
