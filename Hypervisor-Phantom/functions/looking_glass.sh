@@ -4,86 +4,34 @@
 
 source "./utils/formatter.sh"
 source "./utils/prompter.sh"
+source "./utils/packages.sh"
 
 readonly SRC_DIR="src"
 readonly LG_URL="https://looking-glass.io/artifact/stable/source"
 readonly LG_ARCHIVE="looking-glass-B6.tar.gz"
 
-install_req_pkgs() {
-  fmtr::log "Checking for missing packages"
+REQUIRED_PKGS_Arch=(
+  cmake gcc libegl libgl fontconfig spice-protocol
+  pkgconf binutils libxi libxinerama libxss libxcursor libxpresent make
+  libxkbcommon wayland-protocols ttf-dejavu libsamplerate nettle
+  linux-headers dkms
+)
 
-  case "$DISTRO" in
-    Arch)
-      REQUIRED_PKGS=("cmake" "gcc" "libegl" "libgl" "fontconfig" "spice-protocol" \
-        "pkgconf" "binutils" "libxi" "libxinerama" "libxss" "libxcursor" "libxpresent" "make" \
-        "libxkbcommon" "wayland-protocols" "ttf-dejavu" "libsamplerate" "nettle" \
-        "linux-headers" "dkms"
-      )
-      PKG_MANAGER="pacman"
-      INSTALL_CMD="sudo pacman -S --noconfirm"
-      CHECK_CMD="pacman -Q"
-      ;;
-    Debian)
-      REQUIRED_PKGS=("binutils-dev" "cmake" "fonts-dejavu-core" "libfontconfig-dev" \
-        "gcc" "g++" "pkg-config" "libegl-dev" "libgl-dev" "libgles-dev" "libspice-protocol-dev" \
-        "nettle-dev" "libx11-dev" "libxcursor-dev" "libxi-dev" "libxinerama-dev" \
-        "libxpresent-dev" "libxss-dev" "libxkbcommon-dev" "libwayland-dev" "wayland-protocols" \
-        "libpipewire-0.3-dev" "libpulse-dev" "libsamplerate0-dev"
-      )
-      PKG_MANAGER="apt"
-      INSTALL_CMD="sudo apt -y install"
-      CHECK_CMD="dpkg -l"
-      ;;
-    Fedora)
-      REQUIRED_PKGS=("cmake" "gcc" "gcc-c++" "libglvnd-devel" "fontconfig-devel" \
-        "spice-protocol" "make" "nettle-devel" "pkgconf-pkg-config" "binutils-devel" \
-        "libXi-devel" "libXinerama-devel" "libXcursor-devel" "libXpresent-devel" \
-        "libxkbcommon-x11-devel" "wayland-devel" "wayland-protocols-devel" \
-        "libXScrnSaver-devel" "libXrandr-devel" "dejavu-sans-mono-fonts" \
-        "libdecor-devel" "pipewire-devel" "libsamplerate-devel" \
-        "pulseaudio-libs-devel" "dkms" "kernel-devel" "kernel-headers"
-      )
-      PKG_MANAGER="dnf"
-      INSTALL_CMD="sudo dnf -y install"
-      CHECK_CMD="rpm -q"
-      ;;
-    *)
-      fmtr::error "Distribution not recognized or not supported by this script."
-      exit 1
-      ;;
-  esac
+REQUIRED_PKGS_Debian=(
+  binutils-dev cmake fonts-dejavu-core libfontconfig-dev
+  gcc g++ pkg-config libegl-dev libgl-dev libgles-dev libspice-protocol-dev
+  nettle-dev libx11-dev libxcursor-dev libxi-dev libxinerama-dev
+  libxpresent-dev libxss-dev libxkbcommon-dev libwayland-dev wayland-protocols
+  libpipewire-0.3-dev libpulse-dev libsamplerate0-dev
+)
 
-  # List to store missing packages
-  MISSING_PKGS=()
-
-  # Check each required package
-  for PKG in "${REQUIRED_PKGS[@]}"; do
-    if ! $CHECK_CMD $PKG &>/dev/null; then
-      MISSING_PKGS+=("$PKG")
-    fi
-  done
-
-  # If no packages are missing, notify the user
-  if [ ${#MISSING_PKGS[@]} -eq 0 ]; then
-    fmtr::log "All required packages for LG are already installed."
-    return 0
-  fi
-
-  fmtr::warn "The required packages are missing: ${MISSING_PKGS[@]}"
-  if prmt::yes_or_no "$(fmtr::ask 'Install the missing packages for LG?')"; then
-    # Install missing packages
-    $INSTALL_CMD "${MISSING_PKGS[@]}" &>> "$LOG_FILE"
-    if [ $? -eq 0 ]; then
-      fmtr::log "Successfully installed missing packages: ${MISSING_PKGS[@]}"
-    else
-      fmtr::error "Failed to install some packages. Check the log for details."
-      exit 1
-    fi
-  else
-    fmtr::error "The missing packages are required to continue; Exiting."
-    exit 1
-  fi
-}
+REQUIRED_PKGS_Fedora=(
+  cmake gcc gcc-c++ libglvnd-devel fontconfig-devel spice-protocol make nettle-devel
+  pkgconf-pkg-config binutils-devel libXi-devel libXinerama-devel libXcursor-devel
+  libXpresent-devel libxkbcommon-x11-devel wayland-devel wayland-protocols-devel
+  libXScrnSaver-devel libXrandr-devel dejavu-sans-mono-fonts libdecor-devel
+  pipewire-devel libsamplerate-devel pulseaudio-libs-devel dkms kernel-devel kernel-headers
+)
 
 install_looking_glass() {
   mkdir -p "$SRC_DIR" && cd "$SRC_DIR"
@@ -141,7 +89,7 @@ EOF
 }
 
 main() {
-  install_req_pkgs
+  install_req_pkgs "Looking Glass"
   install_looking_glass
   configure_looking_glass
 }

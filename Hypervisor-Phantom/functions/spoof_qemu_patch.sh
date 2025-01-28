@@ -4,6 +4,7 @@
 
 source "./utils/formatter.sh"
 source "./utils/prompter.sh"
+source "./utils/packages.sh"
 
 declare -r CPU_VENDOR=$(case "$VENDOR_ID" in
   *AuthenticAMD*) echo "amd" ;;
@@ -22,65 +23,18 @@ readonly PATCH_DIR="../../patches/QEMU"
 readonly QEMU_PATCH="${CPU_VENDOR}-${QEMU_DIR}.patch"
 readonly GPG_KEY="CEACC9E15534EBABB82D3FA03353C9CEF108B584"
 
-install_req_pkgs() {
-  fmtr::log "Checking for missing packages"
-
-  case "$DISTRO" in
-    Arch)
-      REQUIRED_PKGS=("base-devel" "dmidecode" "glib2" "libusb" "ninja" "python-packaging" "python-sphinx" "python-sphinx_rtd_theme" "gnupg")
-      PKG_MANAGER="pacman"
-      INSTALL_CMD="sudo pacman -S --noconfirm"
-      CHECK_CMD="pacman -Q"
-      ;;
-    Debian)
-      REQUIRED_PKGS=("build-essential" "libfdt-dev" "libglib2.0-dev" "libpixman-1-dev" "libusb-1.0-0-dev" "ninja-build" "python3-venv" "zlib1g-dev" "gnupg")
-      PKG_MANAGER="apt"
-      INSTALL_CMD="sudo apt -y install"
-      CHECK_CMD="dpkg -l"
-      ;;
-    Fedora)
-      REQUIRED_PKGS=("bzip2" "glib2-devel" "libfdt-devel" "libusb1-devel" "ninja-build" "pixman-devel" "python3" "zlib-devel" "gnupg2")
-      PKG_MANAGER="dnf"
-      INSTALL_CMD="sudo dnf -yq install"
-      CHECK_CMD="rpm -q"
-      ;;
-    *)
-      fmtr::error "Distribution not recognized or not supported by this script."
-      exit 1
-      ;;
-  esac
-
-  # List to store missing packages
-  MISSING_PKGS=()
-
-  # Check each required package
-  for PKG in "${REQUIRED_PKGS[@]}"; do
-    if ! $CHECK_CMD $PKG &>/dev/null; then
-      MISSING_PKGS+=("$PKG")
-    fi
-  done
-
-  # If no packages are missing, notify the user
-  if [ ${#MISSING_PKGS[@]} -eq 0 ]; then
-    fmtr::log "All required packages for QEMU are already installed."
-    return 0
-  fi
-
-  fmtr::warn "The required packages are missing: ${MISSING_PKGS[@]}"
-  if prmt::yes_or_no "$(fmtr::ask 'Install the missing packages for QEMU?')"; then
-    # Install missing packages
-    $INSTALL_CMD "${MISSING_PKGS[@]}" &>> "$LOG_FILE"
-    if [ $? -eq 0 ]; then
-      fmtr::log "Successfully installed missing packages: ${MISSING_PKGS[@]}"
-    else
-      fmtr::error "Failed to install some packages. Check the log for details."
-      exit 1
-    fi
-  else
-    fmtr::log "The missing packages are required to continue; Exiting."
-    exit 1
-  fi
-}
+REQUIRED_PKGS_Arch=(
+  base-devel dmidecode glib2 libusb ninja
+  python-packaging python-sphinx python-sphinx_rtd_theme gnupg
+)
+REQUIRED_PKGS_Debian=(
+  build-essential libfdt-dev libglib2.0-dev libpixman-1-dev
+  libusb-1.0-0-dev ninja-build python3-venv zlib1g-dev gnupg
+)
+REQUIRED_PKGS_Fedora=(
+  bzip2 glib2-devel libfdt-devel libusb1-devel
+  ninja-build pixman-devel python3 zlib-devel gnupg2
+)
 
 acquire_qemu_source() {
   mkdir -p "$SRC_DIR" && cd "$SRC_DIR"
@@ -317,7 +271,7 @@ cleanup() {
 }
 
 main() {
-  install_req_pkgs
+  install_req_pkgs "QEMU"
   acquire_qemu_source
   patch_qemu
   prmt::yes_or_no "$(fmtr::ask 'Build & install QEMU to /usr/local/bin')" && compile_qemu

@@ -4,6 +4,7 @@
 
 source "./utils/formatter.sh"
 source "./utils/prompter.sh"
+source "./utils/packages.sh"
 
 declare -r CPU_VENDOR=$(case "$VENDOR_ID" in
   *AuthenticAMD*) echo "amd" ;;
@@ -22,60 +23,17 @@ readonly CODE_DEST_SECBOOT="${DEST_DIR}/OVMF_CODE.secboot.4m.fd"
 readonly CODE_DEST="${DEST_DIR}/OVMF_CODE.4m.fd"
 readonly VAR_DEST="${DEST_DIR}/OVMF_VARS.4m.fd"
 
-install_req_pkgs() {
-  fmtr::log "Checking for missing packages"
+REQUIRED_PKGS_Arch=(
+  base-devel acpica git nasm python
+)
 
-  case "$DISTRO" in
-    Arch)
-      REQUIRED_PKGS=("base-devel" "acpica" "git" "nasm" "python")
-      PKG_MANAGER="pacman"
-      INSTALL_CMD="sudo pacman -S --noconfirm"
-      CHECK_CMD="pacman -Q"
-      ;;
-    Debian)
-      REQUIRED_PKGS=("build-essential" "uuid-dev" "iasl" "git" "nasm" "python-is-python3")
-      PKG_MANAGER="apt"
-      INSTALL_CMD="sudo apt -y install"
-      CHECK_CMD="dpkg -l"
-      ;;
-    Fedora)
-      REQUIRED_PKGS=("gcc" "gcc-c++" "make" "acpica-tools" "git" "nasm" "python3" "libuuid-devel")
-      PKG_MANAGER="dnf"
-      INSTALL_CMD="sudo dnf -y install"
-      CHECK_CMD="rpm -q"
-      ;;
-    *)
-      fmtr::error "Distribution not recognized or not supported by this script."
-      exit 1
-      ;;
-  esac
+REQUIRED_PKGS_Debian=(
+  build-essential uuid-dev iasl git nasm python-is-python3
+)
 
-  MISSING_PKGS=()
-  for PKG in "${REQUIRED_PKGS[@]}"; do
-    if ! $CHECK_CMD $PKG &>/dev/null; then
-      MISSING_PKGS+=("$PKG")
-    fi
-  done
-
-  if [ ${#MISSING_PKGS[@]} -eq 0 ]; then
-    fmtr::log "All required packages for EKD2 are already installed."
-    return 0
-  fi
-
-  fmtr::warn "The required packages are missing: ${MISSING_PKGS[@]}"
-  if prmt::yes_or_no "$(fmtr::ask 'Install the missing packages for EDK2?')"; then
-    $INSTALL_CMD "${MISSING_PKGS[@]}" &>> "$LOG_FILE"
-    if [ $? -eq 0 ]; then
-      fmtr::log "Successfully installed missing packages: ${MISSING_PKGS[@]}"
-    else
-      fmtr::error "Failed to install some packages. Check the log for details."
-      exit 1
-    fi
-  else
-    fmtr::log "The missing packages are required to continue; Exiting."
-    exit 1
-  fi
-}
+REQUIRED_PKGS_Fedora=(
+  gcc gcc-c++ make acpica-tools git nasm python3 libuuid-devel
+)
 
 acquire_edk2_source() {
   mkdir -p "$SRC_DIR" && cd "$SRC_DIR"
@@ -159,7 +117,7 @@ cleanup() {
 }
 
 main() {
-  install_req_pkgs
+  install_req_pkgs "EDK2/OVMF"
   acquire_edk2_source
   patch_ovmf
   prmt::yes_or_no "$(fmtr::ask 'Build and install OVMF now?')" && compile_ovmf

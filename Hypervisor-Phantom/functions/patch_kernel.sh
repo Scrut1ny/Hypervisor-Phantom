@@ -2,9 +2,10 @@
 
 [[ -z "$DISTRO" || -z "$LOG_FILE" ]] && exit 1
 
-source "utils/debugger.sh"
-source "utils/prompter.sh"
-source "utils/formatter.sh"
+source "./utils/debugger.sh"
+source "./utils/prompter.sh"
+source "./utils/formatter.sh"
+source "./utils/packages.sh"
 
 readonly SRC_DIR="src"
 readonly KERNEL_MAJOR="6"
@@ -15,65 +16,17 @@ readonly KERNEL_URL="https://cdn.kernel.org/pub/linux/kernel/v${KERNEL_MAJOR}.x/
 readonly PATCH_DIR="../../patches/Kernel"
 readonly LINUX_PATCH="${KERNEL_DIR}.patch"
 
-install_req_pkgs() {
-  fmtr::log "Checking for missing packages"
+REQUIRED_PKGS_Arch=(
+  base-devel ncurses bison flex openssl elfutils
+)
 
-  case "$DISTRO" in
-    Arch)
-      REQUIRED_PKGS=("base-devel" "ncurses" "bison" "flex" "openssl" "elfutils")
-      PKG_MANAGER="pacman"
-      INSTALL_CMD="sudo pacman -S --noconfirm"
-      CHECK_CMD="pacman -Q"
-      ;;
-    Debian)
-      REQUIRED_PKGS=("build-essential" "libncurses-dev" "bison" "flex" "libssl-dev" "libelf-dev")
-      PKG_MANAGER="apt"
-      INSTALL_CMD="sudo apt -y install"
-      CHECK_CMD="dpkg -l"
-      ;;
-    Fedora)
-      REQUIRED_PKGS=("gcc" "gcc-c++" "make" "ncurses-devel" "bison" "flex" "elfutils-libelf-devel" "openssl-devel")
-      PKG_MANAGER="dnf"
-      INSTALL_CMD="sudo dnf -y install"
-      CHECK_CMD="rpm -q"
-      ;;
-    *)
-      fmtr::error "Distribution not recognized or not supported by this script."
-      exit 1
-      ;;
-  esac
+REQUIRED_PKGS_Debian=(
+  build-essential libncurses-dev bison flex libssl-dev libelf-dev
+)
 
-  # List to store missing packages
-  MISSING_PKGS=()
-
-  # Check each required package
-  for PKG in "${REQUIRED_PKGS[@]}"; do
-    if ! $CHECK_CMD $PKG &>/dev/null; then
-      MISSING_PKGS+=("$PKG")
-    fi
-  done
-
-  # If no packages are missing, notify the user
-  if [ ${#MISSING_PKGS[@]} -eq 0 ]; then
-    fmtr::log "All required packages for the Linux Kernel are already installed."
-    return 0
-  fi
-
-  fmtr::warn "The required packages are missing: ${MISSING_PKGS[@]}"
-  if prmt::yes_or_no "$(fmtr::ask 'Install the missing packages for the Linux Kernel?')"; then
-    # Install missing packages
-    $INSTALL_CMD "${MISSING_PKGS[@]}" &>> "$LOG_FILE"
-    if [ $? -eq 0 ]; then
-      fmtr::log "Successfully installed missing packages: ${MISSING_PKGS[@]}"
-    else
-      fmtr::error "Failed to install some packages. Check the log for details."
-      exit 1
-    fi
-  else
-    fmtr::log "The missing packages are required to continue; Exiting."
-    exit 1
-  fi
-}
+REQUIRED_PKGS_Fedora=(
+  gcc gcc-c++ make ncurses-devel bison flex elfutils-libelf-devel openssl-devel
+)
 
 acquire_linux_source() {
   mkdir -p "$SRC_DIR" && cd "$SRC_DIR"
@@ -135,7 +88,7 @@ update_grub() {
   fmtr::info "GRUB has been updated to boot the patched kernel by default."
 }
 
-install_req_pkgs
+install_req_pkgs "Linux Kernel"
 acquire_linux_source
 patch_kernel
 compile_kernel
