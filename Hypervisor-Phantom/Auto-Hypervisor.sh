@@ -26,13 +26,13 @@ detect_distro() {
 
 get_cpu_info() {
   CPU_COUNT=$(nproc --all 2>/dev/null || echo "Unknown")
-  VENDOR_ID=$(lscpu | grep 'Vendor ID:' | awk '{print $3}' 2>/dev/null | xargs || echo "Unknown")
+  VENDOR_ID=$(LANG=en_US.UTF-8 lscpu | grep 'Vendor ID:' | awk '{print $3}' 2>/dev/null | xargs || echo "Unknown")
   export CPU_COUNT VENDOR_ID
   readonly CPU_COUNT VENDOR_ID
 }
 
 get_virtualization_status() {
-  VIRT_STATUS=$(lscpu | grep 'Virtualization:' | awk '{print $2}' 2>/dev/null | xargs || echo "Unknown")
+  VIRT_STATUS=$(LANG=en_US.UTF-8 lscpu | grep 'Virtualization:' | awk '{print $2}' 2>/dev/null | xargs || echo "Unknown")
   VIRT_STATUS=${VIRT_STATUS:-"Not enabled"}
   export VIRT_STATUS
   readonly VIRT_STATUS
