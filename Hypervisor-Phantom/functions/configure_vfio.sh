@@ -1,15 +1,16 @@
 #!/usr/bin/env bash
 [[ -z "$DISTRO" || -z "$LOG_FILE" ]] && exit 1
 
-VFIO_CONF_PATH='/etc/modprobe.d/vfio.conf'
+source "./utils/formatter.sh"
+source "./utils/prompter.sh"
+
+readonly VFIO_CONF_PATH="/etc/modprobe.d/vfio.conf"
+
 declare -a SDBOOT_CONF_LOCATIONS=(
     "/boot/loader/entries"
     "/boot/efi/loader/entries"
     "/efi/loader/entries"
 )
-
-source "./utils/formatter.sh"
-source "./utils/prompter.sh"
 
 # Device categories with corresponding grep patterns
 declare -A DEVICE_TYPES=(
