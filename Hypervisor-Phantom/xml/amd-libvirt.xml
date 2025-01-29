@@ -1,4 +1,22 @@
-<!-- DO NOT BLINDLY COPY AND PASTE BUT WORK SECTION BY SECTION AND ADJUST TO YOUR HARDWARE -->
+<!--
+  ******************************************************************************
+  *                              IMPORTANT NOTICE                              *
+  ******************************************************************************
+  *                                                                            *
+  *  DO NOT BLINDLY COPY AND PASTE THIS CONFIGURATION.                         *
+  *                                                                            *
+  *  This XML configuration is provided as a template and should be carefully  *
+  *  reviewed and adjusted to match your specific system requirements.         *
+  *                                                                            *
+  *  Always work section by section, ensuring that each parameter is           *
+  *  appropriate for your environment. Blindly copying and pasting may lead    *
+  *  to misconfigurations, security vulnerabilities, or system instability.    *
+  *                                                                            *
+  *  Take the time to understand each setting and modify it as needed.         *
+  *                                                                            *
+  ******************************************************************************
+-->
+
 <domain xmlns:qemu="http://libvirt.org/schemas/domain/qemu/1.0" type="kvm"> <!-- Don't forget XMLNS! -->
   <uuid>5607c162-59e6-4ef4-a454-bd55d24f6465</uuid>
   <!-- ... -->
