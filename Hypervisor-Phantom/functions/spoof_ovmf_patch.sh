@@ -42,12 +42,16 @@ acquire_edk2_source() {
     if [ -d "$EDK2_DIR/.git" ]; then
       fmtr::warn "Directory $EDK2_DIR already exists and is a valid Git repository."
       if ! prmt::yes_or_no "$(fmtr::ask 'Delete and re-clone the EDK2 source?')"; then
-        fmtr::info "Keeping existing directory. Skipping re-clone."; return
+        fmtr::info "Keeping existing directory. Skipping re-clone."
+        cd "$EDK2_DIR" || { fmtr::fatal "Failed to change to EDK2 directory after cloning: $EDK2_DIR"; exit 1; }
+        return
       fi
     else
       fmtr::warn "Directory $EDK2_DIR exists but is not a valid Git repository."
       if ! prmt::yes_or_no "$(fmtr::ask 'Delete and re-clone the EDK2 source?')"; then
-        fmtr::info "Keeping existing directory. Skipping re-clone."; return
+        fmtr::info "Keeping existing directory. Skipping re-clone."
+        cd "$EDK2_DIR" || { fmtr::fatal "Failed to change to EDK2 directory after cloning: $EDK2_DIR"; exit 1; }
+        return
       fi
     fi
     rm -rf "$EDK2_DIR" || { fmtr::fatal "Failed to remove existing directory: $EDK2_DIR"; exit 1; }
