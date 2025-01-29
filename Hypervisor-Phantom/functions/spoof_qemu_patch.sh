@@ -42,7 +42,9 @@ acquire_qemu_source() {
   if [ -d "$QEMU_DIR" ]; then
     fmtr::warn "Directory $QEMU_DIR already exists."
     if ! prmt::yes_or_no "$(fmtr::ask 'Delete and re-download the QEMU source?')"; then
-      fmtr::info "Keeping existing directory. Skipping re-download."; return
+      fmtr::info "Keeping existing directory. Skipping re-download."
+      cd "$QEMU_DIR" || { fmtr::fatal "Failed to change to QEMU directory: $QEMU_DIR"; exit 1; }
+      return
     fi
     sudo rm -rf "$QEMU_DIR" || { fmtr::fatal "Failed to remove existing directory: $QEMU_DIR"; exit 1; }
     fmtr::info "Old directory deleted. Re-downloading..."
