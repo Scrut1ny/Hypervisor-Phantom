@@ -25,14 +25,14 @@
 
 
 
-<!-- Secure Boot Setup
-
-<> https://wiki.archlinux.org/title/KVM#Secure_Boot
-
-Enroll Microsoft and Redhat's secure boot keys command:
-virt-fw-vars --input /var/lib/libvirt/qemu/nvram/{vm-name}_VARS.fd --output /var/lib/libvirt/qemu/nvram/{vm-name}_SECURE_VARS.fd --secure-boot --enroll-redhat
-
--->
+  <!-- Secure Boot Setup
+  
+  <> https://wiki.archlinux.org/title/KVM#Secure_Boot
+  
+  Enroll Microsoft and Redhat's secure boot keys command:
+  virt-fw-vars --input /var/lib/libvirt/qemu/nvram/{vm-name}_VARS.fd --output /var/lib/libvirt/qemu/nvram/{vm-name}_SECURE_VARS.fd --secure-boot --enroll-redhat
+  
+  -->
   <os>
     <loader readonly="yes" secure="yes" type="pflash">/usr/share/edk2/x64/OVMF_CODE.secboot.4m.fd</loader>
     <nvram template="/usr/share/edk2/x64/OVMF_VARS.4m.fd">/var/lib/libvirt/qemu/nvram/{vm-name}_SECURE_VARS.fd</nvram>
@@ -42,11 +42,11 @@ virt-fw-vars --input /var/lib/libvirt/qemu/nvram/{vm-name}_VARS.fd --output /var
 
 
 
-<!-- Non-Secure Boot Setup
-
-
- 
--->
+  <!-- Non-Secure Boot Setup
+  
+  
+   
+  -->
   <os>
     <loader readonly="yes" type="pflash">/usr/share/edk2/x64/OVMF_CODE.4m.fd</loader>
     <nvram template="/usr/share/edk2/x64/OVMF_VARS.4m.fd">/var/lib/libvirt/qemu/nvram/{vm-name}_VARS.fd</nvram>
