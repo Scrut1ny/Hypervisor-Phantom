@@ -172,7 +172,12 @@
       <driver name="qemu" type="raw" cache="none" io="native" discard="unmap"/> <!-- use io="threads" in block mode -->
       <source file="/var/lib/libvirt/images/win10.img"/>
       <target dev="sda" bus="sata"/> <!-- Use SATA to avoid using the VirtIO driver -->
-      <serial>CAC0_25CA_57AB_841F.</serial> <!-- Spoof drive serial # -->
+      <serial>CAC0_25CA_57AB_841F.</serial> <!-- Spoof drive serial # 
+
+     Serial Number Formats by Manufacture:
+     Samsung: "XXXX_XXXX_XXXX_XXXX." - Characters: A-F 0-9
+     
+     -->
       <boot order="1"/>
       <address type="drive" controller="0" bus="0" target="0" unit="0"/>
     </disk>
