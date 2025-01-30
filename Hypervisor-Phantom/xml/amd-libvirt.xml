@@ -28,9 +28,16 @@
   <!-- Secure Boot Setup
   
   <> https://wiki.archlinux.org/title/KVM#Secure_Boot
+  <> https://archlinux.org/packages/extra/any/virt-firmware/
   
   Enroll Microsoft and Redhat's secure boot keys command:
-  virt-fw-vars --input /var/lib/libvirt/qemu/nvram/{vm-name}_VARS.fd --output /var/lib/libvirt/qemu/nvram/{vm-name}_SECURE_VARS.fd --secure-boot --enroll-redhat
+ 
+  sudo pacman -S virt-firmware --noconfirm
+ 
+  virt-fw-vars --input /var/lib/libvirt/qemu/nvram/{vm-name}_VARS.fd \
+               --output /var/lib/libvirt/qemu/nvram/{vm-name}_SECURE_VARS.fd \
+               --secure-boot \
+               --enroll-redhat
   
   -->
   <os>
