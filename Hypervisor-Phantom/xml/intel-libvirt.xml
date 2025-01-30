@@ -19,16 +19,43 @@
 
 <domain xmlns:qemu="http://libvirt.org/schemas/domain/qemu/1.0" type="kvm"> <!-- Don't forget XMLNS! -->
   <uuid>5607c162-59e6-4ef4-a454-bd55d24f6465</uuid>
-  <!-- ... -->
+
   <memory unit="G">16</memory>  <!-- keep RAM amount at realistic values: 64, 32, 16, 12, and 8 GiB are all common -->
   <currentMemory unit="G">16</currentMemory>
-  <!-- ... -->
+
+
+
+  <!-- Secure Boot Setup
+  
+  <> https://wiki.archlinux.org/title/KVM#Secure_Boot
+  
+  Enroll Microsoft and Redhat's secure boot keys command:
+  virt-fw-vars --input /var/lib/libvirt/qemu/nvram/{vm-name}_VARS.fd --output /var/lib/libvirt/qemu/nvram/{vm-name}_SECURE_VARS.fd --secure-boot --enroll-redhat
+  
+  -->
   <os>
-    <!-- ... -->
-    <loader readonly="yes" type="pflash">/usr/share/edk2/x64/OVMF_CODE.4m.fd</loader>
-    <nvram template="/usr/share/edk2/x64/OVMF_VARS.4m.fd"/>
+    <loader readonly="yes" secure="yes" type="pflash">/usr/share/edk2/x64/OVMF_CODE.secboot.4m.fd</loader>
+    <nvram template="/usr/share/edk2/x64/OVMF_VARS.4m.fd">/var/lib/libvirt/qemu/nvram/{vm-name}_SECURE_VARS.fd</nvram>
     <smbios mode="host"/> <!-- Passes through host smbios for mobo. ADJUST SERIALS IN <qemu:commandline>! -->
   </os>
+ 
+
+
+
+  <!-- Non-Secure Boot Setup
+  
+  
+   
+  -->
+  <os>
+    <loader readonly="yes" type="pflash">/usr/share/edk2/x64/OVMF_CODE.4m.fd</loader>
+    <nvram template="/usr/share/edk2/x64/OVMF_VARS.4m.fd">/var/lib/libvirt/qemu/nvram/{vm-name}_VARS.fd</nvram>
+    <smbios mode="host"/> <!-- Passes through host smbios for mobo. ADJUST SERIALS IN <qemu:commandline>! -->
+  </os>
+
+
+
+ 
 
   <features>
     <acpi/>
