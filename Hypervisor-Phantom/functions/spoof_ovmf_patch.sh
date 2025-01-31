@@ -81,6 +81,17 @@ compile_ovmf() {
   export EDK_TOOLS_PATH="${path}/BaseTools"
   export CONF_PATH="${path}/Conf"
 
+  # Common build defines for TPM and network features
+  local common_defines=(
+    "--define=NETWORK_HTTP_BOOT_ENABLE=TRUE"
+    "--define=NETWORK_IP6_ENABLE=TRUE"
+    "--define=TPM_CONFIG_ENABLE=TRUE"
+    "--define=TPM_ENABLE=TRUE"
+    "--define=TPM1_ENABLE=TRUE"
+    "--define=TPM2_ENABLE=TRUE"
+    "--define=NETWORK_TLS_ENABLE=TRUE"
+  )
+
   make -C BaseTools &>> "$LOG_FILE"; source edksetup.sh &>> "$LOG_FILE"
 
   fmtr::log "Compiling OVMF with secure boot"
@@ -88,6 +99,7 @@ compile_ovmf() {
     --platform='OvmfPkg/OvmfPkgX64.dsc' \
     --arch='X64' \
     --define='SECURE_BOOT_ENABLE=TRUE' \
+    "${common_defines[@]}" \
     --buildtarget='RELEASE' \
     --tagname='GCC5' \
     -n0 \
@@ -102,6 +114,7 @@ compile_ovmf() {
   build \
     --platform='OvmfPkg/OvmfPkgX64.dsc' \
     --arch='X64' \
+    "${common_defines[@]}" \
     --buildtarget='RELEASE' \
     --tagname='GCC5' \
     -n0 \
