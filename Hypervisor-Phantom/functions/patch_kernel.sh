@@ -9,7 +9,7 @@ source "./utils/packages.sh"
 
 readonly SRC_DIR="src"
 readonly KERNEL_MAJOR="6"
-readonly KERNEL_VERSION="${KERNEL_MAJOR}.10.6"
+readonly KERNEL_VERSION="${KERNEL_MAJOR}.13"
 readonly KERNEL_DIR="linux-${KERNEL_VERSION}"
 readonly KERNEL_ARCHIVE="${KERNEL_DIR}.tar.xz"
 readonly KERNEL_URL="https://cdn.kernel.org/pub/linux/kernel/v${KERNEL_MAJOR}.x/${KERNEL_ARCHIVE}"
