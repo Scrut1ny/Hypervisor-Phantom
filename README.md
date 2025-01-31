@@ -48,7 +48,7 @@ git clone --single-branch --depth=1 https://github.com/Scrut1ny/Hypervisor-Phant
 cd Hypervisor-Phantom/Hypervisor-Phantom
 
 # 3. Set executable permissions
-chmod -R +x *.sh
+chmod -R +x *
 
 # 4. Run the script
 ./Auto-Hypervisor.sh
