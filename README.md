@@ -174,7 +174,7 @@ chmod -R +x *
 | BattlEye (BE) | Desktop Games | ✅ (w/Kernal Patch for `R6, Destiny 2, etc...`) |
 | Easy Anti-Cheat (EAC) | Desktop Games | ✅ |
 | Gepard Shield | PUBG: Battlegrounds | ✅ |
-| NACE (Netease Anticheat Expert) | Marvel Rivals | ❔ (w/Kernal Patch) |
+| NACE (Netease Anticheat Expert) | Marvel Rivals | ❔ |
 | Hyperion | Roblox | ✅ |
 | Mhyprot | Genshin Impact | ✅ |
 | nProtect GameGuard (NP) | Desktop Games | ✅ |
