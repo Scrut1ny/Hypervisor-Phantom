@@ -86,7 +86,7 @@
       <reset state="off"/>
       <frequencies state="off"/>
       <!-- *** IMPORTANT ***
-      If a RDTSC Kernel patch is not present, ONLY vendor_id
+      If a RDTSC Kernel patch is NOT present, ONLY vendor_id
       enlightenment should be ENABLED (state="on"). Make sure
       to always keep the value="" empty!
      
