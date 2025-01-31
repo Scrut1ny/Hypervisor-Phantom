@@ -68,8 +68,8 @@
     <acpi/>
     <apic/>
     <pae/>
-    <!-- Disable all enlightenments, if Hyper-V method is not used.
-    Enlightenments on "bare-metal" are extremely suspicious -->
+    <!-- Disable all enlightenments if Hyper-V method is NOT used.
+    Enlightenments on "bare-metal" are flagged / extremely suspicious! -->
     <hyperv mode="custom">
       <relaxed state="off"/>
       <vapic state="off"/>
@@ -80,9 +80,14 @@
       <stimer state="off"/>
       <reset state="off"/>
       <frequencies state="off"/>
-      <!-- If KVM patch is not present,
-      only vendor_id should be enabled -->
-      <!-- <vendor_id state="off" value=""/> -->
+      <!-- *** IMPORTANT ***
+      If a RDTSC Kernel patch is not present, ONLY vendor_id
+      enlightenment should be ENABLED (state="on"). Make sure
+      to always keep the value="" empty!
+     
+      <vendor_id state="on" value=""/>   # RDTSC Kernel patch NOT present.
+      <vendor_id state="off" value=""/>  # RDTSC Kernel patch IS present.
+      -->
     </hyperv>
     <kvm>
       <hidden state="on"/> <!-- Hide the KVM hypervisor from standard MSR based discovery -->
