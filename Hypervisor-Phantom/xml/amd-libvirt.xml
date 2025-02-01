@@ -186,6 +186,7 @@
 
       Serial Number Formats by Manufacture:
       Samsung: "XXXX_XXXX_XXXX_XXXX." - Characters: A-F 0-9
+      Sandisk: "XXXX_XXXX_XXXX_XXXX_XXXX_XXXX_XXXX_XXXX." - Characters: A-F 0-9
      
       -->
       <boot order="1"/>
