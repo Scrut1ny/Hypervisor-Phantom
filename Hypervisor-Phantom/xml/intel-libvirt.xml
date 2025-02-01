@@ -189,7 +189,7 @@
     <> https://libvirt.org/formatdomain.html#network-interfaces
     -->
     <interface type="network">
-      <mac address="D8:F1:3F:B3:75:4E"/> <!-- Set fully randomized MAC address every instance -->
+      <mac address="24:c2:73:a6:be:8f"/> <!-- Set fully randomized MAC address every instance -->
       <source network="default"/> <!-- DO NOT USE "VirtIO" -->
       <model type="e1000e"/>
       <address type="pci" domain="0x0000" bus="0x01" slot="0x00" function="0x0"/>
