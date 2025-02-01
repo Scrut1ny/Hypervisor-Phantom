@@ -200,7 +200,7 @@
     <> https://libvirt.org/formatdomain.html#network-interfaces
     -->
     <interface type="network">
-      <mac address="24:C2:73:A6:BE:8F"/> <!-- Set fully randomized MAC address every instance -->
+      <mac address="24:c2:73:a6:be:8f"/> <!-- Set fully randomized MAC address every instance -->
       <source network="default"/> <!-- DO NOT USE "VirtIO" -->
       <model type="e1000e"/>
       <address type="pci" domain="0x0000" bus="0x01" slot="0x00" function="0x0"/>
