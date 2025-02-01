@@ -34,10 +34,10 @@
  
   sudo pacman -S virt-firmware --noconfirm
  
-  virt-fw-vars --input /var/lib/libvirt/qemu/nvram/{vm-name}_VARS.fd \
-               --output /var/lib/libvirt/qemu/nvram/{vm-name}_SECURE_VARS.fd \
-               --secure-boot \
-               --microsoft-kek all
+  sudo virt-fw-vars --input /var/lib/libvirt/qemu/nvram/{vm-name}_VARS.fd \
+                    --output /var/lib/libvirt/qemu/nvram/{vm-name}_SECURE_VARS.fd \
+                    --secure-boot \
+                    --microsoft-kek all
   
   -->
   <os>
