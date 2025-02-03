@@ -33,7 +33,7 @@ isolate_gpu() {
                 ;;
             *)
                 pci_device=$(lspci | grep -iE "${DEVICE_TYPES[$choice]}" | sort)
-                fmtr::log "Available devices:\n"
+                fmtr::log "Available devices:\n"; echo ""
                 echo "$pci_device" | nl -w2 -s') ' | sed 's/^/ /'
 
                 read -rp "$(fmtr::ask 'Select device number: ')" selection
