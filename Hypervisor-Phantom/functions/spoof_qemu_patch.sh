@@ -21,6 +21,7 @@ readonly QEMU_URL="https://download.qemu.org/${QEMU_ARCHIVE}"
 readonly QEMU_SIG_URL="${QEMU_URL}.sig"
 readonly PATCH_DIR="../../patches/QEMU"
 readonly QEMU_PATCH="${CPU_VENDOR}-${QEMU_DIR}.patch"
+readonly QEMU_LIBNFS_PATCH="${QEMU_DIR}-libnfs6.patch"
 readonly GPG_KEY="CEACC9E15534EBABB82D3FA03353C9CEF108B584"
 
 REQUIRED_PKGS_Arch=(
@@ -80,7 +81,19 @@ patch_qemu() {
     exit 1
   fi
 
-  fmtr::info "Applying patch to QEMU..."
+  if [ ! -f "${PATCH_DIR}/${QEMU_LIBNFS_PATCH}" ]; then
+    fmtr::error "Patch file ${PATCH_DIR}/${QEMU_LIBNFS_PATCH} not found!"
+    fmtr::fatal "Cannot proceed without the libnfs patch file. Exiting."
+    exit 1
+  fi
+
+  fmtr::info "Applying patches to QEMU..."
+
+  patch -fsp1 < "${PATCH_DIR}/${QEMU_LIBNFS_PATCH}" &>> "$LOG_FILE" || {
+    fmtr::error "Failed to apply patch ${QEMU_LIBNFS_PATCH}!"
+    fmtr::fatal "libNFS patch application failed. Please check the log for errors."
+    exit 1
+  }
 
   patch -fsp1 < "${PATCH_DIR}/${QEMU_PATCH}" &>> "$LOG_FILE" || {
     fmtr::error "Failed to apply patch ${QEMU_PATCH}!"
