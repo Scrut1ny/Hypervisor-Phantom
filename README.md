@@ -364,6 +364,8 @@ XXXX-XX-XX XX:XX:XX.XXX-XXXX [BROWSER LOCK] [INFO] Number of display devices con
 - Monitor EDID Modifiers
     - [Monitor Asset Manager](https://www.entechtaiwan.com/util/moninfo.shtm)
     - [Custom Resolution Utility (CRU)](https://www.monitortests.com/forum/Thread-Custom-Resolution-Utility-CRU)
+- BIOS Editor
+    - [Phoenix BIOS Editor](https://theretroweb.com/drivers/208)
 
 </details>
 
