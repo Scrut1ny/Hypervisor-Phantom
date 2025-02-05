@@ -486,3 +486,20 @@ Now, connect the capture card device back to your Linux host system now and open
 > Use at your own risk. The tool is provided "as-is" without any warranties.
 
 ---
+
+
+
+
+
+
+
+
+## Star History
+
+<a href="https://star-history.com/#Scrut1ny/Hypervisor-Phantom&Date">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=Scrut1ny/Hypervisor-Phantom&type=Date&theme=dark" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=Scrut1ny/Hypervisor-Phantom&type=Date" />
+   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=Scrut1ny/Hypervisor-Phantom&type=Date" />
+ </picture>
+</a>
