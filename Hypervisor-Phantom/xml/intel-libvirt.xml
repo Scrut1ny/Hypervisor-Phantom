@@ -75,7 +75,7 @@
     <pae/>
     <!-- Disable all enlightenments, if Hyper-V method is not used.
     Enlightenments on "bare-metal" are extremely suspicious -->
-    <hyperv mode="custom">
+    <hyperv mode="passthrough">
       <relaxed state="off"/>
       <vapic state="off"/>
       <spinlocks state="off"/>
@@ -85,9 +85,9 @@
       <stimer state="off"/>
       <reset state="off"/>
       <frequencies state="off"/>
-      <!-- Remove all enlightments except for
-      this one, if a Kernel patch is present! -->
-      <vendor_id state="off" value=""/>
+      <!-- If KVM patch is not present,
+      only vendor_id should be enabled -->
+      <vendor_id state="off" value=""/> <!-- anything tbh -->
     </hyperv>
     <kvm>
       <hidden state="on"/> <!-- Hide the KVM hypervisor from standard MSR based discovery -->
