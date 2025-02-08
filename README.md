@@ -6,6 +6,8 @@ This tool provides an automated setup solution designed to evade detection from 
 
 </div>
 
+https://dcbadge.limes.pink/api/server/https://discord.gg/kW8ZtQy6xU
+
 ![pic](https://github.com/user-attachments/assets/1329110e-62f9-456b-9816-83975d52a9df)
 
 
