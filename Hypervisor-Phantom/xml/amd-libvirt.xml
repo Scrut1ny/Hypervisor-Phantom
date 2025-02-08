@@ -26,7 +26,8 @@
 
 
   <!-- Secure Boot Setup
-  
+
+  <> https://libvirt.org/formatdomain.html#operating-system-booting
   <> https://wiki.archlinux.org/title/KVM#Secure_Boot
   <> https://archlinux.org/packages/extra/any/virt-firmware/
   
@@ -56,7 +57,7 @@
 
   <!-- Non-Secure Boot Setup
   
-  
+  <> https://libvirt.org/formatdomain.html#operating-system-booting
    
   -->
   <os>
@@ -69,6 +70,12 @@
 
 
 
+  <!-- 
+  <> https://libvirt.org/formatdomain.html#hypervisor-features
+
+
+ 
+  -->
   <features>
     <acpi/>
     <apic/>
@@ -87,7 +94,7 @@
       <frequencies state="off"/>
       <!-- If KVM patch is not present,
       only vendor_id should be enabled -->
-      <vendor_id state="off" value=""/> <!-- anything tbh -->
+      <vendor_id state="off" value=""/> <!-- Set hypervisor vendor id -->
     </hyperv>
     <kvm>
       <hidden state="on"/> <!-- Hide the KVM hypervisor from standard MSR based discovery -->
@@ -98,9 +105,12 @@
   </features>
 
 
+  <!--
+  <> https://libvirt.org/formatdomain.html#cpu-model-and-topology
 
 
  
+  -->
   <cpu mode="host-passthrough" check="none" migratable="on">
     <topology sockets="1" dies="1" cores="8" threads="2"/>
     <!-- Optimize performance -->
@@ -122,8 +132,12 @@
 
 
 
+  <!--
+  <> https://libvirt.org/formatdomain.html#time-keeping
 
  
+ 
+  -->
   <clock offset="localtime">
     <timer name="tsc" present="yes" tickpolicy="discard" mode="native"/>
     <timer name="rtc" present="no"/>
