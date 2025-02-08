@@ -1,0 +1,87 @@
+diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
+index f72835e85..f838e744e 100644
+--- a/arch/x86/kvm/vmx/vmx.c
++++ b/arch/x86/kvm/vmx/vmx.c
+@@ -4496,11 +4496,13 @@ static u32 vmx_exec_control(struct vcpu_vmx *vmx)
+ 	 * Not used by KVM, but fully supported for nesting, i.e. are allowed in
+ 	 * vmcs12 and propagated to vmcs02 when set in vmcs12.
+ 	 */
+-	exec_control &= ~(CPU_BASED_RDTSC_EXITING |
+-			  CPU_BASED_USE_IO_BITMAPS |
++	exec_control &= ~(CPU_BASED_USE_IO_BITMAPS |
+ 			  CPU_BASED_MONITOR_TRAP_FLAG |
+ 			  CPU_BASED_PAUSE_EXITING);
+ 
++	// Ensure handle_rdtsc() is used.
++	exec_control |= CPU_BASED_RDTSC_EXITING;
++
+ 	/* INTR_WINDOW_EXITING and NMI_WINDOW_EXITING are toggled dynamically */
+ 	exec_control &= ~(CPU_BASED_INTR_WINDOW_EXITING |
+ 			  CPU_BASED_NMI_WINDOW_EXITING);
+@@ -6111,6 +6113,36 @@ static int handle_notify(struct kvm_vcpu *vcpu)
+ 	return 1;
+ }
+ 
++static u32 print_once = 1;
++
++static int handle_rdtsc(struct kvm_vcpu * vcpu) {
++	static u64 rdtsc_fake = 0;
++	static u64 rdtsc_prev = 0;
++	u64 rdtsc_real = rdtsc();
++
++	if (print_once) {
++		printk("[handle_rdtsc] fake rdtsc vmx function is working\n");
++		print_once = 0;
++		rdtsc_fake = rdtsc_real;
++	}
++
++	if (rdtsc_prev != 0) {
++		if (rdtsc_real > rdtsc_prev) {
++			u64 diff = rdtsc_real - rdtsc_prev;
++			u64 fake_diff = diff / 16; // if you have 4.2Ghz on your vm, change 16 to 20
++			rdtsc_fake += fake_diff;
++		}
++	}
++	if (rdtsc_fake > rdtsc_real) {
++		rdtsc_fake = rdtsc_real;
++	}
++	rdtsc_prev = rdtsc_real;
++	vcpu -> arch.regs[VCPU_REGS_RAX] = rdtsc_fake & -1 u;
++	vcpu -> arch.regs[VCPU_REGS_RDX] = (rdtsc_fake >> 32) & -1 u;
++
++	return skip_emulated_instruction(vcpu);
++}
++
+ /*
+  * The exit handlers return 1 if the exit was handled fully and guest execution
+  * may resume.  Otherwise they set the kvm_run parameter to indicate what needs
+@@ -6169,6 +6201,7 @@ static int (*kvm_vmx_exit_handlers[])(struct kvm_vcpu *vcpu) = {
+ 	[EXIT_REASON_ENCLS]		      = handle_encls,
+ 	[EXIT_REASON_BUS_LOCK]                = handle_bus_lock_vmexit,
+ 	[EXIT_REASON_NOTIFY]		      = handle_notify,
++	[EXIT_REASON_RDTSC]                   = handle_rdtsc,
+ };
+ 
+ static const int kvm_vmx_max_exit_handlers =
+diff --git a/arch/x86/kvm/vmx/vmx.h b/arch/x86/kvm/vmx/vmx.h
+index 8b111ce10..b482dd3b2 100644
+--- a/arch/x86/kvm/vmx/vmx.h
++++ b/arch/x86/kvm/vmx/vmx.h
+@@ -531,6 +531,7 @@ static inline u8 vmx_get_rvi(void)
+ 	 CPU_BASED_MONITOR_EXITING |					\
+ 	 CPU_BASED_INVLPG_EXITING |					\
+ 	 CPU_BASED_RDPMC_EXITING |					\
++	 CPU_BASED_RDTSC_EXITING |					\
+ 	 CPU_BASED_INTR_WINDOW_EXITING)
+ 
+ #ifdef CONFIG_X86_64
+@@ -544,8 +545,7 @@ static inline u8 vmx_get_rvi(void)
+ #endif
+ 
+ #define KVM_OPTIONAL_VMX_CPU_BASED_VM_EXEC_CONTROL			\
+-	(CPU_BASED_RDTSC_EXITING |					\
+-	 CPU_BASED_TPR_SHADOW |						\
++	(CPU_BASED_TPR_SHADOW |						\
+ 	 CPU_BASED_USE_IO_BITMAPS |					\
+ 	 CPU_BASED_MONITOR_TRAP_FLAG |					\
+ 	 CPU_BASED_USE_MSR_BITMAPS |					\
