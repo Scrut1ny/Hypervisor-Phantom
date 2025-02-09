@@ -299,7 +299,7 @@
 
 
     <qemu:arg value="-smbios"/>
-    <qemu:arg value="type=0,uefi=true"/>  <!-- Enable UEFI Feature, requires new qemu patch... -->
+    <qemu:arg value="type=0,uefi=true"/> <!-- Explicitly marks the BIOS as UEFI-compliant -->
 
 
     <!-- Spoofs SMBIOS DMI Type 1, 2 and 3 details
