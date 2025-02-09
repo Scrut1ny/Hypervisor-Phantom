@@ -366,6 +366,8 @@ XXXX-XX-XX XX:XX:XX.XXX-XXXX [BROWSER LOCK] [INFO] Number of display devices con
     - [MeshCentral](https://github.com/Ylianst/MeshCentral)
 - Monitor EDID Modifiers
     - [Monitor Asset Manager](https://www.entechtaiwan.com/util/moninfo.shtm)
+        - [Dell Article](https://www.dell.com/support/kbdoc/en-us/000156229/using-monitor-asset-manager-version-2-6-to-read-extended-display-identification-data-edid-information)
+        - [Using an INF file to override EDIDs](https://learn.microsoft.com/en-us/windows-hardware/drivers/display/overriding-monitor-edids)
     - [Custom Resolution Utility (CRU)](https://www.monitortests.com/forum/Thread-Custom-Resolution-Utility-CRU)
 - UEFI/BIOS Editors
     - [Phoenix BIOS Editor](https://theretroweb.com/drivers/208)
