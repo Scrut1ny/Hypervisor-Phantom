@@ -75,7 +75,7 @@
     <pae/>
     <!-- Disable all enlightenments, if Hyper-V method is not used.
     Enlightenments on "bare-metal" are extremely suspicious -->
-    <hyperv mode="passthrough">
+    <hyperv mode="custom">
       <relaxed state="off"/>
       <vapic state="off"/>
       <spinlocks state="off"/>
