@@ -72,7 +72,6 @@
   <features>
     <acpi/>
     <apic/>
-    <pae/>
     <!-- Disable all enlightenments, if Hyper-V method is not used.
     Enlightenments on "bare-metal" are extremely suspicious -->
     <hyperv mode="custom">
@@ -95,7 +94,7 @@
     <smm state="on"/>
     <pmu state="off"/>
     <ioapic driver="kvm"/>
-    <!-- ... -->
+    <msrs unknown="fault"/>
   </features>
 
 
