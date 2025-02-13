@@ -98,6 +98,18 @@
     <!-- ... -->
   </features>
 
+
+
+
+  <!--
+  <> https://libvirt.org/formatdomain.html#cpu-model-and-topology
+
+  If you're trying to bypass the AMD CPU thread count check, then you need to set CPU mode
+  to hypervisor default, so it uses the default one specified in the QEMU patch under the
+  "hw/i386/pc_q35.c" file patch. Change the "m->desc" string to whatever CPU that has a
+  core/thread count that can be used within your hosts CPU ability.
+  
+  -->
   <cpu mode="host-passthrough" check="none" migratable="on">
     <topology sockets="1" dies="1" cores="8" threads="2"/>
     <!-- Optimize performance -->
@@ -124,6 +136,10 @@
     <timer name="hypervclock" present="no"/>
   </clock>
 
+
+
+
+ 
   <!--
   <> https://libvirt.org/formatdomain.html#power-management
 
