@@ -4,6 +4,7 @@
 
 source "./utils/formatter.sh"
 source "./utils/packages.sh"
+source "./utils/prompter.sh"
 
 REQUIRED_PKGS_Arch=(
   qemu-base edk2-ovmf libvirt dnsmasq virt-manager
