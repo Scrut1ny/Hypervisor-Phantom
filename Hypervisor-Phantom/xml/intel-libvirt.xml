@@ -40,7 +40,7 @@
   sudo virt-fw-vars --input /var/lib/libvirt/qemu/nvram/{vm-name}_VARS.fd \
                     --output /var/lib/libvirt/qemu/nvram/{vm-name}_SECURE_VARS.fd \
                     --secure-boot \
-                    --microsoft-kek all
+                    --enroll-redhat
   
   -->
   <os>
