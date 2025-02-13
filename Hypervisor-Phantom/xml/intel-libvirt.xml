@@ -27,6 +27,7 @@
 
   <!-- Secure Boot Setup
   
+  <> https://libvirt.org/formatdomain.html#operating-system-booting
   <> https://wiki.archlinux.org/title/KVM#Secure_Boot
   <> https://archlinux.org/packages/extra/any/virt-firmware/
   
