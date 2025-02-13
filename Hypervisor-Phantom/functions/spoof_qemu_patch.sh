@@ -272,7 +272,10 @@ spoof_cpuid_manufacturer() {
 
 compile_qemu() {
   fmtr::log "Configuring build environment"
-  ./configure --target-list=x86_64-softmmu --enable-libusb --disable-werror &>> "$LOG_FILE"
+  ./configure --target-list=x86_64-softmmu \
+              --enable-libusb \
+              --disable-werror &>> "$LOG_FILE"
+              #--enable-spice # Enable Spice for QXL Video
 
   fmtr::log "Building & Installing QEMU"
   sudo make install -j"$(nproc)" &>> "$LOG_FILE"
