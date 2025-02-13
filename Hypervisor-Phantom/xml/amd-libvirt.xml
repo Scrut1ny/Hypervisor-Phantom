@@ -102,6 +102,7 @@
     <smm state="on"/>
     <pmu state="off"/>
     <ioapic driver="kvm"/>
+    <msrs unknown="fault"/>
   </features>
 
 
