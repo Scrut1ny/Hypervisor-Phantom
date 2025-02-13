@@ -68,7 +68,12 @@
 
 
  
+  <!-- 
+  <> https://libvirt.org/formatdomain.html#hypervisor-features
 
+
+ 
+  -->
   <features>
     <acpi/>
     <apic/>
@@ -126,6 +131,11 @@
      if host-passthrough isn't used (...) -->
   </cpu>
 
+
+
+
+
+ 
   <clock offset="localtime">
     <timer name="tsc" present="yes" tickpolicy="discard" mode="native"/>
     <timer name="rtc" present="no"/>
