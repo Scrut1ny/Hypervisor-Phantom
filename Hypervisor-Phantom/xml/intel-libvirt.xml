@@ -33,7 +33,9 @@
   
   Enroll Microsoft and Redhat's secure boot keys command:
  
-  sudo pacman -S virt-firmware --noconfirm
+  Arch   - sudo pacman -S virt-firmware --noconfirm
+  Debian - sudo apt-get install virt-firmware
+  Fedora - sudo dnf install virt-firmware
  
   sudo virt-fw-vars --input /var/lib/libvirt/qemu/nvram/{vm-name}_VARS.fd \
                     --output /var/lib/libvirt/qemu/nvram/{vm-name}_SECURE_VARS.fd \
