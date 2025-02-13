@@ -56,7 +56,8 @@ configure_system_installation() {
   {
     sudo usermod -aG kvm,libvirt "$(whoami)"
     sudo systemctl enable --now libvirtd.socket
-    sudo virsh net-autostart default
+    sudo virsh net-autostart default # Enable autostart for virtual default network on boot
+    sudo virsh net-start default # Start the virtual default network
   } &>> "$LOG_FILE"
 }
 
