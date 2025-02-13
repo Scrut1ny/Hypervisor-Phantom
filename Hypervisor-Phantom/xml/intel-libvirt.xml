@@ -136,7 +136,12 @@
 
 
 
+  <!--
+  <> https://libvirt.org/formatdomain.html#time-keeping
+
  
+ 
+  -->
   <clock offset="localtime">
     <timer name="tsc" present="yes" tickpolicy="discard" mode="native"/>
     <timer name="rtc" present="no"/>
