@@ -81,7 +81,6 @@
   <features>
     <acpi/>
     <apic/>
-    <pae/>
     <!-- Disable all enlightenments if Hyper-V method is NOT used.
     Enlightenments on "bare-metal" are flagged / extremely suspicious! -->
     <hyperv mode="custom">
