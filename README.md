@@ -208,8 +208,8 @@ chmod -R +x *
 
 ## Pearson VUE
 
-- System Requirements
-[Link](https://home.pearsonvue.com/Standalone-pages/System-requirements-PVBL.aspx)
+- [Sameple Exam/System Test](https://vueop.startpractice.com/)
+- [System Requirements](https://home.pearsonvue.com/Standalone-pages/System-requirements-PVBL.aspx)
 
 - Exam Content & Special Configurations (SDS)
 ```
