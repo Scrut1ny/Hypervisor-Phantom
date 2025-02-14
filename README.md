@@ -361,6 +361,7 @@ XXXX-XX-XX XX:XX:XX.XXX-XXXX [BROWSER LOCK] [INFO] Number of display devices con
         - [ShareX](https://github.com/ShareX/ShareX)
 - RAT (Remote Access/Administration Trojan)
     - [Quasar](https://github.com/quasar/Quasar)
+        - [Resource Hacker](https://www.angusj.com/resourcehacker/)
 - RDP (Remote Desktop Protocal)
     - [Ammyy Admin](https://www.ammyy.com/)
     - [MeshCentral](https://github.com/Ylianst/MeshCentral)
