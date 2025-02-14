@@ -105,7 +105,7 @@ index e3195d5..276092b 100644
      mc->valid_cpu_types = valid_cpu_types;
      mc->max_cpus = 512;
 diff --git a/hw/arm/virt.c b/hw/arm/virt.c
-index 1a381e9..291c74d 100644
+index 1a381e9..12d5172 100644
 --- a/hw/arm/virt.c
 +++ b/hw/arm/virt.c
 @@ -110,7 +110,7 @@ static void arm_virt_compat_set(MachineClass *mc)
@@ -199,7 +199,7 @@ index 2cb8196..95af00f 100644
      /* edid version */
      edid[18] = 1;
 diff --git a/hw/i386/fw_cfg.c b/hw/i386/fw_cfg.c
-index 0e44946..b8b4d5e 100644
+index 0e44946..682abda 100644
 --- a/hw/i386/fw_cfg.c
 +++ b/hw/i386/fw_cfg.c
 @@ -73,7 +73,7 @@ void fw_cfg_build_smbios(PCMachineState *pcms, FWCfgState *fw_cfg,
@@ -251,7 +251,7 @@ index 317aaca..14873e3 100644
  GlobalProperty pc_compat_9_1[] = {
      { "ICH9-LPC", "x-smi-swsmi-timer", "off" },
 diff --git a/hw/i386/pc_q35.c b/hw/i386/pc_q35.c
-index 8319b6d..01c56bf 100644
+index 8319b6d..5821788 100644
 --- a/hw/i386/pc_q35.c
 +++ b/hw/i386/pc_q35.c
 @@ -338,8 +338,8 @@ static void pc_q35_machine_options(MachineClass *m)
@@ -405,7 +405,7 @@ index 45e4d4c..1e898e4 100644
  /* ----------------------------------------------------------------- */
  
 diff --git a/hw/loongarch/virt.c b/hw/loongarch/virt.c
-index 9a635d1..e9eaeed 100644
+index 9a635d1..f9af9b7 100644
 --- a/hw/loongarch/virt.c
 +++ b/hw/loongarch/virt.c
 @@ -594,13 +594,13 @@ static void virt_build_smbios(LoongArchVirtMachineState *lvms)
@@ -425,7 +425,7 @@ index 9a635d1..e9eaeed 100644
      smbios_get_tables(ms, SMBIOS_ENTRY_POINT_TYPE_64,
                        NULL, 0,
 diff --git a/hw/m68k/virt.c b/hw/m68k/virt.c
-index ea5c4a5..52b41ce 100644
+index ea5c4a5..cc70ed1 100644
 --- a/hw/m68k/virt.c
 +++ b/hw/m68k/virt.c
 @@ -312,7 +312,7 @@ static void virt_init(MachineState *machine)
@@ -447,7 +447,7 @@ index ea5c4a5..52b41ce 100644
          if (latest) { \
              mc->alias = "virt"; \
 diff --git a/hw/misc/pvpanic-isa.c b/hw/misc/pvpanic-isa.c
-index 9a923b7..da5ce8a 100644
+index 9a923b7..e9b5807 100644
 --- a/hw/misc/pvpanic-isa.c
 +++ b/hw/misc/pvpanic-isa.c
 @@ -69,7 +69,7 @@ static void build_pvpanic_isa_aml(AcpiDevAmlIf *adev, Aml *scope)
@@ -473,7 +473,7 @@ index ec75419..f5d5850 100644
      strpadcpy((char *)id->sn, sizeof(id->sn), n->params.serial, ' ');
  
 diff --git a/hw/nvram/fw_cfg-acpi.c b/hw/nvram/fw_cfg-acpi.c
-index 2e6ef89..b57515d 100644
+index 2e6ef89..bb5a6f4 100644
 --- a/hw/nvram/fw_cfg-acpi.c
 +++ b/hw/nvram/fw_cfg-acpi.c
 @@ -11,7 +11,7 @@
@@ -630,7 +630,7 @@ index c75a6c8..8e9f232 100644
      info.mad_version = cpu_to_be32(1);
      info.os_type = cpu_to_be32(2);
 diff --git a/hw/smbios/smbios.c b/hw/smbios/smbios.c
-index a394514..bf45b34 100644
+index a394514..9c4bf73 100644
 --- a/hw/smbios/smbios.c
 +++ b/hw/smbios/smbios.c
 @@ -571,11 +571,11 @@ static void smbios_build_type_0_table(void)
@@ -641,13 +641,97 @@ index a394514..bf45b34 100644
 +    t->bios_characteristics = cpu_to_le64(0); /* Not supported */
      t->bios_characteristics_extension_bytes[0] = 0;
 -    t->bios_characteristics_extension_bytes[1] = 0x14; /* TCD/SVVP | VM */
-+    t->bios_characteristics_extension_bytes[1] = 0; /* TCD/SVVP | VM */
++    t->bios_characteristics_extension_bytes[1] = 0x0F; /* TCD/SVVP | VM */
      if (smbios_type0.uefi) {
 -        t->bios_characteristics_extension_bytes[1] |= 0x08; /* |= UEFI */
 +        t->bios_characteristics_extension_bytes[1] |= 0; /* |= UEFI */
      }
  
      if (smbios_type0.have_major_minor) {
+@@ -684,7 +684,7 @@ static void smbios_build_type_4_table(MachineState *ms, unsigned instance,
+     snprintf(sock_str, sizeof(sock_str), "%s%2x", type4.sock_pfx, instance);
+     SMBIOS_TABLE_SET_STR(4, socket_designation_str, sock_str);
+     t->processor_type = 0x03; /* CPU */
+-    t->processor_family = 0xfe; /* use Processor Family 2 field */
++    t->processor_family = 0xC6; /* use Processor Family 2 field */
+     SMBIOS_TABLE_SET_STR(4, processor_manufacturer_str, type4.manufacturer);
+     if (type4.processor_id == 0) {
+         t->processor_id[0] = cpu_to_le32(smbios_cpuid_version);
+@@ -694,15 +694,15 @@ static void smbios_build_type_4_table(MachineState *ms, unsigned instance,
+         t->processor_id[1] = cpu_to_le32(type4.processor_id >> 32);
+     }
+     SMBIOS_TABLE_SET_STR(4, processor_version_str, type4.version);
+-    t->voltage = 0;
+-    t->external_clock = cpu_to_le16(0); /* Unknown */
++    t->voltage = 0x8B;
++    t->external_clock = cpu_to_le16(100); /* Unknown */
+     t->max_speed = cpu_to_le16(type4.max_speed);
+     t->current_speed = cpu_to_le16(type4.current_speed);
+     t->status = 0x41; /* Socket populated, CPU enabled */
+     t->processor_upgrade = 0x01; /* Other */
+-    t->l1_cache_handle = cpu_to_le16(0xFFFF); /* N/A */
+-    t->l2_cache_handle = cpu_to_le16(0xFFFF); /* N/A */
+-    t->l3_cache_handle = cpu_to_le16(0xFFFF); /* N/A */
++    t->l1_cache_handle = cpu_to_le16(0x0039); /* N/A */
++    t->l2_cache_handle = cpu_to_le16(0x003A); /* N/A */
++    t->l3_cache_handle = cpu_to_le16(0x003B); /* N/A */
+     SMBIOS_TABLE_SET_STR(4, serial_number_str, type4.serial);
+     SMBIOS_TABLE_SET_STR(4, asset_tag_number_str, type4.asset);
+     SMBIOS_TABLE_SET_STR(4, part_number_str, type4.part);
+@@ -715,7 +715,7 @@ static void smbios_build_type_4_table(MachineState *ms, unsigned instance,
+ 
+     t->thread_count = (threads_per_socket > 255) ? 0xFF : threads_per_socket;
+ 
+-    t->processor_characteristics = cpu_to_le16(0x02); /* Unknown */
++    t->processor_characteristics = cpu_to_le16(0x04); /* Unknown */
+     t->processor_family2 = cpu_to_le16(type4.processor_family);
+ 
+     if (tbl_len == SMBIOS_TYPE_4_LEN_V30) {
+@@ -843,9 +843,9 @@ static void smbios_build_type_16_table(unsigned dimm_cnt)
+ 
+     SMBIOS_BUILD_TABLE_PRE(16, T16_BASE, true); /* required */
+ 
+-    t->location = 0x01; /* Other */
++    t->location = 0x03; /* Other */
+     t->use = 0x03; /* System memory */
+-    t->error_correction = 0x06; /* Multi-bit ECC (for Microsoft, per SeaBIOS) */
++    t->error_correction = 0x03; /* Multi-bit ECC (for Microsoft, per SeaBIOS) */
+     size_kb = QEMU_ALIGN_UP(current_machine->ram_size, KiB) / KiB;
+     if (size_kb < MAX_T16_STD_SZ) {
+         t->maximum_capacity = cpu_to_le32(size_kb);
+@@ -872,8 +872,8 @@ static void smbios_build_type_17_table(unsigned instance, uint64_t size)
+ 
+     t->physical_memory_array_handle = cpu_to_le16(0x1000); /* Type 16 above */
+     t->memory_error_information_handle = cpu_to_le16(0xFFFE); /* Not provided */
+-    t->total_width = cpu_to_le16(0xFFFF); /* Unknown */
+-    t->data_width = cpu_to_le16(0xFFFF); /* Unknown */
++    t->total_width = cpu_to_le16(64); /* Unknown */
++    t->data_width = cpu_to_le16(64); /* Unknown */
+     size_mb = QEMU_ALIGN_UP(size, MiB) / MiB;
+     if (size_mb < MAX_T17_STD_SZ) {
+         t->size = cpu_to_le16(size_mb);
+@@ -888,7 +888,7 @@ static void smbios_build_type_17_table(unsigned instance, uint64_t size)
+     snprintf(loc_str, sizeof(loc_str), "%s %d", type17.loc_pfx, instance);
+     SMBIOS_TABLE_SET_STR(17, device_locator_str, loc_str);
+     SMBIOS_TABLE_SET_STR(17, bank_locator_str, type17.bank);
+-    t->memory_type = 0x07; /* RAM */
++    t->memory_type = 0x1A; /* RAM */
+     t->type_detail = cpu_to_le16(0x02); /* Other */
+     t->speed = cpu_to_le16(type17.speed);
+     SMBIOS_TABLE_SET_STR(17, manufacturer_str, type17.manufacturer);
+@@ -897,9 +897,9 @@ static void smbios_build_type_17_table(unsigned instance, uint64_t size)
+     SMBIOS_TABLE_SET_STR(17, part_number_str, type17.part);
+     t->attributes = 0; /* Unknown */
+     t->configured_clock_speed = t->speed; /* reuse value for max speed */
+-    t->minimum_voltage = cpu_to_le16(0); /* Unknown */
+-    t->maximum_voltage = cpu_to_le16(0); /* Unknown */
+-    t->configured_voltage = cpu_to_le16(0); /* Unknown */
++    t->minimum_voltage = cpu_to_le16(1200); /* Unknown */
++    t->maximum_voltage = cpu_to_le16(1350); /* Unknown */
++    t->configured_voltage = cpu_to_le16(1200); /* Unknown */
+ 
+     SMBIOS_BUILD_TABLE_POST;
+ }
 diff --git a/hw/ufs/lu.c b/hw/ufs/lu.c
 index 81bfff9..33dcea0 100644
 --- a/hw/ufs/lu.c
@@ -664,7 +748,7 @@ index 81bfff9..33dcea0 100644
  
      return SCSI_INQUIRY_LEN;
 diff --git a/hw/usb/canokey.c b/hw/usb/canokey.c
-index b306eeb..665185e 100644
+index 9af9d4d..3952264 100644
 --- a/hw/usb/canokey.c
 +++ b/hw/usb/canokey.c
 @@ -35,8 +35,8 @@ enum {
@@ -1088,7 +1172,7 @@ index 1fb59cf..9f83f9a 100644
  }
  
 diff --git a/include/hw/acpi/aml-build.h b/include/hw/acpi/aml-build.h
-index 4fd5da4..665b6fd 100644
+index 4fd5da4..21836d7 100644
 --- a/include/hw/acpi/aml-build.h
 +++ b/include/hw/acpi/aml-build.h
 @@ -4,8 +4,8 @@
@@ -1103,7 +1187,7 @@ index 4fd5da4..665b6fd 100644
  #define ACPI_BUILD_TABLE_FILE "etc/acpi/tables"
  #define ACPI_BUILD_RSDP_FILE "etc/acpi/rsdp"
 diff --git a/include/standard-headers/linux/qemu_fw_cfg.h b/include/standard-headers/linux/qemu_fw_cfg.h
-index cb93f66..2c2fd16 100644
+index cb93f66..f0dd04f 100644
 --- a/include/standard-headers/linux/qemu_fw_cfg.h
 +++ b/include/standard-headers/linux/qemu_fw_cfg.h
 @@ -4,7 +4,7 @@
@@ -1162,7 +1246,7 @@ index 460a26b..415c2c2 100644
  #                 "current":true,
  #                 "absolute":true
 diff --git a/target/i386/cpu.c b/target/i386/cpu.c
-index 3725dbb..f03d149 100644
+index 348771b..3071305 100644
 --- a/target/i386/cpu.c
 +++ b/target/i386/cpu.c
 @@ -2498,7 +2498,7 @@ static const X86CPUDefinition builtin_x86_defs[] = {
@@ -1210,7 +1294,7 @@ index 3725dbb..f03d149 100644
      },
      {
          .name = "n270",
-@@ -5440,7 +5440,7 @@ static void max_x86_cpu_initfn(Object *obj)
+@@ -5441,7 +5441,7 @@ static void max_x86_cpu_initfn(Object *obj)
      object_property_set_str(OBJECT(cpu), "vendor", CPUID_VENDOR_AMD,
                              &error_abort);
      object_property_set_str(OBJECT(cpu), "model-id",
@@ -1219,7 +1303,7 @@ index 3725dbb..f03d149 100644
                              &error_abort);
  }
  
-@@ -7732,7 +7732,7 @@ static void x86_cpu_hyperv_realize(X86CPU *cpu)
+@@ -7735,7 +7735,7 @@ static void x86_cpu_hyperv_realize(X86CPU *cpu)
  
      /* Hyper-V vendor id */
      if (!cpu->hyperv_vendor) {
@@ -1229,7 +1313,7 @@ index 3725dbb..f03d149 100644
      }
      len = strlen(cpu->hyperv_vendor);
 diff --git a/target/i386/kvm/kvm.c b/target/i386/kvm/kvm.c
-index 8e17942..f8c7976 100644
+index 2ff618f..7467b1a 100644
 --- a/target/i386/kvm/kvm.c
 +++ b/target/i386/kvm/kvm.c
 @@ -1621,7 +1621,7 @@ static int hyperv_fill_cpuids(CPUState *cs,
@@ -1282,7 +1366,7 @@ index a27f4b6..8742700 100644
  }
  
 diff --git a/target/s390x/tcg/misc_helper.c b/target/s390x/tcg/misc_helper.c
-index 303f86d..1eca086 100644
+index 303f86d..25a2cda 100644
 --- a/target/s390x/tcg/misc_helper.c
 +++ b/target/s390x/tcg/misc_helper.c
 @@ -326,18 +326,18 @@ uint32_t HELPER(stsi)(CPUS390XState *env, uint64_t a0, uint64_t r0, uint64_t r1)
