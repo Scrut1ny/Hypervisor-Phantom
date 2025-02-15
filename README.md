@@ -219,6 +219,8 @@ chmod -R +x *
 | Student Photo | Capture student photo before the assessment begins |
 | Student ID | Capture ID photo before the assessment begins |
 
+---
+
 ## Pearson VUE
 
 - [Sameple Exam/System Test](https://vueop.startpractice.com/)
@@ -295,6 +297,8 @@ XXXX-XX-XX XX:XX:XX.XXX-XXXX [BROWSER LOCK] [INFO] Number of display devices con
 ```
 
 ![image](https://github.com/Scrut1ny/Hypervisor-Phantom/assets/53458032/af144f9c-e69b-4998-8b44-16c876612c25)
+
+---
 
 ## Proctorio
 
