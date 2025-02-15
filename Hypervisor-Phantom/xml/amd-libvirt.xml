@@ -340,7 +340,24 @@
 
 
 
-  <!-- ONLY USE THIS WHEN USING VIRTUAL STORAGE (ex: qcow) AND YOU'RE USING AN SSD --> 
+  <!--
+  <> https://libvirt.org/formatdomain.html#hard-drives-floppy-disks-cdroms
+
+  TL;DR - Only use this if your host is SSD-backed and you're using virtual storage.
+ 
+  Use override for SATA device properties to optimize discard handling and rotation settings for SSD-backed qcow virtual storage.
+  This configuration allows you to specify advanced disk properties that help optimize performance for SSD-backed virtual disks,
+  particularly with regard to discard operations and rotation rate. The properties below control specific QEMU disk device features:
+
+  - `rotation_rate`: Sets the rotation rate of the virtual disk. A value of `1` indicates that the disk is an
+                     SSD (solid-state drive), optimizing I/O behavior for non-rotational storage.
+
+  - `discard_granularity`: Controls the granularity of discard operations. Setting this value to `0` can optimize how the
+                           guest OS handles the discard requests, affecting the performance of SSD-backed virtual disks.
+
+  This setup is recommended for systems using SSD-backed virtual storage in qcow format, as it improves compatibility and
+  performance when using discard operations and better reflects the behavior of SSD storage.
+  -->
   <qemu:override>
     <qemu:device alias="sata0-0-0">
       <qemu:frontend>
