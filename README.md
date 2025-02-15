@@ -191,6 +191,19 @@ chmod -R +x *
 <details>
 <summary>Exam Software Analysis: Reverse Engineering</summary>
 
+#### Tools Recommended
+- Websites
+    - [Decompiler Explorer](https://dogbolt.org/)
+    - [SQLite Viewer Web App](https://sqliteviewer.app/)
+- Software
+    - [Process Informer](https://github.com/winsiderss/systeminformer)
+    - [PE-Bear (Lightweight PE Analyzer)](https://github.com/hasherezade/pe-bear)
+    - [Detect It Easy (DIE)](https://github.com/horsicq/DIE-engine)
+    - [Ghidra (Advanced Reverse Engineering)](https://github.com/NationalSecurityAgency/ghidra)
+    - [x64dbg (Dynamic Debugging)](https://github.com/x64dbg/x64dbg)
+
+---
+
 ## Honorlock
 
 | **Function** | **Description** |
