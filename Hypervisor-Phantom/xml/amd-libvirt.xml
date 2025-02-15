@@ -298,14 +298,15 @@
 
 
   <!--
-    <> https://www.qemu.org/docs/master/system/qemu-manpage.html#hxtool-4
+ 
+  <> https://www.qemu.org/docs/master/system/qemu-manpage.html#hxtool-4
+  <> https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_3.2.0.pdf
+ 
   -->
   <qemu:commandline>
-
-
+   
     <qemu:arg value="-smbios"/>
     <qemu:arg value="type=0,uefi=true"/> <!-- Explicitly marks the BIOS as UEFI-compliant -->
-
 
     <!-- Spoofs SMBIOS DMI Type 1, 2 and 3 details
     Type 1 <> https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_3.2.0.pdf#%5B%7B%22num%22%3A85%2C%22gen%22%3A0%7D%2C%7B%22name%22%3A%22XYZ%22%7D%2C70%2C212%2C0%5D
@@ -319,21 +320,18 @@
     <qemu:arg value="-smbios"/>
     <qemu:arg value="type=3,serial=To be filled by O.E.M."/>
 
-
     <!-- Spoofs SMBIOS DMI Type 4 details
     <> https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_3.2.0.pdf#%5B%7B%22num%22%3A114%2C%22gen%22%3A0%7D%2C%7B%22name%22%3A%22XYZ%22%7D%2C70%2C583%2C0%5D
     -->
     <qemu:arg value="-smbios"/>
     <qemu:arg value="type=4,sock_pfx=AM5,max-speed=4400,current-speed=3600"/>
 
-
     <!-- Spoofs SMBIOS DMI Type 17 details
     <> https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_3.2.0.pdf#%5B%7B%22num%22%3A258%2C%22gen%22%3A0%7D%2C%7B%22name%22%3A%22XYZ%22%7D%2C70%2C597%2C0%5D
     -->
     <qemu:arg value="-smbios"/>
     <qemu:arg value="type=17,loc_pfx=DIMMA2,bank=P0 CHANNEL A,manufacturer=Samsung,serial=Unknown,asset=Not Specified,part=Not Specified,speed=4800"/>
-
-
+   
   </qemu:commandline>
 
 
