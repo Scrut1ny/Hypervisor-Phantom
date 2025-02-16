@@ -125,7 +125,8 @@
     <feature policy="require" name="invtsc"/>
     <!-- Remove giveaways for HV -->
     <feature policy="disable" name="hypervisor"/> <!-- 1. Makes Windows report "Virtualization: Enabled" instead of "Virtual machine: Yes" in Task Manager.
-                                                       2. If you're emulating Windows 11 set "options kvm ignore_msrs=1" in "/etc/modprobe.d/kvm.conf" -->
+                                                       2. Also makes Windows report L1-3 caches (right under "Virtualization: Enabled")
+                                                       3. When emulating Windows 11, set "options kvm ignore_msrs=1" in "/etc/modprobe.d/kvm.conf" -->
     <feature policy="disable" name="ssbd"/>
     <feature policy="disable" name="virt-ssbd"/>
     <!-- Disable RDTSCP for RDTSC patch -->
