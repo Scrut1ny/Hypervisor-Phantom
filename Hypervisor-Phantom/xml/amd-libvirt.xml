@@ -18,7 +18,7 @@
 -->
 
 <domain xmlns:qemu="http://libvirt.org/schemas/domain/qemu/1.0" type="kvm"> <!-- Don't forget XMLNS! -->
-  <uuid>5607c162-59e6-4ef4-a454-bd55d24f6465</uuid>
+  <uuid>XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX</uuid>
 
   <memory unit="G">16</memory>  <!-- keep RAM amount at realistic values: 64, 32, 16, 12, and 8 GiB are all common -->
   <currentMemory unit="G">16</currentMemory>
