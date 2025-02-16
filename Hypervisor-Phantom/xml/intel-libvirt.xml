@@ -343,7 +343,7 @@
   <!--
   <> https://libvirt.org/formatdomain.html#hard-drives-floppy-disks-cdroms
 
-  TL;DR - Only use this if your host is SSD-backed and you're using virtual storage.
+  TL;DR - Only use this if your host is SSD-backed and you're using virtual storage (Ex. .qcow) for guest.
  
   Use override for SATA device properties to optimize discard handling and rotation settings for SSD-backed qcow virtual storage.
   This configuration allows you to specify advanced disk properties that help optimize performance for SSD-backed virtual disks,
