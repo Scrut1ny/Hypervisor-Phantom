@@ -21,4 +21,4 @@ clear
 echo -e "\n=====# Pearson | VUE: System Test - Exam Generator #=====\n"
 echo -e "# Download Page: \033[94m${new_url}\033[0m"
 echo -e "# Live Exam: \033[94m${final_uri}\033[0m\n"
-
+echo -e "# Shortcut: \033[94mhttps://vueop.startpractice.com\033[0m\n"
