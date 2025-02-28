@@ -15,21 +15,24 @@ This tool provides an automated setup solution designed to evade detection from 
 
 
 
+
 ## What this tool does
-- ✅ Automatic distro, bootloader, versions, etc detection
-- ✅ Fully automates...
-  - [VFIO](https://www.kernel.org/doc/html/latest/driver-api/vfio.html) configuration (PCIe Passthrough)
+- **🔍 Automatic Detection**
+  - Detects distro, bootloader, and versions automatically
+
+- **🤖 Full Automation**
+  - **[VFIO Configuration](https://www.kernel.org/doc/html/latest/driver-api/vfio.html) (PCIe Passthrough)**
     - Configures bootloader
     - Regenerates ramdisks
-  - Custom patched [QEMU](https://gitlab.com/qemu-project/qemu) install
+  - **Custom Patched [QEMU](https://gitlab.com/qemu-project/qemu) Installation**
     - Spoofs all hardcoded serial numbers
-  - Custom patched [EDK2/OVMF (UEFI Firmware)](https://github.com/tianocore/edk2) install
-  - [Looking Glass](https://looking-glass.io/) setup & install
-  - Installation of all virtualization packages required
-- ✅ Spoofs SMBIOS
-- ✅ Spoofs Serial Numbers
-- ✅ RAM
-- ✅ Much more...
+  - **Custom Patched [EDK2/OVMF (UEFI Firmware)](https://github.com/tianocore/edk2) Installation**
+  - **[Looking Glass](https://looking-glass.io/) Setup & Installation**
+  - Installs all necessary virtualization packages
+
+- **🛡️ Spoofing Capabilities**
+  - SMBIOS Spoofing (via XML)
+    - Serial Numbers, UUID, RAM, etc.
 
 
 
