@@ -50,7 +50,7 @@ This tool provides an automated setup solution designed to evade detection from 
 git clone --single-branch --depth=1 https://github.com/Scrut1ny/Hypervisor-Phantom
 
 # 2. CD into the repository
-cd Hypervisor-Phantom/Hypervisor-Phantom
+cd Hypervisor-Phantom-main/Hypervisor-Phantom/
 
 # 3. Set executable permissions
 chmod -R +x *
