@@ -31,6 +31,9 @@ REQUIRED_PKGS_Debian=(
   build-essential uuid-dev iasl git nasm python-is-python3
 )
 
+REQUIRED_PKGS_openSUSE=(
+  gcc gcc-c++ make acpica git nasm python3 libuuid-devel
+)
 REQUIRED_PKGS_Fedora=(
   gcc gcc-c++ make acpica-tools git nasm python3 libuuid-devel
 )

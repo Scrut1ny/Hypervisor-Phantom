@@ -25,6 +25,15 @@ REQUIRED_PKGS_Debian=(
   libpipewire-0.3-dev libpulse-dev libsamplerate0-dev
 )
 
+REQUIRED_PKGS_openSUSE=(
+  binutils-devel clang cmake dejavu-fonts fontconfig-devel gcc gcc-c++ glibc-locale 
+  libdecor-devel libglvnd-devel libnettle-devel libpulse-devel libsamplerate-devel 
+  libSDL2-2_0-0 libSDL2_ttf-2_0-0 libvulkan1 libwayland-egl1 libxkbcommon-devel 
+  libXpresent-devel libXrandr-devel libXss-devel libXss-devel make Mesa-libGLESv3-devel 
+  pipewire-devel pkgconf-pkg-config pkgconf spice-protocol-devel vulkan-devel wayland-devel
+  zlib-devel-static
+)
+
 REQUIRED_PKGS_Fedora=(
   cmake gcc gcc-c++ libglvnd-devel fontconfig-devel spice-protocol make nettle-devel
   pkgconf-pkg-config binutils-devel libXi-devel libXinerama-devel libXcursor-devel

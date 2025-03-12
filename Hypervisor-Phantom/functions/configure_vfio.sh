@@ -143,7 +143,7 @@ regenerate_ramdisks() {
             sudo update-initramfs -u &>> "$LOG_FILE"
             sudo update-grub
             ;;
-        Fedora)
+        openSUSE|Fedora)
             sudo grub2-mkconfig -o /boot/grub2/grub.cfg &>> "$LOG_FILE"
             sudo dracut -f &>> "$LOG_FILE"
             ;;
