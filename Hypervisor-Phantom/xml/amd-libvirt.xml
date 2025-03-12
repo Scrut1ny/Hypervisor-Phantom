@@ -33,9 +33,10 @@
   
   Enroll Microsoft and Redhat's secure boot keys command:
  
-  Arch   - sudo pacman -S virt-firmware --noconfirm
-  Debian - sudo apt-get install virt-firmware
-  Fedora - sudo dnf install virt-firmware
+  Arch     - sudo pacman -S virt-firmware --noconfirm
+  Debian   - sudo apt-get install virt-firmware
+  openSUSE - sudo zypper install virt-firmware
+  Fedora   - sudo dnf install virt-firmware
  
   sudo virt-fw-vars --input /var/lib/libvirt/qemu/nvram/{vm-name}_VARS.fd \
                     --output /var/lib/libvirt/qemu/nvram/{vm-name}_SECURE_VARS.fd \
@@ -232,9 +233,10 @@
 
     Software TPM requires the swtpm (and swtpm-tools on some distros) to work.
 
-    Arch   - https://archlinux.org/packages/extra/x86_64/swtpm/
-    Debian - https://packages.debian.org/sid/swtpm
-    Fedora - https://packages.fedoraproject.org/pkgs/swtpm/swtpm/
+    Arch     - https://archlinux.org/packages/extra/x86_64/swtpm/
+    Debian   - https://packages.debian.org/sid/swtpm
+    openSUSE - https://software.opensuse.org/package/swtpm
+    Fedora   - https://packages.fedoraproject.org/pkgs/swtpm/swtpm/
 
     Note: If you're trying to bypass Valorant/League of Legends Vanguard Anti-Cheat, you must enable TPM
     as these games require it to run properly. Vanguard specifically checks for the presence of a TPM
