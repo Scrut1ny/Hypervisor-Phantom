@@ -31,7 +31,7 @@ REQUIRED_PKGS_openSUSE=(
   libSDL2-2_0-0 libSDL2_ttf-2_0-0 libvulkan1 libwayland-egl1 libxkbcommon-devel 
   libXpresent-devel libXrandr-devel libXss-devel libXss-devel make Mesa-libGLESv3-devel 
   pipewire-devel pkgconf-pkg-config pkgconf spice-protocol-devel vulkan-devel wayland-devel
-  zlib-devel-static
+  zlib-devel-static libXi-devel libXinerama-devel libXcursor-devel
 )
 
 REQUIRED_PKGS_Fedora=(
