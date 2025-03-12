@@ -34,7 +34,7 @@ REQUIRED_PKGS_Debian=(
 )
 REQUIRED_PKGS_openSUSE=(
   bzip2 gcc-c++ gpg2 glib2-devel make qemu  
-  libpixman-1-0-devel libusb-1_0-devel 
+  libpixman-1-0-devel libusb-1_0-devel patch
 )
 REQUIRED_PKGS_Fedora=(
   bzip2 glib2-devel libfdt-devel libusb1-devel
