@@ -32,6 +32,7 @@ REQUIRED_PKGS_openSUSE=(
   libXpresent-devel libXrandr-devel libXss-devel libXss-devel make Mesa-libGLESv3-devel 
   pipewire-devel pkgconf-pkg-config pkgconf spice-protocol-devel vulkan-devel wayland-devel
   zlib-devel-static libXi-devel libXinerama-devel libXcursor-devel dkms Mesa-libGL-devel
+  Mesa-libGLESv2-devel libzstd-devel-static libconfig++-devel SDL2-devel
 )
 
 REQUIRED_PKGS_Fedora=(
@@ -43,6 +44,14 @@ REQUIRED_PKGS_Fedora=(
 )
 
 install_looking_glass() {
+  if [[ "$DISTRO" -eq "openSUSE" && ! $((find /usr/lib64/libbfd.so) 2>/dev/null) ]]; then
+    fmtr::log "Configuring packages to ensure Looking Glass build completion"
+    {
+      LIBBFD_OLD=$(find /usr -name "libbfd*.so*" 2>/dev/null)
+      sudo ln -sv $LIBBFD_OLD /usr/lib64/libbfd.so
+    } &>> "$LOG_FILE"
+  fi
+  
   mkdir -p "$SRC_DIR" && cd "$SRC_DIR"
 
   fmtr::log "Downloading Looking Glass"
