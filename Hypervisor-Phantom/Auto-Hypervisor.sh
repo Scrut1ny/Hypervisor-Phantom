@@ -5,7 +5,7 @@ detect_distro() {
     local distro_id=$(grep ^ID= /etc/os-release | cut -d= -f2 | tr -d '"')
     case "$distro_id" in
       arch) DISTRO="Arch" ;;
-      opensuse-tumbleweed|opensuse-tumbleweed-slowroll|opensuse-leap) DISTRO="openSUSE" ;;
+      opensuse-tumbleweed|opensuse-slowroll|opensuse-leap) DISTRO="openSUSE" ;;
       debian|ubuntu|linuxmint|kali) DISTRO="Debian" ;;
       fedora|centos|rhel|rocky) DISTRO="Fedora" ;;
       *) DISTRO="Unknown ($distro_id)" ;;
