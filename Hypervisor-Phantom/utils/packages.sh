@@ -19,6 +19,11 @@ install_req_pkgs() {
       INSTALL_CMD="sudo apt -y install"
       CHECK_CMD="dpkg -l"
       ;;
+    openSUSE)
+      PKG_MANAGER="zypper"
+      INSTALL_CMD="sudo zypper install -y"
+      CHECK_CMD="rpm -q"
+      ;;
     Fedora)
       PKG_MANAGER="dnf"
       INSTALL_CMD="sudo dnf -yq install"

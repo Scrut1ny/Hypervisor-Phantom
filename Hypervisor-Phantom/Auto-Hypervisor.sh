@@ -5,6 +5,7 @@ detect_distro() {
     local distro_id=$(grep ^ID= /etc/os-release | cut -d= -f2 | tr -d '"')
     case "$distro_id" in
       arch) DISTRO="Arch" ;;
+      opensuse-tumbleweed|opensuse-slowroll|opensuse-leap) DISTRO="openSUSE" ;;
       debian|ubuntu|linuxmint|kali) DISTRO="Debian" ;;
       fedora|centos|rhel|rocky) DISTRO="Fedora" ;;
       *) DISTRO="Unknown ($distro_id)" ;;
@@ -14,6 +15,8 @@ detect_distro() {
       DISTRO="Arch"
     elif command -v apt &>/dev/null; then
       DISTRO="Debian"
+    elif command -v zypper &>/dev/null; then
+      DISTRO="openSUSE"
     elif command -v dnf &>/dev/null; then
       DISTRO="Fedora"
     else

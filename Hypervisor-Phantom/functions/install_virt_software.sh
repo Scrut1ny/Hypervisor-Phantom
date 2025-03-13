@@ -15,6 +15,11 @@ REQUIRED_PKGS_Debian=(
   libvirt-daemon-system libvirt-daemon-config-network
 )
 
+REQUIRED_PKGS_openSUSE=(
+  libvirt libvirt-client libvirt-daemon virt-manager
+  qemu qemu-kvm ovmf qemu-tools
+)
+
 REQUIRED_PKGS_Fedora=(
   @virtualization
 )

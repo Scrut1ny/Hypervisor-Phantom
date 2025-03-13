@@ -32,10 +32,16 @@ REQUIRED_PKGS_Debian=(
   build-essential libfdt-dev libglib2.0-dev libpixman-1-dev
   libusb-1.0-0-dev ninja-build python3-venv zlib1g-dev gnupg
 )
+REQUIRED_PKGS_openSUSE=(
+  bzip2 gcc-c++ gpg2 glib2-devel make qemu  
+  libpixman-1-0-devel libusb-1_0-devel patch
+  python3-Sphinx ninja
+)
 REQUIRED_PKGS_Fedora=(
   bzip2 glib2-devel libfdt-devel libusb1-devel
   ninja-build pixman-devel python3 zlib-devel gnupg2
 )
+
 
 acquire_qemu_source() {
   mkdir -p "$SRC_DIR" && cd "$SRC_DIR"
