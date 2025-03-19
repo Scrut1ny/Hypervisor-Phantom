@@ -149,7 +149,7 @@ chmod -R +x *
 
 | Rating | Software | System Test | Bypassed |
 | - | - | - | - |
-| 🥇 | VMAware | [Repo Link](https://github.com/kernelwernel/VMAware) <> [Download - x64 - v2.0](https://github.com/kernelwernel/VMAware/releases/download/v2.0/vmaware64.exe) <> [Download - x32 - v2.0](https://github.com/kernelwernel/VMAware/releases/download/v2.0/vmaware32.exe) | ✅ |
+| 🥇 | VMAware | [Repo Link](https://github.com/kernelwernel/VMAware) <> [Download - x64 - v2.1](https://github.com/kernelwernel/VMAware/releases/download/v2.1/vmaware64.exe) <> [Download - x32 - v2.1](https://github.com/kernelwernel/VMAware/releases/download/v2.1/vmaware32.exe) | ✅ |
 | 🥈 | Al-Khaser | [Repo Link](https://github.com/LordNoteworthy/al-khaser) <> [Download - x64 - v1.0.0](https://github.com/ayoubfaouzi/al-khaser/releases/download/v1.0.0/al-khaser_x64.7z) <> [Download - x32 - v1.0.0](https://github.com/ayoubfaouzi/al-khaser/releases/download/v1.0.0/al-khaser_x86.7z) | ✅ |
 | 🥉 | Pafish | [Repo Link](https://github.com/a0rtega/pafish) <> [Download - x64 - v0.6](https://github.com/a0rtega/pafish/releases/download/v0.6/pafish64.exe) <> [Download - x32 - v0.6](https://github.com/a0rtega/pafish/releases/download/v0.6/pafish.exe) | ✅ |
 
