@@ -8,21 +8,22 @@ source "./utils/packages.sh"
 
 readonly SRC_DIR="src"
 readonly LG_URL="https://looking-glass.io/artifact/stable/source"
-readonly LG_ARCHIVE="looking-glass-B6.tar.gz"
+readonly LG_ARCHIVE="looking-glass-B7.tar.gz"
+
+# https://looking-glass.io/wiki/Installation_on_other_distributions
 
 REQUIRED_PKGS_Arch=(
-  cmake gcc libegl libgl fontconfig spice-protocol
-  pkgconf binutils libxi libxinerama libxss libxcursor libxpresent make
-  libxkbcommon wayland-protocols ttf-dejavu libsamplerate nettle
-  linux-headers dkms
+  cmake gcc libgl libegl fontconfig spice-protocol make nettle pkgconf binutils libxi libxinerama
+  libxss libxcursor libxpresent libxkbcommon wayland-protocols ttf-dejavu libsamplerate
 )
 
 REQUIRED_PKGS_Debian=(
+  # https://looking-glass.io/docs/B7/build/#fetching-with-apt
   binutils-dev cmake fonts-dejavu-core libfontconfig-dev
   gcc g++ pkg-config libegl-dev libgl-dev libgles-dev libspice-protocol-dev
   nettle-dev libx11-dev libxcursor-dev libxi-dev libxinerama-dev
   libxpresent-dev libxss-dev libxkbcommon-dev libwayland-dev wayland-protocols
-  libpipewire-0.3-dev libpulse-dev libsamplerate0-dev
+  libpipewire-0.3-dev libsamplerate0-dev
 )
 
 REQUIRED_PKGS_openSUSE=(
