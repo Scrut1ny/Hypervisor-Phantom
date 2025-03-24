@@ -346,6 +346,17 @@
     <qemu:arg value="-smbios"/>
     <qemu:arg value="type=17,loc_pfx=Controller0-ChannelA-DIMM0,bank=BANK 0,manufacturer=Samsung,serial=Unknown,asset=Not Specified,part=Not Specified,speed=4800"/>
 
+
+
+
+    <!-- IVSHMEM with the KVMFR module
+    The kernel module implements a basic interface to the IVSHMEM device for Looking Glass allowing DMA GPU transfers.
+    -->
+    <qemu:arg value="-device"/>
+    <qemu:arg value="{'driver':'ivshmem-plain','id':'shmem0','memdev':'looking-glass'}"/>
+    <qemu:arg value="-object"/>
+    <qemu:arg value="{'qom-type':'memory-backend-file','id':'looking-glass','mem-path':'/dev/kvmfr0','size':33554432,'share':true}"/>
+   
   </qemu:commandline>
 
 
