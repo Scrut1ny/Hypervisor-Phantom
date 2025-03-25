@@ -295,7 +295,7 @@
     
     <!--
     <> https://libvirt.org/formatdomain.html#shared-memory-device
-    <> https://looking-glass.io/docs/B6/install/#ivshmem
+    <> https://looking-glass.io/docs/B7/install/#ivshmem
 
     +----------------------+------------------------+----------------------------+
     | Resolution           | Standard Dynamic Range | High Dynamic Range (HDR) * |
