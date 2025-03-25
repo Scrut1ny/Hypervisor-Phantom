@@ -296,10 +296,16 @@
     
     <!--
     <> https://libvirt.org/formatdomain.html#shared-memory-device
-    <> https://looking-glass.io/docs/B6/install/#ivshmem
+    <> https://looking-glass.io/docs/B7/install/#ivshmem
 
-    1920x1080 (1080p), 1920x1200 (1200p), 1920x1440 (1440p) = 32 SDR | 64 HDR
-    3840x2160 (2160p/4K) = 128 SDR | 256 HDR
+    +----------------------+------------------------+----------------------------+
+    | Resolution           | Standard Dynamic Range | High Dynamic Range (HDR) * |
+    +----------------------+------------------------+----------------------------+
+    | 1920x1080 (1080p)    | 32                     | 64                         |
+    | 1920x1200 (1200p)    | 32                     | 64                         |
+    | 2560x1440 (1440p)    | 64                     | 128                        |
+    | 3840x2160 (2160p/4K) | 128                    | 256                        |
+    +----------------------+------------------------+----------------------------+
     -->
     <shmem name="looking-glass">
       <model type="ivshmem-plain"/>
