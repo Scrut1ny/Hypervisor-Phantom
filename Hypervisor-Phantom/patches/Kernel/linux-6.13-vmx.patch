@@ -46,8 +46,8 @@ index f72835e85..f838e744e 100644
 +		rdtsc_fake = rdtsc_real;
 +	}
 +	rdtsc_prev = rdtsc_real;
-+	vcpu -> arch.regs[VCPU_REGS_RAX] = rdtsc_fake & -1 u;
-+	vcpu -> arch.regs[VCPU_REGS_RDX] = (rdtsc_fake >> 32) & -1 u;
++	vcpu -> arch.regs[VCPU_REGS_RAX] = rdtsc_fake & -1u;
++	vcpu -> arch.regs[VCPU_REGS_RDX] = (rdtsc_fake >> 32) & -1u;
 +
 +	return skip_emulated_instruction(vcpu);
 +}
