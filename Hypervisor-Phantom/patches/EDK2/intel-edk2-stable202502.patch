@@ -162,6 +162,61 @@ index ba21393..ae21b82 100644
  //
  // Type definition and contents of the default Type 0 SMBIOS table.
  //
+diff --git a/OvmfPkg/Include/IndustryStandard/Q35MchIch9.h b/OvmfPkg/Include/IndustryStandard/Q35MchIch9.h
+index db828d3..cc5e015 100644
+--- a/OvmfPkg/Include/IndustryStandard/Q35MchIch9.h
++++ b/OvmfPkg/Include/IndustryStandard/Q35MchIch9.h
+@@ -20,7 +20,7 @@
+ //
+ // Host Bridge Device ID (DID) value for Q35/MCH
+ //
+-#define INTEL_Q35_MCH_DEVICE_ID  0x29C0
++#define INTEL_Q35_MCH_DEVICE_ID  0x2531 // Change to 0x1480 for AMD MCH, 0x29C0 for Stock MCH, or 0x2531 for Intel MCH
+ 
+ //
+ // B/D/F/Type: 0/0/0/PCI
+diff --git a/OvmfPkg/QemuVideoDxe/Driver.c b/OvmfPkg/QemuVideoDxe/Driver.c
+index 6feca83..94dfb3e 100644
+--- a/OvmfPkg/QemuVideoDxe/Driver.c
++++ b/OvmfPkg/QemuVideoDxe/Driver.c
+@@ -41,31 +41,31 @@ QEMU_VIDEO_CARD  gQemuVideoCardList[] = {
+     L"Cirrus 5446"
+   },{
+     PCI_CLASS_DISPLAY_VGA,
+-    0x1234,
++    0x8086, // 0x1234,
+     0x1111,
+     QEMU_VIDEO_BOCHS_MMIO,
+     L"QEMU Standard VGA"
+   },{
+     PCI_CLASS_DISPLAY_OTHER,
+-    0x1234,
++    0x8086, // 0x1234,
+     0x1111,
+     QEMU_VIDEO_BOCHS_MMIO,
+     L"QEMU Standard VGA (secondary)"
+   },{
+     PCI_CLASS_DISPLAY_VGA,
+-    0x1b36,
++    0x8086, // 0x1b36,
+     0x0100,
+     QEMU_VIDEO_BOCHS,
+     L"QEMU QXL VGA"
+   },{
+     PCI_CLASS_DISPLAY_VGA,
+-    0x1af4,
+-    0x1050,
++    0x8086, // 0x1af4,
++    0x0416, // 0x1050,
+     QEMU_VIDEO_BOCHS_MMIO,
+     L"QEMU VirtIO VGA"
+   },{
+     PCI_CLASS_DISPLAY_VGA,
+-    0x15ad,
++    0x8086, // 0x15ad,
+     0x0405,
+     QEMU_VIDEO_VMWARE_SVGA,
+     L"QEMU VMWare SVGA"
 diff --git a/ShellPkg/ShellPkg.dec b/ShellPkg/ShellPkg.dec
 index 18df262..1b26ff0 100644
 --- a/ShellPkg/ShellPkg.dec
