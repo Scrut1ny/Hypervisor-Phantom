@@ -339,6 +339,9 @@ XXXX-XX-XX XX:XX:XX.XXX-XXXX [BROWSER LOCK] [INFO] Number of display devices con
 ## Virtual Display Driver
 - [Virtual-Display-Driver](https://github.com/itsmikethetech/Virtual-Display-Driver)
 
+## Webcam Manipulation
+- [Deep-Live-Cam](https://github.com/hacksider/Deep-Live-Cam)
+
 </details>
 
 
