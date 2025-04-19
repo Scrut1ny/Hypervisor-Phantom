@@ -12,6 +12,7 @@ source "./utils/packages.sh"
 readonly SRC_DIR="src"
 readonly TKG_URL="https://github.com/Frogging-Family/linux-tkg.git"
 readonly TKG_DIR="linux-tkg"
+readonly TKG_CFG_DIR="../../$SRC_DIR/linux-tkg/customization.cfg"
 readonly PATCH_DIR="../../patches/Kernel"
 readonly KERNEL_PATCH="*.mypatch"
 readonly KERNEL_VERSION="6.14.2"
@@ -80,6 +81,13 @@ select_distro() {
 }
 
 
+modify_customization_cfg() {
+
+  sed -i 's/_distro=""/_distro="'"$distro"'"/' $TKG_CFG_DIR &>> "$LOG_FILE"
+
+}
+
+
 arch_distro() {
 
 makepkg -si
@@ -96,3 +104,4 @@ other_distro() {
 
 acquire_tkg_source
 select_distro
+modify_customization_cfg
