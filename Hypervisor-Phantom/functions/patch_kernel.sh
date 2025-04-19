@@ -4,7 +4,6 @@
 
 [[ -z "$DISTRO" || -z "$LOG_FILE" ]] && exit 1
 
-
 source "./utils/prompter.sh"
 source "./utils/formatter.sh"
 source "./utils/packages.sh"
@@ -15,7 +14,6 @@ declare -r CPU_VENDOR=$(case "$VENDOR_ID" in
   *) fmtr::error "Unknown CPU vendor."; exit 1 ;;
 esac)
 
-# Variables
 readonly SRC_DIR="src"
 readonly TKG_URL="https://github.com/Frogging-Family/linux-tkg.git"
 readonly TKG_DIR="linux-tkg"
@@ -26,7 +24,6 @@ readonly KERNEL_MINOR="14"
 readonly KERNEL_PATCH="2"
 readonly KERNEL_VERSION="${KERNEL_MAJOR}.${KERNEL_MINOR}.${KERNEL_PATCH}"
 readonly KERNEL_USER_PATCH="../../patches/Kernel/zen-kernel-${KERNEL_MAJOR}.${KERNEL_MINOR}.${KERNEL_PATCH}-${CPU_VENDOR}.mypatch"
-
 
 acquire_tkg_source() {
   mkdir -p "$SRC_DIR" && cd "$SRC_DIR"
@@ -155,7 +152,8 @@ modify_customization_cfg() {
 
 patch_kernel() {
 
-  mkdir -p "linux${KERNEL_MAJOR}${KERNEL_MINOR}-tkg-userpatches" && cd "linux${KERNEL_MAJOR}${KERNEL_MINOR}-tkg-userpatches"
+  mkdir -p "linux${KERNEL_MAJOR}${KERNEL_MINOR}-tkg-userpatches"
+  cp "${KERNEL_USER_PATCH}" "linux${KERNEL_MAJOR}${KERNEL_MINOR}-tkg-userpatches"
 
 }
 
@@ -178,3 +176,4 @@ other_distro() {
 acquire_tkg_source
 select_distro
 modify_customization_cfg
+patch_kernel
