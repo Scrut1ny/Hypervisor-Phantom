@@ -2,103 +2,97 @@
 
 [[ -z "$DISTRO" || -z "$LOG_FILE" ]] && exit 1
 
-source "./utils/debugger.sh"
+
 source "./utils/prompter.sh"
 source "./utils/formatter.sh"
 source "./utils/packages.sh"
 
+
+# Variables
 readonly SRC_DIR="src"
-readonly KERNEL_MAJOR="6"
-readonly KERNEL_VERSION="${KERNEL_MAJOR}.13"
-readonly KERNEL_DIR="linux-${KERNEL_VERSION}"
-readonly KERNEL_ARCHIVE="${KERNEL_DIR}.tar.xz"
-readonly KERNEL_URL="https://cdn.kernel.org/pub/linux/kernel/v${KERNEL_MAJOR}.x/${KERNEL_ARCHIVE}"
+readonly TKG_URL="https://github.com/Frogging-Family/linux-tkg.git"
+readonly TKG_DIR="linux-tkg"
 readonly PATCH_DIR="../../patches/Kernel"
-readonly LINUX_PATCH="${KERNEL_DIR}.patch"
+readonly KERNEL_PATCH="*.mypatch"
+readonly KERNEL_VERSION="6.14.2"
 
-REQUIRED_PKGS_Arch=(
-  base-devel ncurses bison flex openssl elfutils
-)
 
-REQUIRED_PKGS_Debian=(
-  build-essential libncurses-dev bison flex libssl-dev libelf-dev
-)
-
-REQUIRED_PKGS_Fedora=(
-  gcc gcc-c++ make ncurses-devel bison flex elfutils-libelf-devel openssl-devel
-)
-
-acquire_linux_source() {
+acquire_tkg_source() {
   mkdir -p "$SRC_DIR" && cd "$SRC_DIR"
 
-  if [[ ! -d "$KERNEL_DIR" ]]; then
-    if [[ ! -f "$KERNEL_ARCHIVE" ]]; then
-      fmtr::log "Downloading Linux Kernel Source"
-      curl -sSO "$KERNEL_URL" || dbg::fail "Couldn't download Linux"
+  if [ -d "$TKG_DIR" ]; then
+    if [ -d "$TKG_DIR/.git" ]; then
+      fmtr::warn "Directory $TKG_DIR already exists and is a valid Git repository."
+      if ! prmt::yes_or_no "$(fmtr::ask 'Delete and re-clone the TKG source?')"; then
+        fmtr::info "Keeping existing directory. Skipping re-clone."
+        cd "$TKG_DIR" || { fmtr::fatal "Failed to change to TKG directory after cloning: $TKG_DIR"; exit 1; }
+        return
+      fi
+    else
+      fmtr::warn "Directory $TKG_DIR exists but is not a valid Git repository."
+      if ! prmt::yes_or_no "$(fmtr::ask 'Delete and re-clone the EDK2 source?')"; then
+        fmtr::info "Keeping existing directory. Skipping re-clone."
+        cd "$TKG_DIR" || { fmtr::fatal "Failed to change to TKG directory after cloning: $TKG_DIR"; exit 1; }
+        return
+      fi
     fi
-
-    fmtr::log "Extracting archive"
-    tar xJf "$KERNEL_ARCHIVE" || dbg::fail "Couldn't extract Linux"
+    rm -rf "$TKG_DIR" || { fmtr::fatal "Failed to remove existing directory: $TKG_DIR"; exit 1; }
+    fmtr::info "Old directory deleted. Re-cloning..."
   fi
 
-  cd "$KERNEL_DIR" || dbg::fail "Couldn't cd into Linux source"
+  fmtr::info "Downloading TKG source from GitHub..."
+  git clone --single-branch --depth=1 "$TKG_URL" "$TKG_DIR" &>> "$LOG_FILE" || { fmtr::fatal "Failed to clone repository."; exit 1; }
+  cd "$TKG_DIR" || { fmtr::fatal "Failed to change to TKG directory after cloning: $TKG_DIR"; exit 1; }
+  fmtr::info "TKG source successfully acquired."
 }
 
-patch_kernel() {
-  if [[ ! -f "${PATCH_DIR}/${LINUX_PATCH}" ]]; then
-    fmtr::log "ERROR: Patch file ${PATCH_DIR}/${LINUX_PATCH} not found!"
-    exit 1
-  fi
 
-  fmtr::log "Patching Linux"
-  patch -fsp1 < "${PATCH_DIR}/${LINUX_PATCH}" || dbg::fail "Failed to apply patch ${LINUX_PATCH}"
+select_distro() {
+  while true; do
+    clear; fmtr::info "Please select your Linux distribution:
+
+  1) Arch    3) Debian  5) Suse    7) Generic
+  2) Ubuntu  4) Fedora  6) Gentoo
+    "
+
+    local choice
+    choice="$(prmt::quick_prompt '  Enter your choice [1-7]: ')"
+
+    case "$choice" in
+        1) distro="Arch" ;;
+        2) distro="Ubuntu" ;;
+        3) distro="Debian" ;;
+        4) distro="Fedora" ;;
+        5) distro="Suse" ;;
+        6) distro="Gentoo" ;;
+        7) distro="Generic" ;;
+        *)
+            clear
+            fmtr::error "Invalid option, please try again."
+            prmt::quick_prompt "$(fmtr::info 'Press any key to continue...')"
+            continue
+            ;;
+    esac
+
+    echo ""; fmtr::info "You selected: $distro"
+    break
+  done
 }
 
-compile_kernel() {
-  fmtr::log "Copying current kernel config"
-  cp "/boot/config-$(uname -r)" ".config" || dbg::fail "Failed to copy current kernel config"
 
-  if [[ "${DISTRO}" == "Debian" ]]; then
-    fmtr::log "Disabling SYSTEM_TRUSTED_KEYS and SYSTEM_REVOCATION_KEYS"
-    scripts/config --disable SYSTEM_TRUSTED_KEYS || dbg::fail "Failed to disable SYSTEM_TRUSTED_KEYS"
-    scripts/config --disable SYSTEM_REVOCATION_KEYS || dbg::fail "Failed to disable SYSTEM_REVOCATION_KEYS"
-  fi
+arch_distro() {
 
-  fmtr::log "Building the Kernel"
-  make olddefconfig &>> "${LOG_FILE}" || dbg::fail "Failed to run make olddefconfig"
-  make -j"$(nproc)" &>> "${LOG_FILE}" || dbg::fail "Failed to build the kernel"
+makepkg -si
 
-  fmtr::log "Done. Restart and select patched kernel version in grub to boot into new kernel"
 }
 
-install_kernel() {
-  fmtr::log "Installing Kernel modules and applying kernel patches"
-  sudo make modules_install &>> "${LOG_FILE}" || dbg::fail "Failed to install kernel modules"
-  sudo make install &>> "${LOG_FILE}" || dbg::fail "Failed to install the kernel"
-  sudo update-initramfs -c -k "${KERNEL_VERSION}" &>> "$LOG_FILE" || dbg::fail "Failed to update initramfs"
+
+other_distro() {
+
+./install.sh install
+
 }
 
-update_grub() {
-  fmtr::log "Updating GRUB to set patched kernel as default"
-  sudo cp /etc/default/grub /etc/default/grub.old || dbg::fail "Failed to backup grub config"
 
-  sudo sed -i "s/^GRUB_DEFAULT=0/GRUB_DEFAULT='Advanced options for Ubuntu>Ubuntu, with Linux ${KERNEL_VERSION}'/" /etc/default/grub || dbg::fail "Failed to update grub config"
-  sudo update-grub || dbg::fail "Failed to update grub"
-
-  fmtr::info "GRUB has been updated to boot the patched kernel by default."
-}
-
-install_req_pkgs "Linux Kernel"
-acquire_linux_source
-patch_kernel
-compile_kernel
-
-if prmt::yes_or_no "$(fmtr::ask 'Would you like to install the patched Kernel')"; then
-  install_kernel
-fi
-
-if prmt::yes_or_no "$(fmtr::ask 'Would you like to update GRUB to set the patched kernel as the default')"; then
-  update_grub
-else
-  fmtr::info "Skipping GRUB update"
-fi
+acquire_tkg_source
+select_distro
