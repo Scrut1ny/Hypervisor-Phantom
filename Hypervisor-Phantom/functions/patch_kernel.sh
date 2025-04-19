@@ -116,7 +116,7 @@ modify_customization_cfg() {
       vendor="AMD"
       fmtr::info "Detected CPU Vendor: AMD
 
-  Please select your CPU architecture type:
+  Please select your CPU Code Name:
 
   1) k8         5) bobcat      9) steamroller  13) zen3
   2) k8sse3     6) jaguar      10) excavator   14) zen4
@@ -152,7 +152,7 @@ modify_customization_cfg() {
       vendor="Intel"
       fmtr::info "Detected CPU Vendor: Intel
 
-  Please select your CPU architecture type:
+  Please select your CPU Code Name:
 
   1) mpsc         8) ivybridge    15) icelake_server  22) rocketlake
   2) atom         9) haswell      16) goldmont        23) alderlake
