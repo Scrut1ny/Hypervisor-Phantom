@@ -9,6 +9,11 @@ source "./utils/prompter.sh"
 source "./utils/formatter.sh"
 source "./utils/packages.sh"
 
+declare -r CPU_VENDOR=$(case "$VENDOR_ID" in
+  *AuthenticAMD*) echo "svm" ;;
+  *GenuineIntel*) echo "vmx" ;;
+  *) fmtr::error "Unknown CPU vendor."; exit 1 ;;
+esac)
 
 # Variables
 readonly SRC_DIR="src"
@@ -16,11 +21,11 @@ readonly TKG_URL="https://github.com/Frogging-Family/linux-tkg.git"
 readonly TKG_DIR="linux-tkg"
 readonly TKG_CFG_DIR="../../$SRC_DIR/linux-tkg/customization.cfg"
 readonly PATCH_DIR="../../patches/Kernel"
-readonly KERNEL_PATCH="*.mypatch"
 readonly KERNEL_MAJOR="6"
 readonly KERNEL_MINOR="14"
 readonly KERNEL_PATCH="2"
 readonly KERNEL_VERSION="${KERNEL_MAJOR}.${KERNEL_MINOR}.${KERNEL_PATCH}"
+readonly KERNEL_USER_PATCH="../../patches/Kernel/zen-kernel-${KERNEL_MAJOR}.${KERNEL_MINOR}.${KERNEL_PATCH}-${CPU_VENDOR}.mypatch"
 
 
 acquire_tkg_source() {
@@ -89,6 +94,8 @@ modify_customization_cfg() {
 
   sed -i 's/_distro="[^"]*"/_distro="'"$distro"'"/' $TKG_CFG_DIR &>> "$LOG_FILE"
   sed -i 's/_version="[^"]*"/_version="'"$KERNEL_VERSION"'"/' $TKG_CFG_DIR &>> "$LOG_FILE"
+  sed -i 's/_menunconfig="[^"]*"/_menunconfig="'"false"'"/' $TKG_CFG_DIR &>> "$LOG_FILE"
+  sed -i 's/_diffconfig="[^"]*"/_diffconfig="'"false"'"/' $TKG_CFG_DIR &>> "$LOG_FILE"
   sed -i 's/_cpusched="[^"]*"/_cpusched="'"pds"'"/' $TKG_CFG_DIR &>> "$LOG_FILE"
   sed -i 's/_compiler="[^"]*"/_compiler="'"gcc"'"/' $TKG_CFG_DIR &>> "$LOG_FILE"
   sed -i 's/_sched_yield_type="[^"]*"/_sched_yield_type="'"0"'"/' $TKG_CFG_DIR &>> "$LOG_FILE"
