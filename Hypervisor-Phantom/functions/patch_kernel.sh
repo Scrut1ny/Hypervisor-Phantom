@@ -83,7 +83,8 @@ select_distro() {
 
 modify_customization_cfg() {
 
-  sed -i 's/_distro=""/_distro="'"$distro"'"/' $TKG_CFG_DIR &>> "$LOG_FILE"
+    sed -i 's/_distro="[^"]*"/_distro="'"$distro"'"/' $TKG_CFG_DIR &>> "$LOG_FILE"
+    sed -i 's/_version="[^"]*"/_version="'"$KERNEL_VERSION"'"/' $TKG_CFG_DIR &>> "$LOG_FILE"
 
 }
 
