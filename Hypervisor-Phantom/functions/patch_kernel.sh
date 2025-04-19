@@ -63,8 +63,7 @@ select_distro() {
   2) Ubuntu  4) Fedora  6) Gentoo
     "
 
-    local choice
-    choice="$(prmt::quick_prompt '  Enter your choice [1-7]: ')"
+    local choice="$(prmt::quick_prompt '  Enter your choice [1-7]: ')"
 
     case "$choice" in
         1) distro="Arch" ;;
@@ -111,7 +110,102 @@ modify_customization_cfg() {
 
   ###
 
-  sed -i 's/_processor_opt="[^"]*"/_processor_opt="'""'"/' $TKG_CFG_DIR &>> "$LOG_FILE"
+  while true; do
+
+    if [[ "$CPU_VENDOR" == "svm" ]]; then
+      vendor="AMD"
+      fmtr::info "Detected CPU Vendor: AMD
+
+  Please select your CPU architecture type:
+
+  1) k8         5) bobcat      9) steamroller  13) zen3
+  2) k8sse3     6) jaguar      10) excavator   14) zen4
+  3) k10        7) bulldozer   11) zen         15) zen5
+  4) barcelona  8) piledriver  12) zen2        16) Automated (not recommended)
+      "
+      read -p "  Enter your choice [1-16]: " choice
+      case "$choice" in
+        1) selected="k8" ;;
+        2) selected="k8sse3" ;;
+        3) selected="k10" ;;
+        4) selected="barcelona" ;;
+        5) selected="bobcat" ;;
+        6) selected="jaguar" ;;
+        7) selected="bulldozer" ;;
+        8) selected="piledriver" ;;
+        9) selected="steamroller" ;;
+        10) selected="excavator" ;;
+        11) selected="zen" ;;
+        12) selected="zen2" ;;
+        13) selected="zen3" ;;
+        14) selected="zen4" ;;
+        15) selected="zen5" ;;
+        16) selected="native_amd" ;;
+        *)
+          clear; fmtr::error "Invalid option, please try again."
+          prmt::quick_prompt "$(fmtr::info 'Press any key to continue...')"
+          continue
+          ;;
+      esac
+
+    elif [[ "$CPU_VENDOR" == "vmx" ]]; then
+      vendor="Intel"
+      fmtr::info "Detected CPU Vendor: Intel
+
+  Please select your CPU architecture type:
+
+  1) mpsc         8) ivybridge    15) icelake_server  22) rocketlake
+  2) atom         9) haswell      16) goldmont        23) alderlake
+  3) core2        10) broadwell   17) goldmontplus    24) raptorlake
+  4) nehalem      11) skylake     18) cascadelake     25) meteorlake
+  5) westmere     12) skylakex    19) cooperlake      26) automated (not recommended)
+  6) silvermont   13) cannonlake  20) tigerlake
+  7) sandybridge  14) icelake     21) sapphirerapids
+      "
+      read -p "  Enter your choice [1-26]: " choice
+      case "$choice" in
+        1) selected="mpsc" ;;
+        2) selected="atom" ;;
+        3) selected="core2" ;;
+        4) selected="nehalem" ;;
+        5) selected="westmere" ;;
+        6) selected="silvermont" ;;
+        7) selected="sandybridge" ;;
+        8) selected="ivybridge" ;;
+        9) selected="haswell" ;;
+        10) selected="broadwell" ;;
+        11) selected="skylake" ;;
+        12) selected="skylakex" ;;
+        13) selected="cannonlake" ;;
+        14) selected="icelake" ;;
+        15) selected="icelake_server" ;;
+        16) selected="goldmont" ;;
+        17) selected="goldmontplus" ;;
+        18) selected="cascadelake" ;;
+        19) selected="cooperlake" ;;
+        20) selected="tigerlake" ;;
+        21) selected="sapphirerapids" ;;
+        22) selected="rocketlake" ;;
+        23) selected="alderlake" ;;
+        24) selected="raptorlake" ;;
+        25) selected="meteorlake" ;;
+        26) selected="native_intel" ;;
+        *)
+          clear; fmtr::error "Invalid option, please try again."
+          prmt::quick_prompt "$(fmtr::info 'Press any key to continue...')"
+          ;;
+      esac
+
+    else
+      fmtr::warn "Unsupported or undefined CPU_VENDOR: $CPU_VENDOR"
+      exit 1
+    fi
+
+    # If we reach this point a valid selection was made.
+    break
+  done
+
+  sed -i 's/_processor_opt="[^"]*"/_processor_opt="'"$selected"'"/' $TKG_CFG_DIR &>> "$LOG_FILE"
 
   ###
 
@@ -143,10 +237,6 @@ modify_customization_cfg() {
   ###
 
   sed -i 's/_timer_freq="[^"]*"/_timer_freq="'""'"/' $TKG_CFG_DIR &>> "$LOG_FILE"
-
-  ###
-
-  sed -i 's/_default_cpu_gov="[^"]*"/_default_cpu_gov="'"performance"'"/' $TKG_CFG_DIR &>> "$LOG_FILE"
 
 }
 
