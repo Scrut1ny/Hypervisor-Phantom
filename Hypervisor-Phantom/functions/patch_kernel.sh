@@ -236,7 +236,7 @@ modify_customization_cfg() {
 
   ###
 
-  sed -i 's/_timer_freq="[^"]*"/_timer_freq="'""'"/' $TKG_CFG_DIR &>> "$LOG_FILE"
+  sed -i 's/_timer_freq="[^"]*"/_timer_freq="'"1000"'"/' $TKG_CFG_DIR &>> "$LOG_FILE"
 
 }
 
