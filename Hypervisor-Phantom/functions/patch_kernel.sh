@@ -25,6 +25,19 @@ readonly KERNEL_PATCH="2"
 readonly KERNEL_VERSION="${KERNEL_MAJOR}.${KERNEL_MINOR}.${KERNEL_PATCH}"
 readonly KERNEL_USER_PATCH="../../patches/Kernel/zen-kernel-${KERNEL_MAJOR}.${KERNEL_MINOR}.${KERNEL_PATCH}-${CPU_VENDOR}.mypatch"
 
+REQUIRED_PKGS_Arch=(
+  base-devel git linux-headers
+)
+REQUIRED_PKGS_Debian=(
+  build-essential git libncurses-dev libssl-dev bc flex bison libelf-dev
+)
+REQUIRED_PKGS_openSUSE=(
+  devel_kernel git ncurses-devel make gcc bc bison flex libelf-devel openssl-devel
+)
+REQUIRED_PKGS_Fedora=(
+  @development-tools git ncurses-devel make gcc bc bison flex elfutils-libelf-devel openssl-devel
+)
+
 acquire_tkg_source() {
   mkdir -p "$SRC_DIR" && cd "$SRC_DIR"
 
@@ -92,7 +105,7 @@ modify_customization_cfg() {
   sed -i 's/_version="[^"]*"/_version="'"$KERNEL_VERSION"'"/' $TKG_CFG_DIR &>> "$LOG_FILE"
   sed -i 's/_menunconfig="[^"]*"/_menunconfig="'"false"'"/' $TKG_CFG_DIR &>> "$LOG_FILE"
   sed -i 's/_diffconfig="[^"]*"/_diffconfig="'"false"'"/' $TKG_CFG_DIR &>> "$LOG_FILE"
-  sed -i 's/_cpusched="[^"]*"/_cpusched="'"pds"'"/' $TKG_CFG_DIR &>> "$LOG_FILE"
+  sed -i 's/_cpusched="[^"]*"/_cpusched="'"eevdf"'"/' $TKG_CFG_DIR &>> "$LOG_FILE"
   sed -i 's/_compiler="[^"]*"/_compiler="'"gcc"'"/' $TKG_CFG_DIR &>> "$LOG_FILE"
   sed -i 's/_sched_yield_type="[^"]*"/_sched_yield_type="'"0"'"/' $TKG_CFG_DIR &>> "$LOG_FILE"
   sed -i 's/_rr_interval="[^"]*"/_rr_interval="'"2"'"/' $TKG_CFG_DIR &>> "$LOG_FILE"
@@ -154,7 +167,7 @@ modify_customization_cfg() {
       vendor="Intel"
       fmtr::info "Detected CPU Vendor: ${vendor}
 
-  Please select your AMD CPU microarchitecture code name:
+  Please select your Intel CPU microarchitecture code name:
 
   1) mpsc         8) ivybridge    15) icelake_server  22) rocketlake
   2) atom         9) haswell      16) goldmont        23) alderlake
@@ -236,6 +249,16 @@ modify_customization_cfg() {
   ####################################################################################################
 
   sed -i 's/_timer_freq="[^"]*"/_timer_freq="'"1000"'"/' $TKG_CFG_DIR &>> "$LOG_FILE"
+  sed -i 's/_user_patches_no_confirm="[^"]*"/_user_patches_no_confirm="'"true"'"/' $TKG_CFG_DIR &>> "$LOG_FILE"
+
+  ####################################################################################################
+  ####################################################################################################
+
+  if [ "$distro" == "Arch" ]; then
+      sed -i 's/_custom_pkgbase="[^"]*"/_custom_pkgbase="Arch Linux (Patched)"/' "$TKG_CFG_DIR" &>> "$LOG_FILE"
+  else
+      sed -i 's/_kernel_localversion="[^"]*"/_kernel_localversion=""/' "$TKG_CFG_DIR" &>> "$LOG_FILE"
+  fi
 
 }
 
@@ -250,18 +273,19 @@ patch_kernel() {
 
 arch_distro() {
 
-makepkg -si
+  sudo makepkg -C -si --noconfirm
 
 }
 
 
 other_distro() {
 
-./install.sh install
+  sudo ./install.sh install
 
 }
 
 
+# install_req_pkgs "Kernel"
 acquire_tkg_source
 select_distro
 modify_customization_cfg
