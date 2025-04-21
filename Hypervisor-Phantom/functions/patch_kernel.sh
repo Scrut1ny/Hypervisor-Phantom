@@ -98,7 +98,8 @@ modify_customization_cfg() {
   sed -i 's/_rr_interval="[^"]*"/_rr_interval="'"2"'"/' $TKG_CFG_DIR &>> "$LOG_FILE"
   sed -i 's/_tickless="[^"]*"/_tickless="'"1"'"/' $TKG_CFG_DIR &>> "$LOG_FILE"
 
-  ###
+  ####################################################################################################
+  ####################################################################################################
 
   fmtr::info "This patch enables corrected IOMMU grouping on
       motherboards with poor PCIe IOMMU grouping."
@@ -108,7 +109,8 @@ modify_customization_cfg() {
       sed -i 's/_acs_override="[^"]*"/_acs_override="'"false"'"/' $TKG_CFG_DIR &>> "$LOG_FILE"
   fi
 
-  ###
+  ####################################################################################################
+  ####################################################################################################
 
   while true; do
 
@@ -201,13 +203,13 @@ modify_customization_cfg() {
       exit 1
     fi
 
-    # If we reach this point a valid selection was made.
     break
   done
 
   sed -i 's/_processor_opt="[^"]*"/_processor_opt="'"$selected"'"/' $TKG_CFG_DIR &>> "$LOG_FILE"
 
-  ###
+  ####################################################################################################
+  ####################################################################################################
 
   if output=$(/lib/ld-linux-x86-64.so.2 --help 2>/dev/null | grep supported); then
       :
@@ -230,11 +232,8 @@ modify_customization_cfg() {
 
   sed -i 's/_x86_64_isalvl="[^"]*"/_x86_64_isalvl="'"$highest"'"/' $TKG_CFG_DIR &>> "$LOG_FILE"
 
-  ###
-
-  sed -i 's/_smt_nice="[^"]*"/_smt_nice="'"true"'"/' $TKG_CFG_DIR &>> "$LOG_FILE"
-
-  ###
+  ####################################################################################################
+  ####################################################################################################
 
   sed -i 's/_timer_freq="[^"]*"/_timer_freq="'"1000"'"/' $TKG_CFG_DIR &>> "$LOG_FILE"
 
