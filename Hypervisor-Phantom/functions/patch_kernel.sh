@@ -21,22 +21,9 @@ readonly TKG_CFG_DIR="../../$SRC_DIR/linux-tkg/customization.cfg"
 readonly PATCH_DIR="../../patches/Kernel"
 readonly KERNEL_MAJOR="6"
 readonly KERNEL_MINOR="14"
-readonly KERNEL_PATCH="2"
-readonly KERNEL_VERSION="${KERNEL_MAJOR}.${KERNEL_MINOR}.${KERNEL_PATCH}"
-readonly KERNEL_USER_PATCH="../../patches/Kernel/zen-kernel-${KERNEL_MAJOR}.${KERNEL_MINOR}.${KERNEL_PATCH}-${CPU_VENDOR}.mypatch"
-
-REQUIRED_PKGS_Arch=(
-  base-devel git linux-headers
-)
-REQUIRED_PKGS_Debian=(
-  build-essential git libncurses-dev libssl-dev bc flex bison libelf-dev
-)
-REQUIRED_PKGS_openSUSE=(
-  devel_kernel git ncurses-devel make gcc bc bison flex libelf-devel openssl-devel
-)
-REQUIRED_PKGS_Fedora=(
-  @development-tools git ncurses-devel make gcc bc bison flex elfutils-libelf-devel openssl-devel
-)
+readonly KERNEL_PATCH="latest" # Set as "-latest" for linux-tkg
+readonly KERNEL_VERSION="${KERNEL_MAJOR}.${KERNEL_MINOR}-${KERNEL_PATCH}"
+readonly KERNEL_USER_PATCH="../../patches/Kernel/zen-kernel-${KERNEL_MAJOR}.${KERNEL_MINOR}-${KERNEL_PATCH}-${CPU_VENDOR}.mypatch"
 
 acquire_tkg_source() {
   mkdir -p "$SRC_DIR" && cd "$SRC_DIR"
@@ -51,17 +38,16 @@ acquire_tkg_source() {
       fi
     else
       fmtr::warn "Directory $TKG_DIR exists but is not a valid Git repository."
-      if ! prmt::yes_or_no "$(fmtr::ask 'Delete and re-clone the EDK2 source?')"; then
-        fmtr::info "Keeping existing directory. Skipping re-clone."
+      if ! prmt::yes_or_no "$(fmtr::ask 'Delete and re-clone the linux-tkg source?')"; then
+        fmtr::info "Keeping existing directory; Skipping re-clone."
         cd "$TKG_DIR" || { fmtr::fatal "Failed to change to TKG directory after cloning: $TKG_DIR"; exit 1; }
         return
       fi
     fi
     rm -rf "$TKG_DIR" || { fmtr::fatal "Failed to remove existing directory: $TKG_DIR"; exit 1; }
-    fmtr::info "Old directory deleted. Re-cloning..."
+    fmtr::info "Directory purged; re-cloning repository..."
   fi
 
-  fmtr::info "Downloading TKG source from GitHub..."
   git clone --single-branch --depth=1 "$TKG_URL" "$TKG_DIR" &>> "$LOG_FILE" || { fmtr::fatal "Failed to clone repository."; exit 1; }
   cd "$TKG_DIR" || { fmtr::fatal "Failed to change to TKG directory after cloning: $TKG_DIR"; exit 1; }
   fmtr::info "TKG source successfully acquired."
@@ -269,24 +255,38 @@ patch_kernel() {
 
 }
 
-
-
 arch_distro() {
 
-  sudo makepkg -C -si --noconfirm
+  clear
+
+  makepkg -C -si --noconfirm
+
+  # Bootloader config locations for systemd-boot.
+  declare -a SDBOOT_CONF_LOCATIONS=(
+      "/boot/loader/entries"
+      "/boot/efi/loader/entries"
+      "/efi/loader/entries"
+  )
+
+
 
 }
 
-
 other_distro() {
+
+  clear
 
   sudo ./install.sh install
 
 }
 
-
-# install_req_pkgs "Kernel"
 acquire_tkg_source
 select_distro
 modify_customization_cfg
 patch_kernel
+
+if [ "$distro" == "Arch" ]; then
+    arch_distro
+else
+    other_distro
+fi
