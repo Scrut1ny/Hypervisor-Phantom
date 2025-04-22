@@ -275,7 +275,7 @@ systemd-boot_boot_entry_maker() {
     "/efi/loader/entries"
   )
 
-  local ENTRY_NAME="arch-rdtsc.conf"
+  local ENTRY_NAME="HvP-RDTSC.conf"
   local TIMESTAMP; TIMESTAMP=$(date +"%Y-%m-%d_%H-%M-%S")
   local ROOT_DEVICE; ROOT_DEVICE=$(findmnt -no SOURCE /)
   local PARTUUID; PARTUUID=$(blkid -s PARTUUID -o value "$ROOT_DEVICE")
@@ -321,3 +321,5 @@ if [ "$distro" == "Arch" ]; then
 else
     other_distro
 fi
+
+systemd-boot_boot_entry_maker
