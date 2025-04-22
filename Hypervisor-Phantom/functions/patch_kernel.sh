@@ -240,11 +240,11 @@ modify_customization_cfg() {
   ####################################################################################################
   ####################################################################################################
 
-  if [ "$distro" == "Arch" ]; then
-      sed -i 's/_custom_pkgbase="[^"]*"/_custom_pkgbase="Arch Linux (Patched)"/' "$TKG_CFG_DIR" &>> "$LOG_FILE"
-  else
-      sed -i 's/_kernel_localversion="[^"]*"/_kernel_localversion=""/' "$TKG_CFG_DIR" &>> "$LOG_FILE"
-  fi
+  #if [ "$distro" == "Arch" ]; then
+  #    sed -i 's/_custom_pkgbase="[^"]*"/_custom_pkgbase="Arch Linux (Patched)"/' "$TKG_CFG_DIR" &>> "$LOG_FILE"
+  #else
+  #    sed -i 's/_kernel_localversion="[^"]*"/_kernel_localversion=""/' "$TKG_CFG_DIR" &>> "$LOG_FILE"
+  #fi
 
 }
 
@@ -257,28 +257,59 @@ patch_kernel() {
 
 arch_distro() {
 
-  clear
-
-  makepkg -C -si --noconfirm
-
-  # Bootloader config locations for systemd-boot.
-  declare -a SDBOOT_CONF_LOCATIONS=(
-      "/boot/loader/entries"
-      "/boot/efi/loader/entries"
-      "/efi/loader/entries"
-  )
-
-
+  clear; makepkg -C -si --noconfirm
 
 }
 
 other_distro() {
 
-  clear
-
-  sudo ./install.sh install
+  clear; sudo ./install.sh install
 
 }
+
+systemd-boot_boot_entry_maker() {
+
+  declare -a SDBOOT_CONF_LOCATIONS=(
+    "/boot/loader/entries"
+    "/boot/efi/loader/entries"
+    "/efi/loader/entries"
+  )
+
+  local ENTRY_NAME="arch-rdtsc.conf"
+  local TIMESTAMP; TIMESTAMP=$(date +"%Y-%m-%d_%H-%M-%S")
+  local ROOT_DEVICE; ROOT_DEVICE=$(findmnt -no SOURCE /)
+  local PARTUUID; PARTUUID=$(blkid -s PARTUUID -o value "$ROOT_DEVICE")
+  ROOTFSTYPE=$(findmnt -no FSTYPE /)
+
+  if [[ -z "$PARTUUID" ]]; then
+    fmtr::error "Unable to determine PARTUUID for root device ($ROOT_DEVICE)."
+    return 1
+  fi
+
+  local BOOT_ENTRY_CONTENT=$(cat <<EOF
+# Created by: Hypervisor-Phantom
+# Created on: $TIMESTAMP
+title   HvP (RDTSC Patch)
+linux   /vmlinuz-linux$KERNEL_MAJOR$KERNEL_MINOR-tkg-eevdf
+initrd  /initramfs-linux$KERNEL_MAJOR$KERNEL_MINOR-tkg-eevdf.img
+initrd  /initramfs-linux$KERNEL_MAJOR$KERNEL_MINOR-tkg-eevdf-fallback.img
+options root=PARTUUID=$PARTUUID rw rootfstype=$ROOTFSTYPE
+EOF
+)
+
+  for ENTRY_DIR in "${SDBOOT_CONF_LOCATIONS[@]}"; do
+    if [[ -d "$ENTRY_DIR" ]]; then
+      echo "$BOOT_ENTRY_CONTENT" > "$ENTRY_DIR/$ENTRY_NAME"
+      fmtr::info "Boot entry written to: $ENTRY_DIR/$ENTRY_NAME"
+      return 0
+    fi
+  done
+
+  fmtr::error "No valid systemd-boot entry directory found."
+  return 1
+
+}
+
 
 acquire_tkg_source
 select_distro
