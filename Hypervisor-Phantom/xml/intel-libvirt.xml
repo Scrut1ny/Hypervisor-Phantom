@@ -130,11 +130,9 @@
                                                        3. When emulating Windows 11, set "options kvm ignore_msrs=1" in "/etc/modprobe.d/kvm.conf" -->
     <feature policy="disable" name="ssbd"/>
     <feature policy="disable" name="virt-ssbd"/>
-    <!-- Disable RDTSCP for RDTSC patch -->
-    <feature policy="disable" name="rdtscp"/>
+    <feature policy="disable" name="rdtscp"/> <!-- Remove RDTSCP if RDTSC kernel patch is utilized -->
     <feature policy="disable" name="rdpid"/>
-    <!-- Enable CPU features,
-     if host-passthrough isn't used (...) -->
+    <!-- Enable CPU features if host-passthrough isn't used (...) -->
   </cpu>
 
 
