@@ -164,7 +164,7 @@ chmod -R +x *
 | Kryterion | | [Link](https://www.kryterion.com/systemcheck/) | ✅ |
 | Pearson VUE | | [Link](https://system-test.onvue.com/system_test?customer=pearson_vue) | ✅ |
 | ProctorU | ✅ | [FF Addon](https://s3-us-west-2.amazonaws.com/proctoru-assets/extension/firefox-extension-latest.xpi) or [Chrome Addon](https://chrome.google.com/webstore/detail/proctoru/goobgennebinldhonaajgafidboenlkl) | ✅ |
-| ProctorU: Guardian Browser | | [Link](https://guardian.meazurelearning.com/) | ✅ |
+| ProctorU: Guardian Browser | | [Link](https://guardian.meazurelearning.com/) or [Link](https://go.proctoru.com/testitout)| ✅ |
 | Proctorio | ✅ | [Link](https://getproctorio.com/) | ✅ |
 | Respondus (LockDown Browser) | ✅ | [Link](https://autolaunch.respondus2.com/MONServer/ldb/preview_launch.do) & [Download](https://download.respondus.com/lockdown/download.php) | ✅ |
 | Safe Exam Browser | | [Link](https://github.com/SafeExamBrowser/seb-win-refactoring) | ✅ |
