@@ -155,19 +155,19 @@ chmod -R +x *
 
 ## Exam Software
 
-| Software | Browser Extension | System Test | Bypassed |
-|----------|-------------------|-------------|----------|
-| ExamSoft: Examplify | ✅ | ??? | ✅ |
-| Examity | ✅ | [New Platform System Check](https://on.v5.examity.com/systemcheck) or [Chrome Addon](https://chromewebstore.google.com/detail/geapelpefnpekodnnlkcaadniodlgebj) or [FF Addon](https://addons.mozilla.org/en-US/firefox/addon/examity/) | ✅ |
-| Honorlock | ✅ | [Link](https://app.honorlock.com/install/extension) | ✅ |
-| Inspera Exam Portal | | [Link](https://ltu.inspera.com/get-iep) - [Demo Exam Instructions](https://www.ltu.se/en/student-web/your-studies/examination/digital-exam-inspera/instructions-for-pc-and-mac-when-downloading-the-inspera-exam-portal) | ✅ |
-| Kryterion | | [Link](https://www.kryterion.com/systemcheck/) | ✅ |
-| Pearson VUE | | [Link](https://system-test.onvue.com/system_test?customer=pearson_vue) | ✅ |
-| ProctorU | ✅ | [FF Addon](https://s3-us-west-2.amazonaws.com/proctoru-assets/extension/firefox-extension-latest.xpi) or [Chrome Addon](https://chrome.google.com/webstore/detail/proctoru/goobgennebinldhonaajgafidboenlkl) | ✅ |
-| ProctorU: Guardian Browser | | [Link](https://guardian.meazurelearning.com/) or [Link](https://go.proctoru.com/testitout)| ✅ |
-| Proctorio | ✅ | [Link](https://getproctorio.com/) | ✅ |
-| Respondus (LockDown Browser) | ✅ | [Link](https://autolaunch.respondus2.com/MONServer/ldb/preview_launch.do) & [Download](https://download.respondus.com/lockdown/download.php) | ✅ |
-| Safe Exam Browser | | [Link](https://github.com/SafeExamBrowser/seb-win-refactoring) | ✅ |
+| Software | Browser Extension | System Test | Download | Bypassed |
+|----------|-------------------|-------------|----------|----------|
+| ExamSoft: Examplify | ✅ | ??? |  | ✅ |
+| Examity | ✅ | [New Platform System Check](https://on.v5.examity.com/systemcheck) or [Chrome Addon](https://chromewebstore.google.com/detail/geapelpefnpekodnnlkcaadniodlgebj) or [FF Addon](https://addons.mozilla.org/en-US/firefox/addon/examity/) |  | ✅ |
+| Honorlock | ✅ | [Link](https://app.honorlock.com/install/extension) |  | ✅ |
+| Inspera Exam Portal | | [Link](https://ltu.inspera.com/get-iep) - [Demo Exam Instructions](https://www.ltu.se/en/student-web/your-studies/examination/digital-exam-inspera/instructions-for-pc-and-mac-when-downloading-the-inspera-exam-portal) |  | ✅ |
+| Kryterion | | [Link](https://www.kryterion.com/systemcheck/) |  | ✅ |
+| Pearson VUE | | [Link](https://system-test.onvue.com/system_test?customer=pearson_vue) |  | ✅ |
+| ProctorU | ✅ |  | [>> ⬇️ Firefox <<](https://s3-us-west-2.amazonaws.com/proctoru-assets/extension/firefox-extension-latest.xpi) or [>> ⬇️ Chrome <<](https://chrome.google.com/webstore/detail/proctoru/goobgennebinldhonaajgafidboenlkl) | ✅ |
+| ProctorU: Guardian Browser | | [Link](https://go.proctoru.com/testitout) | [>> ⬇️ <<](https://production-archimedes-secure-browser-artifacts.s3.amazonaws.com/latest/windows/guardian-browser-x64.exe) [Website #1](https://guardian.meazurelearning.com/) [Website #2](https://go.proctoru.com/testitout) | ✅ |
+| Proctorio | ✅ | [Link](https://getproctorio.com/) |  | ✅ |
+| Respondus (LockDown Browser) | ✅ | [Link](https://autolaunch.respondus2.com/MONServer/ldb/preview_launch.do) & [Download](https://download.respondus.com/lockdown/download.php) |  | ✅ |
+| Safe Exam Browser | | [Link](https://github.com/SafeExamBrowser/seb-win-refactoring) |  | ✅ |
 
 ## Anti-Cheat Software
 
