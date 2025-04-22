@@ -161,13 +161,13 @@ chmod -R +x *
 | Examity | ✅ | [New Platform System Check](https://on.v5.examity.com/systemcheck) or [Chrome Addon](https://chromewebstore.google.com/detail/geapelpefnpekodnnlkcaadniodlgebj) or [FF Addon](https://addons.mozilla.org/en-US/firefox/addon/examity/) |  | ✅ |
 | Honorlock | ✅ | [Link](https://app.honorlock.com/install/extension) |  | ✅ |
 | Inspera Exam Portal | | [Link](https://ltu.inspera.com/get-iep) - [Demo Exam Instructions](https://www.ltu.se/en/student-web/your-studies/examination/digital-exam-inspera/instructions-for-pc-and-mac-when-downloading-the-inspera-exam-portal) |  | ✅ |
-| Kryterion | | [Link](https://www.kryterion.com/systemcheck/) |  | ✅ |
+| Kryterion | | [Link](https://www.kryterion.com/systemcheck/) | [>> ⬇️ <<](https://media.webassessor.com/respondus/windows/labedition/Respondus_LockDown_Browser_Lab_OEM.msi) | ✅ |
 | Pearson VUE | | [Link](https://system-test.onvue.com/system_test?customer=pearson_vue) |  | ✅ |
-| ProctorU | ✅ |  | [>> ⬇️ Firefox <<](https://s3-us-west-2.amazonaws.com/proctoru-assets/extension/firefox-extension-latest.xpi) or [>> ⬇️ Chrome <<](https://chrome.google.com/webstore/detail/proctoru/goobgennebinldhonaajgafidboenlkl) | ✅ |
-| ProctorU: Guardian Browser | | [Link](https://go.proctoru.com/testitout) | [>> ⬇️ <<](https://production-archimedes-secure-browser-artifacts.s3.amazonaws.com/latest/windows/guardian-browser-x64.exe) [Website #1](https://guardian.meazurelearning.com/) [Website #2](https://go.proctoru.com/testitout) | ✅ |
+| ProctorU | ✅ |  | [⬇️ Firefox](https://s3-us-west-2.amazonaws.com/proctoru-assets/extension/firefox-extension-latest.xpi) or [⬇️ Chrome](https://chrome.google.com/webstore/detail/proctoru/goobgennebinldhonaajgafidboenlkl) | ✅ |
+| ProctorU: Guardian Browser | | [Link](https://go.proctoru.com/testitout) | [⬇️](https://production-archimedes-secure-browser-artifacts.s3.amazonaws.com/latest/windows/guardian-browser-x64.exe) [Website #1](https://guardian.meazurelearning.com/) [Website #2](https://go.proctoru.com/testitout) | ✅ |
 | Proctorio | ✅ | [Link](https://getproctorio.com/) |  | ✅ |
-| Respondus (LockDown Browser) | ✅ | [Link](https://autolaunch.respondus2.com/MONServer/ldb/preview_launch.do) & [Download](https://download.respondus.com/lockdown/download.php) |  | ✅ |
-| Safe Exam Browser | | [Link](https://github.com/SafeExamBrowser/seb-win-refactoring) |  | ✅ |
+| Respondus (LockDown Browser) | ✅ | [Link](https://autolaunch.respondus2.com/MONServer/ldb/preview_launch.do) | [⬇️](https://download.respondus.com/lockdown/download.php) | ✅ |
+| Safe Exam Browser | | [Link](https://github.com/SafeExamBrowser/seb-win-refactoring) | [⬇️](https://github.com/SafeExamBrowser/seb-win-refactoring/releases/download/v3.9.0/SEB_3.9.0.787_x64_Setup.msi) | ✅ |
 
 ## Anti-Cheat Software
 
