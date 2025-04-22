@@ -182,6 +182,22 @@ revert_vfio() {
 # Main flow of configure_vfio.sh
 ###############################
 
+# Prompt 0: Important disclaimer
+fmtr::warn "DISCLAIMER: This VFIO script automates GPU isolation, bootloader reconfiguration, and
+      ramdisk regeneration. Due to potential IOMMU grouping issues on some motherboards, this
+      process may not execute correctly and could mess up your system. So I highly encourage
+      you to double check the work automated for your systems safety! Make sure the vendor and
+      device ids of your selected GPU are matching the ones in configurations:
+
+      - lspci -nn | grep -Ei 'vga|3d|audio device'    _____________________________________
+      - $VFIO_CONF_PATH                    / systemd-boot = /boot/loader/entries |
+      - Linux bootloader config entry ]_____________/  GRUB         = /etc/default/grub    |"
+
+if ! prmt::yes_or_no "$(fmtr::ask 'Do you agree to proceed with this script?')"; then
+    fmtr::log "Agreement declined by $(whoami); therefore exiting."
+    exit 0
+fi
+
 # Prompt 1: Remove VFIO configs (undo PCI passthrough)?
 if prmt::yes_or_no "$(fmtr::ask 'Remove VFIO configs? (undo PCI passthrough)')"; then
     revert_vfio
