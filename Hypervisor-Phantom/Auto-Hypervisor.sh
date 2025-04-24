@@ -1,25 +1,35 @@
 #!/usr/bin/env bash
 
 detect_distro() {
+  local distro_id=""
+  
   if [ -f /etc/os-release ]; then
-    local distro_id=$(grep ^ID= /etc/os-release | cut -d= -f2 | tr -d '"')
+    distro_id=$(grep ^ID= /etc/os-release | cut -d= -f2 | tr -d '"')
     case "$distro_id" in
       # Arch-based
-      arch|manjaro|endeavouros|arcolinux|garuda|artix) DISTRO="Arch" ;;
-      
+      arch|manjaro|endeavouros|arcolinux|garuda|artix)
+        DISTRO="Arch"
+        ;;
+        
       # openSUSE
-      opensuse-tumbleweed|opensuse-slowroll|opensuse-leap|sles) DISTRO="openSUSE" ;;
-
+      opensuse-tumbleweed|opensuse-slowroll|opensuse-leap|sles)
+        DISTRO="openSUSE"
+        ;;
+        
       # Debian-based
-      debian|ubuntu|linuxmint|kali|pureos|pop|elementary|zorin|mx|parrot|deepin|peppermint|trisquel|bodhi|linuxlite|neon) DISTRO="Debian" ;;
-
+      debian|ubuntu|linuxmint|kali|pureos|pop|elementary|zorin|mx|parrot|deepin|peppermint|trisquel|bodhi|linuxlite|neon)
+        DISTRO="Debian"
+        ;;
+        
       # RHEL/Fedora-based
-      fedora|centos|rhel|rocky|alma|oracle) DISTRO="Fedora" ;;
-
-      # Unknown or less common
-      *) DISTRO="Unknown ($distro_id)" ;;
+      fedora|centos|rhel|rocky|alma|oracle)
+        DISTRO="Fedora"
+        ;;
     esac
-  else
+  fi
+
+  # Fallback if DISTRO wasn't set by case statement
+  if [ -z "$DISTRO" ]; then
     if command -v pacman &>/dev/null; then
       DISTRO="Arch"
     elif command -v apt &>/dev/null; then
@@ -29,9 +39,14 @@ detect_distro() {
     elif command -v dnf &>/dev/null; then
       DISTRO="Fedora"
     else
-      DISTRO="Unknown"
+      if [ -n "$distro_id" ]; then
+        DISTRO="Unknown ($distro_id)"
+      else
+        DISTRO="Unknown"
+      fi
     fi
   fi
+
   export DISTRO
   readonly DISTRO
 }
