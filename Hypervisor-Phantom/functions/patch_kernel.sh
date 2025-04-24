@@ -237,15 +237,6 @@ modify_customization_cfg() {
   sed -i 's/_timer_freq="[^"]*"/_timer_freq="'"1000"'"/' $TKG_CFG_DIR &>> "$LOG_FILE"
   sed -i 's/_user_patches_no_confirm="[^"]*"/_user_patches_no_confirm="'"true"'"/' $TKG_CFG_DIR &>> "$LOG_FILE"
 
-  ####################################################################################################
-  ####################################################################################################
-
-  #if [ "$distro" == "Arch" ]; then
-  #    sed -i 's/_custom_pkgbase="[^"]*"/_custom_pkgbase="Arch Linux (Patched)"/' "$TKG_CFG_DIR" &>> "$LOG_FILE"
-  #else
-  #    sed -i 's/_kernel_localversion="[^"]*"/_kernel_localversion=""/' "$TKG_CFG_DIR" &>> "$LOG_FILE"
-  #fi
-
 }
 
 patch_kernel() {
