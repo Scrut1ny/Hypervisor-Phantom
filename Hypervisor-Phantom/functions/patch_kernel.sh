@@ -32,7 +32,7 @@ acquire_tkg_source() {
     if [ -d "$TKG_DIR/.git" ]; then
       fmtr::warn "Directory $TKG_DIR already exists and is a valid Git repository."
       if ! prmt::yes_or_no "$(fmtr::ask 'Delete and re-clone the linux-tkg source?')"; then
-        fmtr::info "Keeping existing directory. Skipping re-clone."
+        fmtr::info "Keeping existing directory; Skipping re-clone."
         cd "$TKG_DIR" || { fmtr::fatal "Failed to change to TKG directory after cloning: $TKG_DIR"; exit 1; }
         return
       fi
