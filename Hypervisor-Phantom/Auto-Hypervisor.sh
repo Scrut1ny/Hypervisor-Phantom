@@ -4,10 +4,19 @@ detect_distro() {
   if [ -f /etc/os-release ]; then
     local distro_id=$(grep ^ID= /etc/os-release | cut -d= -f2 | tr -d '"')
     case "$distro_id" in
-      arch) DISTRO="Arch" ;;
-      opensuse-tumbleweed|opensuse-slowroll|opensuse-leap) DISTRO="openSUSE" ;;
-      debian|ubuntu|linuxmint|kali|pureos) DISTRO="Debian" ;;
-      fedora|centos|rhel|rocky) DISTRO="Fedora" ;;
+      # Arch-based
+      arch|manjaro|endeavouros|arcolinux|garuda|artix) DISTRO="Arch" ;;
+      
+      # openSUSE
+      opensuse-tumbleweed|opensuse-slowroll|opensuse-leap|sles) DISTRO="openSUSE" ;;
+
+      # Debian-based
+      debian|ubuntu|linuxmint|kali|pureos|pop|elementary|zorin|mx|parrot|deepin|peppermint|trisquel|bodhi|linuxlite|neon) DISTRO="Debian" ;;
+
+      # RHEL/Fedora-based
+      fedora|centos|rhel|rocky|alma|oracle) DISTRO="Fedora" ;;
+
+      # Unknown or less common
       *) DISTRO="Unknown ($distro_id)" ;;
     esac
   else
@@ -114,7 +123,7 @@ main_menu() {
       2) fmtr::box_text "${options[2]}"; "./functions/install_virt_software.sh" ;;
       3) fmtr::box_text "${options[3]}"; "./functions/spoof_qemu_patch.sh" ;;
       4) fmtr::box_text "${options[4]}"; "./functions/spoof_ovmf_patch.sh" ;;
-      5) fmtr::box_text "${options[5]}"; fmtr::warn "Not supported yet, in progress." ;; # ./functions/patch_kernel.sh
+      5) fmtr::box_text "${options[5]}"; "./functions/patch_kernel.sh" ;;
       6) fmtr::box_text "${options[6]}"; "./functions/looking_glass.sh" ;;
       0)
         if prmt::yes_or_no "$(fmtr::ask 'Do you want to clear the logs directory?')"; then
