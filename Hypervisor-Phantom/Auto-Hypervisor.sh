@@ -6,7 +6,7 @@ detect_distro() {
     case "$distro_id" in
       arch) DISTRO="Arch" ;;
       opensuse-tumbleweed|opensuse-slowroll|opensuse-leap) DISTRO="openSUSE" ;;
-      debian|ubuntu|linuxmint|kali) DISTRO="Debian" ;;
+      debian|ubuntu|linuxmint|kali|pureos) DISTRO="Debian" ;;
       fedora|centos|rhel|rocky) DISTRO="Fedora" ;;
       *) DISTRO="Unknown ($distro_id)" ;;
     esac
