@@ -27,21 +27,32 @@ readonly GPG_KEY="CEACC9E15534EBABB82D3FA03353C9CEF108B584"
 REQUIRED_PKGS_Arch=(
   base-devel dmidecode glib2 libusb ninja
   python-packaging python-sphinx python-sphinx_rtd_theme gnupg
+
+  # Spice Dependency
+  spice
 )
 REQUIRED_PKGS_Debian=(
   build-essential libfdt-dev libglib2.0-dev libpixman-1-dev
   libusb-1.0-0-dev ninja-build python3-venv zlib1g-dev gnupg
+
+  # Spice Dependency
+  spice
 )
 REQUIRED_PKGS_openSUSE=(
   bzip2 gcc-c++ gpg2 glib2-devel make qemu  
   libpixman-1-0-devel libusb-1_0-devel patch
   python3-Sphinx ninja
+
+  # Spice Dependency
+  spice
 )
 REQUIRED_PKGS_Fedora=(
   bzip2 glib2-devel libfdt-devel libusb1-devel
   ninja-build pixman-devel python3 zlib-devel gnupg2
-)
 
+  # Spice Dependency
+  spice
+)
 
 acquire_qemu_source() {
   mkdir -p "$SRC_DIR" && cd "$SRC_DIR"
@@ -280,11 +291,14 @@ compile_qemu() {
   fmtr::log "Configuring build environment"
   ./configure --target-list=x86_64-softmmu \
               --enable-libusb \
+              --enable-spice \
               --disable-werror &>> "$LOG_FILE"
-              #--enable-spice # Enable Spice for QXL Video
 
-  fmtr::log "Building & Installing QEMU"
-  sudo make install -j"$(nproc)" &>> "$LOG_FILE"
+  fmtr::log "Building QEMU"
+  make -j"$(nproc)" &>> "$LOG_FILE"
+
+  fmtr::log "Installing QEMU"
+  sudo make install &>> "$LOG_FILE"
   fmtr::info "Compilation finished!"
 }
 
