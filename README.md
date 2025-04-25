@@ -479,6 +479,8 @@ XXXX-XX-XX XX:XX:XX.XXX-XXXX [BROWSER LOCK] [INFO] Number of display devices con
 | Elgato Cam Link 4K          | No driver since it's a UVC device |
 | Elgato Game Capture HD60 S+ | No driver since it's a UVC device |
 | Elgato Game Capture HD60 X  | No driver since it's a UVC device |
+| Game Capture 4K X           | No driver since it's a UVC device |
+| Game Capture Neo            | No driver since it's a UVC device |
 
 ## Linux - OBS Black Screen Issue Solution
 
