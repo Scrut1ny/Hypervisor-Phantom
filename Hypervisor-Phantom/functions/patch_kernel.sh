@@ -283,6 +283,15 @@ systemd-boot_boot_entry_maker() {
 title   HvP (RDTSC Patch)
 linux   /vmlinuz-linux$KERNEL_MAJOR$KERNEL_MINOR-tkg-eevdf
 initrd  /initramfs-linux$KERNEL_MAJOR$KERNEL_MINOR-tkg-eevdf.img
+options root=PARTUUID=$PARTUUID rw rootfstype=$ROOTFSTYPE
+EOF
+)
+
+  local FALLBACK_BOOT_ENTRY_CONTENT=$(cat <<EOF
+# Created by: Hypervisor-Phantom
+# Created on: $TIMESTAMP
+title   HvP (RDTSC Patch - Fallback)
+linux   /vmlinuz-linux$KERNEL_MAJOR$KERNEL_MINOR-tkg-eevdf
 initrd  /initramfs-linux$KERNEL_MAJOR$KERNEL_MINOR-tkg-eevdf-fallback.img
 options root=PARTUUID=$PARTUUID rw rootfstype=$ROOTFSTYPE
 EOF
@@ -291,7 +300,8 @@ EOF
   for ENTRY_DIR in "${SDBOOT_CONF_LOCATIONS[@]}"; do
     if [[ -d "$ENTRY_DIR" ]]; then
       echo "$BOOT_ENTRY_CONTENT" > "$ENTRY_DIR/$ENTRY_NAME"
-      fmtr::info "Boot entry written to: $ENTRY_DIR/$ENTRY_NAME"
+      echo "$FALLBACK_BOOT_ENTRY_CONTENT" > "$ENTRY_DIR/FALLBACK_$ENTRY_NAME"
+      fmtr::info "Boot entries written to: $ENTRY_DIR/$ENTRY_NAME and $ENTRY_DIR/FALLBACK_$ENTRY_NAME"
       return 0
     fi
   done
@@ -300,7 +310,6 @@ EOF
   return 1
 
 }
-
 
 acquire_tkg_source
 select_distro
