@@ -250,11 +250,23 @@ arch_distro() {
 
   clear; makepkg -C -si --noconfirm
 
+  if prmt::yes_or_no "$(fmtr::ask 'Would you like to add a systemd-boot entry for this kernel?')"; then
+    systemd-boot_boot_entry_maker
+  else
+    fmtr::info "Skipping systemd-boot entry creation."
+  fi
+
 }
 
 other_distro() {
 
   clear; sudo ./install.sh install
+
+  if prmt::yes_or_no "$(fmtr::ask 'Would you like to add a systemd-boot entry for this kernel?')"; then
+    systemd-boot_boot_entry_maker
+  else
+    fmtr::info "Skipping systemd-boot entry creation."
+  fi
 
 }
 
@@ -316,7 +328,6 @@ EOF
 
 }
 
-
 acquire_tkg_source
 select_distro
 modify_customization_cfg
@@ -327,5 +338,3 @@ if [ "$distro" == "Arch" ]; then
 else
     other_distro
 fi
-
-systemd-boot_boot_entry_maker
