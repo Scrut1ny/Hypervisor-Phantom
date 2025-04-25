@@ -301,8 +301,13 @@ EOF
     if [[ -d "$ENTRY_DIR" ]]; then
       echo "$BOOT_ENTRY_CONTENT" | sudo tee "$ENTRY_DIR/$ENTRY_NAME.conf" &>> "$LOG_FILE"
       echo "$FALLBACK_BOOT_ENTRY_CONTENT" | sudo tee "$ENTRY_DIR/$ENTRY_NAME-fallback.conf" &>> "$LOG_FILE"
-      fmtr::info "Boot entries written to: $ENTRY_DIR/$ENTRY_NAME.conf and $ENTRY_DIR/$ENTRY_NAME-fallback.conf"
-      return 0
+      if [[ $? -eq 0 ]]; then
+        fmtr::info "Boot entries written to: $ENTRY_DIR/$ENTRY_NAME.conf and $ENTRY_DIR/$ENTRY_NAME-fallback.conf"
+        return 0
+      else
+        fmtr::error "Failed to write boot entries to: $ENTRY_DIR/$ENTRY_NAME.conf and $ENTRY_DIR/$ENTRY_NAME-fallback.conf"
+        return 1
+      fi
     fi
   done
 
