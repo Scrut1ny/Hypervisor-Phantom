@@ -98,6 +98,7 @@ acquire_qemu_source() {
 
   cd "$QEMU_DIR" || { fmtr::fatal "Failed to change to QEMU directory: $QEMU_DIR"; exit 1; }
   fmtr::info "QEMU source successfully acquired and extracted."
+  patch_qemu
 }
 
 patch_qemu() {
@@ -320,7 +321,6 @@ cleanup() {
 main() {
   install_req_pkgs "QEMU"
   acquire_qemu_source
-  patch_qemu
   prmt::yes_or_no "$(fmtr::ask 'Build & install QEMU to /usr/local/bin')" && compile_qemu
   ! prmt::yes_or_no "$(fmtr::ask 'Keep QEMU source to make repatching quicker')" && cleanup
 }
