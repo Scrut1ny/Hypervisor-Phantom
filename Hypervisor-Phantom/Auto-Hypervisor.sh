@@ -19,16 +19,18 @@ detect_distro() {
       # Windows-Based
       msys2)
         DISTRO="Windows"
-        echo "Hey you, Windows looser! Yes, YOU! Go FUCK yourself, and switch to Linux!"
-        echo "\"i use arch btw\" - Scrut1ny"
+        fmtr::fatal "WARNING: Windows user detected! Hey you, Windows looser! Yes, YOU! Go FUCK yourself, and
+               switch to Linux!"
+        fmtr::info "\"i use arch btw\" - Scrut1ny"
         exit 1
         ;;
 
       # Ubuntu-based
       ubuntu)
         DISTRO="Ubuntu"
-        echo "Hey you, Ubuntu looser! Yes, YOU! Go FUCK yourself, and switch your Linux distro for something better!"
-        echo "\"i use arch btw\" - Scrut1ny"
+        fmtr::fatal "WARNING: Ubuntu user detected! Hey you, Ubuntu looser! Yes, YOU! Go FUCK yourself, and
+               switch your Linux distro for something better!"
+        fmtr::info "\"i use arch btw\" - Scrut1ny"
         exit 1
         ;;
 
@@ -56,8 +58,8 @@ detect_distro() {
       DISTRO="Fedora"
     elif command -v csrutil &>/dev/null; then
       DISTRO="macOS"
-      echo "Hey you, iDevice looser! Yes, YOU! Go FUCK yourself, and switch to Linux!"
-      echo "\"i use arch btw\" - Scrut1ny"
+      fmtr::fatal "Hey you, iDevice looser! Yes, YOU! Go FUCK yourself, and switch to Linux!"
+      fmtr::info "\"i use arch btw\" - Scrut1ny"
       exit 1
     else
       if [ -n "$distro_id" ]; then
