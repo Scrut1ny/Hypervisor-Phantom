@@ -164,7 +164,7 @@ chmod -R +x *
 | Inspera Exam Portal | | • [System Test](https://ltu.inspera.com/get-iep) <br> • [Demo Exam Instructions](https://www.ltu.se/en/student-web/your-studies/examination/digital-exam-inspera/instructions-for-pc-and-mac-when-downloading-the-inspera-exam-portal) |  | ✅ |
 | Kryterion | | [System Test](https://www.kryterion.com/systemcheck/) | [⬇ Download ⬇](https://media.webassessor.com/respondus/windows/labedition/Respondus_LockDown_Browser_Lab_OEM.msi) | ✅ |
 | Pearson VUE | | [System Test](https://system-test.onvue.com/system_test?customer=pearson_vue) |  | ✅ |
-| ProctorU | ✅ |  | [⬇ Firefox ⬇](https://s3-us-west-2.amazonaws.com/proctoru-assets/extension/firefox-extension-latest.xpi) <br> [⬇ Chrome ⬇](https://chrome.google.com/webstore/detail/proctoru/goobgennebinldhonaajgafidboenlkl) | ✅ |
+| ProctorU | ✅ |  | • [⬇ Firefox ⬇](https://s3-us-west-2.amazonaws.com/proctoru-assets/extension/firefox-extension-latest.xpi) <br> • [⬇ Chrome ⬇](https://chrome.google.com/webstore/detail/proctoru/goobgennebinldhonaajgafidboenlkl) | ✅ |
 | ProctorU: Guardian Browser | | [System Test](https://go.proctoru.com/testitout) | • [⬇ Download ⬇](https://production-archimedes-secure-browser-artifacts.s3.amazonaws.com/latest/windows/guardian-browser-x64.exe) <br> • [Meazure Learning Page](https://guardian.meazurelearning.com/) <br> • [ProctorU Page](https://go.proctoru.com/testitout) | ✅ |
 | Proctorio | ✅ | [System Test](https://getproctorio.com/) |  | ✅ |
 | Respondus (LockDown Browser) | ✅ | [System Test](https://autolaunch.respondus2.com/MONServer/ldb/preview_launch.do) | [⬇ Download ⬇](https://download.respondus.com/lockdown/download.php) | ✅ |
