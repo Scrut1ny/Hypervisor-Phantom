@@ -149,9 +149,9 @@ chmod -R +x *
 
 | Rating | Software | System Test | Bypassed |
 |:------:|:--------:|:-----------:|:--------:|
-| 🥇 | VMAware | [Repo Link](https://github.com/kernelwernel/VMAware) <br> [Download - x64 - v2.3.0](https://github.com/kernelwernel/VMAware/releases/download/v2.3.0/vmaware.exe) <br> [Download - x32 - v2.3.0](https://github.com/kernelwernel/VMAware/releases/download/v2.3.0/vmaware32.exe) | ✅ |
-| 🥈 | Al-Khaser (Obsolete) | [Repo Link](https://github.com/LordNoteworthy/al-khaser) <> [Download - x64 - v1.0.0](https://github.com/ayoubfaouzi/al-khaser/releases/download/v1.0.0/al-khaser_x64.7z) <> [Download - x32 - v1.0.0](https://github.com/ayoubfaouzi/al-khaser/releases/download/v1.0.0/al-khaser_x86.7z) | ✅ |
-| 🥉 | Pafish (Obsolete) | [Repo Link](https://github.com/a0rtega/pafish) <> [Download - x64 - v0.6](https://github.com/a0rtega/pafish/releases/download/v0.6/pafish64.exe) <> [Download - x32 - v0.6](https://github.com/a0rtega/pafish/releases/download/v0.6/pafish.exe) | ✅ |
+| 🥇 | VMAware | [Repository Link](https://github.com/kernelwernel/VMAware) <br> [⬇️ Download - x64 - v2.3.0](https://github.com/kernelwernel/VMAware/releases/download/v2.3.0/vmaware.exe) <br> [⬇️ Download - x32 - v2.3.0](https://github.com/kernelwernel/VMAware/releases/download/v2.3.0/vmaware32.exe) | ✅ |
+| 🥈 | Al-Khaser (Obsolete) | [Repository Link](https://github.com/LordNoteworthy/al-khaser) <br> [⬇️ Download - x64 - v1.0.0](https://github.com/ayoubfaouzi/al-khaser/releases/download/v1.0.0/al-khaser_x64.7z) <br> [⬇️ Download - x32 - v1.0.0](https://github.com/ayoubfaouzi/al-khaser/releases/download/v1.0.0/al-khaser_x86.7z) | ✅ |
+| 🥉 | Pafish (Obsolete) | [Repository Link](https://github.com/a0rtega/pafish) <br> [⬇️ Download - x64 - v0.6](https://github.com/a0rtega/pafish/releases/download/v0.6/pafish64.exe) <br> [⬇️ Download - x32 - v0.6](https://github.com/a0rtega/pafish/releases/download/v0.6/pafish.exe) | ✅ |
 
 ## Exam Software
 
