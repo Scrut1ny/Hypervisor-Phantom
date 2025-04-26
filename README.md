@@ -159,7 +159,7 @@ chmod -R +x *
 |:--------:|:-----------------:|:-----------:|:--------:|:--------:|
 | Bluebook |  |  | [⬇️ Download ⬇️](https://bluebook.app.collegeboard.org/) | ✅ |
 | ExamSoft: Examplify | ✅ |  |  | ✅ |
-| Examity | ✅ | [New Platform System Check](https://on.v5.examity.com/systemcheck) or [⬇️ Chrome Addon ⬇️](https://chromewebstore.google.com/detail/geapelpefnpekodnnlkcaadniodlgebj) or [⬇️ Firefox Addon ⬇️](https://addons.mozilla.org/en-US/firefox/addon/examity/) |  | ✅ |
+| Examity | ✅ | [New Platform System Check](https://on.v5.examity.com/systemcheck) | [⬇️ Chrome Addon ⬇️](https://chromewebstore.google.com/detail/geapelpefnpekodnnlkcaadniodlgebj) <br> [⬇️ Firefox Addon ⬇️](https://addons.mozilla.org/en-US/firefox/addon/examity/) | ✅ |
 | Honorlock | ✅ | [Link](https://app.honorlock.com/install/extension) |  | ✅ |
 | Inspera Exam Portal | | [Link](https://ltu.inspera.com/get-iep) - [Demo Exam Instructions](https://www.ltu.se/en/student-web/your-studies/examination/digital-exam-inspera/instructions-for-pc-and-mac-when-downloading-the-inspera-exam-portal) |  | ✅ |
 | Kryterion | | [Link](https://www.kryterion.com/systemcheck/) | [⬇️ Download ⬇️](https://media.webassessor.com/respondus/windows/labedition/Respondus_LockDown_Browser_Lab_OEM.msi) | ✅ |
