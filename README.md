@@ -156,7 +156,7 @@ chmod -R +x *
 ## Exam Software
 
 | Software | Browser Extension | System Test | Download | Bypassed |
-|----------|-------------------|-------------|----------|----------|
+|:--------:|:-----------------:|:-----------:|:--------:|:--------:|
 | Bluebook |  |  | [>> ⬇️ <<](https://bluebook.app.collegeboard.org/) | ✅ |
 | ExamSoft: Examplify | ✅ |  |  | ✅ |
 | Examity | ✅ | [New Platform System Check](https://on.v5.examity.com/systemcheck) or [Chrome Addon](https://chromewebstore.google.com/detail/geapelpefnpekodnnlkcaadniodlgebj) or [FF Addon](https://addons.mozilla.org/en-US/firefox/addon/examity/) |  | ✅ |
