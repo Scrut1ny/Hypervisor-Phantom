@@ -15,9 +15,25 @@ detect_distro() {
       opensuse-tumbleweed|opensuse-slowroll|opensuse-leap|sles)
         DISTRO="openSUSE"
         ;;
-        
+
+      # Windows-Based
+      msys2)
+        DISTRO="Windows"
+        echo "Hey you, Windows looser! Yes, YOU! Go FUCK yourself, and switch to Linux!"
+        echo "\"i use arch btw\" - Scrut1ny"
+        exit 1
+        ;;
+
+      # Ubuntu-based
+      ubuntu)
+        DISTRO="Ubuntu"
+        echo "Hey you, Ubuntu looser! Yes, YOU! Go FUCK yourself, and switch your Linux distro for something better!"
+        echo "\"i use arch btw\" - Scrut1ny"
+        exit 1
+        ;;
+
       # Debian-based
-      debian|ubuntu|linuxmint|kali|pureos|pop|elementary|zorin|mx|parrot|deepin|peppermint|trisquel|bodhi|linuxlite|neon)
+      debian|linuxmint|kali|pureos|pop|elementary|zorin|mx|parrot|deepin|peppermint|trisquel|bodhi|linuxlite|neon)
         DISTRO="Debian"
         ;;
         
@@ -38,6 +54,11 @@ detect_distro() {
       DISTRO="openSUSE"
     elif command -v dnf &>/dev/null; then
       DISTRO="Fedora"
+    elif command -v csrutil &>/dev/null; then
+      DISTRO="macOS"
+      echo "Hey you, iDevice looser! Yes, YOU! Go FUCK yourself, and switch to Linux!"
+      echo "\"i use arch btw\" - Scrut1ny"
+      exit 1
     else
       if [ -n "$distro_id" ]; then
         DISTRO="Unknown ($distro_id)"
