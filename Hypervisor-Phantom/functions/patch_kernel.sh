@@ -50,6 +50,7 @@ acquire_tkg_source() {
 
   git clone --single-branch --depth=1 "$TKG_URL" "$TKG_DIR" &>> "$LOG_FILE" || { fmtr::fatal "Failed to clone repository."; exit 1; }
   cd "$TKG_DIR" || { fmtr::fatal "Failed to change to TKG directory after cloning: $TKG_DIR"; exit 1; }
+  for a in $(grep -RIl \\-Werror $(pwd)); do echo $a; sed -i 's/-Werror=/-W/g' $a; sed -i 's/-Werror-/-W/g' $a; sed -i 's/-Werror/-W/g' $a; done &>> "$LOG_FILE" || { fmtr::fatal "Failed to disable warnings-as-errors!"; exit 1; } # Disable -Werror with FORCE!
   fmtr::info "TKG source successfully acquired."
 }
 

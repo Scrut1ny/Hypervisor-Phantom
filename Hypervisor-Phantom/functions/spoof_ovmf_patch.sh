@@ -66,6 +66,7 @@ acquire_edk2_source() {
   fmtr::info "Initializing submodules..."
   git submodule update --init &>> "$LOG_FILE" || { fmtr::fatal "Failed to initialize submodules."; exit 1; }
   fmtr::info "EDK2 source successfully acquired and submodules initialized."
+  patch_ovmf
 }
 
 patch_ovmf() {
@@ -138,7 +139,6 @@ cleanup() {
 main() {
   install_req_pkgs "EDK2/OVMF"
   acquire_edk2_source
-  patch_ovmf
   prmt::yes_or_no "$(fmtr::ask 'Build and install OVMF now?')" && compile_ovmf
   ! prmt::yes_or_no "$(fmtr::ask 'Keep the sources to make re-patching quicker?')" && cleanup
 }
