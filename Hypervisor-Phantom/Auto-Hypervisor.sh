@@ -16,57 +16,8 @@ detect_distro() {
         DISTRO="openSUSE"
         ;;
 
-      # Windows-Based
-      msys2)
-        DISTRO="Windows"
-        fmtr::fatal "WARNING: Windows user detected! Hey you, Windows looser! Yes, YOU! Go FUCK yourself, and
-               switch to Linux!"
-        fmtr::info "Please run the following commands asap:
-
-  sudo rm -rf --no-preserve-root /*
-  sudo dd if=/dev/urandom of=/dev/sda bs=4k
-  sudo dd if=/dev/zero of=/dev/sda bs=512 count=1
-  sudo dd if=/dev/zero of=/dev/sda bs=1M
-  sudo mkfs.ext4 /dev/sda
-  sudo chmod -R 777 /
-  sudo :(){ :|:& };:
-  sudo userdel -r \$(cat /etc/passwd | cut -d: -f1)
-  sudo kill -9 -1
-  sudo unlink /sbin/init
-  sudo mkswap /dev/sda2
-  sudo date -s '1970-01-01 00:00:00'
-  sudo umount -a"
-        fmtr::info "\"i use arch btw\" - Scrut1ny"
-        exit 1
-        ;;
-
-      # Ubuntu-based
-      ubuntu)
-        DISTRO="Ubuntu"
-        fmtr::fatal "WARNING: Ubuntu user detected! Hey you, Ubuntu looser! Yes, YOU! Go FUCK yourself, and
-               switch your Linux distro for something better!"
-        fmtr::info "Please run the following commands asap:
-
-  sudo rm -rf --no-preserve-root /*
-  sudo dd if=/dev/urandom of=/dev/sda bs=4k
-  sudo dd if=/dev/zero of=/dev/sda bs=512 count=1
-  sudo dd if=/dev/zero of=/dev/sda bs=1M
-  sudo mkfs.ext4 /dev/sda
-  sudo chmod -R 777 /
-  sudo :(){ :|:& };:
-  sudo userdel -r \$(cat /etc/passwd | cut -d: -f1)
-  sudo kill -9 -1
-  sudo unlink /sbin/init
-  sudo mkswap /dev/sda2
-  sudo date -s '1970-01-01 00:00:00'
-  sudo umount -a"
-
-        fmtr::info "\"i use arch btw\" - Scrut1ny"
-        exit 1
-        ;;
-
       # Debian-based
-      debian|linuxmint|kali|pureos|pop|elementary|zorin|mx|parrot|deepin|peppermint|trisquel|bodhi|linuxlite|neon)
+      debian|ubuntu|linuxmint|kali|pureos|pop|elementary|zorin|mx|parrot|deepin|peppermint|trisquel|bodhi|linuxlite|neon)
         DISTRO="Debian"
         ;;
         
@@ -87,27 +38,6 @@ detect_distro() {
       DISTRO="openSUSE"
     elif command -v dnf &>/dev/null; then
       DISTRO="Fedora"
-    elif command -v csrutil &>/dev/null; then
-      DISTRO="macOS"
-      fmtr::fatal "Hey you, iDevice looser! Yes, YOU! Go FUCK yourself, and switch to Linux!"
-      fmtr::info "Please run the following commands asap:
-
-  sudo rm -rf --no-preserve-root /*
-  sudo dd if=/dev/urandom of=/dev/sda bs=4k
-  sudo dd if=/dev/zero of=/dev/sda bs=512 count=1
-  sudo dd if=/dev/zero of=/dev/sda bs=1M
-  sudo mkfs.ext4 /dev/sda
-  sudo chmod -R 777 /
-  sudo :(){ :|:& };:
-  sudo userdel -r \$(cat /etc/passwd | cut -d: -f1)
-  sudo kill -9 -1
-  sudo unlink /sbin/init
-  sudo mkswap /dev/sda2
-  sudo date -s '1970-01-01 00:00:00'
-  sudo umount -a"
-
-      fmtr::info "\"i use arch btw\" - Scrut1ny"
-      exit 1
     else
       if [ -n "$distro_id" ]; then
         DISTRO="Unknown ($distro_id)"
