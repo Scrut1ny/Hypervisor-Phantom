@@ -25,7 +25,7 @@ $keys = Get-ChildItem -Path $regPath -Recurse
 
 # Loop through each key and check if its name contains any of the search strings
 foreach ($key in $keys) {
-    if ($searchStrings -match $key.PSPath) {
+    if ($searchStrings | Where-Object { $key.PSPath -like "*$_*" }) {
         try {
             # Forcefully remove the registry key
             Write-Host "Deleting key: $($key.PSPath)"
@@ -37,5 +37,7 @@ foreach ($key in $keys) {
 }
 '@
 
-# Execute cleanup script using PsExec
-Start-Process -FilePath $psexecPath -ArgumentList "-accepteula -nobanner -s powershell -ExecutionPolicy Bypass -Command `"$cleanupScript`"" -WindowStyle Hidden -Wait
+$cleanupScriptPath = "$tempDir\cleanup.ps1"
+$cleanupScript | Set-Content -Path $cleanupScriptPath -Encoding UTF8
+
+Start-Process -FilePath $psexecPath -ArgumentList "-accepteula -nobanner -s powershell -ExecutionPolicy Bypass -File `"$cleanupScriptPath`"" -WindowStyle Hidden -Wait
