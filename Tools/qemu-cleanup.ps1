@@ -3,15 +3,16 @@
 $downloadUrl = "https://download.sysinternals.com/files/PSTools.zip"
 $tempDir = "$env:TEMP\PSTools"
 $zipPath = "$tempDir.zip"
-
-if (-Not (Test-Path $tempDir)) {
-    Invoke-WebRequest -Uri $downloadUrl -OutFile $zipPath
-	Expand-Archive -Path $zipPath -DestinationPath $tempDir
-	Remove-Item -Path $zipPath -Force
-}
-
 $psexecPath = Join-Path $tempDir "PsExec64.exe"
 
+# Download and extract PSTools if it doesn't exist
+if (-Not (Test-Path $tempDir)) {
+    Invoke-WebRequest -Uri $downloadUrl -OutFile $zipPath
+    Expand-Archive -Path $zipPath -DestinationPath $tempDir
+    Remove-Item -Path $zipPath -Force
+}
+
+# Cleanup script as a string, embedded directly in the process call
 $cleanupScript = @'
 # Define the registry path
 $regPath = "HKLM:\SYSTEM\CurrentControlSet\Enum\PCI"
@@ -24,7 +25,7 @@ $keys = Get-ChildItem -Path $regPath -Recurse
 
 # Loop through each key and check if its name contains any of the search strings
 foreach ($key in $keys) {
-    if ($searchStrings | Where-Object { $key.PSPath -like "*$_*" }) {
+    if ($searchStrings -match $key.PSPath) {
         try {
             # Forcefully remove the registry key
             Write-Host "Deleting key: $($key.PSPath)"
@@ -36,7 +37,5 @@ foreach ($key in $keys) {
 }
 '@
 
-$cleanupScriptPath = "$tempDir\cleanup.ps1"
-$cleanupScript | Set-Content -Path $cleanupScriptPath -Encoding UTF8
-
-Start-Process -FilePath $psexecPath -ArgumentList "-accepteula -nobanner -s powershell -ExecutionPolicy Bypass -File `"$cleanupScriptPath`"" -WindowStyle Hidden -Wait
+# Execute cleanup script using PsExec
+Start-Process -FilePath $psexecPath -ArgumentList "-accepteula -nobanner -s powershell -ExecutionPolicy Bypass -Command `"$cleanupScript`"" -WindowStyle Hidden -Wait
