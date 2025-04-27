@@ -1,47 +1,42 @@
-# Set up variables
+# Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
+
 $downloadUrl = "https://download.sysinternals.com/files/PSTools.zip"
 $tempDir = "$env:TEMP\PSTools"
-$zipPath = "$tempDir\PSTools.zip"
+$zipPath = "$tempDir.zip"
 
-# Create directory if it doesn't exist
 if (-Not (Test-Path $tempDir)) {
-    New-Item -ItemType Directory -Path $tempDir -Force | Out-Null
+    Invoke-WebRequest -Uri $downloadUrl -OutFile $zipPath
+	Expand-Archive -Path $zipPath -DestinationPath $tempDir
+	Remove-Item -Path $zipPath -Force
 }
 
-# Download PSTools.zip
-Invoke-WebRequest -Uri $downloadUrl -OutFile $zipPath
-
-# Extract the zip file
-Add-Type -AssemblyName System.IO.Compression.FileSystem
-[System.IO.Compression.ZipFile]::ExtractToDirectory($zipPath, $tempDir)
-
-# Set PsExec64 path
 $psexecPath = Join-Path $tempDir "PsExec64.exe"
 
-# Create the cleanup PowerShell command
 $cleanupScript = @'
-$patterns = @(
-    "HKLM\SYSTEM\CurrentControlSet\Enum\PCI\VEN_1AF4",
-    "HKLM\SYSTEM\CurrentControlSet\Enum\PCI\VEN_1B36",
-    "HKLM\SYSTEM\CurrentControlSet\Enum\SCSI\Disk&Ven_"
-)
+# Define the registry path
+$regPath = "HKLM:\SYSTEM\CurrentControlSet\Enum\PCI"
 
-foreach ($pattern in $patterns) {
-    $keys = Get-ChildItem -Path $pattern -ErrorAction SilentlyContinue
-    foreach ($key in $keys) {
+# List of strings to search for in the key names
+$searchStrings = @("VEN_1AF4", "DEV_1B36", "SUBSYS_11001AF4")
+
+# Get all subkeys under the PCI path
+$keys = Get-ChildItem -Path $regPath -Recurse
+
+# Loop through each key and check if its name contains any of the search strings
+foreach ($key in $keys) {
+    if ($searchStrings | Where-Object { $key.PSPath -like "*$_*" }) {
         try {
-            Remove-Item -Path $key.PSPath -Recurse -Force -ErrorAction Stop
-            Write-Host "Deleted: $($key.PSPath)"
+            # Forcefully remove the registry key
+            Write-Host "Deleting key: $($key.PSPath)"
+            Remove-Item -Path $key.PSPath -Recurse -Force
         } catch {
-            Write-Warning "Failed to delete: $($key.PSPath) - $_"
+            Write-Host "Failed to delete key: $($key.PSPath) - $_"
         }
     }
 }
 '@
 
-# Save cleanup script to a temporary .ps1 file
 $cleanupScriptPath = "$tempDir\cleanup.ps1"
 $cleanupScript | Set-Content -Path $cleanupScriptPath -Encoding UTF8
 
-# Execute cleanup script with PsExec64 as SYSTEM
-Start-Process -FilePath $psexecPath -ArgumentList "-accepteula -s powershell -ExecutionPolicy Bypass -File `"$cleanupScriptPath`"" -Wait
+Start-Process -FilePath $psexecPath -ArgumentList "-accepteula -nobanner -s powershell -ExecutionPolicy Bypass -File `"$cleanupScriptPath`"" -WindowStyle Hidden -Wait
