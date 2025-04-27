@@ -26,6 +26,7 @@ readonly KERNEL_VERSION="${KERNEL_MAJOR}.${KERNEL_MINOR}-${KERNEL_PATCH}"
 readonly KERNEL_USER_PATCH="../../patches/Kernel/zen-kernel-${KERNEL_MAJOR}.${KERNEL_MINOR}-${KERNEL_PATCH}-${CPU_VENDOR}.mypatch"
 
 acquire_tkg_source() {
+
   mkdir -p "$SRC_DIR" && cd "$SRC_DIR"
 
   if [ -d "$TKG_DIR" ]; then
@@ -45,18 +46,24 @@ acquire_tkg_source() {
       fi
     fi
     rm -rf "$TKG_DIR" || { fmtr::fatal "Failed to remove existing directory: $TKG_DIR"; exit 1; }
-    fmtr::info "Directory purged; re-cloning repository..."
+    fmtr::info "Directory purged"
   fi
 
   fmtr::info "Cloning linux-tkg repository..."
   git clone --single-branch --depth=1 "$TKG_URL" "$TKG_DIR" &>> "$LOG_FILE" || { fmtr::fatal "Failed to clone repository."; exit 1; }
   cd "$TKG_DIR" || { fmtr::fatal "Failed to change to TKG directory after cloning: $TKG_DIR"; exit 1; }
-  for a in $(grep -RIl \\-Werror $(pwd)); do echo $a; sed -i 's/-Werror=/-W/g' $a; sed -i 's/-Werror-/-W/g' $a; sed -i 's/-Werror/-W/g' $a; done &>> "$LOG_FILE" || { fmtr::fatal "Failed to disable warnings-as-errors!"; exit 1; } # Disable -Werror with FORCE!
   fmtr::info "TKG source successfully acquired."
+
+  grep -RIl '\-Werror' "$(pwd)" | while read -r file; do
+      echo "$file"
+      sed -i -e 's/-Werror=/\-W/g' -e 's/-Werror-/\-W/g' -e 's/-Werror/\-W/g' "$file"
+  done &>> "$LOG_FILE" || { fmtr::fatal "Failed to disable warnings-as-errors!"; exit 1; }
+
 }
 
 
 select_distro() {
+
   while true; do
     clear; fmtr::info "Please select your Linux distribution:
 
@@ -81,33 +88,24 @@ select_distro() {
             ;;
     esac
 
-    echo ""; fmtr::info "Selected Linux distribution: ${distro}"
+    echo ""; fmtr::info "Selected Linux distribution: $distro"
     break
   done
+
 }
 
 
 modify_customization_cfg() {
 
-  sed -i 's/_distro="[^"]*"/_distro="'"$distro"'"/' $TKG_CFG_DIR &>> "$LOG_FILE"
-  sed -i 's/_version="[^"]*"/_version="'"$KERNEL_VERSION"'"/' $TKG_CFG_DIR &>> "$LOG_FILE"
-  sed -i 's/_menunconfig="[^"]*"/_menunconfig="'"false"'"/' $TKG_CFG_DIR &>> "$LOG_FILE"
-  sed -i 's/_diffconfig="[^"]*"/_diffconfig="'"false"'"/' $TKG_CFG_DIR &>> "$LOG_FILE"
-  sed -i 's/_cpusched="[^"]*"/_cpusched="'"eevdf"'"/' $TKG_CFG_DIR &>> "$LOG_FILE"
-  sed -i 's/_compiler="[^"]*"/_compiler="'"gcc"'"/' $TKG_CFG_DIR &>> "$LOG_FILE"
-  sed -i 's/_sched_yield_type="[^"]*"/_sched_yield_type="'"0"'"/' $TKG_CFG_DIR &>> "$LOG_FILE"
-  sed -i 's/_rr_interval="[^"]*"/_rr_interval="'"2"'"/' $TKG_CFG_DIR &>> "$LOG_FILE"
-  sed -i 's/_tickless="[^"]*"/_tickless="'"1"'"/' $TKG_CFG_DIR &>> "$LOG_FILE"
-
   ####################################################################################################
   ####################################################################################################
 
   fmtr::info "This patch enables corrected IOMMU grouping on
-      motherboards with poor PCIe IOMMU grouping."
+      motherboards with poor PCI IOMMU grouping."
   if prmt::yes_or_no "$(fmtr::ask 'Apply ACS override bypass Kernel patch?')"; then
-      sed -i 's/_acs_override="[^"]*"/_acs_override="'"true"'"/' $TKG_CFG_DIR &>> "$LOG_FILE"
+      acs="true"
   else
-      sed -i 's/_acs_override="[^"]*"/_acs_override="'"false"'"/' $TKG_CFG_DIR &>> "$LOG_FILE"
+      acs="false"
   fi
 
   ####################################################################################################
@@ -117,7 +115,7 @@ modify_customization_cfg() {
 
     if [[ "$CPU_VENDOR" == "svm" ]]; then
       vendor="AMD"
-      fmtr::info "Detected CPU Vendor: ${vendor}
+      fmtr::info "Detected CPU Vendor: $vendor
 
   Please select your Intel CPU microarchitecture code name:
 
@@ -153,7 +151,7 @@ modify_customization_cfg() {
 
     elif [[ "$CPU_VENDOR" == "vmx" ]]; then
       vendor="Intel"
-      fmtr::info "Detected CPU Vendor: ${vendor}
+      fmtr::info "Detected CPU Vendor: $vendor
 
   Please select your Intel CPU microarchitecture code name:
 
@@ -207,8 +205,6 @@ modify_customization_cfg() {
     break
   done
 
-  sed -i 's/_processor_opt="[^"]*"/_processor_opt="'"$selected"'"/' $TKG_CFG_DIR &>> "$LOG_FILE"
-
   ####################################################################################################
   ####################################################################################################
 
@@ -231,13 +227,29 @@ modify_customization_cfg() {
 
   x86_version=$highest
 
-  sed -i 's/_x86_64_isalvl="[^"]*"/_x86_64_isalvl="'"$highest"'"/' $TKG_CFG_DIR &>> "$LOG_FILE"
-
   ####################################################################################################
   ####################################################################################################
 
-  sed -i 's/_timer_freq="[^"]*"/_timer_freq="'"1000"'"/' $TKG_CFG_DIR &>> "$LOG_FILE"
-  sed -i 's/_user_patches_no_confirm="[^"]*"/_user_patches_no_confirm="'"true"'"/' $TKG_CFG_DIR &>> "$LOG_FILE"
+  declare -A config_values=(
+      [_distro]="$distro"
+      [_version]="$KERNEL_VERSION"
+      [_menunconfig]="false"
+      [_diffconfig]="false"
+      [_cpusched]="eevdf"
+      [_compiler]="gcc"
+      [_sched_yield_type]="0"
+      [_rr_interval]="2"
+      [_tickless]="1"
+      [_acs_override]="$acs"
+      [_processor_opt]="$selected"
+      [_x86_64_isalvl]="$highest"
+      [_timer_freq]="1000"
+      [_user_patches_no_confirm]="true"
+  )
+
+  for key in "${!config_values[@]}"; do
+      sed -i "s|$key=\"[^\"]*\"|$key=\"${config_values[$key]}\"|" "$TKG_CFG_DIR" &>> "$LOG_FILE"
+  done
 
 }
 
