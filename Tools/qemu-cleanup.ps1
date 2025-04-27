@@ -5,14 +5,12 @@ $tempDir = "$env:TEMP\PSTools"
 $zipPath = "$tempDir.zip"
 $psexecPath = Join-Path $tempDir "PsExec64.exe"
 
-# Download and extract PSTools if it doesn't exist
 if (-Not (Test-Path $tempDir)) {
     Invoke-WebRequest -Uri $downloadUrl -OutFile $zipPath
     Expand-Archive -Path $zipPath -DestinationPath $tempDir
     Remove-Item -Path $zipPath -Force
 }
 
-# Cleanup script as a string, embedded directly in the process call
 $cleanupScript = @'
 # Define the registry path
 $regPath = "HKLM:\SYSTEM\CurrentControlSet\Enum\PCI"
