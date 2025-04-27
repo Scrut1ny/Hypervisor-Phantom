@@ -294,9 +294,9 @@ systemd-boot_boot_entry_maker() {
 
   local ENTRY_NAME="HvP-RDTSC"
   local TIMESTAMP; TIMESTAMP=$(date +"%Y-%m-%d_%H-%M-%S")
-  local ROOT_DEVICE; ROOT_DEVICE=$(findmnt -no SOURCE /)
-  local PARTUUID; PARTUUID=$(blkid -s PARTUUID -o value "$ROOT_DEVICE")
-  ROOTFSTYPE=$(findmnt -no FSTYPE /)
+  local ROOT_DEVICE; ROOT_DEVICE=$(sudo findmnt -no SOURCE /)
+  local ROOTFSTYPE; ROOTFSTYPE=$(sudo findmnt -no FSTYPE /)
+  local PARTUUID; PARTUUID=$(sudo blkid -s PARTUUID -o value "$ROOT_DEVICE")
 
   if [[ -z "$PARTUUID" ]]; then
     fmtr::error "Unable to determine PARTUUID for root device ($ROOT_DEVICE)."
