@@ -61,3 +61,5 @@ $cleanupScriptPath = "$tempDir\cleanup.ps1"
 $cleanupScript | Set-Content -Path $cleanupScriptPath -Encoding UTF8
 
 Start-Process -FilePath $psexecPath -ArgumentList "-accepteula -nobanner -s powershell -ExecutionPolicy Bypass -File `"$cleanupScriptPath`"" -WindowStyle Hidden -Wait
+
+# Remove-Item -Path $tempDir -Force
