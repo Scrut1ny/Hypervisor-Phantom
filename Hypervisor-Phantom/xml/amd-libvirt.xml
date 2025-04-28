@@ -324,6 +324,10 @@
   -->
   <qemu:commandline>
 
+    <!-- Spoofs ACPI table data (Battery) -->
+    <qemu:arg value="-acpitable"/>
+    <qemu:arg value="data=/home/{USERNAME}/fake_battery.dsl"/>
+   
     <!-- Spoofs the SMBIOS DMI Type 1, 2, 3, 4 and 17 HWIDs
     Type 0 (BIOS / Firmware) <> https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_3.2.0.pdf#%5B%7B%22num%22%3A74%2C%22gen%22%3A0%7D%2C%7B%22name%22%3A%22XYZ%22%7D%2C70%2C260%2C0%5D
     Type 1 (System Information) <> https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_3.2.0.pdf#%5B%7B%22num%22%3A85%2C%22gen%22%3A0%7D%2C%7B%22name%22%3A%22XYZ%22%7D%2C70%2C212%2C0%5D
