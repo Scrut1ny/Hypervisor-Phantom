@@ -5,7 +5,7 @@ install_req_pkgs() {
   [[ -z "$1" ]] && { fmtr::error "Component name not specified!"; exit 1; }
   local component="$1"
 
-  fmtr::log "Checking for missing $component packages"
+  fmtr::log "Checking for missing $component packages..."
 
   # Determine package manager commands
   case "$DISTRO" in
@@ -30,7 +30,7 @@ install_req_pkgs() {
       CHECK_CMD="rpm -q"
       ;;
     *)
-      fmtr::error "Unsupported distribution: $DISTRO"
+      fmtr::error "Unsupported distribution: $DISTRO."
       exit 1
       ;;
   esac
@@ -38,7 +38,7 @@ install_req_pkgs() {
   # Load required packages from caller's distro-specific array
   local pkg_var="REQUIRED_PKGS_${DISTRO}"
   if [[ ! -v "$pkg_var" ]]; then
-    fmtr::error "$component packages undefined for $DISTRO"
+    fmtr::error "$component packages undefined for $DISTRO."
     exit 1
   fi
   declare -n REQUIRED_PKGS_REF="$pkg_var"
@@ -53,7 +53,7 @@ install_req_pkgs() {
   done
 
   if [[ ${#MISSING_PKGS[@]} -eq 0 ]]; then
-    fmtr::log "All $component packages are already installed"
+    fmtr::log "All $component packages are already installed."
     return 0
   fi
 
@@ -66,7 +66,7 @@ install_req_pkgs() {
     fi
     fmtr::log "Installed: ${MISSING_PKGS[*]}"
   else
-    fmtr::log "Exiting due to missing $component packages"
+    fmtr::log "Exiting due to missing $component packages."
     exit 1
   fi
 }
