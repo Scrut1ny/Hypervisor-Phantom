@@ -60,13 +60,13 @@ acquire_qemu_source() {
 
   if [ -d "$QEMU_DIR" ]; then
     fmtr::warn "Directory $QEMU_DIR already exists."
-    if ! prmt::yes_or_no "$(fmtr::ask 'Delete and re-download the QEMU source?')"; then
+    if ! prmt::yes_or_no "$(fmtr::ask 'Purge the QEMU directory?')"; then
       fmtr::info "Keeping existing directory. Skipping re-download."
       cd "$QEMU_DIR" || { fmtr::fatal "Failed to change to QEMU directory: $QEMU_DIR"; exit 1; }
       return
     fi
     sudo rm -rf "$QEMU_DIR" || { fmtr::fatal "Failed to remove existing directory: $QEMU_DIR"; exit 1; }
-    fmtr::info "Old directory deleted. Re-downloading..."
+    fmtr::info "Directory purged."
   fi
 
   fmtr::info "Downloading QEMU source archive and signature..."
@@ -75,7 +75,7 @@ acquire_qemu_source() {
 
   fmtr::log "Verifying source authenticity..."
   if ! gpg --keyserver keys.openpgp.org --recv-keys "$GPG_KEY" &>> "$LOG_FILE"; then
-    fmtr::warn "Failed to import QEMU signing key"
+    fmtr::warn "Failed to import QEMU signing key."
     if ! prmt::yes_or_no "$(fmtr::ask 'Continue anyway despite key import failure?'))"; then
       fmtr::fatal "Aborting due to key import failure."
       exit 1
@@ -91,7 +91,7 @@ acquire_qemu_source() {
     fi
     fmtr::warn "Continuing despite signature verification failure..."
   else
-    fmtr::log "Signature verification successful"
+    fmtr::log "Signature verification successful."
   fi
 
   fmtr::info "Extracting QEMU source archive..."
@@ -129,8 +129,7 @@ patch_qemu() {
     exit 1
   }
 
-  fmtr::log "Spoofing all model & serial numbers\n"
-  echo ""
+  fmtr::log "Spoofing all model & serial numbers..."; echo ""
 
   spoof_serial_numbers
   spoof_drive_serial_number
@@ -287,7 +286,8 @@ spoof_acpi_table_strings() {
   # By default QEMU doesn't specify PM type in FACP ACPI table.
   # Normally vendors specify either 1 (Desktop) or 2 (Mobile)
   # We patch PM type integer based on dmidecode's chassis-type
-  fmtr::info "Obtaining machine's chassis-type"
+
+  fmtr::info "Obtaining machine's chassis-type..."
 
   local pm_type="1" # Desktop
   local chassis_type=$(sudo dmidecode --string chassis-type)
@@ -301,22 +301,19 @@ spoof_acpi_table_strings() {
   local pm_replacement="build_append_int_noprefix(tbl, $pm_type \/\* $chassis_type \*\/, 1);"
   sed -i "$file" -e "s|$pm_orig|$pm_replacement|"
 
-  print_modified "$file" ''
-  fmtr::format_text '    ' "$pm_replacement" '' "$TEXT_GREEN"
-
   if [[ "$chassis_type" = "Notebook" ]]; then    
-    fmtr::warn "Detected host PM type = 2 (Laptop)"
-    fmtr::info "Generating SSDT ACPI table with fake battery"
+    fmtr::warn "Detected host PM type = 2 (Laptop/Notebook)"
+    fmtr::info "Generating SSDT ACPI table with fake battery..."
 
     # Use already generated pair
     cat "${FAKE_BATTERY_ACPITABLE}" \
       | sed "s/BOCHS/$appname6/" \
       | sed "s/BXPCSSDT/$appname8/" > "$HOME/fake_battery.dsl"
-    iasl -tc "$HOME/fake_battery.dsl"
+    iasl -tc "$HOME/fake_battery.dsl" &>> "$LOG_FILE"
 
-    fmtr::warn "ACPI table saved to $HOME/fake_battery.aml"
-    fmtr::warn "It's highly recommended to passthrough it to VM with the following command:"
-    fmtr::warn "qemu-system-x86_64 -acpitable $HOME/fake_battery.aml"
+    fmtr::info "ACPI table saved to \"$HOME/fake_battery.aml\""
+    fmtr::info "It's highly recommended to passthrough the ACPI Table via QEMU's args/xml:
+      qemu-system-x86_64 -acpitable \"$HOME/fake_battery.aml\""
   fi
 }
 
