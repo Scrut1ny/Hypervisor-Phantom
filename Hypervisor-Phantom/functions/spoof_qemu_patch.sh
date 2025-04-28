@@ -258,7 +258,7 @@ spoof_drive_serial_number() {
 
 spoof_acpi_table_strings() {
   local pairs=(
-    'DELL  ' 'Dell Inc' '_ASUS_' 'Notebook'
+    'DELL  ' 'Dell Inc' ' ASUS ' 'Notebook'
     'MSI NB' 'MEGABOOK' 'LENOVO' 'TC-O5Z  '
     'LENOVO' 'CB-01   ' 'SECCSD' 'LH43STAR'
     'LGE   ' 'ICL     '
