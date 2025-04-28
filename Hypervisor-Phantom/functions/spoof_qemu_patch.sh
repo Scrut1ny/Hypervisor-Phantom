@@ -23,23 +23,24 @@ readonly PATCH_DIR="../../patches/QEMU"
 readonly QEMU_PATCH="${CPU_VENDOR}-${QEMU_DIR}.patch"
 readonly QEMU_LIBNFS_PATCH="${QEMU_DIR}-libnfs6.patch"
 readonly GPG_KEY="CEACC9E15534EBABB82D3FA03353C9CEF108B584"
+readonly FAKE_BATTERY_ACPITABLE="${PATCH_DIR}/fake_battery.dsl"
 
 REQUIRED_PKGS_Arch=(
-  base-devel dmidecode glib2 libusb ninja
+  acpica base-devel dmidecode glib2 libusb ninja
   python-packaging python-sphinx python-sphinx_rtd_theme gnupg
 
   # Spice Dependency
   spice
 )
 REQUIRED_PKGS_Debian=(
-  build-essential libfdt-dev libglib2.0-dev libpixman-1-dev
+  acpica-tools build-essential libfdt-dev libglib2.0-dev libpixman-1-dev
   libusb-1.0-0-dev ninja-build python3-venv zlib1g-dev gnupg
 
   # Spice Dependency
   spice
 )
 REQUIRED_PKGS_openSUSE=(
-  bzip2 gcc-c++ gpg2 glib2-devel make qemu  
+  acpica bzip2 gcc-c++ gpg2 glib2-devel make qemu  
   libpixman-1-0-devel libusb-1_0-devel patch
   python3-Sphinx ninja
 
@@ -47,7 +48,7 @@ REQUIRED_PKGS_openSUSE=(
   spice
 )
 REQUIRED_PKGS_Fedora=(
-  bzip2 glib2-devel libfdt-devel libusb1-devel
+  acpica-tools bzip2 glib2-devel libfdt-devel libusb1-devel
   ninja-build pixman-devel python3 zlib-devel gnupg2
 
   # Spice Dependency
@@ -133,8 +134,8 @@ patch_qemu() {
 
   spoof_serial_numbers
   spoof_drive_serial_number
-  spoof_acpi_table_strings
   spoof_cpuid_manufacturer
+  spoof_acpi_table_strings
 }
 
 spoof_serial_numbers() {
@@ -275,13 +276,48 @@ spoof_acpi_table_strings() {
   local appname6=${pairs[$random_index]}
   local appname8=${pairs[$random_index + 1]}
 
-  local file="$(pwd)/include/hw/acpi/aml-build.h"
-  sed -i "$file" -e "s/^#define ACPI_BUILD_APPNAME6 \".*\"/#define ACPI_BUILD_APPNAME6 \"${appname6}\"/"
-  sed -i "$file" -e "s/^#define ACPI_BUILD_APPNAME8 \".*\"/#define ACPI_BUILD_APPNAME8 \"${appname8}\"/"
+  local h_file="$(pwd)/include/hw/acpi/aml-build.h"
+  sed -i "$h_file" -e "s/^#define ACPI_BUILD_APPNAME6 \".*\"/#define ACPI_BUILD_APPNAME6 \"${appname6}\"/"
+  sed -i "$h_file" -e "s/^#define ACPI_BUILD_APPNAME8 \".*\"/#define ACPI_BUILD_APPNAME8 \"${appname8}\"/"
 
   print_modified "$file" ''
   fmtr::format_text '    ' "#define ACPI_BUILD_APPNAME6 '${appname6}'" '' "$TEXT_GREEN"
   fmtr::format_text '    ' "#define ACPI_BUILD_APPNAME8 '${appname8}'" '' "$TEXT_GREEN"
+
+  # By default QEMU doesn't specify PM type in FACP ACPI table.
+  # Normally vendors specify either 1 (Desktop) or 2 (Mobile)
+  # We patch PM type integer based on dmidecode's chassis-type
+  fmtr::info "Obtaining machine's chassis-type"
+
+  local pm_type="1" # Desktop
+  local chassis_type=$(sudo dmidecode --string chassis-type)
+
+  if [[ "$chassis_type" = "Notebook" ]]; then
+    pm_type="2" # Mobile
+  fi
+
+  local file="$(pwd)/hw/acpi/aml-build.c"
+  local pm_orig="build_append_int_noprefix(tbl, 0 \/\* Unspecified \*\/, 1);"
+  local pm_replacement="build_append_int_noprefix(tbl, $pm_type \/\* $chassis_type \*\/, 1);"
+  sed -i "$file" -e "s|$pm_orig|$pm_replacement|"
+
+  print_modified "$file" ''
+  fmtr::format_text '    ' "$pm_replacement" '' "$TEXT_GREEN"
+
+  if [[ "$chassis_type" = "Notebook" ]]; then    
+    fmtr::warn "Detected host PM type = 2 (Laptop)"
+    fmtr::info "Generating SSDT ACPI table with fake battery"
+
+    # Use already generated pair
+    cat "${FAKE_BATTERY_ACPITABLE}" \
+      | sed "s/BOCHS/$appname6/" \
+      | sed "s/BXPCSSDT/$appname8/" > "$HOME/fake_battery.dsl"
+    iasl -tc "$HOME/fake_battery.dsl"
+
+    fmtr::warn "ACPI table saved to $HOME/fake_battery.aml"
+    fmtr::warn "It's highly recommended to passthrough it to VM with the following command:"
+    fmtr::warn "qemu-system-x86_64 -acpitable $HOME/fake_battery.aml"
+  fi
 }
 
 spoof_cpuid_manufacturer() {
