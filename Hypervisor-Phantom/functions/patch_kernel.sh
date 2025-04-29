@@ -262,7 +262,7 @@ patch_kernel() {
 
 arch_distro() {
 
-  clear; makepkg -C -si --noconfirm
+  clear; env -u BOLD makepkg -C -si --noconfirm
 
   if prmt::yes_or_no "$(fmtr::ask 'Would you like to add a systemd-boot entry for this kernel?')"; then
     systemd-boot_boot_entry_maker
