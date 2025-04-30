@@ -37,7 +37,7 @@ REQUIRED_PKGS_Debian=(
   libusb-1.0-0-dev ninja-build python3-venv zlib1g-dev gnupg
 
   # Spice Dependency
-  spice
+  libspice-server-dev
 )
 REQUIRED_PKGS_openSUSE=(
   acpica bzip2 gcc-c++ gpg2 glib2-devel make qemu  
