@@ -100,6 +100,8 @@ chmod -R +x *
   - [kvm-hidden](https://gitlab.com/DonnerPartyOf1/kvm-hidden)
   - [KVM-Spoofing](https://github.com/A1exxander/KVM-Spoofing)
   - [linux-5.15-hardened-kvm-svm-qemu-win10](https://alt.deliktas.de/git/adeliktas/linux-5.15-hardened-kvm-svm-qemu-win10)
+  - [sGPUpt](https://github.com/MaxxRK/sGPUpt)
+  - [gpupt](https://github.com/pragmagrid/gpupt)
 - **VirtualBox**
   - [VirtualBox RDTSC Fix](https://www.reddit.com/r/virtualbox/comments/g6ky8a/disabling_vm_exit_for_rdtsc_access/)
   - [https://forums.virtualbox.org/viewtopic.php?t=78859](https://forums.virtualbox.org/viewtopic.php?t=78859)
