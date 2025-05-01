@@ -37,7 +37,7 @@ REQUIRED_PKGS_Arch=(
   libusb
 
   # USB redirection Dependencie(s)
-  libusbredir
+  usbredir
 )
 REQUIRED_PKGS_Debian=(
   # Basic Build Dependencie(s)
@@ -359,12 +359,20 @@ spoof_cpuid_manufacturer() {
 
 compile_qemu() {
   fmtr::log "Configuring build environment"
-  ./configure --target-list=x86_64-softmmu \    # set target list (default: build all)
-              --enable-libusb \                 # libusb support for USB passthrough
-              --enable-usb-redir \              # libusbredir support
-              --enable-spice \                  # Spice server support
-              --enable-spice-protocol \         # Spice protocol support
-              --disable-werror &>> "$LOG_FILE"  # Treat warnings as errors
+
+  # --target-list            | set target list (default: build all)
+  # --enable-libusb          | libusb support for USB passthrough
+  # --enable-usb-redir       | libusbredir support
+  # --enable-spice           | Spice server support
+  # --enable-spice-protocol  | Spice protocol support
+  # --disable-werror         | Treat warnings as errors
+
+  ./configure --target-list=x86_64-softmmu \
+              --enable-libusb \
+              --enable-usb-redir \
+              --enable-spice \
+              --enable-spice-protocol \
+              --disable-werror &>> "$LOG_FILE"
 
   fmtr::log "Building QEMU"
   make -j"$(nproc)" &>> "$LOG_FILE"
