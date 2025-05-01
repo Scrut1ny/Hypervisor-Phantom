@@ -26,33 +26,60 @@ readonly GPG_KEY="CEACC9E15534EBABB82D3FA03353C9CEF108B584"
 readonly FAKE_BATTERY_ACPITABLE="${PATCH_DIR}/fake_battery.dsl"
 
 REQUIRED_PKGS_Arch=(
-  acpica base-devel dmidecode glib2 libusb ninja
-  python-packaging python-sphinx python-sphinx_rtd_theme gnupg
+  # Basic Build Dependencie(s)
+  acpica base-devel dmidecode glib2 ninja python-packaging
+  python-sphinx python-sphinx_rtd_theme gnupg
 
-  # Spice Dependency
-  spice
+  # Spice Dependencie(s)
+  spice gtk3
+
+  # USB passthrough Dependencie(s)
+  libusb
+
+  # USB redirection Dependencie(s)
+  libusbredir
 )
 REQUIRED_PKGS_Debian=(
-  acpica-tools build-essential libfdt-dev libglib2.0-dev libpixman-1-dev
-  libusb-1.0-0-dev ninja-build python3-venv zlib1g-dev gnupg
+  # Basic Build Dependencie(s)
+  acpica-tools build-essential libfdt-dev libglib2.0-dev
+  libpixman-1-dev ninja-build python3-venv zlib1g-dev gnupg
 
-  # Spice Dependency
+  # Spice Dependencie(s)
   libspice-server-dev
+
+  # USB passthrough Dependencie(s)
+  libusb-1.0-0-dev
+
+  # USB redirection Dependencie(s)
+  libusbredir-dev
 )
 REQUIRED_PKGS_openSUSE=(
+  # Basic Build Dependencie(s)
   acpica bzip2 gcc-c++ gpg2 glib2-devel make qemu  
-  libpixman-1-0-devel libusb-1_0-devel patch
-  python3-Sphinx ninja
+  libpixman-1-0-devel patch python3-Sphinx ninja
 
-  # Spice Dependency
+  # Spice Dependencie(s)
   spice
+
+  # USB passthrough Dependencie(s)
+  libusb-1_0-devel
+
+  # USB redirection Dependencie(s)
+  libusbredir-devel
 )
 REQUIRED_PKGS_Fedora=(
-  acpica-tools bzip2 glib2-devel libfdt-devel libusb1-devel
-  ninja-build pixman-devel python3 zlib-devel gnupg2
+  # Basic Build Dependencie(s)
+  acpica-tools bzip2 glib2-devel libfdt-devel ninja-build
+  pixman-devel python3 zlib-devel gnupg2
 
-  # Spice Dependency
+  # Spice Dependencie(s)
   spice
+
+  # USB passthrough Dependencie(s)
+  libusb1-devel
+
+  # USB redirection Dependencie(s)
+  libusbredir-devel
 )
 
 acquire_qemu_source() {
@@ -332,10 +359,12 @@ spoof_cpuid_manufacturer() {
 
 compile_qemu() {
   fmtr::log "Configuring build environment"
-  ./configure --target-list=x86_64-softmmu \
-              --enable-libusb \
-              --enable-spice \
-              --disable-werror &>> "$LOG_FILE"
+  ./configure --target-list=x86_64-softmmu \    # set target list (default: build all)
+              --enable-libusb \                 # libusb support for USB passthrough
+              --enable-usb-redir \              # libusbredir support
+              --enable-spice \                  # Spice server support
+              --enable-spice-protocol \         # Spice protocol support
+              --disable-werror &>> "$LOG_FILE"  # Treat warnings as errors
 
   fmtr::log "Building QEMU"
   make -j"$(nproc)" &>> "$LOG_FILE"
