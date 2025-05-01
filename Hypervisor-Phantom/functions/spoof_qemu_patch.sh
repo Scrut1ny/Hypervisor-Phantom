@@ -59,7 +59,7 @@ REQUIRED_PKGS_openSUSE=(
   libpixman-1-0-devel patch python3-Sphinx ninja
 
   # Spice Dependencie(s)
-  spice
+  spice-server
 
   # USB passthrough Dependencie(s)
   libusb-1_0-devel
@@ -73,7 +73,7 @@ REQUIRED_PKGS_Fedora=(
   pixman-devel python3 zlib-devel gnupg2
 
   # Spice Dependencie(s)
-  spice
+  spice-server
 
   # USB passthrough Dependencie(s)
   libusb1-devel
