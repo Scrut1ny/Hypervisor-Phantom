@@ -51,7 +51,7 @@ REQUIRED_PKGS_Debian=(
   libusb-1.0-0-dev
 
   # USB redirection Dependencie(s)
-  libusbredir-dev
+  libusbredirhost-dev libusbredirparser-dev
 )
 REQUIRED_PKGS_openSUSE=(
   # Basic Build Dependencie(s)
