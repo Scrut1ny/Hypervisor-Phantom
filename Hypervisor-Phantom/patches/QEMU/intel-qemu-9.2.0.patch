@@ -221,8 +221,8 @@ index 2cb8196..95af00f 100644
      /* manufacture week and year */
 -    edid[16] = 42;
 -    edid[17] = 2014 - 1990;
-+    edid[16] = 8;
-+    edid[17] = 2020 - 2024;
++    edid[16] = 12;
++    edid[17] = 2025 - 2018;
  
      /* edid version */
      edid[18] = 1;
