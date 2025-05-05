@@ -162,8 +162,21 @@ index f8a1a94..6ee8d8e 100644
      pc->class_id = PCI_CLASS_COMMUNICATION_SERIAL;
      dc->vmsd = &vmstate_pci_serial;
      device_class_set_props(dc, serial_pci_properties);
+diff --git a/hw/core/qdev.c b/hw/core/qdev.c
+index 5f13111..b059f42 100644
+--- a/hw/core/qdev.c
++++ b/hw/core/qdev.c
+@@ -746,7 +746,7 @@ static void device_class_init(ObjectClass *class, void *data)
+      * hotpluggable. Devices that shouldn't be hotpluggable,
+      * should override it in their class_init()
+      */
+-    dc->hotpluggable = true;
++    dc->hotpluggable = false;
+     dc->user_creatable = true;
+     vc->get_id = device_vmstate_if_get_id;
+     rc->get_state = device_get_reset_state;
 diff --git a/hw/display/edid-generate.c b/hw/display/edid-generate.c
-index 2cb8196..95af00f 100644
+index 2cb8196..630a33b 100644
 --- a/hw/display/edid-generate.c
 +++ b/hw/display/edid-generate.c
 @@ -388,22 +388,22 @@ void qemu_edid_generate(uint8_t *edid, size_t size,
@@ -208,8 +221,8 @@ index 2cb8196..95af00f 100644
      /* manufacture week and year */
 -    edid[16] = 42;
 -    edid[17] = 2014 - 1990;
-+    edid[16] = 8;
-+    edid[17] = 2020 - 2024;
++    edid[16] = 12;
++    edid[17] = 2025 - 2018;
  
      /* edid version */
      edid[18] = 1;
@@ -248,7 +261,7 @@ index 208f263..3c47af9 100644
      k->config_write = ich9_smbus_write_config;
      /*
 diff --git a/hw/i386/acpi-build.c b/hw/i386/acpi-build.c
-index f7b961e..1d5c6c8 100644
+index f7b961e..a8f3a80 100644
 --- a/hw/i386/acpi-build.c
 +++ b/hw/i386/acpi-build.c
 @@ -2580,9 +2580,6 @@ void acpi_build(AcpiBuildTables *tables, MachineState *machine)
@@ -261,6 +274,21 @@ index f7b961e..1d5c6c8 100644
      /* Add tables supplied by user (if any) */
      for (u = acpi_table_first(); u; u = acpi_table_next(u)) {
          unsigned len = acpi_table_len(u);
+@@ -2591,6 +2588,14 @@ void acpi_build(AcpiBuildTables *tables, MachineState *machine)
+         g_array_append_vals(tables_blob, u, len);
+     }
+ 
++    /* Disable BGRT (UEFI Logo) */
++    acpi_add_table(table_offsets, tables_blob);
++    AcpiTable table = { .sig = "BGRT", .rev = 1,
++                        .oem_id = x86ms->oem_id, .oem_table_id = x86ms->oem_table_id };
++    acpi_table_begin(&table, tables_blob);
++    build_append_int_noprefix(tables_blob,0x00000000,4);
++    acpi_table_end(tables->linker, &table);
++
+     /* RSDT is pointed to by RSDP */
+     rsdt = tables_blob->len;
+     build_rsdt(tables_blob, tables->linker, table_offsets,
 diff --git a/hw/i386/fw_cfg.c b/hw/i386/fw_cfg.c
 index 0e44946..682abda 100644
 --- a/hw/i386/fw_cfg.c
@@ -1437,6 +1465,19 @@ index 1fb59cf..9f83f9a 100644
      dc->vmsd           = &vmstate_u2f_key;
  }
  
+diff --git a/hw/vfio/ap.c b/hw/vfio/ap.c
+index 4013e7b..9d3778d 100644
+--- a/hw/vfio/ap.c
++++ b/hw/vfio/ap.c
+@@ -255,7 +255,7 @@ static void vfio_ap_class_init(ObjectClass *klass, void *data)
+     set_bit(DEVICE_CATEGORY_MISC, dc->categories);
+     dc->realize = vfio_ap_realize;
+     dc->unrealize = vfio_ap_unrealize;
+-    dc->hotpluggable = true;
++    dc->hotpluggable = false;
+     device_class_set_legacy_reset(dc, vfio_ap_reset);
+     dc->bus_type = TYPE_AP_BUS;
+ }
 diff --git a/include/hw/acpi/aml-build.h b/include/hw/acpi/aml-build.h
 index 4fd5da4..665b6fd 100644
 --- a/include/hw/acpi/aml-build.h
