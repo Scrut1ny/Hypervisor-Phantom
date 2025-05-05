@@ -43,6 +43,7 @@ REQUIRED_PKGS_Debian=(
   # Basic Build Dependencie(s)
   acpica-tools build-essential libfdt-dev libglib2.0-dev
   libpixman-1-dev ninja-build python3-venv zlib1g-dev gnupg
+  python3-sphinx python3-sphinx-rtd-theme
 
   # Spice Dependencie(s)
   libspice-server-dev
