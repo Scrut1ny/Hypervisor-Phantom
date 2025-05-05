@@ -17,7 +17,7 @@ install_req_pkgs() {
     Debian)
       PKG_MANAGER="apt"
       INSTALL_CMD="sudo apt -y install"
-      CHECK_CMD="dpkg -l"
+      CHECK_CMD="dpkg -s"
       ;;
     openSUSE)
       PKG_MANAGER="zypper"
