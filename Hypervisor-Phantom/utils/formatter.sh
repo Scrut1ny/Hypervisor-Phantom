@@ -15,14 +15,14 @@ fi
 # exports ANSI codes as read-only variables
 declare -xr RESET="\033[0m"
 # text styles
-declare -xr BOLD="\033[1m"
-declare -xr DIM="\033[2m"
-declare -xr ITALIC="\033[3m"
-declare -xr UNDER="\033[4m"
-declare -xr BLINK="\033[5m"
-declare -xr REVERSE="\033[7m"
-declare -xr HIDDEN="\033[8m"
-declare -xr STRIKE="\033[9m"
+declare -xr TEXT_BOLD="\033[1m"
+declare -xr TEXT_DIM="\033[2m"
+declare -xr TEXT_ITALIC="\033[3m"
+declare -xr TEXT_UNDER="\033[4m"
+declare -xr TEXT_BLINK="\033[5m"
+declare -xr TEXT_REVERSE="\033[7m"
+declare -xr TEXT_HIDDEN="\033[8m"
+declare -xr TEXT_STRIKE="\033[9m"
 # text colors
 declare -xr TEXT_BLACK="\033[30m"; declare -xr TEXT_GRAY="\033[90m"
 declare -xr TEXT_RED="\033[31m"; declare -xr TEXT_BRIGHT_RED="\033[91m"
@@ -148,7 +148,7 @@ function fmtr::error() {
 # Provides stylized decorations for fatal/unrecoverable errors
 # Globals:
 #   TEXT_BRIGHT_CYAN
-#   BOLD
+#   TEXT_BOLD
 # Arguments:
 #   The fatal error message
 # Outputs:
@@ -157,7 +157,7 @@ function fmtr::error() {
 function fmtr::fatal() {
   local text="$1"
   local message="$(fmtr::format_text \
-    '\n  ' "[X] ${text}" '' "$TEXT_RED" "$BOLD")"
+    '\n  ' "[X] ${text}" '' "$TEXT_RED" "$TEXT_BOLD")"
   echo "$message" >&2
   echo "$message" &>> "$LOG_FILE"
 }
