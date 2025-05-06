@@ -91,7 +91,7 @@ get_gpu_info() {
 }
 
 print_system_info() {
-  fmtr::format_text '  ' "\n  • System Information" '' "$BOLD"
+  fmtr::format_text '  ' "\n  • System Information" '' "$TEXT_BOLD"
   fmtr::format_text '    ├─ Distro: ' "$DISTRO" '' "$TEXT_BRIGHT_GREEN"
 
   local cpu_info="$VENDOR_ID • $CPU_COUNT Cores • $VIRT_STATUS"
