@@ -66,7 +66,7 @@ REQUIRED_PKGS_openSUSE=(
   libusb-1_0-devel
 
   # USB redirection Dependencie(s)
-  libusbredir-devel
+  usbredir-devel
 )
 REQUIRED_PKGS_Fedora=(
   # Basic Build Dependencie(s)
