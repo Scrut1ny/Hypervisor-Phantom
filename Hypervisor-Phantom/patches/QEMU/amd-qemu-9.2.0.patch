@@ -261,7 +261,7 @@ index 208f263..3c47af9 100644
      k->config_write = ich9_smbus_write_config;
      /*
 diff --git a/hw/i386/acpi-build.c b/hw/i386/acpi-build.c
-index f7b961e..0225527 100644
+index f7b961e..a8f3a80 100644
 --- a/hw/i386/acpi-build.c
 +++ b/hw/i386/acpi-build.c
 @@ -2580,9 +2580,6 @@ void acpi_build(AcpiBuildTables *tables, MachineState *machine)
@@ -274,11 +274,10 @@ index f7b961e..0225527 100644
      /* Add tables supplied by user (if any) */
      for (u = acpi_table_first(); u; u = acpi_table_next(u)) {
          unsigned len = acpi_table_len(u);
-@@ -2591,6 +2588,15 @@ void acpi_build(AcpiBuildTables *tables, MachineState *machine)
+@@ -2591,6 +2588,14 @@ void acpi_build(AcpiBuildTables *tables, MachineState *machine)
          g_array_append_vals(tables_blob, u, len);
      }
  
-+
 +    /* Disable BGRT (UEFI Logo) */
 +    acpi_add_table(table_offsets, tables_blob);
 +    AcpiTable table = { .sig = "BGRT", .rev = 1,
