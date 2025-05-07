@@ -367,6 +367,7 @@
 
   <!--
   <> https://libvirt.org/formatdomain.html#hard-drives-floppy-disks-cdroms
+  <> https://libvirt.org/drvqemu.html#overriding-properties-of-qemu-devices
 
   TL;DR - Only use this if your host is SSD-backed and you're using virtual storage (Ex. .qcow) for guest.
  
