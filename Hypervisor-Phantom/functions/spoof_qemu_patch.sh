@@ -80,7 +80,7 @@ REQUIRED_PKGS_Fedora=(
   libusb1-devel
 
   # USB redirection Dependencie(s)
-  libusbredir-devel
+  usbredir-devel
 )
 
 acquire_qemu_source() {
