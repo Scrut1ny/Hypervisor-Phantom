@@ -176,15 +176,15 @@ chmod -R +x *
 
 - [areweanticheatyet](https://areweanticheatyet.com/)
 
-| Engine | Used By | Bypassed |
-|--------|---------|----------|
+| 🛡️ Engine | 🎮 Used By | ✅ Bypassed |
+|:------:|:-------:|:--------:|
 | Anti-Cheat Expert (ACE) | Primarily Mobile Games | ✅ |
 | BattlEye (BE) | Desktop Games | ✅ (w/Kernal Patch for `R6, Destiny 2, etc...`) |
 | Easy Anti-Cheat (EAC) | Desktop Games | ✅ |
 | Gepard Shield | PUBG: Battlegrounds | ✅ |
 | NACE (Netease Anticheat Expert) | Marvel Rivals | ✅ |
 | Hyperion | Roblox | ✅ |
-| Mhyprot | Genshin Impact | ❔ (HoYoKProtect.sys) |
+| Mhyprot | Genshin Impact | ❔ (HoYoKProtect.sys) <br> 🪟 BSOD: ATTEMPTED_WRITE_TO_READONLY_MEMORY |
 | nProtect GameGuard (NP) | Desktop Games | ✅ |
 | RICOCHET | CoD Games | ❔ |
 | Vanguard | Valorant & LoL | ✅ (w/Hyper-V) |
