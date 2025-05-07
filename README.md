@@ -184,7 +184,7 @@ chmod -R +x *
 | Gepard Shield | PUBG: Battlegrounds | ✅ |
 | NACE (Netease Anticheat Expert) | Marvel Rivals | ✅ |
 | Hyperion | Roblox | ✅ |
-| Mhyprot | Genshin Impact | ❔ (HoYoKProtect.sys) <br> 🪟 BSOD: ATTEMPTED_WRITE_TO_READONLY_MEMORY |
+| Mhyprot | Genshin Impact | ❔ (HoYoKProtect.sys) <br> 🪟 [BSOD: ATTEMPTED_WRITE_TO_READONLY_MEMORY](https://github.com/Scrut1ny/Hypervisor-Phantom/issues/34) |
 | nProtect GameGuard (NP) | Desktop Games | ✅ |
 | RICOCHET | CoD Games | ❔ |
 | Vanguard | Valorant & LoL | ✅ (w/Hyper-V) |
