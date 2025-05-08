@@ -676,9 +676,18 @@ index 2e6ef89..bb5a6f4 100644
      aml_append(dev, aml_name_decl("_STA", aml_int(0xB)));
      aml_append(dev, aml_name_decl("_CCA", aml_int(1)));
 diff --git a/hw/nvram/fw_cfg.c b/hw/nvram/fw_cfg.c
-index b644577..c4ace21 100644
+index b644577..80b55b3 100644
 --- a/hw/nvram/fw_cfg.c
 +++ b/hw/nvram/fw_cfg.c
+@@ -57,7 +57,7 @@
+ #define FW_CFG_DMA_CTL_SELECT  0x08
+ #define FW_CFG_DMA_CTL_WRITE   0x10
+ 
+-#define FW_CFG_DMA_SIGNATURE 0x51454d5520434647ULL /* "QEMU CFG" */
++#define FW_CFG_DMA_SIGNATURE 0x5520527670202020 /* "QEMU CFG" */
+ 
+ struct FWCfgEntry {
+     uint32_t len;
 @@ -1119,7 +1119,7 @@ static void fw_cfg_common_realize(DeviceState *dev, Error **errp)
          return;
      }
@@ -1562,7 +1571,7 @@ index c0717e3..dadaf46 100644
  
  typedef uint64_t pcibus_t;
 diff --git a/include/hw/pci/pci_ids.h b/include/hw/pci/pci_ids.h
-index f1a53fe..09591a2 100644
+index f1a53fe..2ae9359 100644
 --- a/include/hw/pci/pci_ids.h
 +++ b/include/hw/pci/pci_ids.h
 @@ -179,6 +179,18 @@
@@ -1573,9 +1582,9 @@ index f1a53fe..09591a2 100644
 +
 +/* https://www.pcilookup.com/ */
 +
-+#define PCI_DEVICE_ID_INTEL_ISA_LPC 0x5182 // 82801AA ISA Bridge (LPC)
++#define PCI_DEVICE_ID_INTEL_ISA_LPC 0x5182 // Alder Lake PCH eSPI Controller - ISA Bridge (LPC)
 +#define PCI_DEVICE_ID_INTEL_SMBUS_HOST_CONTROLLER 0x51a3 // Alder Lake PCH-P SMBus Host Controller
-+#define PCI_DEVICE_ID_INTEL_82860_860_WOMBAT_MCH 0x4641 // 82860 860 (Wombat) Chipset Host Bridge (MCH)
++#define PCI_DEVICE_ID_INTEL_82860_860_WOMBAT_MCH 0x4641 // 12th Gen Core Processor Chipset Host Bridge (MCH)
 +#define PCI_DEVICE_ID_INTEL_USB_UHCI_CONTROLLER 0x2942 // 828011 (ICH9 Family ) USB UHCI Controller
 +#define PCI_DEVICE_ID_INTEL_XHCI_HOST_CONTROLLER 0x51ed // Alder Lake PCH USB 3.2 xHCI Host Controller
 +
