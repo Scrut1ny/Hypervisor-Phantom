@@ -171,7 +171,7 @@ index db828d3..cc5e015 100644
  // Host Bridge Device ID (DID) value for Q35/MCH
  //
 -#define INTEL_Q35_MCH_DEVICE_ID  0x29C0
-+#define INTEL_Q35_MCH_DEVICE_ID  0x2531 // Change to 0x1480 for AMD MCH, 0x29C0 for Stock MCH, or 0x2531 for Intel MCH
++#define INTEL_Q35_MCH_DEVICE_ID  0x4641 // Change to 0x1480 for AMD MCH, 0x29C0 for Stock MCH, or 0x4641 for Intel MCH
  
  //
  // B/D/F/Type: 0/0/0/PCI
