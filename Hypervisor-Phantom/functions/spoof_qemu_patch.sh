@@ -9,11 +9,11 @@ source "./utils/packages.sh"
 declare -r CPU_VENDOR=$(case "$VENDOR_ID" in
   *AuthenticAMD*) echo "amd" ;;
   *GenuineIntel*) echo "intel" ;;
-  *) fmtr::error "Unknown CPU vendor."; exit 1 ;;
+  *) fmtr::error "Unknown CPU Vendor ID."; exit 1 ;;
 esac)
 
 readonly SRC_DIR="src"
-readonly QEMU_VERSION="9.2.0"
+readonly QEMU_VERSION="9.2.3"
 readonly QEMU_DIR="qemu-${QEMU_VERSION}"
 readonly QEMU_ARCHIVE="${QEMU_DIR}.tar.xz"
 readonly QEMU_SIG="${QEMU_ARCHIVE}.sig"
@@ -93,7 +93,7 @@ acquire_qemu_source() {
       cd "$QEMU_DIR" || { fmtr::fatal "Failed to change to QEMU directory: $QEMU_DIR"; exit 1; }
       return
     fi
-    sudo rm -rf "$QEMU_DIR" || { fmtr::fatal "Failed to remove existing directory: $QEMU_DIR"; exit 1; }
+    sudo rm -rf "$QEMU_DIR/" "$QEMU_ARCHIVE" "$QEMU_SIG" || { fmtr::fatal "Failed to remove existing directory: $QEMU_DIR"; exit 1; }
     fmtr::info "Directory purged."
   fi
 
@@ -132,24 +132,18 @@ acquire_qemu_source() {
 
 patch_qemu() {
   if [ ! -f "${PATCH_DIR}/${QEMU_PATCH}" ]; then
-    fmtr::error "Patch file ${PATCH_DIR}/${QEMU_PATCH} not found!"
+    fmtr::error "Patch file \"${PATCH_DIR}/${QEMU_PATCH}\" not found!"
     fmtr::fatal "Cannot proceed without the patch file. Exiting."
     exit 1
   fi
 
   if [ ! -f "${PATCH_DIR}/${QEMU_LIBNFS_PATCH}" ]; then
-    fmtr::error "Patch file ${PATCH_DIR}/${QEMU_LIBNFS_PATCH} not found!"
+    fmtr::error "Patch file \"${PATCH_DIR}/${QEMU_LIBNFS_PATCH}\" not found!"
     fmtr::fatal "Cannot proceed without the libnfs patch file. Exiting."
     exit 1
   fi
 
   fmtr::info "Applying patches to QEMU..."
-
-  patch -fsp1 < "${PATCH_DIR}/${QEMU_LIBNFS_PATCH}" &>> "$LOG_FILE" || {
-    fmtr::error "Failed to apply patch ${QEMU_LIBNFS_PATCH}!"
-    fmtr::fatal "libNFS patch application failed. Please check the log for errors."
-    exit 1
-  }
 
   patch -fsp1 < "${PATCH_DIR}/${QEMU_PATCH}" &>> "$LOG_FILE" || {
     fmtr::error "Failed to apply patch ${QEMU_PATCH}!"
@@ -157,25 +151,37 @@ patch_qemu() {
     exit 1
   }
 
+  patch -fsp1 < "${PATCH_DIR}/${QEMU_LIBNFS_PATCH}" &>> "$LOG_FILE" || {
+    fmtr::error "Failed to apply patch ${QEMU_LIBNFS_PATCH}!"
+    fmtr::fatal "libNFS patch application failed. Please check the log for errors."
+    exit 1
+  }
+
   fmtr::log "Spoofing all model & serial numbers..."; echo ""
 
   spoof_serial_numbers
   spoof_drive_serial_number
-  spoof_cpuid_manufacturer
+  spoof_processor_manufacturer
   spoof_acpi_table_strings
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 spoof_serial_numbers() {
   get_random_serial() { head /dev/urandom | tr -dc 'A-Z0-9' | head -c "$1"; }
-
-  print_modified() {
-    local file="$1"
-    local value="$2"
-    local file_name="$(basename "$file")"
-    local file_log="$(fmtr::format_text '  ' "Modified:" " '$file_name'" "$TEXT_GREEN")"
-    local value_log="$(fmtr::format_text ' with new value(s): ' "$value" '' "$TEXT_GREEN")"
-    echo "${file_log}${value_log}" | tee -a "$LOG_FILE"
-  }
 
   # Define the patterns to look for
   local patterns=("STRING_SERIALNUMBER" "STR_SERIALNUMBER" "STR_SERIAL_MOUSE" "STR_SERIAL_TABLET" "STR_SERIAL_KEYBOARD" "STR_SERIAL_COMPAT")
@@ -192,7 +198,6 @@ spoof_serial_numbers() {
       if [[ $line =~ \[(${regex_pattern})\] ]]; then
         local new_serial="$(get_random_serial 10)"
         line=$(echo "$line" | sed -E "s/(\[(${regex_pattern})\] *= *\")[^\"]*/\1${new_serial}/")
-        print_modified "$file" "$new_serial"
       fi
       new_content+=("$line")
     done < "$file"
@@ -201,6 +206,21 @@ spoof_serial_numbers() {
     printf "%s\n" "${new_content[@]}" > "$file"
   done
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 spoof_drive_serial_number() {
   local core_file="$(pwd)/hw/ide/core.c"
@@ -277,11 +297,21 @@ spoof_drive_serial_number() {
   sed -i "$core_file" -Ee "s/\"MicroSD J45S9\"/\"${new_ide_cfata_model}\"/"
   sed -i "$core_file" -Ee "s/\"Samsung SSD 980 500GB\"/\"${new_default_model}\"/"
 
-  print_modified "$core_file" "$new_serial"
-  print_modified "$core_file" "$new_ide_cd_model"
-  print_modified "$core_file" "$new_ide_cfata_model"
-  print_modified "$core_file" "$new_default_model"
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 spoof_acpi_table_strings() {
   local pairs=(
@@ -299,17 +329,12 @@ spoof_acpi_table_strings() {
 
   local total_pairs=$(( ${#pairs[@]} / 2 ))
   local random_index=$(( RANDOM % total_pairs * 2 ))
-
   local appname6=${pairs[$random_index]}
   local appname8=${pairs[$random_index + 1]}
-
   local h_file="$(pwd)/include/hw/acpi/aml-build.h"
+
   sed -i "$h_file" -e "s/^#define ACPI_BUILD_APPNAME6 \".*\"/#define ACPI_BUILD_APPNAME6 \"${appname6}\"/"
   sed -i "$h_file" -e "s/^#define ACPI_BUILD_APPNAME8 \".*\"/#define ACPI_BUILD_APPNAME8 \"${appname8}\"/"
-
-  print_modified "$file" ''
-  fmtr::format_text '    ' "#define ACPI_BUILD_APPNAME6 '${appname6}'" '' "$TEXT_GREEN"
-  fmtr::format_text '    ' "#define ACPI_BUILD_APPNAME8 '${appname8}'" '' "$TEXT_GREEN"
 
   # By default QEMU doesn't specify PM type in FACP ACPI table.
   # Normally vendors specify either 1 (Desktop) or 2 (Mobile)
@@ -345,29 +370,54 @@ spoof_acpi_table_strings() {
   fi
 }
 
-spoof_cpuid_manufacturer() {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+spoof_processor_manufacturer() {
+
   local chipset_file
   case "$QEMU_VERSION" in
     "8.2.6") chipset_file="$(pwd)/hw/i386/pc_q35.c" ;;
-    "9.2.0") chipset_file="$(pwd)/hw/i386/fw_cfg.c" ;;
+    "9.2.3") chipset_file="$(pwd)/hw/i386/fw_cfg.c" ;;
     *) fmtr::warn "Unsupported QEMU version: $QEMU_VERSION" ;;
   esac
 
-  local manufacturer=$(sudo dmidecode -t 4 | grep 'Manufacturer:' | awk -F': +' '{print $2}')
+  local manufacturer=$(sudo dmidecode --string processor-manufacturer)
   sed -i "$chipset_file" -e "s/smbios_set_defaults(\"[^\"]*\",/smbios_set_defaults(\"${manufacturer}\",/"
-  print_modified "$chipset_file" "$manufacturer"
+
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 compile_qemu() {
+
   fmtr::log "Configuring build environment"
 
-  # --target-list            | set target list (default: build all)
-  # --enable-libusb          | libusb support for USB passthrough
-  # --enable-usb-redir       | libusbredir support
-  # --enable-spice           | Spice server support
-  # --enable-spice-protocol  | Spice protocol support
-  # --disable-werror         | Treat warnings as errors
-
+  # ./configure --help
   ./configure --target-list=x86_64-softmmu \
               --enable-libusb \
               --enable-usb-redir \
@@ -381,19 +431,24 @@ compile_qemu() {
   fmtr::log "Installing QEMU"
   sudo make install &>> "$LOG_FILE"
   fmtr::info "Compilation finished!"
+
 }
 
 cleanup() {
+
   fmtr::log "Cleaning up"
   cd .. && sudo rm -rf "$QEMU_ARCHIVE" "$QEMU_DIR" "$QEMU_SIG"
   cd .. && sudo rmdir --ignore-fail-on-non-empty "$SRC_DIR"
+
 }
 
 main() {
+
   install_req_pkgs "QEMU"
   acquire_qemu_source
   prmt::yes_or_no "$(fmtr::ask 'Build & install QEMU to /usr/local/bin')" && compile_qemu
   ! prmt::yes_or_no "$(fmtr::ask 'Keep QEMU source to make repatching quicker')" && cleanup
+
 }
 
 main
