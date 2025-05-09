@@ -51,74 +51,61 @@ detect_distro() {
   readonly DISTRO
 }
 
-get_cpu_info() {
-  CPU_COUNT=$(nproc --all 2>/dev/null || echo "Unknown")
-  VENDOR_ID=$(LANG=en_US.UTF-8 lscpu | grep 'Vendor ID:' | awk '{print $3}' 2>/dev/null | xargs || echo "Unknown")
-  export CPU_COUNT VENDOR_ID
-  readonly CPU_COUNT VENDOR_ID
-}
 
-get_virtualization_status() {
-  VIRT_STATUS=$(LANG=en_US.UTF-8 lscpu | grep 'Virtualization:' | awk '{print $2}' 2>/dev/null | xargs || echo "Unknown")
-  VIRT_STATUS=${VIRT_STATUS:-"Not enabled"}
-  export VIRT_STATUS
-  readonly VIRT_STATUS
-}
 
-get_memory_info() {
-  if [ -f /proc/meminfo ]; then
-    TOTAL_RAM_GB=$(awk '/MemTotal/ {print $2 / 1024 / 1024}' /proc/meminfo)
-    AVAILABLE_RAM_GB=$(awk '/MemAvailable/ {print $2 / 1024 / 1024}' /proc/meminfo)
-    TOTAL_RAM_GB=$(printf "%.2f" "$TOTAL_RAM_GB")
-    AVAILABLE_RAM_GB=$(printf "%.2f" "$AVAILABLE_RAM_GB")
-  else
-    TOTAL_RAM_GB="Unknown"
-    AVAILABLE_RAM_GB="Unknown"
+
+
+
+
+
+
+cpu_vendor_id() {
+  VENDOR_ID=$(LANG=en_US.UTF-8 lscpu 2>/dev/null | awk -F': +' '/Vendor ID/ {print $2}' | xargs)
+
+  if [ -z "$VENDOR_ID" ]; then
+    # Fallback method
+    VENDOR_ID=$(awk -F': +' '/vendor_id/ {print $2; exit}' /proc/cpuinfo | xargs)
   fi
-  export TOTAL_RAM_GB AVAILABLE_RAM_GB
-  readonly TOTAL_RAM_GB AVAILABLE_RAM_GB
+
+  : "${VENDOR_ID:=Unknown}"
+
+  export VENDOR_ID
+  readonly VENDOR_ID
 }
 
-get_gpu_info() {
-  GPU_NAMES=$(lspci | grep -iE 'vga|3d' | sed -E 's/.*\[(.*)\].*/\1/')
-  if [ -n "$GPU_NAMES" ]; then
-    GPU_NAMES=$(echo "$GPU_NAMES" | awk '{printf "├─ %s\n", $0}' | sed '$ s/├─ /└─ /')
-  else
-    GPU_NAMES="None detected"
-  fi
-  export GPU_NAMES
-  readonly GPU_NAMES
-}
+
+
+
+
+
+
+
+
 
 print_system_info() {
-  fmtr::format_text '  ' "\n  • System Information" '' "$TEXT_BOLD"
-  fmtr::format_text '    ├─ Distro: ' "$DISTRO" '' "$TEXT_BRIGHT_GREEN"
 
-  local cpu_info="$VENDOR_ID • $CPU_COUNT Cores • $VIRT_STATUS"
-  local virt_status_color="$TEXT_BRIGHT_GREEN"
-  if [[ "$VIRT_STATUS" == "Not enabled" ]]; then
-    virt_status_color="$TEXT_BRIGHT_RED"
-  fi
-  fmtr::format_text '    ├─ CPU: ' "$cpu_info" '' "$virt_status_color"
 
-  echo "    ├─ GPU(s):"
-  while IFS= read -r gpu_line; do
-    gpu_name_colored=$(echo "$gpu_line" | sed -E 's/(├─ |└─ )//')
-    fmtr::format_text "    │  ${gpu_line:0:3}" "$gpu_name_colored" '' "$TEXT_BRIGHT_GREEN"
-  done <<< "$GPU_NAMES"
-
-  fmtr::format_text '    └─ RAM: ' "$TOTAL_RAM_GB GB (Available: $AVAILABLE_RAM_GB GB)" '' "$TEXT_BRIGHT_GREEN"
-  echo -e "\n  ────────────────────────────────\n"
+  echo -e "\n  ─────────────────────────\n"
 }
+
+
+
+
+
+
+
+
+
+
 
 main_menu() {
   local options=(
     "Exit"
-    "VFIO Configuration"
-    "Virt Software Setup"
+    "Virtualization Setup"
     "QEMU (Patched) Setup"
-    "EDK2/OVMF (Patched) Setup"
-    "Linux Kernel (Patched) Setup"
+    "EDK2 (Patched) Setup"
+    "GPU Passthrough Setup"
+    "Kernel (Patched) Setup"
     "Looking Glass Setup"
   )
   readonly options
@@ -134,10 +121,10 @@ main_menu() {
 
     local choice="$(prmt::quick_prompt '  Enter your choice [0-6]: ')" && clear
     case $choice in
-      1) fmtr::box_text "${options[1]}"; "./functions/configure_vfio.sh" ;;
-      2) fmtr::box_text "${options[2]}"; "./functions/install_virt_software.sh" ;;
-      3) fmtr::box_text "${options[3]}"; "./functions/spoof_qemu_patch.sh" ;;
-      4) fmtr::box_text "${options[4]}"; "./functions/spoof_ovmf_patch.sh" ;;
+      1) fmtr::box_text "${options[1]}"; "./functions/virtualization.sh" ;;
+      2) fmtr::box_text "${options[2]}"; "./functions/spoof_qemu_patch.sh" ;;
+      3) fmtr::box_text "${options[3]}"; "./functions/spoof_edk2_patch.sh" ;;
+      4) fmtr::box_text "${options[4]}"; "./functions/gpu_passthrough.sh" ;;
       5) fmtr::box_text "${options[5]}"; "./functions/patch_kernel.sh" ;;
       6) fmtr::box_text "${options[6]}"; "./functions/looking_glass.sh" ;;
       0)
@@ -169,10 +156,7 @@ main() {
   fi
 
   detect_distro
-  get_cpu_info
-  get_virtualization_status
-  get_memory_info
-  get_gpu_info
+  cpu_vendor_id
   main_menu
 }
 
