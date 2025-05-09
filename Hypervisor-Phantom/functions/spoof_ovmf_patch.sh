@@ -113,6 +113,11 @@ compile_ovmf() {
   sudo cp "Build/OvmfX64/RELEASE_GCC5/FV/OVMF_CODE.fd" "$CODE_DEST_SECBOOT"
   sudo cp "Build/OvmfX64/RELEASE_GCC5/FV/OVMF_VARS.fd" "$VAR_DEST"
 
+  # Convert .fd files to .qcow2 format
+  fmtr::log "Converting OVMF firmware to .qcow2 format"
+  sudo qemu-img convert -f raw -O qcow2 "$CODE_DEST_SECBOOT" "$DEST_DIR/OVMF_CODE.secboot.qcow2"
+  sudo qemu-img convert -f raw -O qcow2 "$VAR_DEST" "$DEST_DIR/OVMF_VARS.qcow2"
+
   fmtr::log "Compiling OVMF without secure boot"
   build \
     --platform='OvmfPkg/OvmfPkgX64.dsc' \
@@ -125,6 +130,10 @@ compile_ovmf() {
     &>> "$LOG_FILE"
 
   sudo cp "Build/OvmfX64/RELEASE_GCC5/FV/OVMF_CODE.fd" "$CODE_DEST"
+
+  # Convert non-secure .fd file to .qcow2
+  fmtr::log "Converting non-secure OVMF firmware to .qcow2 format"
+  sudo qemu-img convert -f raw -O qcow2 "$CODE_DEST" "$DEST_DIR/OVMF_CODE.qcow2"
 
   sudo chown '0:0' "$CODE_DEST_SECBOOT" "$CODE_DEST" "$VAR_DEST"
   sudo chmod '755' "$CODE_DEST_SECBOOT" "$CODE_DEST" "$VAR_DEST"
