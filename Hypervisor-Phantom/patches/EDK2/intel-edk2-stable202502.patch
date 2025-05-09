@@ -163,7 +163,7 @@ index ba21393..ae21b82 100644
  // Type definition and contents of the default Type 0 SMBIOS table.
  //
 diff --git a/OvmfPkg/Include/IndustryStandard/Q35MchIch9.h b/OvmfPkg/Include/IndustryStandard/Q35MchIch9.h
-index db828d3..cc5e015 100644
+index db828d3..ad00b17 100644
 --- a/OvmfPkg/Include/IndustryStandard/Q35MchIch9.h
 +++ b/OvmfPkg/Include/IndustryStandard/Q35MchIch9.h
 @@ -20,7 +20,7 @@
