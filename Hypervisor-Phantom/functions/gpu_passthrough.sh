@@ -191,7 +191,7 @@ fmtr::warn "DISCLAIMER: This VFIO script automates GPU isolation, bootloader rec
 
       - lspci -nn | grep -Ei 'vga|3d|audio device'    _____________________________________
       - $VFIO_CONF_PATH                    / systemd-boot = /boot/loader/entries |
-      - Linux bootloader config entry ]_____________/  GRUB         = /etc/default/grub    |"
+      - Bootloader configuration entries ]__________/  GRUB         = /etc/default/grub    |"
 
 if ! prmt::yes_or_no "$(fmtr::ask 'Acknowledge and proceed with this script?')"; then
     fmtr::log "Acknowledgement declined by $(whoami); therefore exiting."
