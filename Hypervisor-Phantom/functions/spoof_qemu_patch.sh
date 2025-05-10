@@ -314,6 +314,7 @@ spoof_drive_serial_number() {
 
 
 spoof_acpi_table_strings() {
+
   local pairs=(
     'DELL  ' 'Dell Inc' ' ASUS ' 'Notebook'
     'MSI NB' 'MEGABOOK' 'LENOVO' 'TC-O5Z  '
@@ -368,6 +369,7 @@ spoof_acpi_table_strings() {
     fmtr::info "It's highly recommended to passthrough the ACPI Table via QEMU's args/xml:
       qemu-system-x86_64 -acpitable \"$HOME/fake_battery.aml\""
   fi
+
 }
 
 
