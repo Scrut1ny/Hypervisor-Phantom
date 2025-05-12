@@ -120,44 +120,109 @@ compile_ovmf() {
     fmtr::log "Converting OVMF firmware to .qcow2 format..."
     sudo qemu-img convert -f raw -O qcow2 "Build/OvmfX64/RELEASE_GCC5/FV/OVMF_CODE.fd" "$OVMF_CODE_DEST_DIR/OVMF_CODE.secboot.4m.qcow2"
     sudo qemu-img convert -f raw -O qcow2 "Build/OvmfX64/RELEASE_GCC5/FV/OVMF_VARS.fd" "$OVMF_CODE_DEST_DIR/OVMF_CODE_VARS.4m.qcow2"
-compile_ovmf() {
-
-    # https://github.com/tianocore/tianocore.github.io/wiki/Common-instructions
-    # https://github.com/tianocore/tianocore.github.io/wiki/How-to-build-OVMF
-
-    export WORKSPACE="$(pwd)"
-    export EDK_TOOLS_PATH="${WORKSPACE}/BaseTools"
-    export CONF_PATH="${WORKSPACE}/Conf"
-
-    fmtr::log "Building BaseTools (EDK II build tools)..."
-    make -C BaseTools &>> "$LOG_FILE"; source edksetup.sh &>> "$LOG_FILE"
-
-    fmtr::log "Compiling OVMF firmware with Secure Boot and TPM support..."
-    build \
-        -a X64 \
-        -p OvmfPkg/OvmfPkgX64.dsc \
-        -b RELEASE \
-        -t GCC5 \
-        -n 0 \
-        -s \
-        -q \
-        --define SECURE_BOOT_ENABLE=TRUE \
-        --define TPM_CONFIG_ENABLE=TRUE \
-        --define TPM_ENABLE=TRUE \
-        --define TPM1_ENABLE=TRUE \
-        --define TPM2_ENABLE=TRUE \
-        &>> "$LOG_FILE"
-
-    fmtr::log "Converting OVMF firmware to .qcow2 format..."
-    sudo qemu-img convert -f raw -O qcow2 "Build/OvmfX64/RELEASE_GCC5/FV/OVMF_CODE.fd" "$OVMF_CODE_DEST_DIR/OVMF_CODE.secboot.4m.qcow2"
-    sudo qemu-img convert -f raw -O qcow2 "Build/OvmfX64/RELEASE_GCC5/FV/OVMF_VARS.fd" "$OVMF_CODE_DEST_DIR/OVMF_CODE_VARS.4m.qcow2"
 
     sudo chown '0:0' "$OVMF_CODE_DEST_DIR/OVMF_CODE.secboot.4m.qcow2"
     sudo chmod '755' "$OVMF_CODE_DEST_DIR/OVMF_CODE.secboot.4m.qcow2"
 
 }
-    sudo chown '0:0' "$OVMF_CODE_DEST_DIR/OVMF_CODE.secboot.4m.qcow2"
-    sudo chmod '755' "$OVMF_CODE_DEST_DIR/OVMF_CODE.secboot.4m.qcow2"
+
+cert_injection () {
+
+    local UUID
+    local TMPDIR="secureboot_tmp"
+    local VM_NAME
+    local VARS_FILE
+    local OUTPUT_VARS="/var/lib/libvirt/qemu/nvram/${VM_NAME}_VARS.secboot.fd"
+
+    # Prompt the user to select the UUID type
+    fmtr::log "Select the UUID type to use for Secure Boot:
+
+    1) Randomly generated UUID
+    2) UEFI Global Variable UUID (EFI_GLOBAL_VARIABLE)
+    3) Microsoft Vendor UUID (Microsoft Corporation)"
+
+    read -rp "$(fmtr::ask 'Enter choice [1-3]: ')" uuid_choice
+    case "$uuid_choice" in
+      1) UUID=$(uuidgen) ;; # Randomized UUID
+      2) UUID="8be4df61-93ca-11d2-aa0d-00e098032b8c" ;; # UEFI global variable
+      3) UUID="77fa9abd-0359-4d32-bd60-28f4e78f784b" ;; # Microsoft vendor identity
+      *) fmtr::error "Invalid choice. Defaulting to random UUID."; UUID=$(uuidgen) ;;
+    esac
+
+    # Create a temporary directory for downloading certificates
+    mkdir -p "$TMPDIR" && cd "$TMPDIR" || exit 1
+
+    fmtr::info "Downloading Microsoft Secure Boot certificates..."
+
+    declare -a URLS=(
+      # PK
+      "https://raw.githubusercontent.com/microsoft/secureboot_objects/main/PreSignedObjects/PK/Certificate/WindowsOEMDevicesPK.der"
+
+      # KEK
+      "https://raw.githubusercontent.com/microsoft/secureboot_objects/main/PreSignedObjects/KEK/Certificates/MicCorKEKCA2011_2011-06-24.der"
+      "https://raw.githubusercontent.com/microsoft/secureboot_objects/main/PreSignedObjects/KEK/Certificates/microsoft%20corporation%20kek%202k%20ca%202023.der"
+
+      # DB
+      "https://raw.githubusercontent.com/microsoft/secureboot_objects/main/PreSignedObjects/DB/Certificates/MicCorUEFCA2011_2011-06-27.der"
+      "https://raw.githubusercontent.com/microsoft/secureboot_objects/main/PreSignedObjects/DB/Certificates/MicWinProPCA2011_2011-10-19.der"
+      "https://raw.githubusercontent.com/microsoft/secureboot_objects/main/PreSignedObjects/DB/Certificates/microsoft%20option%20rom%20uefi%20ca%202023.der"
+      "https://raw.githubusercontent.com/microsoft/secureboot_objects/main/PreSignedObjects/DB/Certificates/microsoft%20uefi%20ca%202023.der"
+      "https://raw.githubusercontent.com/microsoft/secureboot_objects/main/PreSignedObjects/DB/Certificates/windows%20uefi%20ca%202023.der"
+
+      # DBX
+      "https://uefi.org/sites/default/files/resources/dbxupdate_x64.bin"
+    )
+
+    for url in "${URLS[@]}"; do
+      curl -sOL "$url"
+    done
+
+    # Prompt user to select the VM and corresponding VARS file
+    fmtr::info "Available domains:"
+    VMS=($(sudo virsh list --all --name))
+
+    if [ ${#VMS[@]} -eq 0 ]; then
+      fmtr::fatal "No VMs found!"
+    fi
+    # Display VM names and prompt the user
+    PS3="Please select the VM to use for Secure Boot (or type 'cancel' to exit): "
+    select VM_NAME in "${VMS[@]}"; do
+      if [ "$VM_NAME" == "cancel" ]; then
+        fmtr::info "Exiting Secure Boot setup."
+        return
+      fi
+
+      if [ -n "$VM_NAME" ]; then
+        VARS_FILE="/var/lib/libvirt/qemu/nvram/${VM_NAME}_VARS.fd"
+        if [ ! -f "$VARS_FILE" ]; then
+          fmtr::fatal "File not found: $VARS_FILE"
+        fi
+        fmtr::info "Using $VARS_FILE as the base VARS file."
+        break
+      fi
+    done
+
+    # If user has selected a VARS file, inject the certificates
+    fmtr::info "Injecting Secure Boot certs into $VARS_FILE using UUID $UUID"
+
+    sudo virt-fw-vars \
+      --input "$VARS_FILE" \
+      --output "$OUTPUT_VARS" \
+      --secure-boot \
+      --set-pk "$UUID" "WindowsOEMDevicesPK.der" \
+      --add-kek "$UUID" "MicCorKEKCA2011_2011-06-24.der" \
+      --add-kek "$UUID" "microsoft%20corporation%20kek%202k%20ca%202023.der" \
+      --add-db "$UUID" "MicCorUEFCA2011_2011-06-27.der" \
+      --add-db "$UUID" "MicWinProPCA2011_2011-10-19.der" \
+      --add-db "$UUID" "microsoft%20option%20rom%20uefi%20ca%202023.der" \
+      --add-db "$UUID" "microsoft%20uefi%20ca%202023.der" \
+      --add-db "$UUID" "windows%20uefi%20ca%202023.der" \
+      --set-dbx dbxupdate_x64.bin &>> "$LOG_FILE"
+
+    fmtr::info "Secure Boot NVRAM generated at: $OUTPUT_VARS"
+
+    # Clean up temporary files
+    cd .. && rm -rf "$TMPDIR"
 
 }
 
