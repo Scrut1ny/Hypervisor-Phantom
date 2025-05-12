@@ -17,25 +17,37 @@ readonly EDK2_URL="https://github.com/tianocore/edk2.git"
 readonly EDK2_VERSION="edk2-stable202502"
 readonly EDK2_DIR="$EDK2_VERSION"
 readonly PATCH_DIR="../../patches/EDK2"
-readonly OVMF_PATCH="${CPU_VENDOR}-${EDK2_VERSION}.patch"
-readonly DEST_DIR="/usr/share/edk2/x64/"
-readonly CODE_DEST_SECBOOT="${DEST_DIR}/OVMF_CODE.secboot.4m.fd"
-readonly CODE_DEST="${DEST_DIR}/OVMF_CODE.4m.fd"
-readonly VAR_DEST="${DEST_DIR}/OVMF_VARS.4m.fd"
+readonly PATCH_OVMF="${CPU_VENDOR}-${EDK2_VERSION}.patch"
+readonly OVMF_CODE_DEST_DIR="/usr/share/edk2/x64"
+readonly OVMF_CODE_SECBOOT_DEST="${OVMF_CODE_DEST_DIR}/OVMF_CODE.secboot.4m.fd"
+readonly OVMF_CODE_VAR_DEST="${OVMF_CODE_DEST_DIR}/OVMF_VARS.4m.fd"
 
 REQUIRED_PKGS_Arch=(
   base-devel acpica git nasm python
+
+  # Includes virt-fw-vars tool
+  virt-firmware
 )
 
 REQUIRED_PKGS_Debian=(
   build-essential uuid-dev iasl git nasm python-is-python3
+
+  # Includes virt-fw-vars tool
+  virt-firmware
 )
 
 REQUIRED_PKGS_openSUSE=(
   gcc gcc-c++ make acpica git nasm python3 libuuid-devel
+
+  # Includes virt-fw-vars tool
+  virt-firmware
 )
+
 REQUIRED_PKGS_Fedora=(
   gcc gcc-c++ make acpica-tools git nasm python3 libuuid-devel
+
+  # Includes virt-fw-vars tool
+  virt-firmware
 )
 
 acquire_edk2_source() {
@@ -78,65 +90,75 @@ patch_ovmf() {
 }
 
 compile_ovmf() {
-  fmtr::log "Configuring build environment"
-  local path="$(pwd)"
-  export WORKSPACE="$path"
-  export EDK_TOOLS_PATH="${path}/BaseTools"
-  export CONF_PATH="${path}/Conf"
 
-  # Common build defines for TPM and network features
-  local common_defines=(
-    "--define=NETWORK_HTTP_BOOT_ENABLE=TRUE"
-    "--define=NETWORK_IP6_ENABLE=TRUE"
-    "--define=TPM_CONFIG_ENABLE=TRUE"
-    "--define=TPM_ENABLE=TRUE"
-    "--define=TPM1_ENABLE=TRUE"
-    "--define=TPM2_ENABLE=TRUE"
-    "--define=NETWORK_TLS_ENABLE=TRUE"
-  )
+    # https://github.com/tianocore/tianocore.github.io/wiki/Common-instructions
+    # https://github.com/tianocore/tianocore.github.io/wiki/How-to-build-OVMF
 
-  make -C BaseTools &>> "$LOG_FILE"; source edksetup.sh &>> "$LOG_FILE"
+    export WORKSPACE="$(pwd)"
+    export EDK_TOOLS_PATH="${WORKSPACE}/BaseTools"
+    export CONF_PATH="${WORKSPACE}/Conf"
 
-  fmtr::log "Compiling OVMF with secure boot"
-  build \
-    --platform='OvmfPkg/OvmfPkgX64.dsc' \
-    --arch='X64' \
-    --define='SECURE_BOOT_ENABLE=TRUE' \
-    "${common_defines[@]}" \
-    --buildtarget='RELEASE' \
-    --tagname='GCC5' \
-    -n0 \
-    -sq \
-    &>> "$LOG_FILE"
+    fmtr::log "Building BaseTools (EDK II build tools)..."
+    make -C BaseTools &>> "$LOG_FILE"; source edksetup.sh &>> "$LOG_FILE"
 
-  sudo mkdir -p "$DEST_DIR"
-  sudo cp "Build/OvmfX64/RELEASE_GCC5/FV/OVMF_CODE.fd" "$CODE_DEST_SECBOOT"
-  sudo cp "Build/OvmfX64/RELEASE_GCC5/FV/OVMF_VARS.fd" "$VAR_DEST"
+    fmtr::log "Compiling OVMF firmware with Secure Boot and TPM support..."
+    build \
+        -a X64 \
+        -p OvmfPkg/OvmfPkgX64.dsc \
+        -b RELEASE \
+        -t GCC5 \
+        -n 0 \
+        -s \
+        -q \
+        --define SECURE_BOOT_ENABLE=TRUE \
+        --define TPM_CONFIG_ENABLE=TRUE \
+        --define TPM_ENABLE=TRUE \
+        --define TPM1_ENABLE=TRUE \
+        --define TPM2_ENABLE=TRUE \
+        &>> "$LOG_FILE"
 
-  # Convert .fd files to .qcow2 format
-  fmtr::log "Converting OVMF firmware to .qcow2 format"
-  sudo qemu-img convert -f raw -O qcow2 "$CODE_DEST_SECBOOT" "$DEST_DIR/OVMF_CODE.secboot.qcow2"
-  sudo qemu-img convert -f raw -O qcow2 "$VAR_DEST" "$DEST_DIR/OVMF_VARS.qcow2"
+    fmtr::log "Converting OVMF firmware to .qcow2 format..."
+    sudo qemu-img convert -f raw -O qcow2 "Build/OvmfX64/RELEASE_GCC5/FV/OVMF_CODE.fd" "$OVMF_CODE_DEST_DIR/OVMF_CODE.secboot.4m.qcow2"
+    sudo qemu-img convert -f raw -O qcow2 "Build/OvmfX64/RELEASE_GCC5/FV/OVMF_VARS.fd" "$OVMF_CODE_DEST_DIR/OVMF_CODE_VARS.4m.qcow2"
+compile_ovmf() {
 
-  fmtr::log "Compiling OVMF without secure boot"
-  build \
-    --platform='OvmfPkg/OvmfPkgX64.dsc' \
-    --arch='X64' \
-    "${common_defines[@]}" \
-    --buildtarget='RELEASE' \
-    --tagname='GCC5' \
-    -n0 \
-    -sq \
-    &>> "$LOG_FILE"
+    # https://github.com/tianocore/tianocore.github.io/wiki/Common-instructions
+    # https://github.com/tianocore/tianocore.github.io/wiki/How-to-build-OVMF
 
-  sudo cp "Build/OvmfX64/RELEASE_GCC5/FV/OVMF_CODE.fd" "$CODE_DEST"
+    export WORKSPACE="$(pwd)"
+    export EDK_TOOLS_PATH="${WORKSPACE}/BaseTools"
+    export CONF_PATH="${WORKSPACE}/Conf"
 
-  # Convert non-secure .fd file to .qcow2
-  fmtr::log "Converting non-secure OVMF firmware to .qcow2 format"
-  sudo qemu-img convert -f raw -O qcow2 "$CODE_DEST" "$DEST_DIR/OVMF_CODE.qcow2"
+    fmtr::log "Building BaseTools (EDK II build tools)..."
+    make -C BaseTools &>> "$LOG_FILE"; source edksetup.sh &>> "$LOG_FILE"
 
-  sudo chown '0:0' "$CODE_DEST_SECBOOT" "$CODE_DEST" "$VAR_DEST"
-  sudo chmod '755' "$CODE_DEST_SECBOOT" "$CODE_DEST" "$VAR_DEST"
+    fmtr::log "Compiling OVMF firmware with Secure Boot and TPM support..."
+    build \
+        -a X64 \
+        -p OvmfPkg/OvmfPkgX64.dsc \
+        -b RELEASE \
+        -t GCC5 \
+        -n 0 \
+        -s \
+        -q \
+        --define SECURE_BOOT_ENABLE=TRUE \
+        --define TPM_CONFIG_ENABLE=TRUE \
+        --define TPM_ENABLE=TRUE \
+        --define TPM1_ENABLE=TRUE \
+        --define TPM2_ENABLE=TRUE \
+        &>> "$LOG_FILE"
+
+    fmtr::log "Converting OVMF firmware to .qcow2 format..."
+    sudo qemu-img convert -f raw -O qcow2 "Build/OvmfX64/RELEASE_GCC5/FV/OVMF_CODE.fd" "$OVMF_CODE_DEST_DIR/OVMF_CODE.secboot.4m.qcow2"
+    sudo qemu-img convert -f raw -O qcow2 "Build/OvmfX64/RELEASE_GCC5/FV/OVMF_VARS.fd" "$OVMF_CODE_DEST_DIR/OVMF_CODE_VARS.4m.qcow2"
+
+    sudo chown '0:0' "$OVMF_CODE_DEST_DIR/OVMF_CODE.secboot.4m.qcow2"
+    sudo chmod '755' "$OVMF_CODE_DEST_DIR/OVMF_CODE.secboot.4m.qcow2"
+
+}
+    sudo chown '0:0' "$OVMF_CODE_DEST_DIR/OVMF_CODE.secboot.4m.qcow2"
+    sudo chmod '755' "$OVMF_CODE_DEST_DIR/OVMF_CODE.secboot.4m.qcow2"
+
 }
 
 cleanup() {
