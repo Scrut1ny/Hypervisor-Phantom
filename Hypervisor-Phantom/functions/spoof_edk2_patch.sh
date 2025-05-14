@@ -16,7 +16,7 @@ readonly SRC_DIR="src"
 readonly EDK2_URL="https://github.com/tianocore/edk2.git"
 readonly EDK2_VERSION="edk2-stable202502"
 readonly PATCH_DIR="../../patches/EDK2"
-readonly PATCH_OVMF="${CPU_VENDOR}-${EDK2_VERSION}.patch"
+readonly OVMF_PATCH="${CPU_VENDOR}-${EDK2_VERSION}.patch"
 readonly OVMF_CODE_DEST_DIR="/usr/share/edk2/x64"
 
 REQUIRED_PKGS_Arch=(
@@ -47,46 +47,61 @@ REQUIRED_PKGS_Fedora=(
   virt-firmware
 )
 
+
+
+
+
 acquire_edk2_source() {
+
   mkdir -p "$SRC_DIR" && cd "$SRC_DIR"
 
-  if [ -d "$EDK2_DIR" ]; then
-    if [ -d "$EDK2_DIR/.git" ]; then
-      fmtr::warn "Directory $EDK2_DIR already exists and is a valid Git repository."
-      if ! prmt::yes_or_no "$(fmtr::ask 'Delete and re-clone the EDK2 source?')"; then
-        fmtr::info "Keeping existing directory; Skipping re-clone."
-        cd "$EDK2_DIR" || { fmtr::fatal "Failed to change to EDK2 directory after cloning: $EDK2_DIR"; exit 1; }
-        return
+  if [ -d "$EDK2_VERSION" ]; then
+    if prmt::yes_or_no "$(fmtr::ask 'Purge EDK2 source directory?')"; then
+      rm -rf "$EDK2_VERSION" || { fmtr::fatal "Failed to remove existing directory: $EDK2_VERSION"; exit 1; }
+      fmtr::info "Directory purged successfully."
+
+      if prmt::yes_or_no "$(fmtr::ask 'Clone the EDK2 repository?')"; then
+        git clone --single-branch --depth=1 --branch "$EDK2_VERSION" "$EDK2_URL" "$EDK2_VERSION" &>> "$LOG_FILE" || { fmtr::fatal "Failed to clone repository."; exit 1; }
+        cd "$EDK2_VERSION" || { fmtr::fatal "Failed to change to EDK2 directory after cloning: $EDK2_VERSION"; exit 1; }
+        fmtr::info "Initializing submodules..."
+        git submodule update --init &>> "$LOG_FILE" || { fmtr::fatal "Failed to initialize submodules."; exit 1; }
+        fmtr::info "EDK2 source successfully acquired and submodules initialized."
+        patch_ovmf
+      else
+        if prmt::yes_or_no "$(fmtr::ask 'Patch EDK2?')"; then
+          patch_ovmf
+        else
+          fmtr::info "Skipping clone and patch."
+        fi
       fi
     else
-      fmtr::warn "Directory $EDK2_DIR exists but is not a valid Git repository."
-      if ! prmt::yes_or_no "$(fmtr::ask 'Delete and re-clone the EDK2 source?')"; then
-        fmtr::info "Keeping existing directory; Skipping re-clone."
-        cd "$EDK2_DIR" || { fmtr::fatal "Failed to change to EDK2 directory after cloning: $EDK2_DIR"; exit 1; }
-        return
-      fi
+      fmtr::info "Kept existing directory; Skipping deletion."
+      cd "$EDK2_VERSION" || { fmtr::fatal "Failed to change to EDK2 directory: $EDK2_VERSION"; exit 1; }
     fi
-    rm -rf "$EDK2_DIR" || { fmtr::fatal "Failed to remove existing directory: $EDK2_DIR"; exit 1; }
-    fmtr::info "Directory purged; re-cloning repository..."
+  else
+    git clone --single-branch --depth=1 --branch "$EDK2_VERSION" "$EDK2_URL" "$EDK2_VERSION" &>> "$LOG_FILE" || { fmtr::fatal "Failed to clone repository."; exit 1; }
+    cd "$EDK2_VERSION" || { fmtr::fatal "Failed to change to EDK2 directory after cloning: $EDK2_VERSION"; exit 1; }
+    fmtr::info "Initializing submodules..."
+    git submodule update --init &>> "$LOG_FILE" || { fmtr::fatal "Failed to initialize submodules."; exit 1; }
+    fmtr::info "EDK2 source successfully acquired and submodules initialized."
+    patch_ovmf
   fi
 
-  git clone --single-branch --depth=1 --branch "$EDK2_VERSION" "$EDK2_URL" "$EDK2_DIR" &>> "$LOG_FILE" || { fmtr::fatal "Failed to clone repository."; exit 1; }
-  cd "$EDK2_DIR" || { fmtr::fatal "Failed to change to EDK2 directory after cloning: $EDK2_DIR"; exit 1; }
-  fmtr::info "Initializing submodules..."
-  git submodule update --init &>> "$LOG_FILE" || { fmtr::fatal "Failed to initialize submodules."; exit 1; }
-  fmtr::info "EDK2 source successfully acquired and submodules initialized."
-  patch_ovmf
 }
 
+
+
+
+
 patch_ovmf() {
+
   [ -d "$PATCH_DIR" ] || fmtr::fatal "Patch directory $PATCH_DIR not found!"
   [ -f "${PATCH_DIR}/${OVMF_PATCH}" ] || { fmtr::error "Patch file ${PATCH_DIR}/${OVMF_PATCH} not found!"; return 1; }
   fmtr::info "Patching OVMF with ${OVMF_PATCH}..."
   git apply < "${PATCH_DIR}/${OVMF_PATCH}" &>> "$LOG_FILE" || { fmtr::error "Failed to apply patch ${OVMF_PATCH}!"; return 1; }
   fmtr::info "Patch ${OVMF_PATCH} applied successfully."
+
 }
-
-
 
 
 
@@ -128,8 +143,6 @@ compile_ovmf() {
     sudo chmod '755' "$OVMF_CODE_DEST_DIR/OVMF_CODE.secboot.4m.qcow2"
 
 }
-
-
 
 
 
@@ -237,7 +250,7 @@ cert_injection () {
 
     fmtr::info "Secure Boot NVRAM generated at: $NVRAM_DIR/${VM_NAME}_VARS.secboot.fd"
 
-    fmtr::log "Converting OVMF firmware to .qcow2 format..."
+    fmtr::log "Converting compiled OVMF firmware to .qcow2 format..."
     sudo qemu-img convert -f raw -O qcow2 "$VARS_FILE" "$NVRAM_DIR/${VM_NAME}_VARS.secboot.qcow2"
 
 }
@@ -246,21 +259,29 @@ cert_injection () {
 
 
 
-cleanup() {
 
+
+
+
+
+
+
+
+cleanup() {
   fmtr::log "Cleaning up"
   cd ../.. && rm -rf "$EDK2_VERSION"
   cd .. && rmdir --ignore-fail-on-non-empty "$SRC_DIR"
-  
 }
 
 main() {
-
-  install_req_pkgs "EDK2/OVMF"
+  install_req_pkgs "EDK2"
   acquire_edk2_source
-  prmt::yes_or_no "$(fmtr::ask 'Build and install OVMF now?')" && compile_ovmf
-  ! prmt::yes_or_no "$(fmtr::ask 'Keep the sources to make re-patching quicker?')" && cleanup
-  
+
+  if prmt::yes_or_no "$(fmtr::ask 'Build and install OVMF now?')"; then
+    compile_ovmf
+  fi
+
+  ! prmt::yes_or_no "$(fmtr::ask 'Keep EDK2 source for faster re-patching?')" && cleanup
 }
 
 main "$@"
