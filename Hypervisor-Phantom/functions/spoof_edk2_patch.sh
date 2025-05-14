@@ -126,7 +126,7 @@ compile_ovmf() {
         --define TPM2_ENABLE=TRUE \
         &>> "$LOG_FILE"
 
-    fmtr::log "Converting OVMF firmware to .qcow2 format..."
+    fmtr::log "Converting compiled OVMF firmware to .qcow2 format..."
     sudo qemu-img convert -f raw -O qcow2 "Build/OvmfX64/RELEASE_GCC5/FV/OVMF_CODE.fd" "$OVMF_CODE_DEST_DIR/OVMF_CODE.secboot.4m.qcow2"
     sudo qemu-img convert -f raw -O qcow2 "Build/OvmfX64/RELEASE_GCC5/FV/OVMF_VARS.fd" "$OVMF_CODE_DEST_DIR/OVMF_CODE_VARS.4m.qcow2"
 
@@ -136,28 +136,30 @@ compile_ovmf() {
 
 cert_injection () {
     local UUID
-    local TEMP_DIR="secboot_tmp"
+    local TEMP_DIR=$(mktemp -d)
     local VM_NAME
     local VARS_FILE
     local NVRAM_DIR="/var/lib/libvirt/qemu/nvram"
 
-    # Prompt the user to select the UUID type
-    fmtr::log "Select the UUID type to use for Secure Boot:
+    TEMP_DIR=$(mktemp -d)
+    trap 'rm -rf "$TEMP_DIR"' EXIT
+    cd "$TEMP_DIR" || exit 1
 
-    1) Randomly generated UUID
-    2) UEFI Global Variable UUID (EFI_GLOBAL_VARIABLE)
-    3) Microsoft Vendor UUID (Microsoft Corporation)"
+    # Prompt the user to select the UUID type
+    fmtr::log "Select the UUID type to use for Secure Boot:"
+    fmtr::format_text '\n  ' "[1]" " Randomly generated UUID" "$TEXT_BRIGHT_YELLOW"
+    fmtr::format_text '  ' "[2]" " UEFI Global Variable UUID (EFI_GLOBAL_VARIABLE)" "$TEXT_BRIGHT_YELLOW"
+    fmtr::format_text '  ' "[3]" " Microsoft Vendor UUID (Microsoft Corporation)" "$TEXT_BRIGHT_YELLOW"
+    fmtr::format_text '\n  ' "[0]" " Exit" "$TEXT_BRIGHT_RED"
 
     read -rp "$(fmtr::ask 'Enter choice [1-3]: ')" uuid_choice
     case "$uuid_choice" in
-      1) UUID=$(uuidgen) ;; # Randomized UUID
-      2) UUID="8be4df61-93ca-11d2-aa0d-00e098032b8c" ;; # UEFI global variable
-      3) UUID="77fa9abd-0359-4d32-bd60-28f4e78f784b" ;; # Microsoft vendor identity
+      0) exit 0 ;;
+      1) UUID=$(uuidgen) ;;
+      2) UUID="8be4df61-93ca-11d2-aa0d-00e098032b8c" ;;
+      3) UUID="77fa9abd-0359-4d32-bd60-28f4e78f784b" ;;
       *) fmtr::error "Invalid choice. Defaulting to random UUID."; UUID=$(uuidgen) ;;
     esac
-
-    # Create a temporary directory for downloading certificates
-    mkdir -p "$TMP_DIR" && cd "$TMP_DIR" || exit 1
 
     fmtr::info "Downloading Microsoft Secure Boot certificates..."
 
@@ -184,40 +186,46 @@ cert_injection () {
       curl -sOL "$url"
     done
 
-    # Convert DER certs to PEM format
     fmtr::info "Converting .der to .pem certs..."
     for der in *.der; do
       pem="${der%.der}.pem"
       openssl x509 -inform der -in "$der" -out "$pem"
     done
 
-    # Prompt user to select the VM and corresponding VARS file
-    fmtr::info "Available domains:"
-    VMS=($(sudo virsh list --all --name))
+    # Prompt user to select VM
+    fmtr::log "Available domains:"
 
+    VMS=($(sudo virsh list --all --name))
     if [ ${#VMS[@]} -eq 0 ]; then
       fmtr::fatal "No VMs found!"
     fi
-    # Display VM names and prompt the user
-    PS3="Please select the VM to use for Secure Boot (or type 'cancel' to exit): "
-    select VM_NAME in "${VMS[@]}"; do
-      if [ "$VM_NAME" == "cancel" ]; then
-        fmtr::info "Exiting Secure Boot setup."
-        return
-      fi
 
-      if [ -n "$VM_NAME" ]; then
-        VARS_FILE="/var/lib/libvirt/qemu/nvram/${VM_NAME}_VARS.fd"
+    # Display VMs with formatting and two-space spacing
+    for i in "${!VMS[@]}"; do
+      index=$((i + 1))
+      fmtr::format_text '  ' "[$index]" "  ${VMS[$i]}  " "$TEXT_BRIGHT_YELLOW"
+    done
+    fmtr::format_text '\n  ' "[0]" "  Cancel  " "$TEXT_BRIGHT_RED"
+
+    while true; do
+      read -rp "$(fmtr::ask 'Enter your choice [0-'"${#VMS[@]}"']: ')" vm_choice
+      if [[ "$vm_choice" == "0" ]]; then
+        fmtr::log "Exiting Secure Boot setup."
+        return
+      elif [[ "$vm_choice" =~ ^[0-9]+$ ]] && (( vm_choice >= 1 && vm_choice <= ${#VMS[@]} )); then
+        VM_NAME="${VMS[$((vm_choice - 1))]}"
+        VARS_FILE="$NVRAM_DIR/${VM_NAME}_VARS.fd"
         if [ ! -f "$VARS_FILE" ]; then
           fmtr::fatal "File not found: $VARS_FILE"
         fi
-        fmtr::info "Using $VARS_FILE as the base VARS file."
+        fmtr::log "Using $VARS_FILE as the base VARS file."
         break
+      else
+        fmtr::error "Invalid selection, please try again."
       fi
     done
 
-    # If user has selected a VARS file, inject the certificates
-    fmtr::info "Injecting Secure Boot certs into $VARS_FILE using UUID $UUID"
+    fmtr::info "Injecting Secure Boot certs into $VARS_FILE..."
 
     sudo virt-fw-vars \
       --input "$VARS_FILE" \
@@ -233,51 +241,56 @@ cert_injection () {
       --add-db "$UUID" "windows%20uefi%20ca%202023.pem" \
       --set-dbx dbxupdate_x64.bin &>> "$LOG_FILE"
 
-    fmtr::info "Secure Boot NVRAM generated at: $NVRAM_DIR/${VM_NAME}_VARS.secboot.fd"
+    fmtr::log "Secure Boot VARS generated at: $NVRAM_DIR/${VM_NAME}_VARS.secboot.fd"
 
-    fmtr::log "Converting compiled OVMF firmware to .qcow2 format..."
-    sudo qemu-img convert -f raw -O qcow2 "$VARS_FILE" "$NVRAM_DIR/${VM_NAME}_VARS.secboot.qcow2"
+    fmtr::info "Converting generated VARS OVMF firmware to .qcow2 format..."
+    sudo qemu-img convert -f raw -O qcow2 \
+      "$NVRAM_DIR/${VM_NAME}_VARS.secboot.fd" \
+      "$NVRAM_DIR/${VM_NAME}_VARS.secboot.qcow2"
+
+    fmtr::info "Cleaning up..."
+    rm -rf "$TEMP_DIR"
 }
 
 cleanup() {
-  fmtr::log "Cleaning up"
-  cd ../.. && rm -rf "$EDK2_VERSION"
-  cd .. && rmdir --ignore-fail-on-non-empty "$SRC_DIR"
+    fmtr::log "Cleaning up"
+    cd ../.. && rm -rf "$EDK2_VERSION"
+    cd .. && rmdir --ignore-fail-on-non-empty "$SRC_DIR"
 }
 
 main() {
-  install_req_pkgs "EDK2"
+    install_req_pkgs "EDK2"
 
-  while true; do
+    while true; do
 
-    fmtr::format_text '\n  ' "[1]" " Build and install OVMF firmware" "$TEXT_BRIGHT_YELLOW"
-    fmtr::format_text '  ' "[2]" " Inject Secure Boot certificates into a VARS file" "$TEXT_BRIGHT_YELLOW"
-    fmtr::format_text '\n  ' "[0]" " Exit" "$TEXT_BRIGHT_RED"
+      fmtr::format_text '\n  ' "[1]" " Build and install OVMF firmware" "$TEXT_BRIGHT_YELLOW"
+      fmtr::format_text '  ' "[2]" " Inject Secure Boot certificates into a VARS file" "$TEXT_BRIGHT_YELLOW"
+      fmtr::format_text '\n  ' "[0]" " Exit" "$TEXT_BRIGHT_RED"
 
-    read -rp "$(fmtr::ask 'Enter choice [1-3]: ')" user_choice
-    case "$user_choice" in
-      1)
-        acquire_edk2_source
-        if prmt::yes_or_no "$(fmtr::ask 'Build and install OVMF now?')"; then
-          compile_ovmf
-        fi
-        ! prmt::yes_or_no "$(fmtr::ask 'Keep EDK2 source for faster re-patching?')" && cleanup
-        exit 0
-        ;;
-      2)
-        cert_injection
-        exit 0
-        ;;
-      0)
-        fmtr::info "Exiting."
-        exit 0
-        ;;
-      *)
-        fmtr::error "Invalid option, please try again."
-        ;;
-    esac
-    prmt::quick_prompt "$(fmtr::info 'Press any key to continue...')"
-  done
+      read -rp "$(fmtr::ask 'Enter choice [1-3]: ')" user_choice
+      case "$user_choice" in
+        1)
+          acquire_edk2_source
+          if prmt::yes_or_no "$(fmtr::ask 'Build and install OVMF now?')"; then
+            compile_ovmf
+          fi
+          ! prmt::yes_or_no "$(fmtr::ask 'Keep EDK2 source for faster re-patching?')" && cleanup
+          exit 0
+          ;;
+        2)
+          cert_injection
+          exit 0
+          ;;
+        0)
+          fmtr::info "Exiting."
+          exit 0
+          ;;
+        *)
+          fmtr::error "Invalid option, please try again."
+          ;;
+      esac
+      prmt::quick_prompt "$(fmtr::info 'Press any key to continue...')"
+    done
 }
 
 main "$@"
