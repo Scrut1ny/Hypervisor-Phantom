@@ -15,12 +15,9 @@ esac)
 readonly SRC_DIR="src"
 readonly EDK2_URL="https://github.com/tianocore/edk2.git"
 readonly EDK2_VERSION="edk2-stable202502"
-readonly EDK2_DIR="$EDK2_VERSION"
 readonly PATCH_DIR="../../patches/EDK2"
 readonly PATCH_OVMF="${CPU_VENDOR}-${EDK2_VERSION}.patch"
 readonly OVMF_CODE_DEST_DIR="/usr/share/edk2/x64"
-readonly OVMF_CODE_SECBOOT_DEST="${OVMF_CODE_DEST_DIR}/OVMF_CODE.secboot.4m.fd"
-readonly OVMF_CODE_VAR_DEST="${OVMF_CODE_DEST_DIR}/OVMF_VARS.4m.fd"
 
 REQUIRED_PKGS_Arch=(
   base-devel acpica git nasm python
@@ -89,6 +86,12 @@ patch_ovmf() {
   fmtr::info "Patch ${OVMF_PATCH} applied successfully."
 }
 
+
+
+
+
+
+
 compile_ovmf() {
 
     # https://github.com/tianocore/tianocore.github.io/wiki/Common-instructions
@@ -126,13 +129,19 @@ compile_ovmf() {
 
 }
 
+
+
+
+
+
+
 cert_injection () {
 
     local UUID
-    local TMPDIR="secureboot_tmp"
+    local TEMP_DIR="secboot_tmp"
     local VM_NAME
     local VARS_FILE
-    local OUTPUT_VARS="/var/lib/libvirt/qemu/nvram/${VM_NAME}_VARS.secboot.fd"
+    local NVRAM_DIR="/var/lib/libvirt/qemu/nvram"
 
     # Prompt the user to select the UUID type
     fmtr::log "Select the UUID type to use for Secure Boot:
@@ -150,7 +159,7 @@ cert_injection () {
     esac
 
     # Create a temporary directory for downloading certificates
-    mkdir -p "$TMPDIR" && cd "$TMPDIR" || exit 1
+    mkdir -p "$TMP_DIR" && cd "$TMP_DIR" || exit 1
 
     fmtr::info "Downloading Microsoft Secure Boot certificates..."
 
@@ -175,6 +184,13 @@ cert_injection () {
 
     for url in "${URLS[@]}"; do
       curl -sOL "$url"
+    done
+
+    # Convert DER certs to PEM format
+    fmtr::info "Converting .der to .pem certs..."
+    for der in *.der; do
+      pem="${der%.der}.pem"
+      openssl x509 -inform der -in "$der" -out "$pem"
     done
 
     # Prompt user to select the VM and corresponding VARS file
@@ -207,24 +223,28 @@ cert_injection () {
 
     sudo virt-fw-vars \
       --input "$VARS_FILE" \
-      --output "$OUTPUT_VARS" \
+      --output "$NVRAM_DIR/${VM_NAME}_VARS.secboot.fd" \
       --secure-boot \
-      --set-pk "$UUID" "WindowsOEMDevicesPK.der" \
-      --add-kek "$UUID" "MicCorKEKCA2011_2011-06-24.der" \
-      --add-kek "$UUID" "microsoft%20corporation%20kek%202k%20ca%202023.der" \
-      --add-db "$UUID" "MicCorUEFCA2011_2011-06-27.der" \
-      --add-db "$UUID" "MicWinProPCA2011_2011-10-19.der" \
-      --add-db "$UUID" "microsoft%20option%20rom%20uefi%20ca%202023.der" \
-      --add-db "$UUID" "microsoft%20uefi%20ca%202023.der" \
-      --add-db "$UUID" "windows%20uefi%20ca%202023.der" \
+      --set-pk "$UUID" "WindowsOEMDevicesPK.pem" \
+      --add-kek "$UUID" "MicCorKEKCA2011_2011-06-24.pem" \
+      --add-kek "$UUID" "microsoft%20corporation%20kek%202k%20ca%202023.pem" \
+      --add-db "$UUID" "MicCorUEFCA2011_2011-06-27.pem" \
+      --add-db "$UUID" "MicWinProPCA2011_2011-10-19.pem" \
+      --add-db "$UUID" "microsoft%20option%20rom%20uefi%20ca%202023.pem" \
+      --add-db "$UUID" "microsoft%20uefi%20ca%202023.pem" \
+      --add-db "$UUID" "windows%20uefi%20ca%202023.pem" \
       --set-dbx dbxupdate_x64.bin &>> "$LOG_FILE"
 
-    fmtr::info "Secure Boot NVRAM generated at: $OUTPUT_VARS"
+    fmtr::info "Secure Boot NVRAM generated at: $NVRAM_DIR/${VM_NAME}_VARS.secboot.fd"
 
-    # Clean up temporary files
-    cd .. && rm -rf "$TMPDIR"
+    fmtr::log "Converting OVMF firmware to .qcow2 format..."
+    sudo qemu-img convert -f raw -O qcow2 "$VARS_FILE" "$NVRAM_DIR/${VM_NAME}_VARS.secboot.qcow2"
 
 }
+
+
+
+
 
 cleanup() {
   fmtr::log "Cleaning up"
