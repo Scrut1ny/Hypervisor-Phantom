@@ -247,16 +247,20 @@ cert_injection () {
 
 
 cleanup() {
+
   fmtr::log "Cleaning up"
-  cd .. && rm -rf "$EDK2_DIR"
+  cd ../.. && rm -rf "$EDK2_VERSION"
   cd .. && rmdir --ignore-fail-on-non-empty "$SRC_DIR"
+  
 }
 
 main() {
+
   install_req_pkgs "EDK2/OVMF"
   acquire_edk2_source
   prmt::yes_or_no "$(fmtr::ask 'Build and install OVMF now?')" && compile_ovmf
   ! prmt::yes_or_no "$(fmtr::ask 'Keep the sources to make re-patching quicker?')" && cleanup
+  
 }
 
 main "$@"
