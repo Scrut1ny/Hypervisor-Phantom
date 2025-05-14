@@ -47,15 +47,12 @@ REQUIRED_PKGS_Fedora=(
   virt-firmware
 )
 
-
-
-
-
 acquire_edk2_source() {
-
   mkdir -p "$SRC_DIR" && cd "$SRC_DIR"
 
   if [ -d "$EDK2_VERSION" ]; then
+
+    fmtr::warn "EDK2 source directory '$EDK2_VERSION' detected."
     if prmt::yes_or_no "$(fmtr::ask 'Purge EDK2 source directory?')"; then
       rm -rf "$EDK2_VERSION" || { fmtr::fatal "Failed to remove existing directory: $EDK2_VERSION"; exit 1; }
       fmtr::info "Directory purged successfully."
@@ -86,7 +83,6 @@ acquire_edk2_source() {
     fmtr::info "EDK2 source successfully acquired and submodules initialized."
     patch_ovmf
   fi
-
 }
 
 
@@ -103,12 +99,7 @@ patch_ovmf() {
 
 }
 
-
-
-
-
 compile_ovmf() {
-
     # https://github.com/tianocore/tianocore.github.io/wiki/Common-instructions
     # https://github.com/tianocore/tianocore.github.io/wiki/How-to-build-OVMF
 
@@ -141,15 +132,9 @@ compile_ovmf() {
 
     sudo chown '0:0' "$OVMF_CODE_DEST_DIR/OVMF_CODE.secboot.4m.qcow2"
     sudo chmod '755' "$OVMF_CODE_DEST_DIR/OVMF_CODE.secboot.4m.qcow2"
-
 }
 
-
-
-
-
 cert_injection () {
-
     local UUID
     local TEMP_DIR="secboot_tmp"
     local VM_NAME
@@ -252,20 +237,7 @@ cert_injection () {
 
     fmtr::log "Converting compiled OVMF firmware to .qcow2 format..."
     sudo qemu-img convert -f raw -O qcow2 "$VARS_FILE" "$NVRAM_DIR/${VM_NAME}_VARS.secboot.qcow2"
-
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 cleanup() {
   fmtr::log "Cleaning up"
@@ -275,13 +247,37 @@ cleanup() {
 
 main() {
   install_req_pkgs "EDK2"
-  acquire_edk2_source
 
-  if prmt::yes_or_no "$(fmtr::ask 'Build and install OVMF now?')"; then
-    compile_ovmf
-  fi
+  while true; do
 
-  ! prmt::yes_or_no "$(fmtr::ask 'Keep EDK2 source for faster re-patching?')" && cleanup
+    fmtr::format_text '\n  ' "[1]" " Build and install OVMF firmware" "$TEXT_BRIGHT_YELLOW"
+    fmtr::format_text '  ' "[2]" " Inject Secure Boot certificates into a VARS file" "$TEXT_BRIGHT_YELLOW"
+    fmtr::format_text '\n  ' "[0]" " Exit" "$TEXT_BRIGHT_RED"
+
+    read -rp "$(fmtr::ask 'Enter choice [1-3]: ')" user_choice
+    case "$user_choice" in
+      1)
+        acquire_edk2_source
+        if prmt::yes_or_no "$(fmtr::ask 'Build and install OVMF now?')"; then
+          compile_ovmf
+        fi
+        ! prmt::yes_or_no "$(fmtr::ask 'Keep EDK2 source for faster re-patching?')" && cleanup
+        exit 0
+        ;;
+      2)
+        cert_injection
+        exit 0
+        ;;
+      0)
+        fmtr::info "Exiting."
+        exit 0
+        ;;
+      *)
+        fmtr::error "Invalid option, please try again."
+        ;;
+    esac
+    prmt::quick_prompt "$(fmtr::info 'Press any key to continue...')"
+  done
 }
 
 main "$@"
