@@ -5,7 +5,7 @@ install_req_pkgs() {
   [[ -z "$1" ]] && { fmtr::error "Component name not specified!"; exit 1; }
   local component="$1"
 
-  fmtr::log "Checking for missing $component packages..."
+  fmtr::log "Checking for required missing $component packages..."
 
   # Determine package manager commands
   case "$DISTRO" in
@@ -53,20 +53,20 @@ install_req_pkgs() {
   done
 
   if [[ ${#MISSING_PKGS[@]} -eq 0 ]]; then
-    fmtr::log "All $component packages are already installed."
+    fmtr::log "All required $component packages already installed."
     return 0
   fi
 
   # Handle installation
-  fmtr::warn "Missing $component packages: ${MISSING_PKGS[*]}"
-  if prmt::yes_or_no "$(fmtr::ask "Install missing $component packages?")"; then
+  fmtr::warn "Missing required $component packages: ${MISSING_PKGS[*]}"
+  if prmt::yes_or_no "$(fmtr::ask "Install required missing $component packages?")"; then
     if ! $INSTALL_CMD "${MISSING_PKGS[@]}" &>> "$LOG_FILE"; then
-      fmtr::error "Failed to install $component packages"
+      fmtr::error "Failed to install required $component packages"
       exit 1
     fi
     fmtr::log "Installed: ${MISSING_PKGS[*]}"
   else
-    fmtr::log "Exiting due to missing $component packages."
+    fmtr::log "Exiting due to required missing $component packages."
     exit 1
   fi
 }
