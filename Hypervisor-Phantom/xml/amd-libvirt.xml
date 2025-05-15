@@ -25,50 +25,20 @@
 
 
 
+
   <!-- Secure Boot Setup
-
-  <> https://libvirt.org/formatdomain.html#operating-system-booting
-  <> https://wiki.archlinux.org/title/KVM#Secure_Boot
-  <> https://archlinux.org/packages/extra/any/virt-firmware/
   
-  Enroll Microsoft and Redhat's secure boot keys command:
- 
-  Arch     - sudo pacman -S virt-firmware --noconfirm
-  Debian   - sudo apt-get install virt-firmware
-  openSUSE - sudo zypper install virt-firmware
-  Fedora   - sudo dnf install virt-firmware
- 
-  sudo virt-fw-vars --input /var/lib/libvirt/qemu/nvram/{vm-name}_VARS.fd \
-                    --output /var/lib/libvirt/qemu/nvram/{vm-name}_SECURE_VARS.fd \
-                    --secure-boot \
-                    --enroll-redhat
+  <> https://libvirt.org/formatdomain.html#operating-system-booting
   
   -->
   <os>
-    <firmware>
-      <feature enabled="yes" name="enrolled-keys"/>
-      <feature enabled="yes" name="secure-boot"/>
-    </firmware>
-   
-    <loader readonly="yes" secure="yes" type="pflash">/usr/share/edk2/x64/OVMF_CODE.secboot.4m.fd</loader>
-    <nvram template="/usr/share/edk2/x64/OVMF_VARS.4m.fd">/var/lib/libvirt/qemu/nvram/{vm-name}_SECURE_VARS.fd</nvram>
-    <smbios mode="host"/> <!-- Passes through host smbios for mobo. ADJUST SERIALS IN <qemu:commandline>! -->
+    <type arch="x86_64" machine="pc-q35-9.2">hvm</type>
+    <loader readonly="yes" secure="yes" type="pflash" format="qcow2">/usr/share/edk2/x64/OVMF_CODE.secboot.4m.qcow2</loader>
+    <nvram template="/usr/share/edk2/x64/OVMF_VARS.4m.qcow2" format="qcow2">/var/lib/libvirt/qemu/nvram/{domain}_VARS.secboot.qcow2</nvram>
+    <boot dev="hd"/>
+    <bootmenu enable="yes"/>
+    <smbios mode="host"/>
   </os>
- 
-
-
-
-  <!-- Non-Secure Boot Setup
-  
-  <> https://libvirt.org/formatdomain.html#operating-system-booting
-   
-  -->
-  <os>
-    <loader readonly="yes" type="pflash">/usr/share/edk2/x64/OVMF_CODE.4m.fd</loader>
-    <nvram template="/usr/share/edk2/x64/OVMF_VARS.4m.fd">/var/lib/libvirt/qemu/nvram/{vm-name}_VARS.fd</nvram>
-    <smbios mode="host"/> <!-- Passes through host smbios for mobo. ADJUST SERIALS IN <qemu:commandline>! -->
-  </os>
-
 
 
 
