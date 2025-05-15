@@ -267,11 +267,11 @@ main() {
       fmtr::format_text '  ' "[2]" " Inject Secure Boot certificates into a VARS file" "$TEXT_BRIGHT_YELLOW"
       fmtr::format_text '\n  ' "[0]" " Exit" "$TEXT_BRIGHT_RED"
 
-      read -rp "$(fmtr::ask 'Enter choice [1-3]: ')" user_choice
+      read -rp "$(fmtr::ask 'Enter choice [0-2]: ')" user_choice
       case "$user_choice" in
         1)
           acquire_edk2_source
-          if prmt::yes_or_no "$(fmtr::ask 'Build and install OVMF now?')"; then
+          if prmt::yes_or_no "$(fmtr::ask 'Build, compile, and install OVMF now?')"; then
             compile_ovmf
           fi
           ! prmt::yes_or_no "$(fmtr::ask 'Keep EDK2 source for faster re-patching?')" && cleanup

@@ -39,6 +39,7 @@ REQUIRED_PKGS_Arch=(
   # USB redirection Dependencie(s)
   usbredir
 )
+
 REQUIRED_PKGS_Debian=(
   # Basic Build Dependencie(s)
   acpica-tools build-essential libfdt-dev libglib2.0-dev
@@ -54,6 +55,7 @@ REQUIRED_PKGS_Debian=(
   # USB redirection Dependencie(s)
   libusbredirhost-dev libusbredirparser-dev
 )
+
 REQUIRED_PKGS_openSUSE=(
   # Basic Build Dependencie(s)
   acpica bzip2 gcc-c++ gpg2 glib2-devel make qemu  
@@ -68,6 +70,7 @@ REQUIRED_PKGS_openSUSE=(
   # USB redirection Dependencie(s)
   libusbredir-devel
 )
+
 REQUIRED_PKGS_Fedora=(
   # Basic Build Dependencie(s)
   acpica-tools bzip2 glib2-devel libfdt-devel ninja-build
@@ -181,6 +184,7 @@ patch_qemu() {
 
 
 spoof_serial_numbers() {
+
   get_random_serial() { head /dev/urandom | tr -dc 'A-Z0-9' | head -c "$1"; }
 
   # Define the patterns to look for
@@ -205,10 +209,31 @@ spoof_serial_numbers() {
     # Write the modified content back to the file
     printf "%s\n" "${new_content[@]}" > "$file"
   done
+
 }
 
 
 
+spoof_serial_numbers() {
+  get_random_serial() { head /dev/urandom | tr -dc 'A-Z0-9' | head -c "$1"; }
+
+  local patterns=("STRING_SERIALNUMBER" "STR_SERIALNUMBER" "STR_SERIAL_MOUSE" "STR_SERIAL_TABLET" "STR_SERIAL_KEYBOARD" "STR_SERIAL_COMPAT")
+  local regex_pattern="($(IFS=\|; echo "${patterns[*]}"))"
+
+  find "$(pwd)/hw/usb" -type f -exec grep -lE "\[$regex_pattern\]" {} + | while read -r file; do
+    tmpfile=$(mktemp)
+
+    while IFS= read -r line; do
+      if [[ $line =~ \[$regex_pattern\] ]]; then
+        local new_serial="$(get_random_serial 10)"
+        line=$(echo "$line" | sed -E "s/(\[$regex_pattern\] *= *\")[^\"]*/\1${new_serial}/")
+      fi
+      echo "$line" >> "$tmpfile"
+    done < "$file"
+
+    mv "$tmpfile" "$file"
+  done
+}
 
 
 
