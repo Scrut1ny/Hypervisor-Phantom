@@ -25,52 +25,125 @@ REQUIRED_PKGS_Fedora=(
 )
 
 configure_firewall_arch() {
-  fmtr::log "Trying to configure firewall..."
+  fmtr::log "Configuring firewall for Arch..."
+
   if pacman -Qs "iptables-nft" &>> "$LOG_FILE"; then
-    sudo sed -i '/firewall_backend \=/s/^#//g' '/etc/libvirt/network.conf'
-    sudo sed -i '/etc/libvirt/network.conf' -e 's/\(firewall_backend \= *\).*/\1\"iptables\"/'
+    if grep -q '^firewall_backend *= *"iptables"' /etc/libvirt/network.conf; then
+      fmtr::info "firewall_backend already set to iptables (compatibility layer)"
+    else
+      sudo sed -i '/firewall_backend \=/s/^#//g' '/etc/libvirt/network.conf'
+      sudo sed -i '/etc/libvirt/network.conf' -e 's/\(firewall_backend \= *\).*/\1"iptables"/'
+      fmtr::info "Set firewall_backend to iptables (compatibility layer)"
+    fi
     sudo systemctl enable --now nftables.service &>> "$LOG_FILE"
-    fmtr::info "firewall_backend=iptables compatibility layer"
+    fmtr::info "nftables service enabled"
+
   elif pacman -Qs "iptables" &>> "$LOG_FILE"; then
-    git clone https://aur.archlinux.org/ebtables.git &>> "$LOG_FILE"
-    cd ebtables || exit
-    makepkg -sirc --noconfirm &>> "$LOG_FILE"
-    rm -rf ../ebtables
+    if pacman -Qs ebtables &> /dev/null; then
+      fmtr::info "ebtables already installed"
+    else
+      fmtr::log "Installing ebtables from AUR..."
+      git clone https://aur.archlinux.org/ebtables.git &>> "$LOG_FILE"
+      cd ebtables || exit
+      makepkg -sirc --noconfirm &>> "$LOG_FILE"
+      cd ..
+      rm -rf ebtables
+      fmtr::info "ebtables installed"
+    fi
     sudo systemctl enable --now iptables.service &>> "$LOG_FILE"
-    fmtr::info "firewall_backend is iptables"
+    fmtr::info "iptables service enabled"
+
   elif pacman -Qs "nftables" &>> "$LOG_FILE"; then
-    fmtr::warn "Nftables without the iptables compatibility layer isn't configured correctly by the libvirt package"
-    echo "More info here: https://bbs.archlinux.org/viewtopic.php?id=284664"
+    fmtr::warn "Nftables without iptables compatibility isn't ideal for libvirt"
+    echo "See: https://bbs.archlinux.org/viewtopic.php?id=284664"
     sudo systemctl enable --now nftables.service &>> "$LOG_FILE"
+    fmtr::info "nftables service enabled"
+
   else
-    fmtr::error "Firewall implementation unsupported by this script, but may still work with Libvirt. Make sure forwarding is configured properly!"
+    fmtr::error "Unsupported firewall implementation. Manual configuration may be required."
   fi
 }
 
 configure_system_installation() {
-  fmtr::log "Configuring Libvirt"
   local libvirtd_conf='/etc/libvirt/libvirtd.conf'
-  sudo sed -i '/unix_sock_group/s/^#//g' "$libvirtd_conf"
-  sudo sed -i '/unix_sock_rw_perms/s/^#//g' "$libvirtd_conf"
-
-  fmtr::log "Setting up QEMU/KVM driver"
   local qemu_conf='/etc/libvirt/qemu.conf'
-  sudo sed -i "s/#user = \"root\"/user = \"$(whoami)\"/" "$qemu_conf"
-  sudo sed -i "s/#group = \"root\"/group = \"$(whoami)\"/" "$qemu_conf"
+  local current_user
+  current_user="$(whoami)"
 
-  {
-    sudo usermod -aG kvm,libvirt "$(whoami)"
-    sudo systemctl enable --now libvirtd.socket
-    sudo virsh net-autostart default # Enable autostart for virtual default network on boot
-    sudo virsh net-start default # Start the virtual default network
-  } &>> "$LOG_FILE"
+  # Configure libvirtd.conf
+  if grep -q "^unix_sock_group" "$libvirtd_conf"; then
+    fmtr::info "unix_sock_group already set"
+  else
+    sudo sed -i '/unix_sock_group/s/^#//g' "$libvirtd_conf"
+    fmtr::info "Enabled unix_sock_group"
+  fi
+
+  if grep -q "^unix_sock_rw_perms" "$libvirtd_conf"; then
+    fmtr::info "unix_sock_rw_perms already set"
+  else
+    sudo sed -i '/unix_sock_rw_perms/s/^#//g' "$libvirtd_conf"
+    fmtr::info "Enabled unix_sock_rw_perms"
+  fi
+
+  # Configure qemu.conf
+  if grep -q "^user = \"$current_user\"" "$qemu_conf"; then
+    fmtr::info "qemu.conf: user already set to $current_user"
+  else
+    sudo sed -i "s/#user = \"root\"/user = \"$current_user\"/" "$qemu_conf"
+    fmtr::info "Set qemu.conf user = $current_user"
+  fi
+
+  if grep -q "^group = \"$current_user\"" "$qemu_conf"; then
+    fmtr::info "qemu.conf: group already set to $current_user"
+  else
+    sudo sed -i "s/#group = \"root\"/group = \"$current_user\"/" "$qemu_conf"
+    fmtr::info "Set qemu.conf group = $current_user"
+  fi
+
+  # Add user to required groups
+  if id -nG "$current_user" | grep -qw "kvm"; then
+    fmtr::info "User $current_user already in kvm group"
+  else
+    sudo usermod -aG kvm "$current_user"
+    fmtr::info "Added $current_user to kvm group"
+  fi
+
+  if id -nG "$current_user" | grep -qw "libvirt"; then
+    fmtr::info "User $current_user already in libvirt group"
+  else
+    sudo usermod -aG libvirt "$current_user"
+    fmtr::info "Added $current_user to libvirt group"
+  fi
+
+  # Start libvirt and virtual network
+  if sudo systemctl is-enabled libvirtd.socket &> /dev/null; then
+    fmtr::info "libvirtd.socket already enabled"
+  else
+    sudo systemctl enable --now libvirtd.socket &>> "$LOG_FILE"
+    fmtr::info "Enabled and started libvirtd.socket"
+  fi
+
+  if sudo virsh net-info default &> /dev/null; then
+    fmtr::info "Default libvirt network already exists and is active"
+  else
+    sudo virsh net-autostart default &>> "$LOG_FILE"
+    sudo virsh net-start default &>> "$LOG_FILE"
+    fmtr::info "Started and enabled default libvirt network"
+  fi
 }
 
 main() {
   install_req_pkgs "virt"
-  configure_firewall_arch
+
+  if [[ "$DISTRO" == "arch" ]]; then
+    fmtr::log "Running Arch-specific firewall configuration..."
+    configure_firewall_arch
+  else
+    fmtr::info "No firewall configuration needed for $DISTRO"
+  fi
+
   configure_system_installation
-  fmtr::warn "Logout for changes to take effect."
+  fmtr::warn "Logout or reboot for all group and service changes to take effect."
 }
 
 main
