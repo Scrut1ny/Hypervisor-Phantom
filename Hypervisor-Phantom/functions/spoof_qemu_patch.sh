@@ -214,29 +214,6 @@ spoof_serial_numbers() {
 
 
 
-spoof_serial_numbers() {
-  get_random_serial() { head /dev/urandom | tr -dc 'A-Z0-9' | head -c "$1"; }
-
-  local patterns=("STRING_SERIALNUMBER" "STR_SERIALNUMBER" "STR_SERIAL_MOUSE" "STR_SERIAL_TABLET" "STR_SERIAL_KEYBOARD" "STR_SERIAL_COMPAT")
-  local regex_pattern="($(IFS=\|; echo "${patterns[*]}"))"
-
-  find "$(pwd)/hw/usb" -type f -exec grep -lE "\[$regex_pattern\]" {} + | while read -r file; do
-    tmpfile=$(mktemp)
-
-    while IFS= read -r line; do
-      if [[ $line =~ \[$regex_pattern\] ]]; then
-        local new_serial="$(get_random_serial 10)"
-        line=$(echo "$line" | sed -E "s/(\[$regex_pattern\] *= *\")[^\"]*/\1${new_serial}/")
-      fi
-      echo "$line" >> "$tmpfile"
-    done < "$file"
-
-    mv "$tmpfile" "$file"
-  done
-}
-
-
-
 
 
 
