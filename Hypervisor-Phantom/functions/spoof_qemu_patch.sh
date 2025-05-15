@@ -184,32 +184,24 @@ patch_qemu() {
 
 
 spoof_serial_numbers() {
-
   get_random_serial() { head /dev/urandom | tr -dc 'A-Z0-9' | head -c "$1"; }
 
-  # Define the patterns to look for
   local patterns=("STRING_SERIALNUMBER" "STR_SERIALNUMBER" "STR_SERIAL_MOUSE" "STR_SERIAL_TABLET" "STR_SERIAL_KEYBOARD" "STR_SERIAL_COMPAT")
+  local regex_pattern="($(IFS=\|; echo "${patterns[*]}"))"
 
-  # Create a regex pattern by joining the patterns with |
-  local regex_pattern=$(IFS="|"; echo "${patterns[*]}")
+  find "$(pwd)/hw/usb" -type f -exec grep -lE "\[$regex_pattern\]" {} + | while read -r file; do
+    tmpfile=$(mktemp)
 
-  # Find and process files containing the specified patterns
-  readarray -t files < <(find "$(pwd)/hw/usb" -type f -exec grep -lE "\[(${regex_pattern})\]" {} +)
-
-  for file in "${files[@]}"; do
-    local new_content=()
     while IFS= read -r line; do
-      if [[ $line =~ \[(${regex_pattern})\] ]]; then
+      if [[ $line =~ \[$regex_pattern\] ]]; then
         local new_serial="$(get_random_serial 10)"
-        line=$(echo "$line" | sed -E "s/(\[(${regex_pattern})\] *= *\")[^\"]*/\1${new_serial}/")
+        line=$(echo "$line" | sed -E "s/(\[$regex_pattern\] *= *\")[^\"]*/\1${new_serial}/")
       fi
-      new_content+=("$line")
+      echo "$line" >> "$tmpfile"
     done < "$file"
 
-    # Write the modified content back to the file
-    printf "%s\n" "${new_content[@]}" > "$file"
+    mv "$tmpfile" "$file"
   done
-
 }
 
 
