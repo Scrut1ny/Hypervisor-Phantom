@@ -51,14 +51,6 @@ detect_distro() {
   readonly DISTRO
 }
 
-
-
-
-
-
-
-
-
 cpu_vendor_id() {
   VENDOR_ID=$(LANG=en_US.UTF-8 lscpu 2>/dev/null | awk -F': +' '/Vendor ID/ {print $2}' | xargs)
 
@@ -73,30 +65,52 @@ cpu_vendor_id() {
   readonly VENDOR_ID
 }
 
-
-
-
-
-
-
-
-
-
 print_system_info() {
 
+    local show_output=0
+    local output=""
 
-  echo -e "\n  ─────────────────────────\n"
+    # UEFI check
+    if [ -d /sys/firmware/efi ]; then
+        output+="\n  [✅] UEFI Firmware: Enabled"
+    else
+        output+="\n  [❌] UEFI Firmware: Disabled"
+        show_output=1
+    fi
+
+    # CPU virtualization (Intel VT-x / AMD-V)
+    if grep -qE 'vmx|svm' /proc/cpuinfo; then
+        output+="\n  [✅] VT-x / AMD-V: Supported"
+    else
+        output+="\n  [❌] VT-x / AMD-V: Not supported"
+        show_output=1
+    fi
+
+    # KVM module check
+    if lsmod | grep -q kvm; then
+        output+="\n  [✅] KVM Kernel Module: Loaded"
+    else
+        output+="\n  [❌] KVM Kernel Module: Not loaded"
+        show_output=1
+    fi
+
+    # IOMMU check
+    if grep -qE "intel_iommu=on|amd_iommu=on" /proc/cmdline; then
+        output+="\n  [✅] IOMMU: Enabled (via kernel cmdline)"
+    else
+        output+="\n  [❌] IOMMU: Not enabled (missing in kernel cmdline)"
+        show_output=1
+    fi
+
+    # Final output logic
+    if [ "$show_output" -eq 1 ]; then
+        echo -e "$output"
+        echo -e "\n  ──────────────────────────────\n"
+    else
+        echo ""
+    fi
+
 }
-
-
-
-
-
-
-
-
-
-
 
 main_menu() {
   local options=(
@@ -112,7 +126,7 @@ main_menu() {
 
   while true; do
     clear
-    fmtr::box_text "Hypervisor Phantom" && print_system_info
+    fmtr::box_text " >> Hypervisor Phantom << " && print_system_info
 
     for (( i=1; i < ${#options[@]}; i++ )); do
       fmtr::format_text '  ' "[${i}]" " ${options[${i}]}" "$TEXT_BRIGHT_YELLOW"
