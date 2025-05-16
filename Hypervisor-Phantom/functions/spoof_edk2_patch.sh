@@ -126,6 +126,8 @@ compile_ovmf() {
         --define TPM2_ENABLE=TRUE \
         &>> "$LOG_FILE"
 
+    sudo mkdir -p "$OVMF_CODE_DEST_DIR"
+
     fmtr::log "Converting compiled OVMF firmware to .qcow2 format..."
     sudo qemu-img convert -f raw -O qcow2 "Build/OvmfX64/RELEASE_GCC5/FV/OVMF_CODE.fd" "$OVMF_CODE_DEST_DIR/OVMF_CODE.secboot.4m.qcow2"
     sudo qemu-img convert -f raw -O qcow2 "Build/OvmfX64/RELEASE_GCC5/FV/OVMF_VARS.fd" "$OVMF_CODE_DEST_DIR/OVMF_CODE_VARS.4m.qcow2"
