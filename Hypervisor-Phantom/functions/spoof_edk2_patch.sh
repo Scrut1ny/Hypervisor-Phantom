@@ -27,10 +27,10 @@ REQUIRED_PKGS_Arch=(
 )
 
 REQUIRED_PKGS_Debian=(
-  build-essential uuid-dev iasl git nasm python-is-python3
+  build-essential uuid-dev acpica-tools git nasm python-is-python3
 
   # Includes virt-fw-vars tool
-  virt-firmware
+  python3-virt-firmware
 )
 
 REQUIRED_PKGS_openSUSE=(
