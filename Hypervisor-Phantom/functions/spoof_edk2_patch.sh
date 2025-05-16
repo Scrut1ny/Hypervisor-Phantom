@@ -127,6 +127,7 @@ compile_ovmf() {
         &>> "$LOG_FILE"
 
     sudo mkdir -p "$OVMF_CODE_DEST_DIR"
+    sudo rm -f "$OVMF_CODE_DEST_DIR/*"
 
     fmtr::log "Converting compiled OVMF firmware to .qcow2 format..."
     sudo qemu-img convert -f raw -O qcow2 "Build/OvmfX64/RELEASE_GCC5/FV/OVMF_CODE.fd" "$OVMF_CODE_DEST_DIR/OVMF_CODE.secboot.4m.qcow2"
@@ -195,7 +196,7 @@ cert_injection () {
     done
 
     # Prompt user to select VM
-    fmtr::log "Available domains:"
+    fmtr::log "Available domains:"; echo ""
 
     VMS=($(sudo virsh list --all --name))
     if [ ${#VMS[@]} -eq 0 ]; then
@@ -216,7 +217,7 @@ cert_injection () {
         return
       elif [[ "$vm_choice" =~ ^[0-9]+$ ]] && (( vm_choice >= 1 && vm_choice <= ${#VMS[@]} )); then
         VM_NAME="${VMS[$((vm_choice - 1))]}"
-        VARS_FILE="$NVRAM_DIR/${VM_NAME}_VARS.fd"
+        VARS_FILE="$NVRAM_DIR/${VM_NAME}_SECURE_VARS.qcow2"
         if [ ! -f "$VARS_FILE" ]; then
           fmtr::fatal "File not found: $VARS_FILE"
         fi
@@ -231,7 +232,7 @@ cert_injection () {
 
     sudo virt-fw-vars \
       --input "$VARS_FILE" \
-      --output "$NVRAM_DIR/${VM_NAME}_VARS.secboot.fd" \
+      --output "$NVRAM_DIR/${VM_NAME}_SECURE_VARS.qcow2" \
       --secure-boot \
       --set-pk "$UUID" "WindowsOEMDevicesPK.pem" \
       --add-kek "$UUID" "MicCorKEKCA2011_2011-06-24.pem" \
@@ -243,13 +244,7 @@ cert_injection () {
       --add-db "$UUID" "windows%20uefi%20ca%202023.pem" \
       --set-dbx dbxupdate_x64.bin &>> "$LOG_FILE"
 
-    fmtr::log "Secure Boot VARS generated at: $NVRAM_DIR/${VM_NAME}_VARS.secboot.fd"
-
-    fmtr::info "Converting generated VARS OVMF firmware to .qcow2 format..."
-    sudo qemu-img convert -f raw -O qcow2 \
-      "$NVRAM_DIR/${VM_NAME}_VARS.secboot.fd" \
-      "$NVRAM_DIR/${VM_NAME}_VARS.secboot.qcow2"
-
+    fmtr::log "Secure Boot VARS generated at: $NVRAM_DIR/${VM_NAME}_SECURE_VARS.qcow2"
     fmtr::info "Cleaning up..."
     rm -rf "$TEMP_DIR"
 }
