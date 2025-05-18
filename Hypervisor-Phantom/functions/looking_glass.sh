@@ -8,7 +8,8 @@ source "./utils/packages.sh"
 
 readonly SRC_DIR="src"
 readonly LG_URL="https://looking-glass.io/artifact/stable/source"
-readonly LG_ARCHIVE="looking-glass-B7.tar.gz"
+readonly LG_VERSION="B7"
+readonly LG_ARCHIVE="looking-glass-$LG_VERSION.tar.gz"
 
 # https://looking-glass.io/docs/B7/build/#host
 # https://looking-glass.io/wiki/Installation_on_other_distributions
@@ -56,8 +57,10 @@ REQUIRED_PKGS_Fedora=(
 )
 
 install_looking_glass() {
+
+  # openSUSE specific thing
   if [[ "$DISTRO" -eq "openSUSE" && ! $((find /usr/lib64/libbfd.so) 2>/dev/null) ]]; then
-    fmtr::log "Configuring packages to ensure Looking Glass build completion"
+    fmtr::log "Configuring packages to ensure LG build completion"
     {
       LIBBFD_OLD=$(find /usr -name "libbfd*.so*" 2>/dev/null)
       sudo ln -sv $LIBBFD_OLD /usr/lib64/libbfd.so
@@ -66,35 +69,56 @@ install_looking_glass() {
   
   mkdir -p "$SRC_DIR" && cd "$SRC_DIR"
 
-  fmtr::log "Downloading Looking Glass"
-  curl -sSLo "$LG_ARCHIVE" "$LG_URL" && tar -zxf "$LG_ARCHIVE" && rm -rf "$LG_ARCHIVE"
+  fmtr::info "Downloading 'looking-glass-B7.tar.gz' archive..."
+  curl -sSo "$LG_ARCHIVE" "$LG_URL" && tar -zxf "$LG_ARCHIVE" && rm -f "$LG_ARCHIVE"
 
-  fmtr::log "Building & Installing Looking Glass"
+  fmtr::info "Building, compiling, and installing LG..."
+  cd looking-glass-$LG_VERSION && mkdir client/build && cd client/build
+
+  if [[ "$VENDOR_ID" == *GenuineIntel* ]]; then
+      NEW_VENDOR_ID="0x8086"
+      NEW_DEVICE_ID="0x8086"
+  elif [[ "$VENDOR_ID" == *AuthenticAMD* ]]; then
+      NEW_VENDOR_ID="0x1022"
+      NEW_DEVICE_ID="0x1022"
+  else
+      fmtr::error "Unknown CPU Vendor ID."; exit 1
+  fi
+
+  sed -i "s/0x1af4/$NEW_VENDOR_ID/" "../../module/kvmfr.c"
+  sed -i "s/0x1110/$NEW_DEVICE_ID/" "../../module/kvmfr.c"
+
   {
-    cd looking-glass-* && mkdir client/build && cd client/build
-    cmake ../
-    sudo make install -j"$(nproc)"
+    cmake ../ && sudo make install -j"$(nproc)"
   } &>> "$LOG_FILE"
 
-  fmtr::log "Cleaning up"
-  cd ../../../ && sudo rm -rf ./looking-glass-*
+  fmtr::info "Cleaning up..."
+  cd ../../../ && rm -rf looking-glass-$LG_VERSION/
+
 }
 
-configure_looking_glass() {
-  fmtr::log "Creating '10-looking-glass.conf'"
-  local conf_file="/etc/tmpfiles.d/10-looking-glass.conf"
-  local username=${SUDO_USER:-$(whoami)}
+configure_ivshmem_shmem() {
 
-  echo "f /dev/shm/looking-glass 0660 ${username} kvm -" | sudo tee "$conf_file" &>> "$LOG_FILE"
+    local conf_file="/etc/tmpfiles.d/10-looking-glass.conf"
+    local username=${SUDO_USER:-$(whoami)}
 
-  fmtr::log "Granting Looking Glass Permissions"
-  {
-    touch /dev/shm/looking-glass
-    sudo chown "${username}:kvm" /dev/shm/looking-glass
-    chmod 660 /dev/shm/looking-glass
-  } &>> "$LOG_FILE"
+    if [ ! -f "$conf_file" ]; then
+      fmtr::info "Creating '10-looking-glass.conf'..."
+      echo "f /dev/shm/looking-glass 0660 ${username} kvm -" | sudo tee "$conf_file" &>> "$LOG_FILE"
+    else
+      fmtr::log "'10-looking-glass.conf' already exists; skipping creation."
+    fi
 
-  local entry_to_add="$(cat <<- 'EOF'
+    if [ ! -e /dev/shm/looking-glass ]; then
+      fmtr::info "Creating '/dev/shm/looking-glass' and setting permissions..."
+      touch /dev/shm/looking-glass
+      sudo chown "${username}:kvm" /dev/shm/looking-glass
+      chmod 660 /dev/shm/looking-glass
+    else
+      fmtr::log "'/dev/shm/looking-glass' already exists; skipping creation."
+    fi
+
+    local entry_to_add="$(cat <<- 'EOF'
 # Alias lg for Looking Glass shared memory setup
 alias lg='if [ ! -e /dev/shm/looking-glass ]; then \
   touch /dev/shm/looking-glass; \
@@ -105,23 +129,46 @@ else \
   /usr/local/bin/looking-glass-client -S -K -1; \
 fi'
 EOF
-  )"
+    )"
 
-  if ! grep -q "alias lg=" ~/.bashrc; then
-    echo "$entry_to_add" >> ~/.bashrc
-    fmtr::log "A new bashrc entry was made for launching Looking Glass."
-  else
-    fmtr::info "The lg alias already exists in .bashrc."
-  fi
+    if ! grep -q "alias lg=" ~/.bashrc; then
+      fmtr::info "Adding LG alias to '~/.bashrc'..."
+      echo "$entry_to_add" >> ~/.bashrc
+    else
+      fmtr::log "The LG alias already exists in '~/.bashrc'."
+    fi
 
-  source "${HOME}/.bashrc"
-  fmtr::info "Just type 'lg' in the terminal to launch Looking Glass"
+    source "${HOME}/.bashrc"
+    fmtr::log "Just type 'lg' in the terminal to launch LG."
+
+}
+
+configure_ivshmem_kvmfr() {
+
+  # The kernel module implements a basic interface to the IVSHMEM device for Looking Glass allowing DMA GPU transfers.
+
+  local MEMORY_SIZE_MB="32"
+
+  # Temporary
+  sudo modprobe kvmfr static_size_mb=$MEMORY_SIZE_MB
+
+  # Permanent
+  echo "options kvmfr static_size_mb=$MEMORY_SIZE_MB" | sudo tee /etc/modprobe.d/kvmfr.conf
+
+  # Automatic (w/systemd)
+  echo -e "# KVMFR Looking Glass module\nkvmfr" | sudo tee /etc/modules-load.d/kvmfr.conf
+
+  # Permissions
+  sudo chown $(whoami):kvm /dev/kvmfr0
+
 }
 
 main() {
-  install_req_pkgs "Looking Glass"
+
+  install_req_pkgs "LG"
   install_looking_glass
-  configure_looking_glass
+  configure_ivshmem_shmem
+
 }
 
 main
