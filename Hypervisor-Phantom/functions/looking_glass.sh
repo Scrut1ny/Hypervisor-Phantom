@@ -135,11 +135,11 @@ EOF
       fmtr::info "Adding LG alias to '~/.bashrc'..."
       echo "$entry_to_add" >> ~/.bashrc
     else
-      fmtr::log "The LG alias already exists in '~/.bashrc'."
+      fmtr::log "The LG alias already exists in '~/.bashrc'; skipping creation."
     fi
 
     source "${HOME}/.bashrc"
-    fmtr::log "Just type 'lg' in the terminal to launch LG."
+    fmtr::warn "TIP: Just enter 'lg' in a fresh terminal to launch LG."
 
 }
 
