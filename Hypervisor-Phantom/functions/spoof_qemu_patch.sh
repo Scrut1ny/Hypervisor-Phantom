@@ -74,7 +74,7 @@ REQUIRED_PKGS_openSUSE=(
 REQUIRED_PKGS_Fedora=(
   # Basic Build Dependencie(s)
   acpica-tools bzip2 glib2-devel libfdt-devel ninja-build
-  pixman-devel python3 zlib-devel gnupg2
+  pixman-devel python3 zlib-ng-devel gnupg2
 
   # Spice Dependencie(s)
   spice-server
