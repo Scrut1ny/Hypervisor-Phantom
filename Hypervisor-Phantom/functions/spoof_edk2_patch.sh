@@ -108,7 +108,9 @@ compile_ovmf() {
     export CONF_PATH="${WORKSPACE}/Conf"
 
     fmtr::log "Building BaseTools (EDK II build tools)..."
-    make -C BaseTools &>> "$LOG_FILE"; source edksetup.sh &>> "$LOG_FILE"
+    {
+      make -C BaseTools; source edksetup.sh
+    } &>> "$LOG_FILE"
 
     fmtr::log "Compiling OVMF firmware with Secure Boot and TPM support..."
     build \
@@ -130,10 +132,10 @@ compile_ovmf() {
 
     fmtr::log "Converting compiled OVMF firmware to .qcow2 format..."
     sudo qemu-img convert -f raw -O qcow2 "Build/OvmfX64/RELEASE_GCC5/FV/OVMF_CODE.fd" "$OVMF_CODE_DEST_DIR/OVMF_CODE.secboot.4m.qcow2"
-    sudo qemu-img convert -f raw -O qcow2 "Build/OvmfX64/RELEASE_GCC5/FV/OVMF_VARS.fd" "$OVMF_CODE_DEST_DIR/OVMF_CODE_VARS.4m.qcow2"
+    sudo qemu-img convert -f raw -O qcow2 "Build/OvmfX64/RELEASE_GCC5/FV/OVMF_VARS.fd" "$OVMF_CODE_DEST_DIR/OVMF_VARS.4m.qcow2"
 
-    sudo chown '0:0' "$OVMF_CODE_DEST_DIR/OVMF_CODE.secboot.4m.qcow2"
-    sudo chmod '755' "$OVMF_CODE_DEST_DIR/OVMF_CODE.secboot.4m.qcow2"
+    sudo chown root:root /usr/share/edk2/x64/*
+    sudo chmod 644 /usr/share/edk2/x64/*
 }
 
 cert_injection () {
@@ -216,22 +218,23 @@ cert_injection () {
         return
       elif [[ "$vm_choice" =~ ^[0-9]+$ ]] && (( vm_choice >= 1 && vm_choice <= ${#VMS[@]} )); then
         VM_NAME="${VMS[$((vm_choice - 1))]}"
-        VARS_FILE="$NVRAM_DIR/${VM_NAME}_SECURE_VARS.qcow2"
+        VARS_FILE="$NVRAM_DIR/${VM_NAME}_VARS.fd"
         if [ ! -f "$VARS_FILE" ]; then
           fmtr::fatal "File not found: $VARS_FILE"
+          exit 1
         fi
-        fmtr::log "Using $VARS_FILE as the base VARS file."
+        fmtr::log "Using '$VARS_FILE' as the base VARS file."
         break
       else
         fmtr::error "Invalid selection, please try again."
       fi
     done
 
-    fmtr::info "Injecting Secure Boot certs into $VARS_FILE..."
+    fmtr::info "Injecting Secure Boot certs into '$VARS_FILE'..."
 
     sudo virt-fw-vars \
       --input "$VARS_FILE" \
-      --output "$NVRAM_DIR/${VM_NAME}_SECURE_VARS.qcow2" \
+      --output "$NVRAM_DIR/${VM_NAME}_SECURE_VARS.fd" \
       --secure-boot \
       --set-pk "$UUID" "WindowsOEMDevicesPK.pem" \
       --add-kek "$UUID" "MicCorKEKCA2011_2011-06-24.pem" \
@@ -242,6 +245,9 @@ cert_injection () {
       --add-db "$UUID" "microsoft%20uefi%20ca%202023.pem" \
       --add-db "$UUID" "windows%20uefi%20ca%202023.pem" \
       --set-dbx dbxupdate_x64.bin &>> "$LOG_FILE"
+
+    fmtr::log "Converting VARS from '.fd' to '.qcow2' format..."
+    sudo qemu-img convert -f raw -O qcow2 "$NVRAM_DIR/${VM_NAME}_SECURE_VARS.fd" "$NVRAM_DIR/${VM_NAME}_SECURE_VARS.qcow2"
 
     fmtr::info "Cleaning up..."
     rm -rf "$TEMP_DIR"
@@ -258,7 +264,7 @@ main() {
 
     while true; do
 
-      fmtr::format_text '\n  ' "[1]" " Build and install OVMF firmware" "$TEXT_BRIGHT_YELLOW"
+      fmtr::format_text '\n  ' "[1]" " Install patched OVMF firmware" "$TEXT_BRIGHT_YELLOW"
       fmtr::format_text '  ' "[2]" " Inject Secure Boot certificates into a VARS file" "$TEXT_BRIGHT_YELLOW"
       fmtr::format_text '\n  ' "[0]" " Exit" "$TEXT_BRIGHT_RED"
 
