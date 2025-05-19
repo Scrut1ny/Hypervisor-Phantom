@@ -145,9 +145,43 @@ cert_injection () {
     local VARS_FILE
     local NVRAM_DIR="/var/lib/libvirt/qemu/nvram"
 
-    TEMP_DIR=$(mktemp -d)
-    trap 'rm -rf "$TEMP_DIR"' EXIT
     cd "$TEMP_DIR" || exit 1
+
+    # Prompt user to select VM
+    fmtr::log "Available domains:"
+
+    VMS=($(sudo virsh list --all --name))
+    if [ ${#VMS[@]} -eq 0 ]; then
+      fmtr::fatal "No domains found!"
+      rm -rf "/tmp/$TEMP_DIR"
+      exit 1
+    fi
+
+    # Display VMs with formatting and two-space spacing
+    for i in "${!VMS[@]}"; do
+      index=$((i + 1))
+      fmtr::format_text '  ' "[$index]" "  ${VMS[$i]}  " "$TEXT_BRIGHT_YELLOW"
+    done
+    fmtr::format_text '\n  ' "[0]" "  Cancel  " "$TEXT_BRIGHT_RED"
+
+    while true; do
+      read -rp "$(fmtr::ask 'Enter your choice [0-'"${#VMS[@]}"']: ')" vm_choice
+      if [[ "$vm_choice" == "0" ]]; then
+        fmtr::log "Exiting Secure Boot setup."
+        return
+      elif [[ "$vm_choice" =~ ^[0-9]+$ ]] && (( vm_choice >= 1 && vm_choice <= ${#VMS[@]} )); then
+        VM_NAME="${VMS[$((vm_choice - 1))]}"
+        VARS_FILE="$NVRAM_DIR/${VM_NAME}_VARS.fd"
+        if [ ! -f "$VARS_FILE" ]; then
+          fmtr::fatal "File not found: $VARS_FILE"
+          exit 1
+        fi
+        fmtr::log "Using '$VARS_FILE' as the base VARS file."
+        break
+      else
+        fmtr::error "Invalid selection, please try again."
+      fi
+    done
 
     # Prompt the user to select the UUID type
     fmtr::log "Select the UUID type to use for Secure Boot:"
@@ -196,40 +230,6 @@ cert_injection () {
       openssl x509 -inform der -in "$der" -out "$pem"
     done
 
-    # Prompt user to select VM
-    fmtr::log "Available domains:"; echo ""
-
-    VMS=($(sudo virsh list --all --name))
-    if [ ${#VMS[@]} -eq 0 ]; then
-      fmtr::fatal "No VMs found!"
-    fi
-
-    # Display VMs with formatting and two-space spacing
-    for i in "${!VMS[@]}"; do
-      index=$((i + 1))
-      fmtr::format_text '  ' "[$index]" "  ${VMS[$i]}  " "$TEXT_BRIGHT_YELLOW"
-    done
-    fmtr::format_text '\n  ' "[0]" "  Cancel  " "$TEXT_BRIGHT_RED"
-
-    while true; do
-      read -rp "$(fmtr::ask 'Enter your choice [0-'"${#VMS[@]}"']: ')" vm_choice
-      if [[ "$vm_choice" == "0" ]]; then
-        fmtr::log "Exiting Secure Boot setup."
-        return
-      elif [[ "$vm_choice" =~ ^[0-9]+$ ]] && (( vm_choice >= 1 && vm_choice <= ${#VMS[@]} )); then
-        VM_NAME="${VMS[$((vm_choice - 1))]}"
-        VARS_FILE="$NVRAM_DIR/${VM_NAME}_VARS.fd"
-        if [ ! -f "$VARS_FILE" ]; then
-          fmtr::fatal "File not found: $VARS_FILE"
-          exit 1
-        fi
-        fmtr::log "Using '$VARS_FILE' as the base VARS file."
-        break
-      else
-        fmtr::error "Invalid selection, please try again."
-      fi
-    done
-
     fmtr::info "Injecting Secure Boot certs into '$VARS_FILE'..."
 
     sudo virt-fw-vars \
@@ -250,7 +250,7 @@ cert_injection () {
     sudo qemu-img convert -f raw -O qcow2 "$NVRAM_DIR/${VM_NAME}_SECURE_VARS.fd" "$NVRAM_DIR/${VM_NAME}_SECURE_VARS.qcow2"
 
     fmtr::info "Cleaning up..."
-    rm -rf "$TEMP_DIR"
+    rm -rf "/tmp/$TEMP_DIR"
 }
 
 cleanup() {
