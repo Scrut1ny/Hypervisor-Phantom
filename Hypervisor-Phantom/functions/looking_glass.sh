@@ -6,292 +6,169 @@ source "./utils/formatter.sh"
 source "./utils/prompter.sh"
 source "./utils/packages.sh"
 
-declare -r CPU_VENDOR=$(case "$VENDOR_ID" in
-  *AuthenticAMD*) echo "amd" ;;
-  *GenuineIntel*) echo "intel" ;;
-  *) fmtr::error "Unknown CPU vendor."; exit 1 ;;
-esac)
-
 readonly SRC_DIR="src"
-readonly EDK2_URL="https://github.com/tianocore/edk2.git"
-readonly EDK2_VERSION="edk2-stable202502"
-readonly PATCH_DIR="../../patches/EDK2"
-readonly OVMF_PATCH="${CPU_VENDOR}-${EDK2_VERSION}.patch"
-readonly OVMF_CODE_DEST_DIR="/usr/share/edk2/x64"
+readonly LG_URL="https://looking-glass.io/artifact/stable/source"
+readonly LG_VERSION="B7"
+readonly LG_ARCHIVE="looking-glass-$LG_VERSION.tar.gz"
+
+# https://looking-glass.io/docs/B7/build/#host
+# https://looking-glass.io/wiki/Installation_on_other_distributions
 
 REQUIRED_PKGS_Arch=(
-  base-devel acpica git nasm python
-
-  # Includes virt-fw-vars tool
-  virt-firmware
+  cmake gcc libgl libegl fontconfig spice-protocol make nettle pkgconf binutils libxi libxinerama
+  libxss libxcursor libxpresent libxkbcommon wayland-protocols ttf-dejavu libsamplerate
 )
 
 REQUIRED_PKGS_Debian=(
-  build-essential uuid-dev acpica-tools git nasm python-is-python3
+  # https://looking-glass.io/docs/B7/build/#fetching-with-apt
+  
+  binutils-dev cmake fonts-dejavu-core libfontconfig-dev
+  gcc g++ pkg-config libegl-dev libgl-dev libgles-dev libspice-protocol-dev
+  nettle-dev libx11-dev libxcursor-dev libxi-dev libxinerama-dev
+  libxpresent-dev libxss-dev libxkbcommon-dev libwayland-dev wayland-protocols
+  libpipewire-0.3-dev libsamplerate0-dev
 
-  # Includes virt-fw-vars tool
-  python3-virt-firmware
+  # Add "libpulse-devel" and remove "pipewire-devel" if you use PulseAudio!
+  # Not recommended though because LG doesn't support PulseAudio.
 )
 
 REQUIRED_PKGS_openSUSE=(
-  gcc gcc-c++ make acpica git nasm python3 libuuid-devel
+  binutils-devel clang cmake dejavu-fonts fontconfig-devel gcc gcc-c++ glibc-locale 
+  libdecor-devel libglvnd-devel libnettle-devel libsamplerate-devel libSDL2-2_0-0
+  libSDL2_ttf-2_0-0 libvulkan1 libwayland-egl1 libxkbcommon-devel libXpresent-devel
+  libXrandr-devel libXss-devel libXss-devel make Mesa-libGLESv3-devel pipewire-devel
+  pkgconf-pkg-config pkgconf spice-protocol-devel vulkan-devel wayland-devel
+  zlib-devel-static libXi-devel libXinerama-devel libXcursor-devel dkms Mesa-libGL-devel
+  Mesa-libGLESv2-devel libzstd-devel-static libconfig++-devel SDL2-devel
 
-  # Includes virt-fw-vars tool
-  virt-firmware
+  # Add "libpulse-devel" and remove "pipewire-devel" if you use PulseAudio!
+  # Not recommended though because LG doesn't support PulseAudio.
 )
 
 REQUIRED_PKGS_Fedora=(
-  gcc gcc-c++ make acpica-tools git nasm python3 libuuid-devel
+  cmake gcc gcc-c++ libglvnd-devel fontconfig-devel spice-protocol make nettle-devel
+  pkgconf-pkg-config binutils-devel libXi-devel libXinerama-devel libXcursor-devel
+  libXpresent-devel libxkbcommon-x11-devel wayland-devel wayland-protocols-devel
+  libXScrnSaver-devel libXrandr-devel dejavu-sans-mono-fonts libdecor-devel
+  pipewire-devel libsamplerate-devel dkms kernel-devel kernel-headers
 
-  # Includes virt-fw-vars tool
-  virt-firmware
+  # Add "pulseaudio-libs-devel" and remove "pipewire-devel" if you use PulseAudio!
+  # Not recommended though because LG doesn't support PulseAudio.
 )
 
-acquire_edk2_source() {
+install_looking_glass() {
+
+  # openSUSE specific thing
+  if [[ "$DISTRO" -eq "openSUSE" && ! $((find /usr/lib64/libbfd.so) 2>/dev/null) ]]; then
+    fmtr::log "Configuring packages to ensure LG build completion"
+    {
+      LIBBFD_OLD=$(find /usr -name "libbfd*.so*" 2>/dev/null)
+      sudo ln -sv $LIBBFD_OLD /usr/lib64/libbfd.so
+    } &>> "$LOG_FILE"
+  fi
+  
   mkdir -p "$SRC_DIR" && cd "$SRC_DIR"
 
-  if [ -d "$EDK2_VERSION" ]; then
+  fmtr::info "Downloading 'looking-glass-B7.tar.gz' archive..."
+  curl -sSo "$LG_ARCHIVE" "$LG_URL" && tar -zxf "$LG_ARCHIVE" && rm -f "$LG_ARCHIVE"
 
-    fmtr::warn "EDK2 source directory '$EDK2_VERSION' detected."
-    if prmt::yes_or_no "$(fmtr::ask 'Purge EDK2 source directory?')"; then
-      rm -rf "$EDK2_VERSION" || { fmtr::fatal "Failed to remove existing directory: $EDK2_VERSION"; exit 1; }
-      fmtr::info "Directory purged successfully."
+  fmtr::info "Building, compiling, and installing LG..."
+  cd looking-glass-$LG_VERSION && mkdir client/build && cd client/build
 
-      if prmt::yes_or_no "$(fmtr::ask 'Clone the EDK2 repository?')"; then
-        git clone --single-branch --depth=1 --branch "$EDK2_VERSION" "$EDK2_URL" "$EDK2_VERSION" &>> "$LOG_FILE" || { fmtr::fatal "Failed to clone repository."; exit 1; }
-        cd "$EDK2_VERSION" || { fmtr::fatal "Failed to change to EDK2 directory after cloning: $EDK2_VERSION"; exit 1; }
-        fmtr::info "Initializing submodules..."
-        git submodule update --init &>> "$LOG_FILE" || { fmtr::fatal "Failed to initialize submodules."; exit 1; }
-        fmtr::info "EDK2 source successfully acquired and submodules initialized."
-        patch_ovmf
-      else
-        if prmt::yes_or_no "$(fmtr::ask 'Patch EDK2?')"; then
-          patch_ovmf
-        else
-          fmtr::info "Skipping clone and patch."
-        fi
-      fi
-    else
-      fmtr::info "Kept existing directory; Skipping deletion."
-      cd "$EDK2_VERSION" || { fmtr::fatal "Failed to change to EDK2 directory: $EDK2_VERSION"; exit 1; }
-    fi
+  if [[ "$VENDOR_ID" == *GenuineIntel* ]]; then
+      NEW_VENDOR_ID="0x8086"
+      NEW_DEVICE_ID="0x8086"
+  elif [[ "$VENDOR_ID" == *AuthenticAMD* ]]; then
+      NEW_VENDOR_ID="0x1022"
+      NEW_DEVICE_ID="0x1022"
   else
-    git clone --single-branch --depth=1 --branch "$EDK2_VERSION" "$EDK2_URL" "$EDK2_VERSION" &>> "$LOG_FILE" || { fmtr::fatal "Failed to clone repository."; exit 1; }
-    cd "$EDK2_VERSION" || { fmtr::fatal "Failed to change to EDK2 directory after cloning: $EDK2_VERSION"; exit 1; }
-    fmtr::info "Initializing submodules..."
-    git submodule update --init &>> "$LOG_FILE" || { fmtr::fatal "Failed to initialize submodules."; exit 1; }
-    fmtr::info "EDK2 source successfully acquired and submodules initialized."
-    patch_ovmf
+      fmtr::error "Unknown CPU Vendor ID."; exit 1
   fi
-}
 
+  sed -i "s/0x1af4/$NEW_VENDOR_ID/" "../../module/kvmfr.c"
+  sed -i "s/0x1110/$NEW_DEVICE_ID/" "../../module/kvmfr.c"
 
+  {
+    cmake ../ && sudo make install -j"$(nproc)"
+  } &>> "$LOG_FILE"
 
-
-
-patch_ovmf() {
-
-  [ -d "$PATCH_DIR" ] || fmtr::fatal "Patch directory $PATCH_DIR not found!"
-  [ -f "${PATCH_DIR}/${OVMF_PATCH}" ] || { fmtr::error "Patch file ${PATCH_DIR}/${OVMF_PATCH} not found!"; return 1; }
-  fmtr::info "Patching OVMF with ${OVMF_PATCH}..."
-  git apply < "${PATCH_DIR}/${OVMF_PATCH}" &>> "$LOG_FILE" || { fmtr::error "Failed to apply patch ${OVMF_PATCH}!"; return 1; }
-  fmtr::info "Patch ${OVMF_PATCH} applied successfully."
+  fmtr::info "Cleaning up..."
+  cd ../../../ && rm -rf looking-glass-$LG_VERSION/
 
 }
 
-compile_ovmf() {
-    # https://github.com/tianocore/tianocore.github.io/wiki/Common-instructions
-    # https://github.com/tianocore/tianocore.github.io/wiki/How-to-build-OVMF
+configure_ivshmem_shmem() {
 
-    export WORKSPACE="$(pwd)"
-    export EDK_TOOLS_PATH="${WORKSPACE}/BaseTools"
-    export CONF_PATH="${WORKSPACE}/Conf"
+    local conf_file="/etc/tmpfiles.d/10-looking-glass.conf"
+    local username=${SUDO_USER:-$(whoami)}
 
-    fmtr::log "Building BaseTools (EDK II build tools)..."
-    {
-      make -C BaseTools; source edksetup.sh
-    } &>> "$LOG_FILE"
-
-    fmtr::log "Compiling OVMF firmware with Secure Boot and TPM support..."
-    build \
-        -a X64 \
-        -p OvmfPkg/OvmfPkgX64.dsc \
-        -b RELEASE \
-        -t GCC5 \
-        -n 0 \
-        -s \
-        -q \
-        --define SECURE_BOOT_ENABLE=TRUE \
-        --define TPM_CONFIG_ENABLE=TRUE \
-        --define TPM_ENABLE=TRUE \
-        --define TPM1_ENABLE=TRUE \
-        --define TPM2_ENABLE=TRUE \
-        &>> "$LOG_FILE"
-
-    sudo mkdir -p "$OVMF_CODE_DEST_DIR"
-
-    fmtr::log "Converting compiled OVMF firmware to .qcow2 format..."
-    sudo qemu-img convert -f raw -O qcow2 "Build/OvmfX64/RELEASE_GCC5/FV/OVMF_CODE.fd" "$OVMF_CODE_DEST_DIR/OVMF_CODE.secboot.4m.qcow2"
-    sudo qemu-img convert -f raw -O qcow2 "Build/OvmfX64/RELEASE_GCC5/FV/OVMF_VARS.fd" "$OVMF_CODE_DEST_DIR/OVMF_VARS.4m.qcow2"
-
-    sudo chown root:root /usr/share/edk2/x64/*
-    sudo chmod 644 /usr/share/edk2/x64/*
-}
-
-cert_injection () {
-    local UUID
-    local TEMP_DIR=$(mktemp -d)
-    local VM_NAME
-    local VARS_FILE
-    local NVRAM_DIR="/var/lib/libvirt/qemu/nvram"
-
-    TEMP_DIR=$(mktemp -d)
-    trap 'rm -rf "$TEMP_DIR"' EXIT
-    cd "$TEMP_DIR" || exit 1
-
-    # Prompt the user to select the UUID type
-    fmtr::log "Select the UUID type to use for Secure Boot:"
-    fmtr::format_text '\n  ' "[1]" " Randomly generated UUID" "$TEXT_BRIGHT_YELLOW"
-    fmtr::format_text '  ' "[2]" " UEFI Global Variable UUID (EFI_GLOBAL_VARIABLE)" "$TEXT_BRIGHT_YELLOW"
-    fmtr::format_text '  ' "[3]" " Microsoft Vendor UUID (Microsoft Corporation)" "$TEXT_BRIGHT_YELLOW"
-    fmtr::format_text '\n  ' "[0]" " Exit" "$TEXT_BRIGHT_RED"
-
-    read -rp "$(fmtr::ask 'Enter choice [1-3]: ')" uuid_choice
-    case "$uuid_choice" in
-      0) exit 0 ;;
-      1) UUID=$(uuidgen) ;;
-      2) UUID="8be4df61-93ca-11d2-aa0d-00e098032b8c" ;;
-      3) UUID="77fa9abd-0359-4d32-bd60-28f4e78f784b" ;;
-      *) fmtr::error "Invalid choice. Defaulting to random UUID."; UUID=$(uuidgen) ;;
-    esac
-
-    fmtr::info "Downloading Microsoft Secure Boot certificates..."
-
-    declare -a URLS=(
-      # PK
-      "https://raw.githubusercontent.com/microsoft/secureboot_objects/main/PreSignedObjects/PK/Certificate/WindowsOEMDevicesPK.der"
-
-      # KEK
-      "https://raw.githubusercontent.com/microsoft/secureboot_objects/main/PreSignedObjects/KEK/Certificates/MicCorKEKCA2011_2011-06-24.der"
-      "https://raw.githubusercontent.com/microsoft/secureboot_objects/main/PreSignedObjects/KEK/Certificates/microsoft%20corporation%20kek%202k%20ca%202023.der"
-
-      # DB
-      "https://raw.githubusercontent.com/microsoft/secureboot_objects/main/PreSignedObjects/DB/Certificates/MicCorUEFCA2011_2011-06-27.der"
-      "https://raw.githubusercontent.com/microsoft/secureboot_objects/main/PreSignedObjects/DB/Certificates/MicWinProPCA2011_2011-10-19.der"
-      "https://raw.githubusercontent.com/microsoft/secureboot_objects/main/PreSignedObjects/DB/Certificates/microsoft%20option%20rom%20uefi%20ca%202023.der"
-      "https://raw.githubusercontent.com/microsoft/secureboot_objects/main/PreSignedObjects/DB/Certificates/microsoft%20uefi%20ca%202023.der"
-      "https://raw.githubusercontent.com/microsoft/secureboot_objects/main/PreSignedObjects/DB/Certificates/windows%20uefi%20ca%202023.der"
-
-      # DBX
-      "https://uefi.org/sites/default/files/resources/dbxupdate_x64.bin"
-    )
-
-    for url in "${URLS[@]}"; do
-      curl -sOL "$url"
-    done
-
-    fmtr::info "Converting .der to .pem certs..."
-    for der in *.der; do
-      pem="${der%.der}.pem"
-      openssl x509 -inform der -in "$der" -out "$pem"
-    done
-
-    # Prompt user to select VM
-    fmtr::log "Available domains:"; echo ""
-
-    VMS=($(sudo virsh list --all --name))
-    if [ ${#VMS[@]} -eq 0 ]; then
-      fmtr::fatal "No VMs found!"
+    if [ ! -f "$conf_file" ]; then
+      fmtr::info "Creating '10-looking-glass.conf'..."
+      echo "f /dev/shm/looking-glass 0660 ${username} kvm -" | sudo tee "$conf_file" &>> "$LOG_FILE"
+    else
+      fmtr::log "'10-looking-glass.conf' already exists; skipping creation."
     fi
 
-    # Display VMs with formatting and two-space spacing
-    for i in "${!VMS[@]}"; do
-      index=$((i + 1))
-      fmtr::format_text '  ' "[$index]" "  ${VMS[$i]}  " "$TEXT_BRIGHT_YELLOW"
-    done
-    fmtr::format_text '\n  ' "[0]" "  Cancel  " "$TEXT_BRIGHT_RED"
+    if [ ! -e /dev/shm/looking-glass ]; then
+      fmtr::info "Creating '/dev/shm/looking-glass' and setting permissions..."
+      touch /dev/shm/looking-glass
+      sudo chown "${username}:kvm" /dev/shm/looking-glass
+      chmod 660 /dev/shm/looking-glass
+    else
+      fmtr::log "'/dev/shm/looking-glass' already exists; skipping creation."
+    fi
 
-    while true; do
-      read -rp "$(fmtr::ask 'Enter your choice [0-'"${#VMS[@]}"']: ')" vm_choice
-      if [[ "$vm_choice" == "0" ]]; then
-        fmtr::log "Exiting Secure Boot setup."
-        return
-      elif [[ "$vm_choice" =~ ^[0-9]+$ ]] && (( vm_choice >= 1 && vm_choice <= ${#VMS[@]} )); then
-        VM_NAME="${VMS[$((vm_choice - 1))]}"
-        VARS_FILE="$NVRAM_DIR/${VM_NAME}_VARS.fd"
-        if [ ! -f "$VARS_FILE" ]; then
-          fmtr::fatal "File not found: $VARS_FILE"
-          exit 1
-        fi
-        fmtr::log "Using '$VARS_FILE' as the base VARS file."
-        break
-      else
-        fmtr::error "Invalid selection, please try again."
-      fi
-    done
+    local entry_to_add="$(cat <<- 'EOF'
+# Alias lg for Looking Glass shared memory setup
+alias lg='if [ ! -e /dev/shm/looking-glass ]; then \
+  touch /dev/shm/looking-glass; \
+  sudo chown $USER:kvm /dev/shm/looking-glass; \
+  chmod 660 /dev/shm/looking-glass; \
+  /usr/local/bin/looking-glass-client -S -K -1; \
+else \
+  /usr/local/bin/looking-glass-client -S -K -1; \
+fi'
+EOF
+    )"
 
-    fmtr::info "Injecting Secure Boot certs into '$VARS_FILE'..."
+    if ! grep -q "alias lg=" ~/.bashrc; then
+      fmtr::info "Adding LG alias to '~/.bashrc'..."
+      echo "$entry_to_add" >> ~/.bashrc
+    else
+      fmtr::log "The LG alias already exists in '~/.bashrc'; skipping creation."
+    fi
 
-    sudo virt-fw-vars \
-      --input "$VARS_FILE" \
-      --output "$NVRAM_DIR/${VM_NAME}_SECURE_VARS.fd" \
-      --secure-boot \
-      --set-pk "$UUID" "WindowsOEMDevicesPK.pem" \
-      --add-kek "$UUID" "MicCorKEKCA2011_2011-06-24.pem" \
-      --add-kek "$UUID" "microsoft%20corporation%20kek%202k%20ca%202023.pem" \
-      --add-db "$UUID" "MicCorUEFCA2011_2011-06-27.pem" \
-      --add-db "$UUID" "MicWinProPCA2011_2011-10-19.pem" \
-      --add-db "$UUID" "microsoft%20option%20rom%20uefi%20ca%202023.pem" \
-      --add-db "$UUID" "microsoft%20uefi%20ca%202023.pem" \
-      --add-db "$UUID" "windows%20uefi%20ca%202023.pem" \
-      --set-dbx dbxupdate_x64.bin &>> "$LOG_FILE"
+    source "${HOME}/.bashrc"
+    fmtr::warn "TIP: Just enter 'lg' in a fresh terminal to launch LG."
 
-    fmtr::log "Converting VARS from '.fd' to '.qcow2' format..."
-    sudo qemu-img convert -f raw -O qcow2 "$NVRAM_DIR/${VM_NAME}_SECURE_VARS.fd" "$NVRAM_DIR/${VM_NAME}_SECURE_VARS.qcow2"
-
-    fmtr::info "Cleaning up..."
-    rm -rf "$TEMP_DIR"
 }
 
-cleanup() {
-    fmtr::log "Cleaning up"
-    cd ../.. && rm -rf "$EDK2_VERSION"
-    cd .. && rmdir --ignore-fail-on-non-empty "$SRC_DIR"
+configure_ivshmem_kvmfr() {
+
+  # The kernel module implements a basic interface to the IVSHMEM device for Looking Glass allowing DMA GPU transfers.
+
+  local MEMORY_SIZE_MB="32"
+
+  # Temporary
+  sudo modprobe kvmfr static_size_mb=$MEMORY_SIZE_MB
+
+  # Permanent
+  echo "options kvmfr static_size_mb=$MEMORY_SIZE_MB" | sudo tee /etc/modprobe.d/kvmfr.conf
+
+  # Automatic (w/systemd)
+  echo -e "# KVMFR Looking Glass module\nkvmfr" | sudo tee /etc/modules-load.d/kvmfr.conf
+
+  # Permissions
+  sudo chown $(whoami):kvm /dev/kvmfr0
+
 }
 
 main() {
-    install_req_pkgs "EDK2"
 
-    while true; do
+  install_req_pkgs "LG"
+  install_looking_glass
+  configure_ivshmem_shmem
 
-      fmtr::format_text '\n  ' "[1]" " Install patched OVMF firmware" "$TEXT_BRIGHT_YELLOW"
-      fmtr::format_text '  ' "[2]" " Inject Secure Boot certificates into a VARS file" "$TEXT_BRIGHT_YELLOW"
-      fmtr::format_text '\n  ' "[0]" " Exit" "$TEXT_BRIGHT_RED"
-
-      read -rp "$(fmtr::ask 'Enter choice [0-2]: ')" user_choice
-      case "$user_choice" in
-        1)
-          acquire_edk2_source
-          if prmt::yes_or_no "$(fmtr::ask 'Build, compile, and install OVMF now?')"; then
-            compile_ovmf
-          fi
-          ! prmt::yes_or_no "$(fmtr::ask 'Keep EDK2 source for faster re-patching?')" && cleanup
-          exit 0
-          ;;
-        2)
-          cert_injection
-          exit 0
-          ;;
-        0)
-          fmtr::info "Exiting."
-          exit 0
-          ;;
-        *)
-          fmtr::error "Invalid option, please try again."
-          ;;
-      esac
-      prmt::quick_prompt "$(fmtr::info 'Press any key to continue...')"
-    done
 }
 
-main "$@"
+main
