@@ -63,11 +63,16 @@
       <synic state="off"/>
       <stimer state="off"/>
       <reset state="off"/>
+      <vendor_id state="on" value="AuthenticAMD"/> <!-- KVM patch NOT present: -->
+      <vendor_id state="off" value="AuthenticAMD"/> <!-- KVM patch IS present: -->
       <frequencies state="off"/>
-      <!-- KVM patch NOT present: -->
-      <vendor_id state="on" value="AuthenticAMD"/>
-      <!-- KVM patch IS present: -->
-      <vendor_id state="off" value="AuthenticAMD"/>
+      <reenlightenment state="off"/>
+      <tlbflush state="off"/>
+      <ipi state="off"/>
+      <evmcs state="off"/>
+      <avic state="off"/>
+      <emsr_bitmap state="off"/>
+      <xmm_input state="off"/>
     </hyperv>
     <kvm>
       <hidden state="on"/> <!-- Hide the KVM hypervisor from standard MSR based discovery (CPUID Bitset) -->
