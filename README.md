@@ -186,7 +186,7 @@ chmod -R +x *
 | Hyperion | Roblox | ✅ |
 | Mhyprot | Genshin Impact | ❔ (HoYoKProtect.sys) <br> 🪟 [BSOD: ATTEMPTED_WRITE_TO_READONLY_MEMORY](https://github.com/Scrut1ny/Hypervisor-Phantom/issues/34) |
 | nProtect GameGuard (NP) | Desktop Games | ✅ |
-| RICOCHET | CoD Games | ❔ |
+| RICOCHET | CoD Games | ✅ |
 | Vanguard | Valorant & LoL | ✅ (w/Hyper-V) |
 
 </details>
