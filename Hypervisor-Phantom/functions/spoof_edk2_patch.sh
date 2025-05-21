@@ -148,7 +148,7 @@ cert_injection () {
     cd "$TEMP_DIR" || exit 1
 
     # Prompt user to select VM
-    fmtr::log "Available domains:"
+    fmtr::log "Available domains:"; echo ""
 
     VMS=($(sudo virsh list --all --name))
     if [ ${#VMS[@]} -eq 0 ]; then
@@ -171,7 +171,7 @@ cert_injection () {
         return
       elif [[ "$vm_choice" =~ ^[0-9]+$ ]] && (( vm_choice >= 1 && vm_choice <= ${#VMS[@]} )); then
         VM_NAME="${VMS[$((vm_choice - 1))]}"
-        VARS_FILE="$NVRAM_DIR/${VM_NAME}_VARS.fd"
+        VARS_FILE="$NVRAM_DIR/${VM_NAME}_VARS.qcow2"
         if [ ! -f "$VARS_FILE" ]; then
           fmtr::fatal "File not found: $VARS_FILE"
           exit 1
@@ -224,30 +224,21 @@ cert_injection () {
       curl -sOL "$url"
     done
 
-    fmtr::info "Converting .der to .pem certs..."
-    for der in *.der; do
-      pem="${der%.der}.pem"
-      openssl x509 -inform der -in "$der" -out "$pem"
-    done
-
     fmtr::info "Injecting Secure Boot certs into '$VARS_FILE'..."
 
     sudo virt-fw-vars \
       --input "$VARS_FILE" \
-      --output "$NVRAM_DIR/${VM_NAME}_SECURE_VARS.fd" \
+      --output "$NVRAM_DIR/${VM_NAME}_SECURE_VARS.qcow2" \
       --secure-boot \
-      --set-pk "$UUID" "WindowsOEMDevicesPK.pem" \
-      --add-kek "$UUID" "MicCorKEKCA2011_2011-06-24.pem" \
-      --add-kek "$UUID" "microsoft%20corporation%20kek%202k%20ca%202023.pem" \
-      --add-db "$UUID" "MicCorUEFCA2011_2011-06-27.pem" \
-      --add-db "$UUID" "MicWinProPCA2011_2011-10-19.pem" \
-      --add-db "$UUID" "microsoft%20option%20rom%20uefi%20ca%202023.pem" \
-      --add-db "$UUID" "microsoft%20uefi%20ca%202023.pem" \
-      --add-db "$UUID" "windows%20uefi%20ca%202023.pem" \
+      --set-pk "$UUID" "WindowsOEMDevicesPK.der" \
+      --add-kek "$UUID" "MicCorKEKCA2011_2011-06-24.der" \
+      --add-kek "$UUID" "microsoft%20corporation%20kek%202k%20ca%202023.der" \
+      --add-db "$UUID" "MicCorUEFCA2011_2011-06-27.der" \
+      --add-db "$UUID" "MicWinProPCA2011_2011-10-19.der" \
+      --add-db "$UUID" "microsoft%20option%20rom%20uefi%20ca%202023.der" \
+      --add-db "$UUID" "microsoft%20uefi%20ca%202023.der" \
+      --add-db "$UUID" "windows%20uefi%20ca%202023.der" \
       --set-dbx dbxupdate_x64.bin &>> "$LOG_FILE"
-
-    fmtr::log "Converting VARS from '.fd' to '.qcow2' format..."
-    sudo qemu-img convert -f raw -O qcow2 "$NVRAM_DIR/${VM_NAME}_SECURE_VARS.fd" "$NVRAM_DIR/${VM_NAME}_SECURE_VARS.qcow2"
 
     fmtr::info "Cleaning up..."
     rm -rf "/tmp/$TEMP_DIR"
