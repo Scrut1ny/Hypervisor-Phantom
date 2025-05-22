@@ -13,7 +13,7 @@ declare -r CPU_VENDOR=$(case "$VENDOR_ID" in
 esac)
 
 readonly SRC_DIR="src"
-readonly QEMU_VERSION="9.2.3"
+readonly QEMU_VERSION="10.0.0"
 readonly QEMU_DIR="qemu-${QEMU_VERSION}"
 readonly QEMU_ARCHIVE="${QEMU_DIR}.tar.xz"
 readonly QEMU_SIG="${QEMU_ARCHIVE}.sig"
@@ -385,6 +385,7 @@ spoof_processor_manufacturer() {
   case "$QEMU_VERSION" in
     "8.2.6") chipset_file="$(pwd)/hw/i386/pc_q35.c" ;;
     "9.2.3") chipset_file="$(pwd)/hw/i386/fw_cfg.c" ;;
+    "10.0.0") chipset_file="$(pwd)/hw/i386/fw_cfg.c" ;;
     *) fmtr::warn "Unsupported QEMU version: $QEMU_VERSION" ;;
   esac
 
