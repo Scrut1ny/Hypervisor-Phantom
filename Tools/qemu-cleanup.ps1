@@ -15,44 +15,56 @@ if (-Not (Test-Path $tempDir)) {
 
 # Cleanup script as a string, embedded directly in the process call
 $cleanupScript = @'
+# Function to delete registry keys matching specific strings
+function Remove-RegistryKeys {
+    param (
+        [string]$regPath,
+        [array]$searchStrings
+    )
+
+    # Get all subkeys under the registry path
+    $keys = Get-ChildItem -Path $regPath -Recurse
+
+    foreach ($key in $keys) {
+        if ($searchStrings | Where-Object { $key.PSPath -like "*$_*" }) {
+            try {
+                # Forcefully remove the registry key
+                Write-Host "Deleting key under $regPath: $($key.PSPath)"
+                Remove-Item -Path $key.PSPath -Recurse -Force
+            } catch {
+                Write-Host "Failed to delete key under $regPath: $($key.PSPath) - $_"
+            }
+        }
+    }
+}
+
 # Define the registry paths
 $regPaths = @(
-    "HKLM:\SYSTEM\CurrentControlSet\Enum\PCI",  # For searching specific strings
-    "HKLM:\SYSTEM\CurrentControlSet\Enum\SCSI"  # For deleting all subkeys
+    "HKLM:\SYSTEM\CurrentControlSet\Enum\PCI",
+    "HKLM:\SYSTEM\CurrentControlSet\Enum\SCSI",
+    "HKLM:\SYSTEM\CurrentControlSet\Enum\HDAUDIO"
 )
 
-# List of strings to search for in the PCI key names
+# List of strings to search for in the registry key names
 $searchStrings = @("VEN_1AF4", "DEV_1B36", "SUBSYS_11001AF4")
 
 # Loop through each registry path
 foreach ($regPath in $regPaths) {
-    # Get all subkeys under the registry path
-    $keys = Get-ChildItem -Path $regPath -Recurse
-
-    # If the path is SCSI, delete all subkeys (no search strings needed)
     if ($regPath -eq "HKLM:\SYSTEM\CurrentControlSet\Enum\SCSI") {
+        # If the path is SCSI, delete all subkeys
+        $keys = Get-ChildItem -Path $regPath -Recurse
         foreach ($key in $keys) {
             try {
-                # Forcefully remove the registry key
                 Write-Host "Deleting key under SCSI: $($key.PSPath)"
                 Remove-Item -Path $key.PSPath -Recurse -Force
             } catch {
                 Write-Host "Failed to delete key under SCSI: $($key.PSPath) - $_"
             }
         }
-    } else {
-        # For PCI, only delete keys that match the search strings
-        foreach ($key in $keys) {
-            if ($searchStrings | Where-Object { $key.PSPath -like "*$_*" }) {
-                try {
-                    # Forcefully remove the registry key
-                    Write-Host "Deleting key under PCI: $($key.PSPath)"
-                    Remove-Item -Path $key.PSPath -Recurse -Force
-                } catch {
-                    Write-Host "Failed to delete key under PCI: $($key.PSPath) - $_"
-                }
-            }
-        }
+    }
+    else {
+        # Use the function to remove keys for PCI and HDAUDIO, based on the search string
+        Remove-RegistryKeys -regPath $regPath -searchStrings $searchStrings
     }
 }
 '@
