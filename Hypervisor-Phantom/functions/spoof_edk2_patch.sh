@@ -240,6 +240,8 @@ cert_injection () {
       --add-db "$UUID" "windows%20uefi%20ca%202023.der" \
       --set-dbx dbxupdate_x64.bin &>> "$LOG_FILE"
 
+    fmtr::log "Secure VARS generated at '${NVRAM_DIR}/${VM_NAME}_SECURE_VARS.qcow2'"
+
     fmtr::info "Cleaning up..."
     rm -rf "/tmp/$TEMP_DIR"
 }
