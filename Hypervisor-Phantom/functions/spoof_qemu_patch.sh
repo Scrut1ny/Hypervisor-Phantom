@@ -263,13 +263,12 @@ spoof_drive_serial_number() {
     "WD Black SN850 NVMe SSD 1TB" "WD Green 1TB SSD"
     "WD Blue 3D NAND 1TB SSD" "Crucial P3 1TB PCIe 3.0 3D NAND NVMe SSD"
     "Seagate BarraCuda SSD 1TB" "Seagate FireCuda 520 SSD 1TB"
-    "Seagate One Touch SSD 1TB" "Seagate IronWolf 110 SSD 1TB"
+    "Seagate IronWolf 110 SSD 1TB" "SanDisk Ultra 3D NAND SSD 1TB"
     "Seagate Fast SSD 1TB" "Crucial MX500 1TB 3D NAND SSD"
     "Crucial P5 Plus NVMe SSD 1TB" "Crucial BX500 1TB 3D NAND SSD"
-    "Crucial X8 Portable SSD 1TB" "Crucial P3 1TB PCIe 3.0 3D NAND NVMe SSD"
+    "Crucial P3 1TB PCIe 3.0 3D NAND NVMe SSD"
     "Kingston A2000 NVMe SSD 1TB" "Kingston KC2500 NVMe SSD 1TB"
     "Kingston A400 SSD 1TB" "Kingston HyperX Savage SSD 1TB"
-    "Kingston DataTraveler Vault Privacy 3.0 1TB" "SanDisk Ultra 3D NAND SSD 1TB"
     "SanDisk SSD PLUS 1TB" "SanDisk Ultra 3D 1TB NAND SSD"
   )
 
