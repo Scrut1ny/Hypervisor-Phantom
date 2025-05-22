@@ -261,7 +261,7 @@ spoof_drive_serial_number() {
     "Samsung SSD 850 PRO 1TB" "Samsung SSD T7 Touch 1TB"
     "Samsung SSD 840 EVO 1TB" "WD Blue SN570 NVMe SSD 1TB"
     "WD Black SN850 NVMe SSD 1TB" "WD Green 1TB SSD"
-    "WD My Passport SSD 1TB" "WD Blue 3D NAND 1TB SSD"
+    "WD Blue 3D NAND 1TB SSD" "Crucial P3 1TB PCIe 3.0 3D NAND NVMe SSD"
     "Seagate BarraCuda SSD 1TB" "Seagate FireCuda 520 SSD 1TB"
     "Seagate One Touch SSD 1TB" "Seagate IronWolf 110 SSD 1TB"
     "Seagate Fast SSD 1TB" "Crucial MX500 1TB 3D NAND SSD"
@@ -270,8 +270,7 @@ spoof_drive_serial_number() {
     "Kingston A2000 NVMe SSD 1TB" "Kingston KC2500 NVMe SSD 1TB"
     "Kingston A400 SSD 1TB" "Kingston HyperX Savage SSD 1TB"
     "Kingston DataTraveler Vault Privacy 3.0 1TB" "SanDisk Ultra 3D NAND SSD 1TB"
-    "SanDisk Extreme Portable SSD V2 1TB" "SanDisk SSD PLUS 1TB"
-    "SanDisk Ultra 3D 1TB NAND SSD" "SanDisk Extreme Pro 1TB NVMe SSD"
+    "SanDisk SSD PLUS 1TB" "SanDisk Ultra 3D 1TB NAND SSD"
   )
 
   get_random_element() {
