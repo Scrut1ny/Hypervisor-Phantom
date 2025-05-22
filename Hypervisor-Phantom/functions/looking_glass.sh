@@ -69,7 +69,7 @@ install_looking_glass() {
   
   mkdir -p "$SRC_DIR" && cd "$SRC_DIR"
 
-  fmtr::info "Downloading 'looking-glass-B7.tar.gz' archive..."
+  fmtr::info "Downloading 'looking-glass-$LG_VERSION.tar.gz' archive..."
   curl -sSo "$LG_ARCHIVE" "$LG_URL" && tar -zxf "$LG_ARCHIVE" && rm -f "$LG_ARCHIVE"
 
   fmtr::info "Building, compiling, and installing LG..."
