@@ -1856,3 +1856,19 @@ diff --git a/target/s390x/tcg/misc_helper.c b/target/s390x/tcg/misc_helper.c
              sysib.sysib_322.vm[0].ext_name_encoding = 2; /* UTF-8 */
 
              /* If our VM has a name, use the real name */
+hw/audio/hda-codec.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/hw/audio/hda-codec.c b/hw/audio/hda-codec.c
+index 6f3a8f691..72a0e0e76 100644
+--- a/hw/audio/hda-codec.c
++++ b/hw/audio/hda-codec.c
+@@ -118,7 +118,7 @@ static void hda_codec_parse_fmt(uint32_t format, struct audsettings *as)
+ 
+ /* some defines */
+ 
+-#define QEMU_HDA_ID_VENDOR  0x1af4
++#define QEMU_HDA_ID_VENDOR  0x1022
+ #define QEMU_HDA_PCM_FORMATS (AC_SUPPCM_BITS_16 |       \
+                               0x1fc /* 16 -> 96 kHz */)
+ #define QEMU_HDA_AMP_NONE    (0)
