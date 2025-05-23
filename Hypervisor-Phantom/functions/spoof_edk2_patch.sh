@@ -248,7 +248,7 @@ cert_injection () {
 
 cleanup() {
     fmtr::log "Cleaning up"
-    cd ../.. && rm -rf "$EDK2_VERSION"
+    cd .. && rm -rf "$EDK2_VERSION"
     cd .. && rmdir --ignore-fail-on-non-empty "$SRC_DIR"
 }
 
