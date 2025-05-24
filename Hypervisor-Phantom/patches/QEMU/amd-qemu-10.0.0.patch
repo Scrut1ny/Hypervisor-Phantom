@@ -1868,7 +1868,7 @@ index 6f3a8f691..72a0e0e76 100644
  /* some defines */
  
 -#define QEMU_HDA_ID_VENDOR  0x1af4
-+#define QEMU_HDA_ID_VENDOR  0x1022
++#define QEMU_HDA_ID_VENDOR  0x10EC
  #define QEMU_HDA_PCM_FORMATS (AC_SUPPCM_BITS_16 |       \
                                0x1fc /* 16 -> 96 kHz */)
  #define QEMU_HDA_AMP_NONE    (0)
