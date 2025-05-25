@@ -321,7 +321,7 @@
     <qemu:arg value="-smbios"/>
     <qemu:arg value="type=3,serial=To be filled by O.E.M."/>
     <qemu:arg value="-smbios"/>
-    <qemu:arg value="type=4,sock_pfx={Your socket designation},manufacturer=Advanced Micro Devices,, Inc.,version={Your CPU model name},max-speed=4700,current-speed=2277"/>
+    <qemu:arg value="type=4,sock_pfx={Your socket designation},manufacturer=Advanced Micro Devices,, Inc.,version={Your CPU model name},max-speed={X},current-speed={X}"/>
     <qemu:arg value="-smbios"/>
     <qemu:arg value="type=17,loc_pfx=Controller0-ChannelA-DIMM0,bank=BANK 0,manufacturer=Samsung,serial=Unknown,asset=Not Specified,part=Not Specified,speed=4800"/>
 
