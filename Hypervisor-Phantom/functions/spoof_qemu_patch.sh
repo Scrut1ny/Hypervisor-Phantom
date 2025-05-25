@@ -334,9 +334,9 @@ spoof_acpi_table_data() {
   ##################################################
   ##################################################
 
-  # Default QEMU has unspecified PM type in FACP ACPI table.
-  # On baremetal normally vendors specify either 1 (Desktop) or 2 (Notebook)
-  # We patch PM type integer based on dmidecode type  chassis-type
+  # Default QEMU has an unspecified PM type in the FACP ACPI table.
+  # On baremetal normally vendors specify either 1 (Desktop) or 2 (Notebook).
+  # We patch the PM type integer based on the chassis type output from dmidecode.
 
   fmtr::info "Obtaining machine's chassis-type..."
 
