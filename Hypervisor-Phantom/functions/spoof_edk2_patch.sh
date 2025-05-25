@@ -85,18 +85,17 @@ acquire_edk2_source() {
   fi
 }
 
-
-
-
-
 patch_ovmf() {
-
+  # Apply custom ovmf patches
   [ -d "$PATCH_DIR" ] || fmtr::fatal "Patch directory $PATCH_DIR not found!"
   [ -f "${PATCH_DIR}/${OVMF_PATCH}" ] || { fmtr::error "Patch file ${PATCH_DIR}/${OVMF_PATCH} not found!"; return 1; }
-  fmtr::info "Patching OVMF with ${OVMF_PATCH}..."
+  fmtr::log "Patching OVMF with ${OVMF_PATCH}..."
   git apply < "${PATCH_DIR}/${OVMF_PATCH}" &>> "$LOG_FILE" || { fmtr::error "Failed to apply patch ${OVMF_PATCH}!"; return 1; }
   fmtr::info "Patch ${OVMF_PATCH} applied successfully."
 
+  # Apply custom boot logo image
+  fmtr::log "Replacing UEFI boot logo image at 'MdeModulePkg/Logo/Logo.bmp'..."
+  cp -f "$PATCH_DIR/Logo.bmp" "MdeModulePkg/Logo/Logo.bmp" &>> "$LOG_FILE"
 }
 
 compile_ovmf() {
