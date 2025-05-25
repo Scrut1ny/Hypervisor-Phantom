@@ -160,12 +160,12 @@ patch_qemu() {
     exit 1
   }
 
-  fmtr::log "Spoofing all model & serial numbers..."; echo ""
+  fmtr::log "Spoofing all model & serial numbers..."
 
   spoof_serial_numbers
   spoof_drive_serial_number
   spoof_processor_manufacturer
-  spoof_acpi_table_strings
+  spoof_acpi_table_data
 }
 
 
@@ -302,9 +302,14 @@ spoof_drive_serial_number() {
 
 
 
-spoof_acpi_table_strings() {
+spoof_acpi_table_data() {
 
-  local pairs=(
+  ##################################################
+  ##################################################
+
+  # Spoofs 'OEM ID' and 'OEM Table ID' for ACPI tables.
+
+  local oem_pairs=(
     'DELL  ' 'Dell Inc' ' ASUS ' 'Notebook'
     'MSI NB' 'MEGABOOK' 'LENOVO' 'TC-O5Z  '
     'LENOVO' 'CB-01   ' 'SECCSD' 'LH43STAR'
@@ -312,52 +317,55 @@ spoof_acpi_table_strings() {
   )
 
   if [[ "$CPU_VENDOR" == "amd" ]]; then
-    pairs+=('ALASKA' 'A M I ')
+    oem_pairs+=('ALASKA' 'A M I ')
   elif [[ "$CPU_VENDOR" == "intel" ]]; then
-    pairs+=('INTEL ' 'U Rvp   ')
+    oem_pairs+=('INTEL ' 'U Rvp   ')
   fi
 
-  local total_pairs=$(( ${#pairs[@]} / 2 ))
+  local total_pairs=$(( ${#oem_pairs[@]} / 2 ))
   local random_index=$(( RANDOM % total_pairs * 2 ))
-  local appname6=${pairs[$random_index]}
-  local appname8=${pairs[$random_index + 1]}
+  local appname6=${oem_pairs[$random_index]}
+  local appname8=${oem_pairs[$random_index + 1]}
   local h_file="$(pwd)/include/hw/acpi/aml-build.h"
 
   sed -i "$h_file" -e "s/^#define ACPI_BUILD_APPNAME6 \".*\"/#define ACPI_BUILD_APPNAME6 \"${appname6}\"/"
   sed -i "$h_file" -e "s/^#define ACPI_BUILD_APPNAME8 \".*\"/#define ACPI_BUILD_APPNAME8 \"${appname8}\"/"
 
-  # By default QEMU doesn't specify PM type in FACP ACPI table.
-  # Normally vendors specify either 1 (Desktop) or 2 (Mobile)
-  # We patch PM type integer based on dmidecode's chassis-type
+  ##################################################
+  ##################################################
+
+  # Default QEMU has unspecified PM type in FACP ACPI table.
+  # On baremetal normally vendors specify either 1 (Desktop) or 2 (Notebook)
+  # We patch PM type integer based on dmidecode type  chassis-type
 
   fmtr::info "Obtaining machine's chassis-type..."
 
+  local c_file="$(pwd)/hw/acpi/aml-build.c"
   local pm_type="1" # Desktop
   local chassis_type=$(sudo dmidecode --string chassis-type)
 
   if [[ "$chassis_type" = "Notebook" ]]; then
-    pm_type="2" # Mobile
+    pm_type="2" # Notebook/Laptop/Mobile
   fi
 
-  local file="$(pwd)/hw/acpi/aml-build.c"
-  local pm_orig="build_append_int_noprefix(tbl, 0 \/\* Unspecified \*\/, 1);"
-  local pm_replacement="build_append_int_noprefix(tbl, $pm_type \/\* $chassis_type \*\/, 1);"
-  sed -i "$file" -e "s|$pm_orig|$pm_replacement|"
+  sed -i 's/build_append_int_noprefix(tbl, 0 \/\* Unspecified \*\//build_append_int_noprefix(tbl, '"$pm_type"' \/\* '"$chassis_type"' \*\//g' "$c_file"
 
   if [[ "$chassis_type" = "Notebook" ]]; then    
-    fmtr::warn "Detected host PM type = 2 (Laptop/Notebook)"
-    fmtr::info "Generating SSDT ACPI table with fake battery..."
+    fmtr::warn "Host PM type equals '$pm_type' ($chassis_type)"
+    fmtr::info "Generating fake battery SSDT ACPI table..."
 
-    # Use already generated pair
     cat "${FAKE_BATTERY_ACPITABLE}" \
       | sed "s/BOCHS/$appname6/" \
       | sed "s/BXPCSSDT/$appname8/" > "$HOME/fake_battery.dsl"
     iasl -tc "$HOME/fake_battery.dsl" &>> "$LOG_FILE"
 
-    fmtr::info "ACPI table saved to \"$HOME/fake_battery.aml\""
+    fmtr::info "ACPI table saved to '$HOME/fake_battery.aml'"
     fmtr::info "It's highly recommended to passthrough the ACPI Table via QEMU's args/xml:
-      qemu-system-x86_64 -acpitable \"$HOME/fake_battery.aml\""
+      qemu-system-x86_64 -acpitable '$HOME/fake_battery.aml'"
   fi
+
+  ##################################################
+  ##################################################
 
 }
 
