@@ -388,7 +388,7 @@ spoof_processor_manufacturer() {
   local chipset_file
   case "$QEMU_VERSION" in
     "8.2.6") chipset_file="$(pwd)/hw/i386/pc_q35.c" ;;
-    "9.2.3") chipset_file="$(pwd)/hw/i386/fw_cfg.c" ;;
+    "9.2.3"|"10.0.0") chipset_file="$(pwd)/hw/i386/fw_cfg.c" ;;
     *) fmtr::warn "Unsupported QEMU version: $QEMU_VERSION" ;;
   esac
 
