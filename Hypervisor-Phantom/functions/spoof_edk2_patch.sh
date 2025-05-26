@@ -94,14 +94,62 @@ patch_ovmf() {
   fmtr::info "Patch ${OVMF_PATCH} applied successfully."
 
   # Apply hosts Boot Graphics Resource Table (BGRT) image
-  fmtr::log "Replacing guest with host OVMF BGRT image..."
-  image_file=$(find /sys/firmware/acpi/bgrt/ -type f -exec file {} \; | grep -i 'bitmap' | cut -d: -f1)
-  if [ -n "$image_file" ]; then
-    cp -f "$image_file" "MdeModulePkg/Logo/Logo.bmp"
-    fmtr::info "Image copied successfully."
-  else
-    fmtr::info "No bitmap image found."
-  fi
+  fmtr::log "Choose BGRT logo image option for OVMF:"
+  fmtr::format_text '\n  ' "[1]" " Use host's BGRT image (from /sys/firmware/acpi/bgrt/)" "$TEXT_BRIGHT_YELLOW"
+  fmtr::format_text '  ' "[2]" " Use a custom BMP image (provide file path)" "$TEXT_BRIGHT_YELLOW"
+  fmtr::format_text '  ' "[3]" " No logo (delete Logo.bmp)" "$TEXT_BRIGHT_YELLOW"
+  fmtr::format_text '\n  ' "[0]" " Skip (keep current Logo.bmp, if present)" "$TEXT_BRIGHT_RED"
+
+  while true; do
+    read -rp "$(fmtr::ask 'Enter choice [0-3]: ')" logo_choice
+    case "$logo_choice" in
+      1)
+        image_file=$(find /sys/firmware/acpi/bgrt/ -type f -exec file {} \; | grep -i 'bitmap' | cut -d: -f1)
+        if [ -n "$image_file" ]; then
+          cp -f "$image_file" "MdeModulePkg/Logo/Logo.bmp"
+          fmtr::info "Host BGRT logo image copied successfully."
+        else
+          fmtr::info "No host BGRT bitmap image found."
+        fi
+        break
+        ;;
+      2)
+        while true; do
+          read -rp "$(fmtr::ask 'Enter full path to your BMP image: ')" custom_bmp
+          if [ ! -f "$custom_bmp" ]; then
+            fmtr::error "File does not exist. Please try again."
+            continue
+          fi
+          # Check file is BMP using the 'file' command
+          file_type=$(file -b --mime-type "$custom_bmp")
+          if [[ "$file_type" != "image/bmp" && "$file_type" != "application/octet-stream" ]]; then
+            fmtr::error "File is not a BMP image (detected: $file_type). Please provide a valid BMP file."
+            continue
+          fi
+          cp -f "$custom_bmp" "MdeModulePkg/Logo/Logo.bmp"
+          fmtr::info "Custom BMP logo image copied successfully."
+          break
+        done
+        break
+        ;;
+      3)
+        if [ -f "MdeModulePkg/Logo/Logo.bmp" ]; then
+          rm -f "MdeModulePkg/Logo/Logo.bmp"
+          fmtr::info "Logo.bmp deleted (no logo will be used)."
+        else
+          fmtr::info "Logo.bmp not present, nothing to delete."
+        fi
+        break
+        ;;
+      0)
+        fmtr::info "Skipping BGRT logo modification."
+        break
+        ;;
+      *)
+        fmtr::error "Invalid choice, please try again."
+        ;;
+    esac
+  done
 }
 
 compile_ovmf() {
