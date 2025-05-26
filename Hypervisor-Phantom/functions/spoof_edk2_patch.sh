@@ -93,9 +93,15 @@ patch_ovmf() {
   git apply < "${PATCH_DIR}/${OVMF_PATCH}" &>> "$LOG_FILE" || { fmtr::error "Failed to apply patch ${OVMF_PATCH}!"; return 1; }
   fmtr::info "Patch ${OVMF_PATCH} applied successfully."
 
-  # Apply custom boot logo image
-  fmtr::log "Replacing UEFI boot logo image at 'MdeModulePkg/Logo/Logo.bmp'..."
-  cp -f "$PATCH_DIR/Logo.bmp" "MdeModulePkg/Logo/Logo.bmp" &>> "$LOG_FILE"
+  # Apply hosts Boot Graphics Resource Table (BGRT) image
+  fmtr::log "Replacing guest with host OVMF BGRT image..."
+  image_file=$(find /sys/firmware/acpi/bgrt/ -type f -exec file {} \; | grep -i 'bitmap' | cut -d: -f1)
+  if [ -n "$image_file" ]; then
+    cp -f "$image_file" "MdeModulePkg/Logo/Logo.bmp"
+    fmtr::info "Image copied successfully."
+  else
+    fmtr::info "No bitmap image found."
+  fi
 }
 
 compile_ovmf() {
