@@ -63,7 +63,7 @@
       <stimer state="off"/>
       <reset state="off"/>
       <vendor_id state="on" value="GenuineIntel"/> <!-- KVM patch NOT present: -->
-      <vendor_id state="off" value="GenuineIntel"/> <!-- KVM patch IS present: -->
+      <vendor_id state="off"                       <!-- KVM patch IS present: -->
       <frequencies state="off"/>
       <reenlightenment state="off"/>
       <tlbflush state="off"/>
@@ -101,6 +101,7 @@
     <cache mode="passthrough"/>
     <feature policy="require" name="vmx"/>
     <feature policy="require" name="invtsc"/>
+    <feature policy="disable" name="vmx-vnmi"/> <!-- NVIDIA (Code 43) error solution for desktops | for notebook GPU PT, you must emulate battery -->
     <!-- Remove giveaways for HV -->
     <feature policy="disable" name="hypervisor"/> <!-- 1. Makes Windows report "Virtualization: Enabled" instead of "Virtual machine: Yes" in Task Manager.
                                                        2. Also makes Windows report L1-3 caches (right under "Virtualization: Enabled")
