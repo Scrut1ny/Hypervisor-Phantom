@@ -62,7 +62,7 @@
       <synic state="off"/>
       <stimer state="off"/>
       <reset state="off"/>
-      <vendor_id state="on" value="GenuineIntel"/> <!-- KVM patch NOT present: -->
+      <vendor_id state="on" value="GenuineIntel"/> <!-- KVM patch NOT present | Apply to fix NVIDIA (Code 43) error -->
       <vendor_id state="off"                       <!-- KVM patch IS present: -->
       <frequencies state="off"/>
       <reenlightenment state="off"/>
