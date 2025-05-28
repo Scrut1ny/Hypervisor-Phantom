@@ -28,6 +28,7 @@ fmtr::log "Detected supported CPU vendor: $VENDOR_ID"
 ##################################################
 ##################################################
 ### VM Name Prompt
+
 if [[ -z "$VM_NAME" ]]; then
     fmtr::ask "Enter the name of the new VM:"
     read VM_NAME
@@ -36,6 +37,7 @@ fi
 ##################################################
 ##################################################
 ### Template Selection
+
 if [[ "$VENDOR_ID" == "GenuineIntel" ]]; then
     TEMPLATE_FILE="./xml/template/template-intel.xml"
 else
