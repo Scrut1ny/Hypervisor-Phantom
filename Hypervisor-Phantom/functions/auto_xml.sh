@@ -132,9 +132,9 @@ uuid=${uuid:-$(uuidgen -r)}
 # Inject SMBIOS into VM
 sudo virt-xml "$VM_NAME" --edit --qemu-commandline="
     -smbios type=0,uefi='true'
-    -smbios type=1,serial='To be filled by 0.E.M.',uuid='$uuid'
-    -smbios type=2,serial='To be filled by 0.E.M.'
-    -smbios type=3,serial='To be filled by 0.E.M.'
+    -smbios type=1,serial='To be filled by O.E.M.',uuid='$uuid'
+    -smbios type=2,serial='To be filled by O.E.M.'
+    -smbios type=3,serial='To be filled by O.E.M.'
     -smbios type=4,sock_pfx='$socket_designation',manufacturer='$cpu_manufacturer',version='$cpu_version',max-speed='$max_speed',current-speed='$current_speed'
     -smbios type=17,loc_pfx='Controller0-ChannelA-DIMMO',bank='BANK 0',manufacturer='${mem_manufacturer:-Samsung}',serial='${serial:-Unknown}',asset='${asset_tag:-Not Specified}',part='${part_number:-Not Specified}',speed='${speed:-4800}'
     -smbios type=17,loc_pfx='Controller1-ChannelA-DIMMO',bank='BANK 0',manufacturer='${mem_manufacturer:-Samsung}',serial='${serial:-Unknown}',asset='${asset_tag:-Not Specified}',part='${part_number:-Not Specified}',speed='${speed:-4800}'
