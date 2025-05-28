@@ -121,7 +121,7 @@ main_menu() {
     "GPU Passthrough Setup"
     "Kernel (Patched) Setup"
     "Looking Glass Setup"
-    "Auto XML"
+    "Auto Libvirt XML Setup"
   )
   readonly options
 
