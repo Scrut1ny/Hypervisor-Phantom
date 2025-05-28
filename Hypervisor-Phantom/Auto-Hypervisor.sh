@@ -121,6 +121,7 @@ main_menu() {
     "GPU Passthrough Setup"
     "Kernel (Patched) Setup"
     "Looking Glass Setup"
+    "Auto XML"
   )
   readonly options
 
@@ -133,7 +134,7 @@ main_menu() {
     done
     fmtr::format_text '\n  ' "[0]" " ${options[0]}\n" "$TEXT_BRIGHT_RED"
 
-    local choice="$(prmt::quick_prompt '  Enter your choice [0-6]: ')" && clear
+    local choice="$(prmt::quick_prompt '  Enter your choice [0-7]: ')" && clear
     case $choice in
       1) fmtr::box_text "${options[1]}"; "./functions/virtualization.sh" ;;
       2) fmtr::box_text "${options[2]}"; "./functions/spoof_qemu_patch.sh" ;;
@@ -141,6 +142,7 @@ main_menu() {
       4) fmtr::box_text "${options[4]}"; "./functions/gpu_passthrough.sh" ;;
       5) fmtr::box_text "${options[5]}"; "./functions/patch_kernel.sh" ;;
       6) fmtr::box_text "${options[6]}"; "./functions/looking_glass.sh" ;;
+      7) fmtr::box_text "${options[7]}"; "./functions/auto_xml.sh" ;;
       0)
         if prmt::yes_or_no "$(fmtr::ask 'Do you want to clear the logs directory?')"; then
           rm "${LOG_PATH}"/*.log
