@@ -1,9 +1,7 @@
 #!/usr/bin/env bash
 
-# Abort if required environment variables are missing.
 [[ -z "$DISTRO" || -z "$LOG_FILE" ]] && { echo "Required environment variables not set."; exit 1; }
 
-# Load shared utils.
 source "./utils/formatter.sh"
 source "./utils/prompter.sh"
 
