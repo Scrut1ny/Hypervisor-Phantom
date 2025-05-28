@@ -14,7 +14,9 @@ if [[ -f "$PRESET_FILE" ]]; then
     source "$PRESET_FILE"
 fi
 
-# === CPU Vendor Check ===
+##################################################
+##################################################
+### CPU Vendor Check
 
 if [[ "$VENDOR_ID" != "GenuineIntel" && "$VENDOR_ID" != "AuthenticAMD" ]]; then
     fmtr::error  "Unsupported CPU vendor: $VENDOR_ID"
@@ -23,13 +25,17 @@ fi
 
 fmtr::log "Detected supported CPU vendor: $VENDOR_ID"
 
-# === VM Name Prompt ===
+##################################################
+##################################################
+### VM Name Prompt
 if [[ -z "$VM_NAME" ]]; then
     fmtr::ask "Enter the name of the new VM:"
     read VM_NAME
 fi
 
-# === Template Selection ===
+##################################################
+##################################################
+### Template Selection
 if [[ "$VENDOR_ID" == "GenuineIntel" ]]; then
     TEMPLATE_FILE="./xml/template/template-intel.xml"
 else
@@ -42,7 +48,10 @@ fi
 
 fmtr::info "Using template: $TEMPLATE_FILE"
 
-# === CPU Topology ===
+##################################################
+##################################################
+### CPU Topology
+
 if [[ -z "$CORES" ]]; then
     fmtr::ask "Enter number of CPU cores (e.g. 6):"
     read CORES
@@ -99,13 +108,19 @@ sudo virsh define "$TMP_XML" &>> "$LOG_FILE"
 rm -f "$TMP_XML"
 fmtr::info "VM '$VM_NAME' defined with $VCPU vCPUs."
 
-# === SMBIOS DATA ===
+
+
+
+
+##################################################
+##################################################
+### SMBIOS DATA
 
 # CPU Info
 processor_output=$(sudo dmidecode -t 4)
 cpu_manufacturer=${cpu_manufacturer:-$(echo "$processor_output" | grep 'Manufacturer:' | awk -F': +' '{print $2}')}
 
-#QEMU doesnt play well with "," in AMD , this fixes it
+# Libvirt XML doesn't allow commas in strings unless they're escaped with another comma.
 if [[ "$cpu_manufacturer" == "Advanced Micro Devices, Inc."* ]]; then
     cpu_manufacturer="Advanced Micro Devices,, Inc."
 fi
@@ -142,21 +157,19 @@ sudo virt-xml "$VM_NAME" --edit --qemu-commandline="
 
 
 
-# === MAC address randomization ===
-# Generate fully random MAC address if not preset
+
+
+##################################################
+##################################################
+### MAC address randomization
+
+# Generate a fully random, locally administered, unicast MAC address if not preset already.
 if [[ -z "$MAC_ADDRESS" ]]; then
-    BYTE1=$(( (RANDOM & 0xFC) | 0x02 ))  # Locally administered, unicast
-    BYTE2=$(( RANDOM & 0xFF ))
-    BYTE3=$(( RANDOM & 0xFF ))
-    BYTE4=$(( RANDOM & 0xFF ))
-    BYTE5=$(( RANDOM & 0xFF ))
-    BYTE6=$(( RANDOM & 0xFF ))
-    MAC_ADDRESS=$(printf '%02X:%02X:%02X:%02X:%02X:%02X' "$BYTE1" "$BYTE2" "$BYTE3" "$BYTE4" "$BYTE5" "$BYTE6")
+    MAC_ADDRESS=$(printf '02:%02X:%02X:%02X:%02X:%02X\n' $((RANDOM%256)) $((RANDOM%256)) $((RANDOM%256)) $((RANDOM%256)) $((RANDOM%256)))
 fi
 
 # Apply the MAC address to the default network interface using virt-xml
 sudo virt-xml "$VM_NAME" --edit --network network=default,mac="$MAC_ADDRESS" &>> "$LOG_FILE"
-
 
 fmtr::info "MAC address set to $MAC_ADDRESS for VM '$VM_NAME'."
 
