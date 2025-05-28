@@ -1,8 +1,9 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
+[[ -z "$DISTRO" || -z "$LOG_FILE" ]] && exit 1
+
 source "./utils/formatter.sh"
 source "./utils/prompter.sh"
-set -e
-
 
 PRESET_FILE="preset.txt"
 
