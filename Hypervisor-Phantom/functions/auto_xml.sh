@@ -31,9 +31,9 @@ fi
 
 # === Template Selection ===
 if [[ "$VENDOR_ID" == "GenuineIntel" ]]; then
-    TEMPLATE_FILE="./xml/template-intel.xml"
+    TEMPLATE_FILE="./xml/template/template-intel.xml"
 else
-    TEMPLATE_FILE="./xml/template-amd.xml"
+    TEMPLATE_FILE="./xml/template/template-amd.xml"
 fi
 if [[ ! -f "$TEMPLATE_FILE" ]]; then
     error "Template file '${TEMPLATE_FILE}' not found."
