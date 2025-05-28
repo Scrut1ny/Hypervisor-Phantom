@@ -1,7 +1,6 @@
 #!/bin/bash
 source "./utils/formatter.sh"
 source "./utils/prompter.sh"
-source "./utils/packages.sh"
 set -e
 
 
