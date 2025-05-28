@@ -138,7 +138,6 @@ memory_output=$(sudo dmidecode -t 17)
 locator=${locator:-$(echo "$memory_output" | grep -m1 'Locator:' | awk -F': +' '{print $2}')}
 bank_locator=${bank_locator:-$(echo "$memory_output" | grep -m1 'Bank Locator:' | awk -F': +' '{print $2}')}
 mem_manufacturer=${mem_manufacturer:-$(echo "$memory_output" | grep -m1 'Manufacturer:' | awk -F': +' '{print $2}')}
-serial=${serial:-$(echo "$memory_output" | grep -m1 'Serial Number:' | awk -F': +' '{print $2}')}
 asset_tag=${asset_tag:-$(echo "$memory_output" | grep -m1 'Asset Tag:' | awk -F': +' '{print $2}')}
 part_number=${part_number:-$(echo "$memory_output" | grep -m1 'Part Number:' | awk -F': +' '{print $2}')}
 speed=${speed:-$(echo "$memory_output" | grep -m1 'Speed:' | awk -F': +' '{print $2}' | awk '{print $1}')}
@@ -153,8 +152,8 @@ sudo virt-xml "$VM_NAME" --edit --qemu-commandline="
     -smbios type=2,serial='To be filled by O.E.M.'
     -smbios type=3,serial='To be filled by O.E.M.'
     -smbios type=4,sock_pfx='$socket_designation',manufacturer='$cpu_manufacturer',version='$cpu_version',max-speed='$max_speed',current-speed='$current_speed'
-    -smbios type=17,loc_pfx='Controller0-ChannelA-DIMMO',bank='BANK 0',manufacturer='${mem_manufacturer:-Samsung}',serial='${serial:-Unknown}',asset='${asset_tag:-Not Specified}',part='${part_number:-Not Specified}',speed='${speed:-4800}'
-    -smbios type=17,loc_pfx='Controller1-ChannelA-DIMMO',bank='BANK 0',manufacturer='${mem_manufacturer:-Samsung}',serial='${serial:-Unknown}',asset='${asset_tag:-Not Specified}',part='${part_number:-Not Specified}',speed='${speed:-4800}'
+    -smbios type=17,loc_pfx='Controller0-ChannelA-DIMMO',bank='BANK 0',manufacturer='${mem_manufacturer:-Samsung}',serial='Unknown',asset='${asset_tag:-Not Specified}',part='${part_number:-Not Specified}',speed='${speed:-4800}'
+    -smbios type=17,loc_pfx='Controller1-ChannelA-DIMMO',bank='BANK 0',manufacturer='${mem_manufacturer:-Samsung}',serial='Unknown',asset='${asset_tag:-Not Specified}',part='${part_number:-Not Specified}',speed='${speed:-4800}'
 " &>> "$LOG_FILE"
 
 
