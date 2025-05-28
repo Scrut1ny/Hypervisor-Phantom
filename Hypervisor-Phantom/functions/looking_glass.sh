@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-[[ -z "$DISTRO" || -z "$LOG_FILE" ]] && exit 1
+[[ -z "$DISTRO" || -z "$LOG_FILE" ]] && { echo "Required environment variables not set."; exit 1; }
 
 source "./utils/formatter.sh"
 source "./utils/prompter.sh"
