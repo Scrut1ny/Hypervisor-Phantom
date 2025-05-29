@@ -11,7 +11,7 @@ source "./utils/packages.sh"
 declare -r CPU_VENDOR=$(case "$VENDOR_ID" in
   *AuthenticAMD*) echo "svm" ;;
   *GenuineIntel*) echo "vmx" ;;
-  *) fmtr::error "Unknown CPU vendor."; exit 1 ;;
+  *) fmtr::error "Unknown CPU Vendor ID."; exit 1 ;;
 esac)
 
 readonly SRC_DIR="src"
