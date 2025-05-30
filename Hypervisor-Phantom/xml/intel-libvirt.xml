@@ -200,8 +200,6 @@
     <interface type="network">
       <mac address="XX:XX:XX:XX:XX:XX"/> <!-- Set fully randomized MAC address every instance -->
       <source network="default"/> <!-- DO NOT USE "VirtIO" -->
-      <model type="e1000e"/>
-      <address type="pci" domain="0x0000" bus="0x01" slot="0x00" function="0x0"/>
     </interface>
 
 
@@ -288,7 +286,6 @@
     <shmem name="looking-glass">
       <model type="ivshmem-plain"/>
       <size unit="M">32</size>
-      <address type="pci" domain="0x0000" bus="0x10" slot="0x02" function="0x0"/>
     </shmem>
   </devices>
 
