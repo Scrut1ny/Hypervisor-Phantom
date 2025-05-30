@@ -156,10 +156,8 @@ sudo virt-xml "$VM_NAME" --edit --qemu-commandline="
 ##################################################
 ### MAC address randomization
 
-# Generate a fully random, locally administered, unicast MAC address if not preset already.
-if [[ -z "$MAC_ADDRESS" ]]; then
-    MAC_ADDRESS=$(printf '02:%02X:%02X:%02X:%02X:%02X\n' $((RANDOM%256)) $((RANDOM%256)) $((RANDOM%256)) $((RANDOM%256)) $((RANDOM%256)))
-fi
+# Generate a fully random, locally administered, unicast MAC address.
+MAC_ADDRESS=$(printf '02:%02X:%02X:%02X:%02X:%02X\n' $((RANDOM%256)) $((RANDOM%256)) $((RANDOM%256)) $((RANDOM%256)) $((RANDOM%256)))
 
 # Apply the MAC address to the default network interface using virt-xml
 sudo virt-xml "$VM_NAME" --edit --network network=default,mac="$MAC_ADDRESS" &>> "$LOG_FILE"
