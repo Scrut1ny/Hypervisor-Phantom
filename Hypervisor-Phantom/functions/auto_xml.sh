@@ -79,29 +79,21 @@ VCPU=$((CORES * THREADS))
 TMP_XML=$(mktemp)
 cp "$TEMPLATE_FILE" "$TMP_XML"
 
-# Inject or replace <name> tag
-if grep -q '<name>.*</name>' "$TMP_XML"; then
-    sed -i "s|<name>.*</name>|<name>$VM_NAME</name>|" "$TMP_XML"
-else
-    sed -i "0,/<domain[^>]*>/s|<domain[^>]*>|&\n  <name>$VM_NAME</name>|" "$TMP_XML"
-fi
+# Replace VM name placeholder
+sed -i "s|@VM_NAME@|$VM_NAME|g" "$TMP_XML"
+fmtr::log "Name set to : $VM_NAME"
 
-# Replace or add <vcpu> tag
-if grep -q '<vcpu.*>.*</vcpu>' "$TMP_XML"; then
-    sed -i "s|<vcpu.*>.*</vcpu>|<vcpu placement=\"static\">$VCPU</vcpu>|" "$TMP_XML"
-else
-    # Insert after <name> tag
-    sed -i "0,/<name>.*<\/name>/s|</name>|</name>\n  <vcpu placement=\"static\">$VCPU</vcpu>|" "$TMP_XML"
-fi
+# Replace total number of vCPUs
+sed -i "s|@TOTAL_NUMBER_OF_CORES@|$VCPU|g" "$TMP_XML"
+fmtr::log "Total core set to : $VCPU"
 
-# Replace or add <topology sockets=... dies=... cores=... threads=... />
-if grep -q '<topology[^>]*/>' "$TMP_XML"; then
-    # We assume sockets=1 and dies=1 fixed, replace cores and threads
-    sed -i "s|<topology[^>]*/>|<topology sockets=\"1\" dies=\"1\" cores=\"$CORES\" threads=\"$THREADS\"/>|" "$TMP_XML"
-else
-    # Insert topology after <vcpu> tag
-    sed -i "0,/<vcpu.*>.*<\/vcpu>/s|</vcpu>|</vcpu>\n  <topology sockets=\"1\" dies=\"1\" cores=\"$CORES\" threads=\"$THREADS\"/>|" "$TMP_XML"
-fi
+# Replace number of cores per socket
+sed -i "s|@NUMBER_OF_CORES@|$CORES|g" "$TMP_XML"
+fmtr::log "Number of cores set to : $CORES"
+
+# Replace number of threads per core
+sed -i "s|@NUMBER_OF_THREADS@|$THREADS|g" "$TMP_XML"
+fmtr::log "Number of threads set to : $THREADS"
 
 
 
