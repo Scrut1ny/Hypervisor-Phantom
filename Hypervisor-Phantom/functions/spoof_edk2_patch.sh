@@ -37,7 +37,7 @@ REQUIRED_PKGS_openSUSE=(
   gcc gcc-c++ make acpica git nasm python3 libuuid-devel
 
   # Includes virt-fw-vars tool
-  virt-firmware
+  python3-virt-firmware
 )
 
 REQUIRED_PKGS_Fedora=(
