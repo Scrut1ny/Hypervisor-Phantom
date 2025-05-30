@@ -1,8 +1,8 @@
 <domain xmlns:qemu="http://libvirt.org/schemas/domain/qemu/1.0" type="kvm">
-
+    <name>@VM_NAME@</name>
     <memory unit="G">16</memory>  <!-- keep RAM amount at realistic values: 64, 32, 16, 12, and 8 GiB are all common -->
     <currentMemory unit="G">16</currentMemory>
-    <vcpu placement="static">12</vcpu>
+    <vcpu placement="static">@TOTAL_NUMBER_OF_CORES@</vcpu>
 
     <os>
         <type arch="x86_64" machine="pc-q35-9.2">hvm</type>
@@ -47,7 +47,7 @@
     </features>
 
     <cpu mode="host-passthrough" check="none" migratable="on">
-        <topology sockets="1" dies="1" clusters="1" cores="6" threads="2"/>
+        <topology sockets="1" dies="1" clusters="1" cores="@NUMBER_OF_CORES@" threads="@NUMBER_OF_THREADS@"/>
         <cache mode="passthrough"/>
         <feature policy="require" name="svm"/>
         <feature policy="require" name="topoext"/>
