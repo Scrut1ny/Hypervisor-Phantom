@@ -118,6 +118,9 @@ main_menu() {
     "Virtualization Setup"
     "QEMU (Patched) Setup"
     "EDK2 (Patched) Setup"
+    "QEMU (Latest Unpatched) Setup"
+    "EDK2 (Latest Unpatched) Setup"
+    "Cleanup Patched Installations"
     "GPU Passthrough Setup"
     "Kernel (Patched) Setup"
     "Looking Glass Setup"
@@ -134,15 +137,18 @@ main_menu() {
     done
     fmtr::format_text '\n  ' "[0]" " ${options[0]}\n" "$TEXT_BRIGHT_RED"
 
-    local choice="$(prmt::quick_prompt '  Enter your choice [0-7]: ')" && clear
+    local choice="$(prmt::quick_prompt '  Enter your choice [0-9]: ')" && clear
     case $choice in
       1) fmtr::box_text "${options[1]}"; "./functions/virtualization.sh" ;;
       2) fmtr::box_text "${options[2]}"; "./functions/spoof_qemu_patch.sh" ;;
       3) fmtr::box_text "${options[3]}"; "./functions/spoof_edk2_patch.sh" ;;
-      4) fmtr::box_text "${options[4]}"; "./functions/gpu_passthrough.sh" ;;
-      5) fmtr::box_text "${options[5]}"; "./functions/patch_kernel.sh" ;;
-      6) fmtr::box_text "${options[6]}"; "./functions/looking_glass.sh" ;;
-      7) fmtr::box_text "${options[7]}"; "./functions/auto_xml.sh" ;;
+      4) fmtr::box_text "${options[4]}"; "./functions/latest_qemu.sh" ;;
+      5) fmtr::box_text "${options[5]}"; "./functions/latest_edk2.sh" ;;
+      6) fmtr::box_text "${options[6]}"; "./functions/cleanup_patched.sh" ;;
+      7) fmtr::box_text "${options[7]}"; "./functions/gpu_passthrough.sh" ;;
+      8) fmtr::box_text "${options[8]}"; "./functions/patch_kernel.sh" ;;
+      9) fmtr::box_text "${options[9]}"; "./functions/looking_glass.sh" ;;
+      10) fmtr::box_text "${options[10]}"; "./functions/auto_xml.sh" ;;
       0)
         if prmt::yes_or_no "$(fmtr::ask 'Do you want to clear the logs directory?')"; then
           rm "${LOG_PATH}"/*.log
