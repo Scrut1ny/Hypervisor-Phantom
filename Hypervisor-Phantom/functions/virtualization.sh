@@ -70,65 +70,61 @@ configure_system_installation() {
   local current_user
   current_user="$(whoami)"
 
-  # Configure libvirtd.conf
-  if grep -q "^unix_sock_group" "$libvirtd_conf"; then
-    fmtr::info "unix_sock_group already set"
-  else
-    sudo sed -i '/unix_sock_group/s/^#//g' "$libvirtd_conf"
-    fmtr::info "Enabled unix_sock_group"
-  fi
+  # Helper to uncomment or append config
+  ensure_config() {
+    local file="$1"
+    local key="$2"
+    local value="$3"
+    if grep -q "^${key}" "$file"; then
+      fmtr::info "$file: $key already set"
+    else
+      sudo sed -i "/${key}/s/^#//g" "$file" || echo "${key} ${value}" | sudo tee -a "$file" > /dev/null
+      fmtr::info "$file: Enabled $key"
+    fi
+  }
 
-  if grep -q "^unix_sock_rw_perms" "$libvirtd_conf"; then
-    fmtr::info "unix_sock_rw_perms already set"
-  else
-    sudo sed -i '/unix_sock_rw_perms/s/^#//g' "$libvirtd_conf"
-    fmtr::info "Enabled unix_sock_rw_perms"
-  fi
+  # Helper to set qemu.conf user/group
+  set_qemu_conf() {
+    local conf="$1" key="$2" val="$3"
+    if grep -q "^${key} = \"${val}\"" "$conf"; then
+      fmtr::info "$conf: $key already set to $val"
+    else
+      sudo sed -i "s/#${key} = \".*\"/${key} = \"${val}\"/" "$conf" || echo "${key} = \"${val}\"" | sudo tee -a "$conf" > /dev/null
+      fmtr::info "$conf: Set $key = $val"
+    fi
+  }
 
-  # Configure qemu.conf
-  if grep -q "^user = \"$current_user\"" "$qemu_conf"; then
-    fmtr::info "qemu.conf: user already set to $current_user"
-  else
-    sudo sed -i "s/#user = \"root\"/user = \"$current_user\"/" "$qemu_conf"
-    fmtr::info "Set qemu.conf user = $current_user"
-  fi
+  # Ensure configs
+  ensure_config "$libvirtd_conf" "unix_sock_group"
+  ensure_config "$libvirtd_conf" "unix_sock_rw_perms"
+  set_qemu_conf "$qemu_conf" "user" "$current_user"
+  set_qemu_conf "$qemu_conf" "group" "$current_user"
 
-  if grep -q "^group = \"$current_user\"" "$qemu_conf"; then
-    fmtr::info "qemu.conf: group already set to $current_user"
-  else
-    sudo sed -i "s/#group = \"root\"/group = \"$current_user\"/" "$qemu_conf"
-    fmtr::info "Set qemu.conf group = $current_user"
-  fi
+  # Groups: kvm, libvirt
+  for grp in kvm libvirt; do
+    if id -nG "$current_user" | grep -qw "$grp"; then
+      fmtr::info "User $current_user already in $grp group"
+    else
+      sudo usermod -aG "$grp" "$current_user"
+      fmtr::info "Added $current_user to $grp group"
+    fi
+  done
 
-  # Add user to required groups
-  if id -nG "$current_user" | grep -qw "kvm"; then
-    fmtr::info "User $current_user already in kvm group"
-  else
-    sudo usermod -aG kvm "$current_user"
-    fmtr::info "Added $current_user to kvm group"
-  fi
-
-  if id -nG "$current_user" | grep -qw "libvirt"; then
-    fmtr::info "User $current_user already in libvirt group"
-  else
-    sudo usermod -aG libvirt "$current_user"
-    fmtr::info "Added $current_user to libvirt group"
-  fi
-
-  # Start libvirt and virtual network
-  if sudo systemctl is-enabled libvirtd.socket &> /dev/null; then
-    fmtr::info "libvirtd.socket already enabled"
-  else
+  # Enable libvirtd.socket if not enabled
+  if ! sudo systemctl is-enabled libvirtd.socket &> /dev/null; then
     sudo systemctl enable --now libvirtd.socket &>> "$LOG_FILE"
     fmtr::info "Enabled and started libvirtd.socket"
+  else
+    fmtr::info "libvirtd.socket already enabled"
   fi
 
-  if sudo virsh net-info default &> /dev/null; then
-    fmtr::info "Default libvirt network already exists and is active"
-  else
+  # Ensure default network is running
+  if ! sudo virsh net-info default &> /dev/null; then
     sudo virsh net-autostart default &>> "$LOG_FILE"
     sudo virsh net-start default &>> "$LOG_FILE"
     fmtr::info "Started and enabled default libvirt network"
+  else
+    fmtr::info "Default libvirt network already exists and is active"
   fi
 }
 
