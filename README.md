@@ -423,27 +423,35 @@ XXXX-XX-XX XX:XX:XX.XXX-XXXX [BROWSER LOCK] [INFO] Number of display devices con
 ## Bypass Kits
 
 #### Expensive Bypass Kit (Recommended):
-- 1x2 HDMI Splitter <> [ViewHD](https://www.amazon.com/dp/B004F9LVXC) - `~$21.95`
+- 1x2 HDMI Splitter <> [ViewHD](https://www.amazon.com/dp/B004F9LVXC) - `~$22.00`
 - EDID Emulator <> [4K-EWB - HDMI 2.1 4K EDID Emulator](https://www.amazon.com/dp/B0DB7YDFD6) - `~$25.00`
-- USB HDMI Capture Card <> [Elgato HD60 X](https://www.amazon.com/dp/B09V1KJ3J4) - `~$159.99`
+- USB HDMI Capture Card <> [Elgato HD60 X](https://www.amazon.com/dp/B09V1KJ3J4) - `~$160.00`
 
 #### Cheap Bypass Kit (Not recommended):
-- 1x2 HDMI Splitter <> [OREI](https://www.amazon.com/dp/B005HXFARS) - `~$13`
-- EDID Emulator <> [EVanlak](https://www.amazon.com/dp/B07YMTKJCR) - `~$7`
-- USB HDMI Capture Card <> [AXHDCAP](https://www.amazon.com/dp/B0C2MDTY8P) - `~$9`
+- 1x2 HDMI Splitter <> [OREI](https://www.amazon.com/dp/B005HXFARS) - `~$13.00`
+- EDID Emulator <> [EVanlak](https://www.amazon.com/dp/B07YMTKJCR) - `~$7.00`
+- USB HDMI Capture Card <> [AXHDCAP](https://www.amazon.com/dp/B0C2MDTY8P) - `~$9.00`
 
 ## Equipment List
-- Capture Card(s)
-    - [Elgato HD60 X](https://www.amazon.com/dp/B09V1KJ3J4) - `~$159.99`
-    - [Elgato Cam Link](https://www.amazon.com/dp/B07K3FN5MR) - `~$97.99`
+- External USB Capture Card(s)
+    - Elgato
+        - [HD60 X | 10GBE9901](https://www.amazon.com/dp/B09V1KJ3J4) - `~$140.00`
+        - [4K X | 20GBH9901](https://www.amazon.com/dp/B0CPFWXMBL) - `~$200.00`
+        - [Game Capture Neo | 20GBI9901](https://www.amazon.com/dp/B0CVYKQNFH) - `~$110.00`
+        - [Cam Link](https://www.amazon.com/dp/B07K3FN5MR) - `~$90.00`
     - [AXHDCAP 4K HDMI Video Capture Card](https://www.amazon.com/dp/B0C2MDTY8P) - `~$9.98`
 - 1x2 HDMI Splitter(s)
-    - [HBAVLINK](https://www.amazon.com/dp/B08T62MKH1)
-    - [CORSAHD](https://www.amazon.com/dp/B0CLL5GQXT)
-    - [ViewHD](https://www.amazon.com/dp/B004F9LVXC)
-    - [OREI](https://www.amazon.com/dp/B005HXFARS)
-    - [EZCOO](https://www.amazon.com/dp/B07VP37KMB)
-    - [EZCOO](https://www.amazon.com/dp/B07TZRXKYG)
+    - ViewHD
+        - [VHD-1X2MN3D](https://www.amazon.com/dp/B004F9LVXC)
+    - HBAVLINK
+        - [HB-SP102B](https://www.amazon.com/dp/B08T62MKH1)
+        - [HB-SP102C](https://www.amazon.com/dp/B08T64JWWT)
+    - CORSAHD
+        - [CO-SP12H2](https://www.amazon.com/dp/B0CLL5GQXT)
+        - [?????????](https://www.amazon.com/dp/B0CXHQNSWM)
+    - EZCOO
+        - [EZ-SP12H2](https://www.amazon.com/dp/B07VP37KMB)
+        - [EZ-EX11HAS-PRO](https://www.amazon.com/dp/B07TZRXKYG)
 - EDID Emulator(s)
     - HDMI
         - Brand: THWT
