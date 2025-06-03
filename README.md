@@ -132,7 +132,6 @@ chmod -R +x *
 
 - **Opt for a VPN**: Use a VPN to obscure all your internet traffic. However, be cautious with popular VPN services as their IP ranges may be blacklisted by certain exam proctoring or anti-cheat systems.
 - **Allocate Sufficient HV Storage**: Equip your hypervisor with at least `128GB+` of storage. Hypervisors with lower or insufficient storage are more susceptible to being identified or flagged by detection and monitoring systems.
-- **System Up Time**: Leave the hypervisor running for at least `12+` minutes to bypass a `GetTickCount()` check in a hypervisor detection tool. (This check is honestly pointless, and isn't reliable to rely on.)
 
 </details>
 
@@ -151,7 +150,7 @@ chmod -R +x *
 
 | ⭐ Rating | 💻 Software | 🧪 System Test | ✅ Bypassed |
 |:------:|:--------:|:-----------:|:--------:|
-| 🥇 | VMAware | [Repository Link](https://github.com/kernelwernel/VMAware) <br> [⬇ Download - x64 - v2.4.0 ⬇](https://github.com/kernelwernel/VMAware/releases/download/v1.5/vmaware64.exe) <br> [⬇ Download - x32 - v2.4.0 ⬇](https://github.com/kernelwernel/VMAware/releases/download/v1.5/vmaware32.exe) | ✅ |
+| 🥇 | VMAware | [Repository Link](https://github.com/kernelwernel/VMAware) <br> [⬇ Download - x64 - v2.4.0 ⬇](https://github.com/kernelwernel/VMAware/releases/download/v2.4.0/vmaware.exe) <br> [⬇ Download - x32 - v2.4.0 ⬇](https://github.com/kernelwernel/VMAware/releases/download/v2.4.0/vmaware32.exe) | ✅ |
 | 🥈 | Al-Khaser (Obsolete) | [Repository Link](https://github.com/LordNoteworthy/al-khaser) <br> [⬇ Download - x64 - v1.0.0 ⬇](https://github.com/ayoubfaouzi/al-khaser/releases/download/v1.0.0/al-khaser_x64.7z) <br> [⬇ Download - x32 - v1.0.0 ⬇](https://github.com/ayoubfaouzi/al-khaser/releases/download/v1.0.0/al-khaser_x86.7z) | ✅ |
 | 🥉 | Pafish (Obsolete) | [Repository Link](https://github.com/a0rtega/pafish) <br> [⬇ Download - x64 - v0.6 ⬇](https://github.com/a0rtega/pafish/releases/download/v0.6/pafish64.exe) <br> [⬇ Download - x32 - v0.6 ⬇](https://github.com/a0rtega/pafish/releases/download/v0.6/pafish.exe) | ✅ |
 
@@ -179,7 +178,7 @@ chmod -R +x *
 | 🛡️ Engine | 🎮 Used By | ✅ Bypassed |
 |:------:|:-------:|:--------:|
 | Anti-Cheat Expert (ACE) | Primarily Mobile Games | ✅ |
-| BattlEye (BE) | Desktop Games | ✅ (w/Kernal Patch for `R6, Destiny 2, etc...`) |
+| BattlEye (BE) | Desktop Games | ✅ (w/Windows Hyper-V + HVCI) |
 | Easy Anti-Cheat (EAC) | Desktop Games | ✅ |
 | Gepard Shield | PUBG: Battlegrounds | ✅ |
 | NACE (Netease Anticheat Expert) | Marvel Rivals | ✅ |
@@ -187,7 +186,7 @@ chmod -R +x *
 | Mhyprot | Genshin Impact | ❔ (HoYoKProtect.sys) <br> 🪟 [BSOD: ATTEMPTED_WRITE_TO_READONLY_MEMORY](https://github.com/Scrut1ny/Hypervisor-Phantom/issues/34) |
 | nProtect GameGuard (NP) | Desktop Games | ✅ |
 | RICOCHET | CoD Games | ✅ |
-| Vanguard | Valorant & LoL | ✅ (w/Hyper-V) |
+| Vanguard | Valorant & LoL | ✅ (w/Windows Hyper-V + HVCI) |
 
 </details>
 
