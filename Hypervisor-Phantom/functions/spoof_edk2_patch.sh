@@ -44,7 +44,7 @@ REQUIRED_PKGS_Fedora=(
   gcc gcc-c++ make acpica-tools git nasm python3 libuuid-devel
 
   # Includes virt-fw-vars tool
-  virt-firmware
+  python3-virt-firmware
 )
 
 acquire_edk2_source() {

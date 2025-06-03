@@ -34,7 +34,7 @@
   <os>
     <type arch="x86_64" machine="pc-q35-9.2">hvm</type>
     <loader readonly="yes" secure="yes" type="pflash" format="qcow2">/usr/share/edk2/x64/OVMF_CODE.secboot.4m.qcow2</loader>
-    <nvram template="/usr/share/edk2/x64/OVMF_VARS.4m.qcow2" format="qcow2">/var/lib/libvirt/qemu/nvram/{domain}_VARS.qcow2</nvram>
+    <nvram template="/usr/share/edk2/x64/OVMF_VARS.4m.qcow2" format="qcow2"></nvram>
     <bootmenu enable="yes"/>
     <smbios mode="host"/>
   </os>
@@ -197,8 +197,6 @@
     <interface type="network">
       <mac address="XX:XX:XX:XX:XX:XX"/> <!-- Set fully randomized MAC address every instance -->
       <source network="default"/> <!-- DO NOT USE "VirtIO" -->
-      <model type="e1000e"/>
-      <address type="pci" domain="0x0000" bus="0x01" slot="0x00" function="0x0"/>
     </interface>
 
 
@@ -286,7 +284,6 @@
     <shmem name="looking-glass">
       <model type="ivshmem-plain"/>
       <size unit="M">32</size>
-      <address type="pci" domain="0x0000" bus="0x10" slot="0x02" function="0x0"/>
     </shmem>
   </devices>
 
