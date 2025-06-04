@@ -440,8 +440,9 @@ XXXX-XX-XX XX:XX:XX.XXX-XXXX [BROWSER LOCK] [INFO] Number of display devices con
         - [Cam Link](https://www.amazon.com/dp/B07K3FN5MR) - `~$90.00`
     - [AXHDCAP 4K HDMI Video Capture Card](https://www.amazon.com/dp/B0C2MDTY8P) - `~$9.98`
 - 1x2 HDMI Splitter(s)
-    - ViewHD
-        - [VHD-1X2MN3D](https://www.amazon.com/dp/B004F9LVXC)
+    - [U9 / ViewHD](https://u9ltd.myshopify.com/collections/splitter)
+        - [VHD-1X2MN3D](https://www.amazon.com/dp/B004F9LVXC) - 
+        - [VHD-1X2MN3D](https://www.amazon.com/dp/B086JKRSW) - `~$18.00`
     - HBAVLINK
         - [HB-SP102B](https://www.amazon.com/dp/B08T62MKH1)
         - [HB-SP102C](https://www.amazon.com/dp/B08T64JWWT)
