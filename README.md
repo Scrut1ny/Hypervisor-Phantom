@@ -442,7 +442,7 @@ XXXX-XX-XX XX:XX:XX.XXX-XXXX [BROWSER LOCK] [INFO] Number of display devices con
 - 1x2 HDMI Splitter(s)
     - [U9 / ViewHD](https://u9ltd.myshopify.com/collections/splitter)
         - [VHD-1X2MN3D](https://www.amazon.com/dp/B004F9LVXC) - 
-        - [VHD-1X2MN3D](https://www.amazon.com/dp/B086JKRSW) - `~$18.00`
+        - [VHD-1X2MN3D](https://www.amazon.com/dp/B086JKRSW1) - `~$18.00`
     - HBAVLINK
         - [HB-SP102B](https://www.amazon.com/dp/B08T62MKH1)
         - [HB-SP102C](https://www.amazon.com/dp/B08T64JWWT)
