@@ -14,7 +14,7 @@ esac)
 
 readonly SRC_DIR="src"
 readonly QEMU_VERSION="10.0.2"
-readonly QEMU_DIR="qemu-stable-${QEMU_VERSION}"
+readonly QEMU_DIR="qemu-${QEMU_VERSION}"
 readonly QEMU_ARCHIVE="${QEMU_DIR}.tar.xz"
 readonly QEMU_SIG="${QEMU_ARCHIVE}.sig"
 readonly QEMU_URL="https://download.qemu.org/${QEMU_ARCHIVE}"
