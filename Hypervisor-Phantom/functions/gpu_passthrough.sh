@@ -185,7 +185,7 @@ fmtr::warn "DISCLAIMER: This VFIO script automates GPU isolation, bootloader rec
       ramdisk regeneration. Due to potential IOMMU grouping issues on some motherboards, this
       process may not execute correctly and could mess up your system. So I highly encourage
       you to double check the work automated for your systems safety! Make sure the vendor and
-      device ids of your selected GPU are matching the ones in configurations:
+      device ids of your selected GPU are matching the ones in the following config files:
 
       - lspci -nn | grep -Ei 'vga|3d|audio device'    _____________________________________
       - $VFIO_CONF_PATH                    / systemd-boot = /boot/loader/entries |
