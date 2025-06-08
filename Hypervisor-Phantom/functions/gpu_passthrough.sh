@@ -14,15 +14,8 @@ declare -a SDBOOT_CONF_LOCATIONS=(
     "/efi/loader/entries"
 )
 
-# Device category patterns.
-declare -A DEVICE_TYPES=(
-    [1]='vga|3d'
-    [2]='Non-Volatile memory'
-    [3]='.*'
-)
-
 # isolate_gpu:
-# Presents a list of PCI devices based on category and returns the chosen device's hardware ID.
+# Presents a list of GPU/iGPU PCI devices and returns the chosen device's hardware ID.
 isolate_gpu() {
     local choice pci_devices selection bus_number hwid
     # Cache the lspci output to avoid multiple calls.
@@ -33,21 +26,19 @@ isolate_gpu() {
         fmtr::log "Select device type:
 
   1) GPUs/iGPUs
-  2) NVMe SSDs
-  3) All PCI devices
-  4) Cancel (restart script)"
-        read -rp "$(fmtr::ask 'Enter choice (1-4): ')" choice
+  2) Cancel (restart script)"
+        read -rp "$(fmtr::ask 'Enter choice (1-2): ')" choice
 
-        [[ ! "$choice" =~ ^[1-4]$ ]] && { fmtr::warn "Invalid choice"; continue; }
+        [[ ! "$choice" =~ ^[1-2]$ ]] && { fmtr::warn "Invalid choice"; continue; }
 
-        if [[ "$choice" -eq 4 ]]; then
+        if [[ "$choice" -eq 2 ]]; then
             clear; fmtr::box_text "VFIO Configuration"; exec "$0"
         fi
 
-        # Filter devices based on selection.
-        pci_devices=$(echo "$all_devices" | grep -iE "${DEVICE_TYPES[$choice]}" | sort)
+        # Filter devices for GPUs/iGPUs only.
+        pci_devices=$(echo "$all_devices" | grep -iE 'vga|3d' | sort)
         if [[ -z "$pci_devices" ]]; then
-            fmtr::warn "No devices match the criteria. Try a different selection."
+            fmtr::warn "No GPU devices found. Try again."
             continue
         fi
 
