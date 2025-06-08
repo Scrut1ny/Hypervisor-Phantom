@@ -7,18 +7,14 @@ source "./utils/prompter.sh"
 
 readonly VFIO_CONF_PATH="/etc/modprobe.d/vfio.conf"
 
-# Bootloader config locations for systemd-boot.
 declare -a SDBOOT_CONF_LOCATIONS=(
     "/boot/loader/entries"
     "/boot/efi/loader/entries"
     "/efi/loader/entries"
 )
 
-# isolate_gpu:
-# Presents a list of GPU/iGPU PCI devices and returns the chosen device's hardware ID.
 isolate_gpu() {
     local choice pci_devices selection bus_number hwid
-    # Cache the lspci output to avoid multiple calls.
     local all_devices
     all_devices=$(lspci)
 
@@ -35,19 +31,20 @@ isolate_gpu() {
             clear; fmtr::box_text "VFIO Configuration"; exec "$0"
         fi
 
-        # Filter devices for GPUs/iGPUs only.
         pci_devices=$(echo "$all_devices" | grep -iE 'vga|3d' | sort)
         if [[ -z "$pci_devices" ]]; then
             fmtr::warn "No GPU devices found. Try again."
             continue
         fi
 
-        fmtr::log "Available devices:"; echo ""
-        # Number each device.
-        echo "$pci_devices" | nl -w2 -s') ' | sed 's/^/ /'
+        fmtr::log "Available devices:"; echo ""; i=1; while IFS= read -r line; do
+            highlighted=$(echo "$line" | sed -E 's/^[0-9a-f:.]+\s+(VGA compatible controller:|3D controller:)\s*//; s/(\[[^][]+\])/'$'\e[1;33m''\1'$'\e[0m/')
+            printf "  %d) %s\n" "$i" "$highlighted"
+            ((i++))
+        done <<< "$pci_devices"
+
         read -rp "$(fmtr::ask 'Select device number: ')" selection
 
-        # Select the chosen device.
         bus_number=$(echo "$pci_devices" | sed -n "${selection}p" | awk '{print $1}' | cut -d: -f1)
         if [[ -z "$bus_number" ]]; then
             fmtr::warn "Invalid selection. Please try again."
@@ -60,9 +57,7 @@ isolate_gpu() {
             continue
         fi
 
-        # Append VFIO options to vfio.conf.
-        echo -e "options vfio-pci ids=$hwid\nsoftdep nvidia pre: vfio-pci" | \
-            sudo tee -a "$VFIO_CONF_PATH" &>> "$LOG_FILE"
+        echo -e "options vfio-pci ids=$hwid\nsoftdep nvidia pre: vfio-pci" | sudo tee -a "$VFIO_CONF_PATH" &>> "$LOG_FILE"
         fmtr::log "Configured $VFIO_CONF_PATH with IDs: $hwid"
         # Set and export HWID for bootloader configuration.
         HWID=$hwid
@@ -72,8 +67,6 @@ isolate_gpu() {
     done
 }
 
-# configure_bootloader:
-# Updates bootloader configurations (GRUB or systemd-boot) with IOMMU and VFIO options.
 configure_bootloader() {
     local iommu_setting
     case "$VENDOR_ID" in
@@ -119,8 +112,6 @@ configure_bootloader() {
     fi
 }
 
-# regenerate_ramdisks:
-# Regenerates initramfs and/or GRUB configurations based on the detected distro.
 regenerate_ramdisks() {
     case "$DISTRO" in
         Arch)
@@ -144,8 +135,6 @@ regenerate_ramdisks() {
     return 0
 }
 
-# revert_vfio:
-# Removes VFIO configurations and restores previous bootloader settings.
 revert_vfio() {
     if [[ -f "$VFIO_CONF_PATH" ]]; then
         sudo rm -v "$VFIO_CONF_PATH" | tee -a &>> "$LOG_FILE"
@@ -167,16 +156,12 @@ revert_vfio() {
     fi
 }
 
-###############################
-# Main flow of configure_vfio.sh
-###############################
-
 # Prompt 0: Important disclaimer
 fmtr::warn "DISCLAIMER: This VFIO script automates GPU isolation, bootloader reconfiguration, and
       ramdisk regeneration. Due to potential IOMMU grouping issues on some motherboards, this
       process may not execute correctly and could mess up your system. So I highly encourage
       you to double check the work automated for your systems safety! Make sure the vendor and
-      device ids of your selected GPU are matching the ones in the following config files:
+      device ids of your selected GPU are matching the ones in configurations:
 
       - lspci -nn | grep -Ei 'vga|3d|audio device'    _____________________________________
       - $VFIO_CONF_PATH                    / systemd-boot = /boot/loader/entries |
