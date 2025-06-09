@@ -160,7 +160,7 @@ patch_qemu() {
     exit 1
   }
 
-  fmtr::log "Spoofing all model & serial numbers..."
+  fmtr::log "Spoofing all unique hardcoded QEMU identifiers..."
 
   spoof_serial_numbers
   spoof_drive_serial_number
