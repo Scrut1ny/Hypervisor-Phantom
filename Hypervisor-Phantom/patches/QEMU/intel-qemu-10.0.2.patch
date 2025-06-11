@@ -274,32 +274,18 @@ diff --git a/hw/i386/acpi-build.c b/hw/i386/acpi-build.c
 index 3fffa4a..5185045 100644
 --- a/hw/i386/acpi-build.c
 +++ b/hw/i386/acpi-build.c
-@@ -2588,9 +2588,6 @@ void acpi_build(AcpiBuildTables *tables, MachineState *machine)
+@@ -2588,8 +2588,9 @@ void acpi_build(AcpiBuildTables *tables, MachineState *machine)
                         x86ms->oem_id, x86ms->oem_table_id, &pcms->cxl_devices_state);
      }
  
 -    acpi_add_table(table_offsets, tables_blob);
 -    build_waet(tables_blob, tables->linker, x86ms->oem_id, x86ms->oem_table_id);
--
++    // Disable WAET table (not found on bare metal systems)
++    // acpi_add_table(table_offsets, tables_blob);
++    // build_waet(tables_blob, tables->linker, x86ms->oem_id, x86ms->oem_table_id);
+ 
      /* Add tables supplied by user (if any) */
      for (u = acpi_table_first(); u; u = acpi_table_next(u)) {
-         unsigned len = acpi_table_len(u);
-@@ -2599,6 +2596,15 @@ void acpi_build(AcpiBuildTables *tables, MachineState *machine)
-         g_array_append_vals(tables_blob, u, len);
-     }
- 
-+    /* Disable BGRT (UEFI Logo)
-+    acpi_add_table(table_offsets, tables_blob);
-+    AcpiTable table = { .sig = "BGRT", .rev = 1,
-+                        .oem_id = x86ms->oem_id, .oem_table_id = x86ms->oem_table_id };
-+    acpi_table_begin(&table, tables_blob);
-+    build_append_int_noprefix(tables_blob,0x00000000,4);
-+    acpi_table_end(tables->linker, &table);
-+    */
-+
-     /* RSDT is pointed to by RSDP */
-     rsdt = tables_blob->len;
-     build_rsdt(tables_blob, tables->linker, table_offsets,
 diff --git a/hw/i386/fw_cfg.c b/hw/i386/fw_cfg.c
 index 5c0bcd5..9b6b452 100644
 --- a/hw/i386/fw_cfg.c
@@ -313,34 +299,20 @@ index 5c0bcd5..9b6b452 100644
      }
  
      /* tell smbios about cpuid version and features */
-@@ -212,6 +212,14 @@ void fw_cfg_build_feature_control(MachineState *ms, FWCfgState *fw_cfg)
+@@ -212,6 +212,8 @@ void fw_cfg_build_feature_control(MachineState *ms, FWCfgState *fw_cfg)
      fw_cfg_add_file(fw_cfg, "etc/msr_feature_control", val, sizeof(*val));
  }
  
-+/*
-+ *
-+ * TODO: In the future we might need to disable this entire function from being used.
-+ * Would need to disable this function from being called in two other files also:
-+ * "hw/i386/acpi-microvm.c" and "hw/i386/acpi-build.c"
-+ *
-+ */
-+
++// Disable FWCF device (not found on bare metal systems)
++#if 0
  #ifdef CONFIG_ACPI
  void fw_cfg_add_acpi_dsdt(Aml *scope, FWCfgState *fw_cfg)
  {
-@@ -225,10 +233,10 @@ void fw_cfg_add_acpi_dsdt(Aml *scope, FWCfgState *fw_cfg)
-     uint8_t io_size = object_property_get_bool(obj, "dma_enabled", NULL) ?
-         ROUND_UP(FW_CFG_CTL_SIZE, 4) + sizeof(dma_addr_t) :
-         FW_CFG_CTL_SIZE;
--    Aml *dev = aml_device("FWCF");
-+    Aml *dev = aml_device("FWCG");
-     Aml *crs = aml_resource_template();
- 
--    aml_append(dev, aml_name_decl("_HID", aml_string("QEMU0002")));
-+    aml_append(dev, aml_name_decl("_HID", aml_string("UEFI0002")));
- 
-     /* device present, functioning, decoding, not shown in UI */
-     aml_append(dev, aml_name_decl("_STA", aml_int(0xB)));
+@@ -240,3 +242,4 @@ void fw_cfg_add_acpi_dsdt(Aml *scope, FWCfgState *fw_cfg)
+     aml_append(scope, dev);
+ }
+ #endif
++#endif
 diff --git a/hw/i386/multiboot.c b/hw/i386/multiboot.c
 index cd07a05..9ca77b8 100644
 --- a/hw/i386/multiboot.c
@@ -704,19 +676,6 @@ index c3713dc..26aeab2 100644
  
      crs = aml_resource_template();
      aml_append(crs,
-diff --git a/hw/net/e1000x_regs.h b/hw/net/e1000x_regs.h
-index cd896fc..d938aa4 100644
---- a/hw/net/e1000x_regs.h
-+++ b/hw/net/e1000x_regs.h
-@@ -84,7 +84,7 @@
- #define E1000_DEV_ID_82573E              0x108B
- #define E1000_DEV_ID_82573E_IAMT         0x108C
- #define E1000_DEV_ID_82573L              0x109A
--#define E1000_DEV_ID_82574L              0x10D3
-+#define E1000_DEV_ID_82574L              0x10F6
- #define E1000_DEV_ID_82546GB_QUAD_COPPER_KSP3 0x10B5
- #define E1000_DEV_ID_80003ES2LAN_COPPER_DPT     0x1096
- #define E1000_DEV_ID_80003ES2LAN_SERDES_DPT     0x1098
 diff --git a/hw/nvme/ctrl.c b/hw/nvme/ctrl.c
 index d6b77d4..8d43136 100644
 --- a/hw/nvme/ctrl.c
