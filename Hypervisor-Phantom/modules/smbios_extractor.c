@@ -31,7 +31,7 @@ int main(void) {
     }
 
     unsigned char processor_upgrade = data[0x19];
-    unsigned short processor_family = data[0x06];
+    unsigned char processor_family = data[0x06];
     unsigned short processor_family2 = (unsigned short)(data[0x29] << 8 | data[0x28]);
 
     printf("processor_upgrade: 0x%X\n", processor_upgrade);
