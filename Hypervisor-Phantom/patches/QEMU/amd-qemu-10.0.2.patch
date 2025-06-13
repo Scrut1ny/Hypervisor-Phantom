@@ -279,7 +279,7 @@ index 3fffa4a332..827a5fc0ce 100644
      {
          scope = aml_scope("\\_SB.PCI0");
 -        fw_cfg_add_acpi_dsdt(scope, x86ms->fw_cfg);
-+        //fw_cfg_add_acpi_dsdt(scope, x86ms->fw_cfg);
++        //fw_cfg_add_acpi_dsdt(scope, x86ms->fw_cfg); Fix compile error
          aml_append(dsdt, scope);
      }
  
@@ -304,7 +304,7 @@ index 279da6b4aa..8150997210 100644
  
      sb_scope = aml_scope("_SB");
 -    fw_cfg_add_acpi_dsdt(sb_scope, x86ms->fw_cfg);
-+    //fw_cfg_add_acpi_dsdt(sb_scope, x86ms->fw_cfg);
++    //fw_cfg_add_acpi_dsdt(sb_scope, x86ms->fw_cfg); Fix compile error
      qbus_build_aml(BUS(isabus), sb_scope);
      build_ged_aml(sb_scope, GED_DEVICE, x86ms->acpi_dev,
                    GED_MMIO_IRQ, AML_SYSTEM_MEMORY, GED_MMIO_BASE);
