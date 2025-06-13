@@ -164,7 +164,7 @@ patch_qemu() {
 
   spoof_serial_numbers
   spoof_drive_serial_number
-  spoof_processor_manufacturer
+  spoof_smbios_processor_data
   spoof_acpi_table_data
 }
 
@@ -381,7 +381,10 @@ spoof_acpi_table_data() {
 
 
 
-spoof_processor_manufacturer() {
+spoof_smbios_processor_data() {
+
+  ##################################################
+  ##################################################
 
   local chipset_file
   case "$QEMU_VERSION" in
@@ -392,6 +395,40 @@ spoof_processor_manufacturer() {
 
   local manufacturer=$(sudo dmidecode --string processor-manufacturer)
   sed -i "$chipset_file" -e "s/smbios_set_defaults(\"[^\"]*\",/smbios_set_defaults(\"${manufacturer}\",/"
+
+  ##################################################
+  ##################################################
+
+  local smbios_file="$(pwd)/hw/smbios/smbios.c"
+  local RAW="/sys/firmware/dmi/entries/4-0/raw"
+  local DATA_SIZE=50
+
+  local data
+  data=$(sudo head -c $DATA_SIZE "$RAW" | od -An -tx1 | tr -d ' \n')
+
+  get_byte() {
+    local offset=$1
+    local byte=${data:$((offset*2)):2}
+    printf "%s" "${byte^^}"
+  }
+
+  get_le16() {
+    local offset=$1
+    local low=${data:$((offset*2)):2}
+    local high=${data:$((offset*2+2)):2}
+    printf "%s%s" "${high^^}" "${low^^}"
+  }
+
+  local processor_family="$(get_byte 6)"
+  local processor_upgrade="$(get_byte 25)"
+  local processor_family2="$(get_le16 40)"
+
+  sed -i -E "s/(t->processor_family[[:space:]]*=[[:space:]]*)0x[0-9A-Fa-f]+;/\10x${processor_family};/" "$smbios_file"
+  sed -i -E "s/(t->processor_upgrade[[:space:]]*=[[:space:]]*)0x[0-9A-Fa-f]+;/\10x${processor_upgrade};/" "$smbios_file"
+  sed -i -E "s/(t->processor_family2[[:space:]]*=[[:space:]]*cpu_to_le16\()0x[0-9A-Fa-f]+(\);)/\10x${processor_family2}\2/" "$smbios_file"
+
+  ##################################################
+  ##################################################
 
 }
 
