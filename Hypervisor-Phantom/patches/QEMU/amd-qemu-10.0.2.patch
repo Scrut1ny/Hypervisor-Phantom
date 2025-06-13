@@ -1053,7 +1053,7 @@ index ad4cd6721e..597000923a 100644
 -    t->l1_cache_handle = cpu_to_le16(0xFFFF); /* N/A */
 -    t->l2_cache_handle = cpu_to_le16(0xFFFF); /* N/A */
 -    t->l3_cache_handle = cpu_to_le16(0xFFFF); /* N/A */
-+    t->processor_upgrade = 0x31; /* AM4 Socket */
++    t->processor_upgrade = 0x31; /* 0x31 = AM4 Socket | 0x49 = AM5 Socket | https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_3.8.0.pdf#%5B%7B%22num%22%3A305%2C%22gen%22%3A0%7D%2C%7B%22name%22%3A%22XYZ%22%7D%2C70%2C318%2C0%5D */
 +    t->l1_cache_handle = cpu_to_le16(0x0014); /* N/A */
 +    t->l2_cache_handle = cpu_to_le16(0x0015); /* N/A */
 +    t->l3_cache_handle = cpu_to_le16(0x0016); /* N/A */
