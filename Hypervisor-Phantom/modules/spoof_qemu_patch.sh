@@ -180,23 +180,15 @@ patch_qemu() {
 
 
 spoof_serial_numbers() {
-  get_random_serial() { head /dev/urandom | tr -dc 'A-Z0-9' | head -c "$1"; }
-
-  local patterns=("STRING_SERIALNUMBER" "STR_SERIALNUMBER" "STR_SERIAL_MOUSE" "STR_SERIAL_TABLET" "STR_SERIAL_KEYBOARD" "STR_SERIAL_COMPAT")
-  local regex_pattern="($(IFS=\|; echo "${patterns[*]}"))"
-
-  find "$(pwd)/hw/usb" -type f -exec grep -lE "\[$regex_pattern\]" {} + | while read -r file; do
-    tmpfile=$(mktemp)
-
-    while IFS= read -r line; do
-      if [[ $line =~ \[$regex_pattern\] ]]; then
-        local new_serial="$(get_random_serial 10)"
-        line=$(echo "$line" | sed -E "s/(\[$regex_pattern\] *= *\")[^\"]*/\1${new_serial}/")
-      fi
-      echo "$line" >> "$tmpfile"
-    done < "$file"
-
-    mv "$tmpfile" "$file"
+  local patterns=(STRING_SERIALNUMBER STR_SERIALNUMBER STR_SERIAL_MOUSE \
+                  STR_SERIAL_TABLET STR_SERIAL_KEYBOARD STR_SERIAL_COMPAT)
+  for file in ./hw/usb/*.c; do
+    for pat in "${patterns[@]}"; do
+      grep -n "\[\s*${pat}\s*\]\s*=\s*\"[^\"]*\"" "$file" | cut -d: -f1 | while read -r lineno; do
+        serial=$(tr -dc 'A-Z0-9' </dev/urandom | head -c10)
+        sed -r -i "${lineno}s/(\[\s*${pat}\s*\]\s*=\s*\")[^\"]*(\")/\1${serial}\2/" "$file"
+      done
+    done
   done
 }
 
@@ -436,10 +428,8 @@ spoof_smbios_processor_data() {
 
 
 compile_qemu() {
-
   fmtr::log "Configuring build environment"
 
-  # ./configure --help
   ./configure --target-list=x86_64-softmmu \
               --enable-libusb \
               --enable-usb-redir \
@@ -447,13 +437,26 @@ compile_qemu() {
               --enable-spice-protocol \
               --disable-werror &>> "$LOG_FILE"
 
+  if [[ $? -ne 0 ]]; then
+    fmtr::error "Configure failed. Check $LOG_FILE"
+    return 1
+  fi
+
   fmtr::log "Building QEMU"
   make -j"$(nproc)" &>> "$LOG_FILE"
+  if [[ $? -ne 0 ]]; then
+    fmtr::error "Build failed. Check $LOG_FILE"
+    return 1
+  fi
 
   fmtr::log "Installing QEMU"
   sudo make install &>> "$LOG_FILE"
-  fmtr::info "Compilation finished!"
+  if [[ $? -ne 0 ]]; then
+    fmtr::error "Install failed. Check $LOG_FILE"
+    return 1
+  fi
 
+  fmtr::info "Compilation finished!"
 }
 
 cleanup() {
