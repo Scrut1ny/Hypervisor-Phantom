@@ -1,0 +1,153 @@
+diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
+index 3b92f893b239..359f88c2fb58 100644
+--- a/arch/x86/kvm/vmx/vmx.c
++++ b/arch/x86/kvm/vmx/vmx.c
+@@ -247,6 +247,26 @@ static const struct {
+ #define L1D_CACHE_ORDER 4
+ static void *vmx_l1d_flush_pages;
+ 
++static __always_inline u64 mul_u64_u64_shr0(u64 a, u64 mul, unsigned int shift)
++{
++	return (u64)(((unsigned __int128)a * mul) >> shift);
++}
++
++static inline u64 __scale_tsc0(u64 ratio, u64 tsc)
++{
++	return mul_u64_u64_shr0(tsc, ratio, kvm_caps.tsc_scaling_ratio_frac_bits);
++}
++
++static inline u64 kvm_scale_tsc0(u64 tsc, u64 ratio)
++{
++	u64 _tsc = tsc;
++
++	if (ratio != kvm_caps.default_tsc_scaling_ratio)
++		_tsc = __scale_tsc0(ratio, tsc);
++
++	return _tsc;
++}
++
+ static int vmx_setup_l1d_flush(enum vmx_l1d_flush_state l1tf)
+ {
+ 	struct page *page;
+@@ -4492,11 +4512,13 @@ static u32 vmx_exec_control(struct vcpu_vmx *vmx)
+ 	 * Not used by KVM, but fully supported for nesting, i.e. are allowed in
+ 	 * vmcs12 and propagated to vmcs02 when set in vmcs12.
+ 	 */
+-	exec_control &= ~(CPU_BASED_RDTSC_EXITING |
+-			  CPU_BASED_USE_IO_BITMAPS |
++	exec_control &= ~(CPU_BASED_USE_IO_BITMAPS |
+ 			  CPU_BASED_MONITOR_TRAP_FLAG |
+ 			  CPU_BASED_PAUSE_EXITING);
+ 
++	// Ensure handle_rdtsc() is used.
++	exec_control |= CPU_BASED_RDTSC_EXITING;
++
+ 	/* INTR_WINDOW_EXITING and NMI_WINDOW_EXITING are toggled dynamically */
+ 	exec_control &= ~(CPU_BASED_INTR_WINDOW_EXITING |
+ 			  CPU_BASED_NMI_WINDOW_EXITING);
+@@ -6113,6 +6135,38 @@ static int handle_notify(struct kvm_vcpu *vcpu)
+ 	return 1;
+ }
+ 
++
++static int handle_rdtsc(struct kvm_vcpu *vcpu) {
++	u64 offset = vcpu->arch.tsc_offset;
++	u64 ratio = vcpu->arch.tsc_scaling_ratio;
++	u64 rdtsc_fake;
++
++	if (vmx_get_cpl(vcpu) != 0 || !is_protmode(vcpu))
++		ratio /= 8;
++	
++	rdtsc_fake = kvm_scale_tsc0(rdtsc(), ratio) + offset;
++
++	vcpu->arch.regs[VCPU_REGS_RAX] = rdtsc_fake & -1u;
++	vcpu->arch.regs[VCPU_REGS_RDX] = (rdtsc_fake >> 32) & -1u;
++
++	return skip_emulated_instruction(vcpu);
++}
++
++static int handle_rdtscp(struct kvm_vcpu *vcpu) {
++	vcpu->arch.regs[VCPU_REGS_RCX] = vmcs_read16(VIRTUAL_PROCESSOR_ID);
++	return handle_rdtsc(vcpu);
++}
++
++static int handle_umwait(struct kvm_vcpu *vcpu)
++{
++	return skip_emulated_instruction(vcpu);
++}
++
++static int handle_tpause(struct kvm_vcpu *vcpu)
++{
++	return skip_emulated_instruction(vcpu);
++}
++
+ /*
+  * The exit handlers return 1 if the exit was handled fully and guest execution
+  * may resume.  Otherwise they set the kvm_run parameter to indicate what needs
+@@ -6171,6 +6225,10 @@ static int (*kvm_vmx_exit_handlers[])(struct kvm_vcpu *vcpu) = {
+ 	[EXIT_REASON_ENCLS]		      = handle_encls,
+ 	[EXIT_REASON_BUS_LOCK]                = handle_bus_lock_vmexit,
+ 	[EXIT_REASON_NOTIFY]		      = handle_notify,
++	[EXIT_REASON_RDTSC]                   = handle_rdtsc,
++	[EXIT_REASON_RDTSCP]                  = handle_rdtscp,
++	[EXIT_REASON_UMWAIT]                  = handle_umwait,
++	[EXIT_REASON_TPAUSE]		      = handle_tpause,
+ };
+ 
+ static const int kvm_vmx_max_exit_handlers =
+@@ -6619,8 +6677,9 @@ static int __vmx_handle_exit(struct kvm_vcpu *vcpu, fastpath_t exit_fastpath)
+ 
+ 	exit_handler_index = array_index_nospec((u16)exit_reason.basic,
+ 						kvm_vmx_max_exit_handlers);
+-	if (!kvm_vmx_exit_handlers[exit_handler_index])
+-		goto unexpected_vmexit;
++	
++	if (exit_handler_index == EXIT_REASON_CPUID)
++		vcpu->is_after_cpuid = 1;
+ 
+ 	return kvm_vmx_exit_handlers[exit_handler_index](vcpu);
+ 
+diff --git a/arch/x86/kvm/vmx/vmx.h b/arch/x86/kvm/vmx/vmx.h
+index 951e44dc9d0e..8c22b72edfab 100644
+--- a/arch/x86/kvm/vmx/vmx.h
++++ b/arch/x86/kvm/vmx/vmx.h
+@@ -529,6 +529,7 @@ static inline u8 vmx_get_rvi(void)
+ 	 CPU_BASED_MONITOR_EXITING |					\
+ 	 CPU_BASED_INVLPG_EXITING |					\
+ 	 CPU_BASED_RDPMC_EXITING |					\
++	 CPU_BASED_RDTSC_EXITING |					\
+ 	 CPU_BASED_INTR_WINDOW_EXITING)
+ 
+ #ifdef CONFIG_X86_64
+@@ -542,8 +543,7 @@ static inline u8 vmx_get_rvi(void)
+ #endif
+ 
+ #define KVM_OPTIONAL_VMX_CPU_BASED_VM_EXEC_CONTROL			\
+-	(CPU_BASED_RDTSC_EXITING |					\
+-	 CPU_BASED_TPR_SHADOW |						\
++	(CPU_BASED_TPR_SHADOW |						\
+ 	 CPU_BASED_USE_IO_BITMAPS |					\
+ 	 CPU_BASED_MONITOR_TRAP_FLAG |					\
+ 	 CPU_BASED_USE_MSR_BITMAPS |					\
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index 9e57dd990a26..92ffa00ec3ce 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -4246,6 +4246,9 @@ int kvm_get_msr_common(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
+ 			ratio = vcpu->arch.tsc_scaling_ratio;
+ 		}
+ 
++		if (kvm_x86_call(get_cpl)(vcpu) != 0 || !is_protmode(vcpu))
++			ratio /= 8;
++
+ 		msr_info->data = kvm_scale_tsc(rdtsc(), ratio) + offset;
+ 		break;
+ 	}
+@@ -4296,7 +4299,6 @@ int kvm_get_msr_common(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
+ 		msr_info->data = vcpu->arch.smi_count;
+ 		break;
+ 	case MSR_IA32_PERF_STATUS:
+-		/* TSC increment by tick */
+ 		msr_info->data = 1000ULL;
+ 		/* CPU multiplier */
+ 		msr_info->data |= (((uint64_t)4ULL) << 40);
