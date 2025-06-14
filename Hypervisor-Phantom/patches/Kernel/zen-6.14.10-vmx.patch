@@ -1,5 +1,17 @@
+From 0fbdcea9f6e56b215c73bb99231575804c8a8eb6 Mon Sep 17 00:00:00 2001
+From: dmfrpro <dmfr2021y@gmail.com>
+Date: Sat, 14 Jun 2025 22:43:07 +0300
+Subject: [PATCH 1/1] VMX patch
+
+Signed-off-by: dmfrpro <dmfr2021y@gmail.com>
+---
+ arch/x86/kvm/vmx/vmx.c | 62 ++++++++++++++++++++++++++++++++++++++++--
+ arch/x86/kvm/vmx/vmx.h |  4 +--
+ arch/x86/kvm/x86.c     |  3 ++
+ 3 files changed, 65 insertions(+), 4 deletions(-)
+
 diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
-index 3b92f893b239..359f88c2fb58 100644
+index 3b92f893b239..dcf32c4ee6a8 100644
 --- a/arch/x86/kvm/vmx/vmx.c
 +++ b/arch/x86/kvm/vmx/vmx.c
 @@ -247,6 +247,26 @@ static const struct {
@@ -95,18 +107,6 @@ index 3b92f893b239..359f88c2fb58 100644
  };
  
  static const int kvm_vmx_max_exit_handlers =
-@@ -6619,8 +6677,9 @@ static int __vmx_handle_exit(struct kvm_vcpu *vcpu, fastpath_t exit_fastpath)
- 
- 	exit_handler_index = array_index_nospec((u16)exit_reason.basic,
- 						kvm_vmx_max_exit_handlers);
--	if (!kvm_vmx_exit_handlers[exit_handler_index])
--		goto unexpected_vmexit;
-+	
-+	if (exit_handler_index == EXIT_REASON_CPUID)
-+		vcpu->is_after_cpuid = 1;
- 
- 	return kvm_vmx_exit_handlers[exit_handler_index](vcpu);
- 
 diff --git a/arch/x86/kvm/vmx/vmx.h b/arch/x86/kvm/vmx/vmx.h
 index 951e44dc9d0e..8c22b72edfab 100644
 --- a/arch/x86/kvm/vmx/vmx.h
@@ -130,7 +130,7 @@ index 951e44dc9d0e..8c22b72edfab 100644
  	 CPU_BASED_MONITOR_TRAP_FLAG |					\
  	 CPU_BASED_USE_MSR_BITMAPS |					\
 diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index 9e57dd990a26..92ffa00ec3ce 100644
+index 9e57dd990a26..baed8c1b932d 100644
 --- a/arch/x86/kvm/x86.c
 +++ b/arch/x86/kvm/x86.c
 @@ -4246,6 +4246,9 @@ int kvm_get_msr_common(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
@@ -143,11 +143,6 @@ index 9e57dd990a26..92ffa00ec3ce 100644
  		msr_info->data = kvm_scale_tsc(rdtsc(), ratio) + offset;
  		break;
  	}
-@@ -4296,7 +4299,6 @@ int kvm_get_msr_common(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
- 		msr_info->data = vcpu->arch.smi_count;
- 		break;
- 	case MSR_IA32_PERF_STATUS:
--		/* TSC increment by tick */
- 		msr_info->data = 1000ULL;
- 		/* CPU multiplier */
- 		msr_info->data |= (((uint64_t)4ULL) << 40);
+-- 
+2.49.0
+
