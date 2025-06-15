@@ -397,6 +397,10 @@ spoof_smbios_processor_data() {
   local RAW="/sys/firmware/dmi/entries/4-0/raw"
   local DATA_SIZE=50
 
+  if [[ ! -e "$RAW" ]]; then
+    sudo modprobe dmi_sysfs &>> "$LOG_FILE"
+  fi
+
   local data=$(sudo head -c $DATA_SIZE "$RAW" | hexdump -ve '1/1 "%02X"')
 
   local processor_family="${data:12:2}"
