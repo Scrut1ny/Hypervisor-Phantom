@@ -79,8 +79,8 @@ chmod -R +x *
     - [Hyper-V Enlightenments](https://www.qemu.org/docs/master/system/i386/hyperv.html)
   - [KVM for x86 systems (Linux Kernel)](https://www.kernel.org/doc/html/next/virt/kvm/x86/index.html)
   - [Domain XML format](https://libvirt.org/formatdomain.html)
-  - [ACPI System Management Bus Interface Specification](https://uefi.org/specs/ACPI/6.5/13_System_Mgmt_Bus_Interface_Specification.html)
-  - [System Management BIOS (SMBIOS) Reference Specification](https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_3.2.0.pdf)
+  - [ACPI System Management Bus Interface Specification - HTML](https://uefi.org/specs/ACPI/6.6/13_System_Mgmt_Bus_Interface_Specification.html) - [PDF Version](https://uefi.org/sites/default/files/resources/ACPI_Spec_6.6.pdf)
+  - [SMBIOS Reference Specification - PDF](https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_3.8.0.pdf)
   - [PCILookup](https://www.pcilookup.com/)
 - **General**
   - [https://evasions.checkpoint.com/](https://evasions.checkpoint.com/)
