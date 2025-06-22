@@ -206,7 +206,7 @@ spoof_serial_numbers() {
 
 
 spoof_drive_serial_number() {
-  local core_file="$(pwd)/hw/ide/core.c"
+  local core_file="hw/ide/core.c"
 
   local ide_cd_models=(
     "HL-DT-ST BD-RE WH16NS60" "HL-DT-ST DVDRAM GH24NSC0"
@@ -316,7 +316,7 @@ spoof_acpi_table_data() {
   local random_index=$(( RANDOM % total_pairs * 2 ))
   local appname6=${oem_pairs[$random_index]}
   local appname8=${oem_pairs[$random_index + 1]}
-  local h_file="$(pwd)/include/hw/acpi/aml-build.h"
+  local h_file="include/hw/acpi/aml-build.h"
 
   sed -i "$h_file" -e "s/^#define ACPI_BUILD_APPNAME6 \".*\"/#define ACPI_BUILD_APPNAME6 \"${appname6}\"/"
   sed -i "$h_file" -e "s/^#define ACPI_BUILD_APPNAME8 \".*\"/#define ACPI_BUILD_APPNAME8 \"${appname8}\"/"
@@ -330,7 +330,7 @@ spoof_acpi_table_data() {
 
   fmtr::info "Obtaining machine's chassis-type..."
 
-  local c_file="$(pwd)/hw/acpi/aml-build.c"
+  local c_file="hw/acpi/aml-build.c"
   local pm_type="1" # Desktop
   local chassis_type=$(sudo dmidecode --string chassis-type)
 
@@ -380,8 +380,8 @@ spoof_smbios_processor_data() {
 
   local chipset_file
   case "$QEMU_VERSION" in
-    "8.2.6") chipset_file="$(pwd)/hw/i386/pc_q35.c" ;;
-    "9.2.4"|"10.0.2") chipset_file="$(pwd)/hw/i386/fw_cfg.c" ;;
+    "8.2.6") chipset_file="hw/i386/pc_q35.c" ;;
+    "9.2.4"|"10.0.2") chipset_file="hw/i386/fw_cfg.c" ;;
     *) fmtr::warn "Unsupported QEMU version: $QEMU_VERSION" ;;
   esac
 
