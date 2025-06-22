@@ -391,21 +391,18 @@ spoof_smbios_processor_data() {
   ##################################################
   ##################################################
 
-  # Handle 0x0004, DMI type 4, 48 bytes
+  # Handle 0x0004, DMI type 4
 
-  local smbios_file="$(pwd)/hw/smbios/smbios.c"
-  local RAW="/sys/firmware/dmi/entries/4-0/raw"
-  local DATA_SIZE=50
+  local smbios_file="hw/smbios/smbios.c" \
+        t4_raw="/sys/firmware/dmi/entries/4-0/raw" \
+        bytes=42
 
-  if [[ ! -e "$RAW" ]]; then
-    sudo modprobe dmi_sysfs &>> "$LOG_FILE"
-  fi
+  [[ -e $t4_raw ]] || sudo modprobe dmi_sysfs >>"$LOG_FILE"
 
-  local data=$(sudo head -c $DATA_SIZE "$RAW" | hexdump -ve '1/1 "%02X"')
-
-  local processor_family="${data:12:2}"
-  local processor_upgrade="${data:50:2}"
-  local processor_family2="${data:82:2}${data:80:2}"
+  local data=$(sudo hexdump -n"$bytes" -v -e '/1 "%02X"' "$t4_raw") \
+        processor_family="${data:12:2}" \
+        processor_upgrade="${data:50:2}" \
+        processor_family2="${data:82:2}${data:80:2}"
 
   sed -i -E "s/(t->processor_family[[:space:]]*=[[:space:]]*)0x[0-9A-Fa-f]+;/\10x${processor_family};/" "$smbios_file"
   sed -i -E "s/(t->processor_upgrade[[:space:]]*=[[:space:]]*)0x[0-9A-Fa-f]+;/\10x${processor_upgrade};/" "$smbios_file"
