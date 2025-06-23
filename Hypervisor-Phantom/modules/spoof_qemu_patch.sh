@@ -399,7 +399,7 @@ spoof_smbios_processor_data() {
   [[ -e $t4_raw ]] || sudo modprobe dmi_sysfs >>"$LOG_FILE"
 
   local data=$(sudo hexdump -v -e '/1 "%02X"' "$t4_raw")
-  
+
   local processor_type="${data:10:2}"
   local processor_family="${data:12:2}"
   local voltage="${data:34:2}"
@@ -415,7 +415,13 @@ spoof_smbios_processor_data() {
   local processor_family2="${data:82:2}${data:80:2}"
 
   sed -i -E "s/(t->processor_family[[:space:]]*=[[:space:]]*)0x[0-9A-Fa-f]+;/\10x${processor_family};/" "$smbios_file"
+  sed -i -E "s/(t->voltage[[:space:]]*=[[:space:]]*)0;/\1${voltage};/" "$smbios_file"
+  sed -i -E "s/(t->external_clock[[:space:]]*=[[:space:]]*cpu_to_le16\()0x[0-9A-Fa-f]+(\);)/\10x${external_clock}\2/" "$smbios_file"
+  sed -i -E "s/(t->l1_cache_handle[[:space:]]*=[[:space:]]*cpu_to_le16\()0x[0-9A-Fa-f]+(\);)/\10x${l1_cache_handle}\2/" "$smbios_file"
+  sed -i -E "s/(t->l2_cache_handle[[:space:]]*=[[:space:]]*cpu_to_le16\()0x[0-9A-Fa-f]+(\);)/\10x${l2_cache_handle}\2/" "$smbios_file"
+  sed -i -E "s/(t->l3_cache_handle[[:space:]]*=[[:space:]]*cpu_to_le16\()0x[0-9A-Fa-f]+(\);)/\10x${l3_cache_handle}\2/" "$smbios_file"
   sed -i -E "s/(t->processor_upgrade[[:space:]]*=[[:space:]]*)0x[0-9A-Fa-f]+;/\10x${processor_upgrade};/" "$smbios_file"
+  sed -i -E "s/(t->processor_characteristics[[:space:]]*=[[:space:]]*cpu_to_le16\()0x[0-9A-Fa-f]+(\);)/\10x${processor_characteristics}\2/" "$smbios_file"
   sed -i -E "s/(t->processor_family2[[:space:]]*=[[:space:]]*cpu_to_le16\()0x[0-9A-Fa-f]+(\);)/\10x${processor_family2}\2/" "$smbios_file"
 
   ##################################################
