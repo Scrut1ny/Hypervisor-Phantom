@@ -391,6 +391,23 @@ spoof_smbios_processor_data() {
   ##################################################
   ##################################################
 
+  # Handle 0x0000, DMI type 0
+
+  local smbios_file="hw/smbios/smbios.c"
+  local t0_raw="/sys/firmware/dmi/entries/0-0/raw"
+
+  [[ -e $t0_raw ]] || sudo modprobe dmi_sysfs >>"$LOG_FILE"
+
+  local data=$(sudo hexdump -v -e '/1 "%02X"' "$t0_raw")
+
+  local rom_size="${data:18:2}"
+  local bios_characteristics="$(echo "${data:20:16}" | fold -w2 | tac | tr -d '\n')"
+  local characteristics_ext1="${data:36:2}"
+  local characteristics_ext2="${data:38:2}"
+
+  ##################################################
+  ##################################################
+
   # Handle 0x0004, DMI type 4
 
   local smbios_file="hw/smbios/smbios.c"
