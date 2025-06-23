@@ -393,24 +393,26 @@ spoof_smbios_processor_data() {
 
   # Handle 0x0004, DMI type 4
 
-  local smbios_file="hw/smbios/smbios.c" \
-        t4_raw="/sys/firmware/dmi/entries/4-0/raw"
+  local smbios_file="hw/smbios/smbios.c"
+  local t4_raw="/sys/firmware/dmi/entries/4-0/raw"
 
   [[ -e $t4_raw ]] || sudo modprobe dmi_sysfs >>"$LOG_FILE"
 
-  local data=$(sudo hexdump -v -e '/1 "%02X"' "$t4_raw") \
-        processor_type="${data:10:2}" \
-        processor_family="${data:12:2}" \
-        external_clock="${data:38:2}${data:36:2}" \
-        max_speed="${data:42:2}${data:40:2}" \
-        current_speed="${data:46:2}${data:44:2}" \
-        status="${data:48:2}" \
-        processor_upgrade="${data:50:2}" \
-        l1_cache_handle="${data:54:2}${data:52:2}" \
-        l2_cache_handle="${data:58:2}${data:56:2}" \
-        l3_cache_handle="${data:62:2}${data:60:2}" \
-        processor_characteristics="${data:78:2}${data:76:2}" \
-        processor_family2="${data:82:2}${data:80:2}"
+  local data=$(sudo hexdump -v -e '/1 "%02X"' "$t4_raw")
+  
+  local processor_type="${data:10:2}"
+  local processor_family="${data:12:2}"
+  local voltage="${data:34:2}"
+  local external_clock="${data:38:2}${data:36:2}"
+  local max_speed="${data:42:2}${data:40:2}"
+  local current_speed="${data:46:2}${data:44:2}"
+  local status="${data:48:2}"
+  local processor_upgrade="${data:50:2}"
+  local l1_cache_handle="${data:54:2}${data:52:2}"
+  local l2_cache_handle="${data:58:2}${data:56:2}"
+  local l3_cache_handle="${data:62:2}${data:60:2}"
+  local processor_characteristics="${data:78:2}${data:76:2}"
+  local processor_family2="${data:82:2}${data:80:2}"
 
   sed -i -E "s/(t->processor_family[[:space:]]*=[[:space:]]*)0x[0-9A-Fa-f]+;/\10x${processor_family};/" "$smbios_file"
   sed -i -E "s/(t->processor_upgrade[[:space:]]*=[[:space:]]*)0x[0-9A-Fa-f]+;/\10x${processor_upgrade};/" "$smbios_file"
