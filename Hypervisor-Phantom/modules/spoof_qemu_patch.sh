@@ -432,7 +432,7 @@ spoof_smbios_processor_data() {
   local processor_family2="${data:82:2}${data:80:2}"
 
   sed -i -E "s/(t->processor_family[[:space:]]*=[[:space:]]*)0x[0-9A-Fa-f]+;/\10x${processor_family};/" "$smbios_file"
-  sed -i -E "s/(t->voltage[[:space:]]*=[[:space:]]*)0;/\1${voltage};/" "$smbios_file"
+  sed -i -E "s/(t->voltage[[:space:]]*=[[:space:]]*)0;/\10x${voltage};/" "$smbios_file"
   sed -i -E "s/(t->external_clock[[:space:]]*=[[:space:]]*cpu_to_le16\()0x[0-9A-Fa-f]+(\);)/\10x${external_clock}\2/" "$smbios_file"
   sed -i -E "s/(t->l1_cache_handle[[:space:]]*=[[:space:]]*cpu_to_le16\()0x[0-9A-Fa-f]+(\);)/\10x${l1_cache_handle}\2/" "$smbios_file"
   sed -i -E "s/(t->l2_cache_handle[[:space:]]*=[[:space:]]*cpu_to_le16\()0x[0-9A-Fa-f]+(\);)/\10x${l2_cache_handle}\2/" "$smbios_file"
