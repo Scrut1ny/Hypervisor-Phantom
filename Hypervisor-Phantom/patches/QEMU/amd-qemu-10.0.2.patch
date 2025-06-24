@@ -274,6 +274,144 @@ diff --git a/hw/i386/acpi-build.c b/hw/i386/acpi-build.c
 index 3fffa4a332..827a5fc0ce 100644
 --- a/hw/i386/acpi-build.c
 +++ b/hw/i386/acpi-build.c
+@@ -1386,6 +1386,68 @@ build_dsdt(GArray *table_data, BIOSLinker *linker,
+     build_dbg_aml(dsdt);
+     if (i440fx) {
+         sb_scope = aml_scope("_SB");
++
++        /*
++         * Emulate Windows ACPI OSYS/_OSI logic in DSDT.
++         * Adds Windows 2001/2006/2009/2012/2013/2015.
++         */
++
++        aml_append(sb_scope, aml_name_decl("OSYS", aml_int(0x03E8)));
++
++        Aml *osi = aml_if(
++            aml_equal(aml_call1("_OSI", aml_string("Windows 2001")), aml_int(1))
++        );
++        aml_append(osi, aml_store(aml_int(0x07D1), aml_name("OSYS")));
++        aml_append(sb_scope, osi);
++
++        osi = aml_if(
++            aml_equal(aml_call1("_OSI", aml_string("Windows 2001 SP1")), aml_int(1))
++        );
++        aml_append(osi, aml_store(aml_int(0x07D1), aml_name("OSYS")));
++        aml_append(sb_scope, osi);
++
++        osi = aml_if(
++            aml_equal(aml_call1("_OSI", aml_string("Windows 2001 SP2")), aml_int(1))
++        );
++        aml_append(osi, aml_store(aml_int(0x07D2), aml_name("OSYS")));
++        aml_append(sb_scope, osi);
++
++        osi = aml_if(
++            aml_equal(aml_call1("_OSI", aml_string("Windows 2001.1")), aml_int(1))
++        );
++        aml_append(osi, aml_store(aml_int(0x07D3), aml_name("OSYS")));
++        aml_append(sb_scope, osi);
++
++        osi = aml_if(
++            aml_equal(aml_call1("_OSI", aml_string("Windows 2006")), aml_int(1))
++        );
++        aml_append(osi, aml_store(aml_int(0x07D6), aml_name("OSYS")));
++        aml_append(sb_scope, osi);
++
++        osi = aml_if(
++            aml_equal(aml_call1("_OSI", aml_string("Windows 2009")), aml_int(1))
++        );
++        aml_append(osi, aml_store(aml_int(0x07D9), aml_name("OSYS")));
++        aml_append(sb_scope, osi);
++
++        osi = aml_if(
++            aml_equal(aml_call1("_OSI", aml_string("Windows 2012")), aml_int(1))
++        );
++        aml_append(osi, aml_store(aml_int(0x07DC), aml_name("OSYS")));
++        aml_append(sb_scope, osi);
++
++        osi = aml_if(
++            aml_equal(aml_call1("_OSI", aml_string("Windows 2013")), aml_int(1))
++        );
++        aml_append(osi, aml_store(aml_int(0x07DD), aml_name("OSYS")));
++        aml_append(sb_scope, osi);
++
++        osi = aml_if(
++            aml_equal(aml_call1("_OSI", aml_string("Windows 2015")), aml_int(1))
++        );
++        aml_append(osi, aml_store(aml_int(0x07DF), aml_name("OSYS")));
++        aml_append(sb_scope, osi);
++
+         dev = aml_device("PCI0");
+         aml_append(dev, aml_name_decl("_HID", aml_eisaid("PNP0A03")));
+         aml_append(dev, aml_name_decl("_UID", aml_int(pcmc->pci_root_uid)));
+@@ -1399,6 +1461,68 @@ build_dsdt(GArray *table_data, BIOSLinker *linker,
+         build_piix4_pci0_int(dsdt);
+     } else if (q35) {
+         sb_scope = aml_scope("_SB");
++
++        /*
++         * Emulate Windows ACPI OSYS/_OSI logic in DSDT.
++         * Adds Windows 2001/2006/2009/2012/2013/2015.
++         */
++
++        aml_append(sb_scope, aml_name_decl("OSYS", aml_int(0x03E8)));
++
++        Aml *osi = aml_if(
++            aml_equal(aml_call1("_OSI", aml_string("Windows 2001")), aml_int(1))
++        );
++        aml_append(osi, aml_store(aml_int(0x07D1), aml_name("OSYS")));
++        aml_append(sb_scope, osi);
++
++        osi = aml_if(
++            aml_equal(aml_call1("_OSI", aml_string("Windows 2001 SP1")), aml_int(1))
++        );
++        aml_append(osi, aml_store(aml_int(0x07D1), aml_name("OSYS")));
++        aml_append(sb_scope, osi);
++
++        osi = aml_if(
++            aml_equal(aml_call1("_OSI", aml_string("Windows 2001 SP2")), aml_int(1))
++        );
++        aml_append(osi, aml_store(aml_int(0x07D2), aml_name("OSYS")));
++        aml_append(sb_scope, osi);
++
++        osi = aml_if(
++            aml_equal(aml_call1("_OSI", aml_string("Windows 2001.1")), aml_int(1))
++        );
++        aml_append(osi, aml_store(aml_int(0x07D3), aml_name("OSYS")));
++        aml_append(sb_scope, osi);
++
++        osi = aml_if(
++            aml_equal(aml_call1("_OSI", aml_string("Windows 2006")), aml_int(1))
++        );
++        aml_append(osi, aml_store(aml_int(0x07D6), aml_name("OSYS")));
++        aml_append(sb_scope, osi);
++
++        osi = aml_if(
++            aml_equal(aml_call1("_OSI", aml_string("Windows 2009")), aml_int(1))
++        );
++        aml_append(osi, aml_store(aml_int(0x07D9), aml_name("OSYS")));
++        aml_append(sb_scope, osi);
++
++        osi = aml_if(
++            aml_equal(aml_call1("_OSI", aml_string("Windows 2012")), aml_int(1))
++        );
++        aml_append(osi, aml_store(aml_int(0x07DC), aml_name("OSYS")));
++        aml_append(sb_scope, osi);
++
++        osi = aml_if(
++            aml_equal(aml_call1("_OSI", aml_string("Windows 2013")), aml_int(1))
++        );
++        aml_append(osi, aml_store(aml_int(0x07DD), aml_name("OSYS")));
++        aml_append(sb_scope, osi);
++
++        osi = aml_if(
++            aml_equal(aml_call1("_OSI", aml_string("Windows 2015")), aml_int(1))
++        );
++        aml_append(osi, aml_store(aml_int(0x07DF), aml_name("OSYS")));
++        aml_append(sb_scope, osi);
++
+         dev = aml_device("PCI0");
+         aml_append(dev, aml_name_decl("_HID", aml_eisaid("PNP0A08")));
+         aml_append(dev, aml_name_decl("_CID", aml_eisaid("PNP0A03")));
 @@ -1702,7 +1702,7 @@ build_dsdt(GArray *table_data, BIOSLinker *linker,
      /* create fw_cfg node, unconditionally */
      {
