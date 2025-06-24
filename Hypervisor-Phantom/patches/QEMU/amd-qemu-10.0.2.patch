@@ -283,6 +283,23 @@ index 3fffa4a332..827a5fc0ce 100644
          aml_append(dsdt, scope);
      }
  
+@@ -2146,6 +2166,8 @@ build_dmar_q35(GArray *table_data, BIOSLinker *linker, const char *oem_id,
+  *
+  * Helpful to speedup Windows guests and ignored by others.
+  */
++// Disable WAET device (not found on bare metal systems)
++#if 0
+ static void
+ build_waet(GArray *table_data, BIOSLinker *linker, const char *oem_id,
+            const char *oem_table_id)
+@@ -2164,6 +2186,7 @@ build_waet(GArray *table_data, BIOSLinker *linker, const char *oem_id,
+     build_append_int_noprefix(table_data, 1 << 1 /* ACPI PM timer good */, 4);
+     acpi_table_end(linker, &table);
+ }
++#endif
+ 
+ /*
+  *   IVRS table as specified in AMD IOMMU Specification v2.62, Section 5.2
 @@ -2588,8 +2588,9 @@ void acpi_build(AcpiBuildTables *tables, MachineState *machine)
                         x86ms->oem_id, x86ms->oem_table_id, &pcms->cxl_devices_state);
      }
