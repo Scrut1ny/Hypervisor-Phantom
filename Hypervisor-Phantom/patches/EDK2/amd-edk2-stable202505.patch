@@ -189,10 +189,23 @@ index db828d3..da87376 100644
  // Host Bridge Device ID (DID) value for Q35/MCH
  //
 -#define INTEL_Q35_MCH_DEVICE_ID  0x29C0
-+#define INTEL_Q35_MCH_DEVICE_ID  0x1480 // Changed to AMD MCH from 0x29C0 (intel one)
++#define INTEL_Q35_MCH_DEVICE_ID  0x1480 // Intel G33/P35/Q35/Q33 Chipset - Memory Controller Hub [A0] | AMD Vendor ID Replacement from 0x29c0 | hw/pci-host/q35.c
  
  //
  // B/D/F/Type: 0/0/0/PCI
+diff --git a/OvmfPkg/Include/IndustryStandard/QemuPciBridgeCapabilities.h b/OvmfPkg/Include/IndustryStandard/QemuPciBridgeCapabilities.h
+index a70b99f..4b1db74 100644
+--- a/OvmfPkg/Include/IndustryStandard/QemuPciBridgeCapabilities.h
++++ b/OvmfPkg/Include/IndustryStandard/QemuPciBridgeCapabilities.h
+@@ -18,7 +18,7 @@
+ // The hints apply to PCI Bridges whose PCI_DEVICE_INDEPENDENT_REGION.VendorId
+ // equals the following value.
+ //
+-#define QEMU_PCI_BRIDGE_VENDOR_ID_REDHAT  0x1B36
++#define QEMU_PCI_BRIDGE_VENDOR_ID_REDHAT  0x1022 // "Red Hat, Inc." | AMD Vendor ID Replacement from 0x1b36
+ 
+ //
+ // Common capability header for all hints.
 diff --git a/OvmfPkg/QemuVideoDxe/Driver.c b/OvmfPkg/QemuVideoDxe/Driver.c
 index 6feca83..a8d3313 100644
 --- a/OvmfPkg/QemuVideoDxe/Driver.c
@@ -235,6 +248,29 @@ index 6feca83..a8d3313 100644
      0x0405,
      QEMU_VIDEO_VMWARE_SVGA,
      L"QEMU VMWare SVGA"
+diff --git a/OvmfPkg/SmbiosPlatformDxe/SmbiosPlatformDxe.c b/OvmfPkg/SmbiosPlatformDxe/SmbiosPlatformDxe.c
+index e929da6..026d3e9 100644
+--- a/OvmfPkg/SmbiosPlatformDxe/SmbiosPlatformDxe.c
++++ b/OvmfPkg/SmbiosPlatformDxe/SmbiosPlatformDxe.c
+@@ -38,9 +38,15 @@ STATIC CONST SMBIOS_TABLE_TYPE0  mOvmfDefaultType0 = {
+   },
+   {      // BIOSCharacteristicsExtensionBytes[2]
+     0,   // BiosReserved
+-    0x1C // SystemReserved = VirtualMachineSupported |
+-    //                  UefiSpecificationSupported |
+-    //                  TargetContentDistributionEnabled
++    0x0D // SystemReserved = Hex2Binary = 0b00001101
++    //                       Bit0 = BIOS Boot Specification supported - 1 (Yes)
++    //                       Bit1 = Function key-initiated Network Service boot supported - 0 (No)
++    //                       Bit2 = Enable Targeted Content Distribution - 1 (Yes)
++    //                       Bit3 = UEFI Specification is supported - 1 (Yes)
++    //                       Bit4 = SMBIOS table describes a virtual machine - 0 (No)
++    //                       Bit5 = Manufacturing mode is supported. - 0 (No)
++    //                       Bit6 = Manufacturing mode is enabled. - 0 (No)
++    //                       Bit7 = Reserved for future assignment by this specification. - 0 (No)
+   },
+   0,     // UINT8                     SystemBiosMajorRelease
+   0,     // UINT8                     SystemBiosMinorRelease
 diff --git a/ShellPkg/ShellPkg.dec b/ShellPkg/ShellPkg.dec
 index 18df262..c0a6962 100644
 --- a/ShellPkg/ShellPkg.dec
