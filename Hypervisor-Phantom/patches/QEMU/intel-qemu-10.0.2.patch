@@ -1917,6 +1917,19 @@ index 1fb59cf404..53da8be63e 100644
      dc->vmsd           = &vmstate_u2f_key;
  }
  
+diff --git a/pc-bios/optionrom/optionrom.h b/pc-bios/optionrom/optionrom.h
+index 7bcdf0e..9c2a417 100644
+--- a/pc-bios/optionrom/optionrom.h
++++ b/pc-bios/optionrom/optionrom.h
+@@ -43,7 +43,7 @@
+ #define FW_CFG_DMA_CTL_SELECT  0x08
+ #define FW_CFG_DMA_CTL_WRITE   0x10
+ 
+-#define FW_CFG_DMA_SIGNATURE 0x51454d5520434647ULL /* "QEMU CFG" */
++#define FW_CFG_DMA_SIGNATURE 0x51434f4d20434647ULL /* "QCOM CFG" */
+ 
+ #define BIOS_CFG_DMA_ADDR_HIGH  0x514
+ #define BIOS_CFG_DMA_ADDR_LOW   0x518
 diff --git a/hw/vfio/ap.c b/hw/vfio/ap.c
 index c7ab4ff57a..9bb3cf437e 100644
 --- a/hw/vfio/ap.c
