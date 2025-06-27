@@ -70,19 +70,19 @@ print_system_info() {
     local show_output=0
     local output=""
 
-    # UEFI check
-    if [ -d /sys/firmware/efi ]; then
-        output+="\n  [✅] UEFI Firmware: Enabled"
+    # CPU Virtualization (Intel VT-x/AMD-V) - Required for KVM (hardware-assisted virtualization)
+    if grep -qE 'vmx|svm' /proc/cpuinfo; then
+        output+="\n  [✅] VT-x/AMD-V: Supported"
     else
-        output+="\n  [❌] UEFI Firmware: Disabled"
+        output+="\n  [❌] VT-x/AMD-V: Not supported"
         show_output=1
     fi
 
-    # CPU virtualization (Intel VT-x / AMD-V)
-    if grep -qE 'vmx|svm' /proc/cpuinfo; then
-        output+="\n  [✅] VT-x / AMD-V: Supported"
+    # IOMMU (VT-d/AMD-Vi) - Required for PCIe/GPU Passthrough
+    if grep -qE "iommu=on" /proc/cmdline; then
+        output+="\n  [✅] VT-d/AMD-Vi (IOMMU): Enabled"
     else
-        output+="\n  [❌] VT-x / AMD-V: Not supported"
+        output+="\n  [❌] VT-d/AMD-Vi (IOMMU): Not enabled"
         show_output=1
     fi
 
@@ -91,14 +91,6 @@ print_system_info() {
         output+="\n  [✅] KVM Kernel Module: Loaded"
     else
         output+="\n  [❌] KVM Kernel Module: Not loaded"
-        show_output=1
-    fi
-
-    # IOMMU check
-    if grep -qE "intel_iommu=on|amd_iommu=on" /proc/cmdline; then
-        output+="\n  [✅] IOMMU: Enabled (via kernel cmdline)"
-    else
-        output+="\n  [❌] IOMMU: Not enabled (missing in kernel cmdline)"
         show_output=1
     fi
 
