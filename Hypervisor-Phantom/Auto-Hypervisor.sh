@@ -72,9 +72,9 @@ print_system_info() {
 
     # CPU Virtualization (Intel VT-x/AMD-V) - Required for KVM (hardware-assisted virtualization)
     if grep -qE 'vmx|svm' /proc/cpuinfo; then
-        output+="\n  [✅] VT-x/AMD-V: Supported"
+        output+="\n  [✅] VT-x/AMD-V (Virtualization): Supported"
     else
-        output+="\n  [❌] VT-x/AMD-V: Not supported"
+        output+="\n  [❌] VT-x/AMD-V (Virtualization): Not supported"
         show_output=1
     fi
 
