@@ -34,7 +34,7 @@ isolate_gpu() {
           done); hwids=${hwids%,}
 
   printf 'options vfio-pci ids=%s\nsoftdep nvidia pre: vfio-pci\n' "$hwids" | \
-    sudo tee /etc/modprobe.d/vfio.conf >/dev/null
+    sudo tee $VFIO_CONF_PATH >/dev/null
 
   export hwids; readonly hwids
 }
@@ -57,7 +57,7 @@ configure_bootloader() {
     if [[ -f "/etc/default/grub" ]]; then
         fmtr::log "Configuring GRUB"
         sudo cp /etc/default/grub{,.bak}
-        sudo sed -i "s/GRUB_CMDLINE_LINUX_DEFAULT=\"/& $iommu_setting iommu=pt vfio-pci.ids=$HWID /" /etc/default/grub
+        sudo sed -i "s/GRUB_CMDLINE_LINUX_DEFAULT=\"/& $iommu_setting iommu=pt vfio-pci.ids=$hwids /" /etc/default/grub
         sudo grub-mkconfig -o /boot/grub/grub.cfg || fmtr::warn "Manual GRUB update required"
     else
         local location config_file
@@ -72,7 +72,7 @@ configure_bootloader() {
 
             fmtr::log "Modifying systemd-boot config: $config_file"
             sudo cp "$config_file" "${config_file}.bak"
-            echo "options $iommu_setting iommu=pt vfio-pci.ids=$HWID" | sudo tee -a "$config_file" &>> "$LOG_FILE"
+            echo "options $iommu_setting iommu=pt vfio-pci.ids=$hwids" | sudo tee -a "$config_file" &>> "$LOG_FILE"
 
             if [[ -f "/boot/loader/loader.conf" ]]; then
                 sudo sed -i "s/^default.*/default $(basename "$config_file")/" /boot/loader/loader.conf
