@@ -14,29 +14,35 @@ declare -a SDBOOT_CONF_LOCATIONS=(
 )
 
 isolate_gpu() {
-  mapfile -t gpus < <(for d in /sys/bus/pci/devices/*; do
-    [[ $(<"$d/class") == 0x03* ]] &&
-      printf '%s %s\n' "$d" \
-        "$(lspci -s ${d##*/} | grep -oP '\[\K[^\]]+(?=\])')"
-  done)
+    mapfile -t gpus < <(for d in /sys/bus/pci/devices/*; do
+        [[ $(<"$d/class") == 0x03* ]] &&
+        printf '%s %s\n' "$d" \
+            "$(lspci -s ${d##*/} | grep -oP '\[\K[^\]]+(?=\])')"
+    done)
 
-  for i in "${!gpus[@]}"; do
-    printf '  %d) %s\n' $((i+1)) "${gpus[i]#* }"
-  done
-  read -rp "$(fmtr::ask 'Select device number: ')" sel; ((sel--))
+    for i in "${!gpus[@]}"; do
+        printf '\n  %d) %s\n' $((i+1)) "${gpus[i]#* }"
+    done
+    read -rp "$(fmtr::ask 'Select device number: ')" sel; ((sel--))
 
-  local busid=${gpus[sel]%% *}; busid=${busid##*/}
-  local group=$(basename "$(readlink -f /sys/bus/pci/devices/$busid/iommu_group)")
+    local busid=${gpus[sel]%% *}; busid=${busid##*/}
+    local group=$(basename "$(readlink -f /sys/bus/pci/devices/$busid/iommu_group)")
 
-  local hwids=$(for d in /sys/kernel/iommu_groups/$group/devices/*; do
-            ven=$(<"$d/vendor"); dev=$(<"$d/device")
-            printf '%s:%s,' "${ven#0x}" "${dev#0x}"
-          done); hwids=${hwids%,}
+    hwids=$(for d in /sys/kernel/iommu_groups/$group/devices/*; do
+                ven=$(<"$d/vendor"); dev=$(<"$d/device")
+                printf '%s:%s,' "${ven#0x}" "${dev#0x}"
+            done); hwids=${hwids%,}
 
-  printf 'options vfio-pci ids=%s\nsoftdep nvidia pre: vfio-pci\n' "$hwids" | \
-    sudo tee $VFIO_CONF_PATH >/dev/null
+    fmtr::log "Modifying VFIO config: $VFIO_CONF_PATH"
 
-  export hwids; readonly hwids
+    if [[ $(<"/sys/bus/pci/devices/$busid/vendor") == "0x10de" ]]; then
+    printf 'options vfio-pci ids=%s\nsoftdep nvidia pre: vfio-pci\n' "$hwids" | \
+        sudo tee $VFIO_CONF_PATH >/dev/null
+    else
+    printf 'options vfio-pci ids=%s\n' "$hwids" | sudo tee $VFIO_CONF_PATH >/dev/null
+    fi
+
+    export hwids; readonly hwids
 }
 
 configure_bootloader() {
@@ -70,13 +76,17 @@ configure_bootloader() {
         [[ -z "$config_file" ]] && fmtr::warn "No configuration file found in $location" && continue
 
         fmtr::log "Modifying systemd-boot config: $config_file"
-        sudo cp "$config_file" "${config_file}.bak"
-        if grep -q "^options " "$config_file"; then
-            sudo sed -i "s|^options .*|options ${kernel_opts}|" "$config_file"
-        else
-            echo "options ${kernel_opts}" | sudo tee -a "$config_file" &>> "$LOG_FILE"
+
+        # Remove any vfio/iommu params from all options lines
+        sudo sed -i -E \
+            -e '/^options /s/(amd_iommu=on|intel_iommu=on|iommu=pt|vfio-pci.ids=[^ ]*)//g' \
+            -e '/^options[[:space:]]*$/d' \
+            "$config_file"
+
+        # Add vfio options on a new line, if not already present
+        if ! grep -q "^options[[:space:]]\+${kernel_opts}" "$config_file"; then
+            echo "options ${kernel_opts}" | sudo tee -a "$config_file" >/dev/null
         fi
-        grep "^options" "$config_file" | tee -a "$LOG_FILE"
 
         if [[ -f "/boot/loader/loader.conf" ]]; then
             sudo sed -i "s/^default.*/default $(basename "$config_file")/" /boot/loader/loader.conf
@@ -90,33 +100,29 @@ configure_bootloader() {
     return 1
 }
 
-regenerate_ramdisks() {
+rebuild_boot_configs() {
     if [[ "$BOOTLOADER_TYPE" != "grub" ]]; then
-        fmtr::log "Ramdisk regeneration not required for non-GRUB bootloaders."
+        fmtr::log "Bootloader config rebuild not required for non-GRUB bootloaders."
         return 0
     fi
 
-    fmtr::log "Regenerating ramdisk for GRUB-based system ($DISTRO)."
+    fmtr::log "Updating bootloader configuration for GRUB-based system ($DISTRO)."
     case "$DISTRO" in
         Arch)
-            sudo mkinitcpio -P &>> "$LOG_FILE" && fmtr::log "mkinitcpio ramdisk updated."
-            sudo grub-mkconfig -o /boot/grub/grub.cfg &>> "$LOG_FILE" && fmtr::log "GRUB configuration updated."
+            sudo grub-mkconfig -o /boot/grub/grub.cfg &>> "$LOG_FILE" && fmtr::log "Bootloader configuration updated."
             ;;
         Debian)
-            sudo update-initramfs -u &>> "$LOG_FILE" && fmtr::log "initramfs updated."
-            sudo update-grub &>> "$LOG_FILE" && fmtr::log "GRUB configuration updated."
+            sudo update-grub &>> "$LOG_FILE" && fmtr::log "Bootloader configuration updated."
             ;;
-        Fedora|openSUSE*)
-            sudo dracut -f &>> "$LOG_FILE" && fmtr::log "dracut ramdisk updated."
-            # openSUSE sometimes uses grub2-mkconfig instead
+        Fedora|openSUSE)
             if command -v grub2-mkconfig &>/dev/null; then
-                sudo grub2-mkconfig -o /boot/grub2/grub.cfg &>> "$LOG_FILE" && fmtr::log "GRUB2 configuration updated."
+                sudo grub2-mkconfig -o /boot/grub2/grub.cfg &>> "$LOG_FILE" && fmtr::log "Bootloader configuration updated."
             elif command -v grub-mkconfig &>/dev/null; then
-                sudo grub-mkconfig -o /boot/grub/grub.cfg &>> "$LOG_FILE" && fmtr::log "GRUB configuration updated."
+                sudo grub-mkconfig -o /boot/grub/grub.cfg &>> "$LOG_FILE" && fmtr::log "Bootloader configuration updated."
             fi
             ;;
         *)
-            fmtr::error "Unsupported distro for ramdisk regeneration: $DISTRO"
+            fmtr::error "Unsupported distro for bootloader config rebuild: $DISTRO"
             return 1
             ;;
     esac
@@ -125,7 +131,7 @@ regenerate_ramdisks() {
 
 revert_vfio() {
     if [[ -f "$VFIO_CONF_PATH" ]]; then
-        sudo rm -v "$VFIO_CONF_PATH" | tee -a "$LOG_FILE"
+        sudo rm -v "$VFIO_CONF_PATH" | tee -a &>> "$LOG_FILE"
     else
         fmtr::log "$VFIO_CONF_PATH doesn't exist; nothing to remove."
     fi
@@ -178,13 +184,13 @@ if prmt::yes_or_no "$(fmtr::ask 'Configure VFIO now?')"; then
     fi
 fi
 
-# Prompt 3: Proceed with regenerating ramdisks?
-if prmt::yes_or_no "$(fmtr::ask 'Proceed with regenerating ramdisks?')"; then
-    if ! regenerate_ramdisks; then
-        fmtr::log "Failed to regenerate ramdisks."
+# Prompt 3: Proceed with updating bootloader config?
+if prmt::yes_or_no "$(fmtr::ask 'Proceed with rebuilding bootloader config?')"; then
+    if ! rebuild_boot_configs; then
+        fmtr::log "Failed to update bootloader configuration."
         exit 1
     fi
     fmtr::warn "REBOOT required for changes to take effect"
 else
-    fmtr::warn "Proceeding without regenerating ramdisks."
+    fmtr::warn "Proceeding without updating bootloader configuration."
 fi
