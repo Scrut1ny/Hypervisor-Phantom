@@ -14,57 +14,29 @@ declare -a SDBOOT_CONF_LOCATIONS=(
 )
 
 isolate_gpu() {
-    local choice pci_devices selection bus_number hwid
-    local all_devices
-    all_devices=$(lspci)
+  mapfile -t gpus < <(for d in /sys/bus/pci/devices/*; do
+    [[ $(<"$d/class") == 0x03* ]] &&
+      printf '%s %s\n' "$d"                       \
+        "$(lspci -s ${d##*/} | grep -oP '\[\K[^\]]+(?=\])')"
+  done)
 
-    while true; do
-        fmtr::log "Select device type:
+  for i in "${!gpus[@]}"; do
+    printf '  %d) %s\n' $((i+1)) "${gpus[i]#* }"
+  done
+  read -rp "$(fmtr::ask 'Select device number: ')" sel; ((sel--))
 
-  1) GPUs/iGPUs
-  2) Cancel (restart script)"
-        read -rp "$(fmtr::ask 'Enter choice (1-2): ')" choice
+  busid=${gpus[sel]%% *}; busid=${busid##*/}
+  group=$(basename "$(readlink -f /sys/bus/pci/devices/$busid/iommu_group)")
 
-        [[ ! "$choice" =~ ^[1-2]$ ]] && { fmtr::warn "Invalid choice"; continue; }
+  hwids=$(for d in /sys/kernel/iommu_groups/$group/devices/*; do
+            ven=$(<"$d/vendor"); dev=$(<"$d/device")
+            printf '%s:%s,' "${ven#0x}" "${dev#0x}"
+          done); hwids=${hwids%,}
 
-        if [[ "$choice" -eq 2 ]]; then
-            clear; fmtr::box_text "VFIO Configuration"; exec "$0"
-        fi
+  printf 'options vfio-pci ids=%s\nsoftdep nvidia pre: vfio-pci\n' "$hwids" | \
+    sudo tee /etc/modprobe.d/vfio.conf >/dev/null
 
-        pci_devices=$(echo "$all_devices" | grep -iE 'vga|3d' | sort)
-        if [[ -z "$pci_devices" ]]; then
-            fmtr::warn "No GPU devices found. Try again."
-            continue
-        fi
-
-        fmtr::log "Available devices:"; echo ""; i=1; while IFS= read -r line; do
-            highlighted=$(echo "$line" | sed -E 's/^[0-9a-f:.]+\s+(VGA compatible controller:|3D controller:)\s*//; s/(\[[^][]+\])/'$'\e[1;33m''\1'$'\e[0m/')
-            printf "  %d) %s\n" "$i" "$highlighted"
-            ((i++))
-        done <<< "$pci_devices"
-
-        read -rp "$(fmtr::ask 'Select device number: ')" selection
-
-        bus_number=$(echo "$pci_devices" | sed -n "${selection}p" | awk '{print $1}' | cut -d: -f1)
-        if [[ -z "$bus_number" ]]; then
-            fmtr::warn "Invalid selection. Please try again."
-            continue
-        fi
-
-        hwid=$(lspci -nn | grep "^${bus_number}:" | sed -E 's/.*\[([0-9a-f:]+)\].*/\1/' | paste -sd, -)
-        if [[ -z "$hwid" ]]; then
-            fmtr::warn "Unable to determine Hardware ID. Please try again."
-            continue
-        fi
-
-        echo -e "options vfio-pci ids=$hwid\nsoftdep nvidia pre: vfio-pci" | sudo tee -a "$VFIO_CONF_PATH" &>> "$LOG_FILE"
-        fmtr::log "Configured $VFIO_CONF_PATH with IDs: $hwid"
-        # Set and export HWID for bootloader configuration.
-        HWID=$hwid
-        export HWID
-        readonly HWID
-        break
-    done
+  export hwids; readonly hwids
 }
 
 configure_bootloader() {

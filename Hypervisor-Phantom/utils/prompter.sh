@@ -26,8 +26,8 @@ function prmt::yes_or_no() {
     read -rp "$(echo -e "${text} [y/n]: ")" answer
     echo "$answer" &>> "$LOG_FILE" # logging
     case "$answer" in
-      [Yy]*) return 0 ;; # Yes
-      [Nn]*) return 1 ;; # No
+      [Yy]*) echo ""; return 0 ;; # Yes
+      [Nn]*) echo ""; return 1 ;; # No
       *) echo -e "\n  [!] Please answer y/n" ;;
     esac
   done
@@ -48,4 +48,21 @@ function prmt::quick_prompt() {
   echo "$response"
 
   echo "$response" &>> "$LOG_FILE" # logging
+}
+
+#######################################################
+# Provides stylized decorations for prompts to the user
+# Globals:
+#   TEXT_BLACK
+#   BACK_BRIGHT_GREEN
+# Arguments:
+#   Question to ask to the user
+# Outputs:
+#   Formatted question for the user to STDOUT
+#######################################################
+function fmtr::ask() {
+  local text="$1"
+  local message="$(fmtr::format_text \
+    '\n  ' "[?]" " ${text}" "$TEXT_BLACK" "$BACK_BRIGHT_GREEN")"
+  echo "$message" | tee -a "$LOG_FILE"
 }

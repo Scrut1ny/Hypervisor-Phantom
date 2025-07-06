@@ -62,23 +62,6 @@ function fmtr::format_text() {
   echo -e "${prefix}${codes// /}${text}${RESET}${suffix}"
 }
 
-#######################################################
-# Provides stylized decorations for prompts to the user
-# Globals:
-#   TEXT_BLACK
-#   BACK_BRIGHT_GREEN
-# Arguments:
-#   Question to ask to the user
-# Outputs:
-#   Formatted question for the user to STDOUT
-#######################################################
-function fmtr::ask() {
-  local text="$1"
-  local message="$(fmtr::format_text \
-    '\n  ' "[?]" " ${text}" "$TEXT_BLACK" "$BACK_BRIGHT_GREEN")"
-  echo "$message" | tee -a "$LOG_FILE"
-}
-
 ################################################
 # Provides stylized decorations for log messages
 # Globals:
