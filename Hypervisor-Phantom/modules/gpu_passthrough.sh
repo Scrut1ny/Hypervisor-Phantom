@@ -25,10 +25,10 @@ isolate_gpu() {
   done
   read -rp "$(fmtr::ask 'Select device number: ')" sel; ((sel--))
 
-  busid=${gpus[sel]%% *}; busid=${busid##*/}
-  group=$(basename "$(readlink -f /sys/bus/pci/devices/$busid/iommu_group)")
+  local busid=${gpus[sel]%% *}; busid=${busid##*/}
+  local group=$(basename "$(readlink -f /sys/bus/pci/devices/$busid/iommu_group)")
 
-  hwids=$(for d in /sys/kernel/iommu_groups/$group/devices/*; do
+  local hwids=$(for d in /sys/kernel/iommu_groups/$group/devices/*; do
             ven=$(<"$d/vendor"); dev=$(<"$d/device")
             printf '%s:%s,' "${ven#0x}" "${dev#0x}"
           done); hwids=${hwids%,}
@@ -40,24 +40,16 @@ isolate_gpu() {
 }
 
 configure_bootloader() {
-    local iommu_setting
-    case "$VENDOR_ID" in
-        *AuthenticAMD*)
-            iommu_setting="amd_iommu=on"
-            ;;
-        *GenuineIntel*)
-            iommu_setting="intel_iommu=on"
-            ;;
-        *)
-            fmtr::error "Unknown CPU vendor"
-            exit 1
-            ;;
-    esac
+    declare -r CPU_VENDOR=$(case "$VENDOR_ID" in
+        *AuthenticAMD*) echo "amd" ;;
+        *GenuineIntel*) echo "intel" ;;
+        *) fmtr::error "Unknown CPU Vendor ID."; exit 1 ;;
+    esac)
 
     if [[ -f "/etc/default/grub" ]]; then
         fmtr::log "Configuring GRUB"
         sudo cp /etc/default/grub{,.bak}
-        sudo sed -i "s/GRUB_CMDLINE_LINUX_DEFAULT=\"/& $iommu_setting iommu=pt vfio-pci.ids=$hwids /" /etc/default/grub
+        sudo sed -i "s/GRUB_CMDLINE_LINUX_DEFAULT=\"/& ${CPU_VENDOR}_iommu=on iommu=pt vfio-pci.ids=$hwids /" /etc/default/grub
         sudo grub-mkconfig -o /boot/grub/grub.cfg || fmtr::warn "Manual GRUB update required"
     else
         local location config_file
@@ -72,7 +64,7 @@ configure_bootloader() {
 
             fmtr::log "Modifying systemd-boot config: $config_file"
             sudo cp "$config_file" "${config_file}.bak"
-            echo "options $iommu_setting iommu=pt vfio-pci.ids=$hwids" | sudo tee -a "$config_file" &>> "$LOG_FILE"
+            echo "options ${CPU_VENDOR}_iommu=on iommu=pt vfio-pci.ids=$hwids" | sudo tee -a "$config_file" &>> "$LOG_FILE"
 
             if [[ -f "/boot/loader/loader.conf" ]]; then
                 sudo sed -i "s/^default.*/default $(basename "$config_file")/" /boot/loader/loader.conf
@@ -111,7 +103,7 @@ revert_vfio() {
     if [[ -f "$VFIO_CONF_PATH" ]]; then
         sudo rm -v "$VFIO_CONF_PATH" | tee -a &>> "$LOG_FILE"
     else
-        fmtr::log "$VFIO_CONF_PATH does not exist; nothing to remove."
+        fmtr::log "$VFIO_CONF_PATH doesn't exist; nothing to remove."
     fi
 
     if [[ -f "/etc/default/grub" ]]; then
