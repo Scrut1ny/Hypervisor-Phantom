@@ -40,59 +40,83 @@ isolate_gpu() {
 }
 
 configure_bootloader() {
-    declare -r CPU_VENDOR=$(case "$VENDOR_ID" in
-        *AuthenticAMD*) echo "amd" ;;
-        *GenuineIntel*) echo "intel" ;;
-        *) fmtr::error "Unknown CPU Vendor ID."; exit 1 ;;
-    esac)
+    local cpu_vendor kernel_opts boot_mode=""
+
+    case "$VENDOR_ID" in
+        *AuthenticAMD*) cpu_vendor="amd" ;;
+        *GenuineIntel*) cpu_vendor="intel" ;;
+        *) fmtr::error "Unknown CPU Vendor ID."; return 1 ;;
+    esac
+    kernel_opts="${cpu_vendor}_iommu=on iommu=pt vfio-pci.ids=${hwids}"
 
     if [[ -f "/etc/default/grub" ]]; then
+        boot_mode="grub"
         fmtr::log "Configuring GRUB"
         sudo cp /etc/default/grub{,.bak}
-        sudo sed -i "s/GRUB_CMDLINE_LINUX_DEFAULT=\"/& ${CPU_VENDOR}_iommu=on iommu=pt vfio-pci.ids=$hwids /" /etc/default/grub
-        sudo grub-mkconfig -o /boot/grub/grub.cfg || fmtr::warn "Manual GRUB update required"
-    else
-        local location config_file
-        for location in "${SDBOOT_CONF_LOCATIONS[@]}"; do
-            [[ -d "$location" ]] || continue
-
-            config_file=$(sudo find "$location" -maxdepth 1 -name '*.conf' ! -name '*-fallback.conf' -print -quit)
-            if [[ -z "$config_file" ]]; then
-                fmtr::warn "No configuration file found in $location"
-                continue
-            fi
-
-            fmtr::log "Modifying systemd-boot config: $config_file"
-            sudo cp "$config_file" "${config_file}.bak"
-            echo "options ${CPU_VENDOR}_iommu=on iommu=pt vfio-pci.ids=$hwids" | sudo tee -a "$config_file" &>> "$LOG_FILE"
-
-            if [[ -f "/boot/loader/loader.conf" ]]; then
-                sudo sed -i "s/^default.*/default $(basename "$config_file")/" /boot/loader/loader.conf
-            fi
-            return 0
-        done
-        fmtr::warn "No bootloader configuration found."
-        return 1
+        if ! grep -q "${kernel_opts}" /etc/default/grub; then
+            sudo sed -i "s|\(GRUB_CMDLINE_LINUX_DEFAULT=\"[^\"]*\)|\1 ${kernel_opts}|" /etc/default/grub
+            sudo grub-mkconfig -o /boot/grub/grub.cfg || fmtr::warn "Manual GRUB update may be required."
+        else
+            fmtr::log "Kernel options already present in GRUB config."
+        fi
+        export BOOTLOADER_TYPE="grub"
+        return 0
     fi
+
+    for location in "${SDBOOT_CONF_LOCATIONS[@]}"; do
+        [[ -d "$location" ]] || continue
+        local config_file
+        config_file=$(sudo find "$location" -maxdepth 1 -name '*.conf' ! -name '*-fallback.conf' -print -quit)
+        [[ -z "$config_file" ]] && fmtr::warn "No configuration file found in $location" && continue
+
+        fmtr::log "Modifying systemd-boot config: $config_file"
+        sudo cp "$config_file" "${config_file}.bak"
+        if grep -q "^options " "$config_file"; then
+            sudo sed -i "s|^options .*|options ${kernel_opts}|" "$config_file"
+        else
+            echo "options ${kernel_opts}" | sudo tee -a "$config_file" &>> "$LOG_FILE"
+        fi
+        grep "^options" "$config_file" | tee -a "$LOG_FILE"
+
+        if [[ -f "/boot/loader/loader.conf" ]]; then
+            sudo sed -i "s/^default.*/default $(basename "$config_file")/" /boot/loader/loader.conf
+        fi
+        export BOOTLOADER_TYPE="systemd-boot"
+        return 0
+    done
+
+    fmtr::warn "No bootloader configuration found."
+    export BOOTLOADER_TYPE=""
+    return 1
 }
 
 regenerate_ramdisks() {
+    if [[ "$BOOTLOADER_TYPE" != "grub" ]]; then
+        fmtr::log "Ramdisk regeneration not required for non-GRUB bootloaders."
+        return 0
+    fi
+
+    fmtr::log "Regenerating ramdisk for GRUB-based system ($DISTRO)."
     case "$DISTRO" in
         Arch)
-            sudo mkinitcpio -P &>> "$LOG_FILE"
-            command -v grub-mkconfig &>/dev/null && sudo grub-mkconfig -o /boot/grub/grub.cfg
-            command -v reinstall-kernels &>/dev/null && sudo reinstall-kernels
+            sudo mkinitcpio -P &>> "$LOG_FILE" && fmtr::log "mkinitcpio ramdisk updated."
+            sudo grub-mkconfig -o /boot/grub/grub.cfg &>> "$LOG_FILE" && fmtr::log "GRUB configuration updated."
             ;;
         Debian)
-            sudo update-initramfs -u &>> "$LOG_FILE"
-            sudo update-grub
+            sudo update-initramfs -u &>> "$LOG_FILE" && fmtr::log "initramfs updated."
+            sudo update-grub &>> "$LOG_FILE" && fmtr::log "GRUB configuration updated."
             ;;
-        openSUSE|Fedora)
-            sudo grub2-mkconfig -o /boot/grub2/grub.cfg &>> "$LOG_FILE"
-            sudo dracut -f &>> "$LOG_FILE"
+        Fedora|openSUSE*)
+            sudo dracut -f &>> "$LOG_FILE" && fmtr::log "dracut ramdisk updated."
+            # openSUSE sometimes uses grub2-mkconfig instead
+            if command -v grub2-mkconfig &>/dev/null; then
+                sudo grub2-mkconfig -o /boot/grub2/grub.cfg &>> "$LOG_FILE" && fmtr::log "GRUB2 configuration updated."
+            elif command -v grub-mkconfig &>/dev/null; then
+                sudo grub-mkconfig -o /boot/grub/grub.cfg &>> "$LOG_FILE" && fmtr::log "GRUB configuration updated."
+            fi
             ;;
         *)
-            fmtr::error "Unsupported distro"
+            fmtr::error "Unsupported distro for ramdisk regeneration: $DISTRO"
             return 1
             ;;
     esac
@@ -101,7 +125,7 @@ regenerate_ramdisks() {
 
 revert_vfio() {
     if [[ -f "$VFIO_CONF_PATH" ]]; then
-        sudo rm -v "$VFIO_CONF_PATH" | tee -a &>> "$LOG_FILE"
+        sudo rm -v "$VFIO_CONF_PATH" | tee -a "$LOG_FILE"
     else
         fmtr::log "$VFIO_CONF_PATH doesn't exist; nothing to remove."
     fi
@@ -109,9 +133,9 @@ revert_vfio() {
     if [[ -f "/etc/default/grub" ]]; then
         sudo sed -i '/GRUB_CMDLINE_LINUX_DEFAULT=/s/\(amd_iommu\|intel_iommu\|iommu\|vfio-pci.ids\)=[^ "]*//g' /etc/default/grub
     else
-        local location config_file
         for location in "${SDBOOT_CONF_LOCATIONS[@]}"; do
             [[ -d "$location" ]] || continue
+            local config_file
             config_file=$(sudo find "$location" -maxdepth 1 -name '*.conf' ! -name '*-fallback.conf' -print -quit)
             [[ -z "$config_file" ]] && continue
             sudo sed -i -e '/options/ s/\(amd_iommu\|intel_iommu\|iommu\|vfio-pci.ids\)=[^ ]*//g' \
@@ -120,7 +144,8 @@ revert_vfio() {
     fi
 }
 
-# Prompt 0: Important disclaimer
+# ----- PROMPTS -----
+
 fmtr::warn "DISCLAIMER: This VFIO script automates GPU isolation, bootloader reconfiguration, and
       ramdisk regeneration. Due to potential IOMMU grouping issues on some motherboards, this
       process may not execute correctly and could mess up your system. So I highly encourage
