@@ -16,7 +16,7 @@ declare -a SDBOOT_CONF_LOCATIONS=(
 isolate_gpu() {
   mapfile -t gpus < <(for d in /sys/bus/pci/devices/*; do
     [[ $(<"$d/class") == 0x03* ]] &&
-      printf '%s %s\n' "$d"                       \
+      printf '%s %s\n' "$d" \
         "$(lspci -s ${d##*/} | grep -oP '\[\K[^\]]+(?=\])')"
   done)
 
