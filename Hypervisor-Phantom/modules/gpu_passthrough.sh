@@ -14,6 +14,8 @@ declare -a SDBOOT_CONF_LOCATIONS=(
 )
 
 isolate_gpu() {
+    local gpus sel busid group
+
     mapfile -t gpus < <(for d in /sys/bus/pci/devices/*; do
         [[ $(<"$d/class") == 0x03* ]] &&
         printf '%s %s\n' "$d" \
@@ -25,8 +27,8 @@ isolate_gpu() {
     done
     read -rp "$(fmtr::ask 'Select device number: ')" sel; ((sel--))
 
-    local busid=${gpus[sel]%% *}; busid=${busid##*/}
-    local group=$(basename "$(readlink -f /sys/bus/pci/devices/$busid/iommu_group)")
+    busid=$(basename "${gpus[sel]%% *}")
+    group=$(basename "$(readlink -f "/sys/bus/pci/devices/$busid/iommu_group")")
 
     hwids=$(for d in /sys/kernel/iommu_groups/$group/devices/*; do
                 ven=$(<"$d/vendor"); dev=$(<"$d/device")
@@ -36,13 +38,11 @@ isolate_gpu() {
     fmtr::log "Modifying VFIO config: $VFIO_CONF_PATH"
 
     if [[ $(<"/sys/bus/pci/devices/$busid/vendor") == "0x10de" ]]; then
-    printf 'options vfio-pci ids=%s\nsoftdep nvidia pre: vfio-pci\n' "$hwids" | \
-        sudo tee $VFIO_CONF_PATH >/dev/null
+        printf 'options vfio-pci ids=%s\nsoftdep nvidia pre: vfio-pci\n' "$hwids" | \
+            sudo tee $VFIO_CONF_PATH >/dev/null
     else
-    printf 'options vfio-pci ids=%s\n' "$hwids" | sudo tee $VFIO_CONF_PATH >/dev/null
+        printf 'options vfio-pci ids=%s\n' "$hwids" | sudo tee $VFIO_CONF_PATH >/dev/null
     fi
-
-    export hwids; readonly hwids
 }
 
 configure_bootloader() {
