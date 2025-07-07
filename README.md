@@ -240,9 +240,9 @@ chmod -R +x *
 <details>
 <summary>Bypassing HDCP</summary>
 
-#### HDCP (High-bandwidth Digital Content Protection)
-- [HDCP](https://en.wikipedia.org/wiki/High-bandwidth_Digital_Content_Protection)
-- [HDCP: Versions](https://en.wikipedia.org/wiki/High-bandwidth_Digital_Content_Protection#Versions)
+#### HDCP (High-bandwidth Digital Content Protection) Stuff
+- [Wikipedia - HDCP](https://en.wikipedia.org/wiki/High-bandwidth_Digital_Content_Protection)
+- [NVIDIA - To verify if your system is HDCP-capable](https://www.nvidia.com/content/Control-Panel-Help/vLatest/en-us/mergedProjects/Display/To_verify_if_your_system_is_HDCP-capable.htm)
 
 ## Bypassing HDCP Hardware/Software Diagram:
 ![bypass](https://github.com/Scrut1ny/Hypervisor-Phantom/assets/53458032/589b0f88-f14b-44d8-bf1c-225df4d01e54)
