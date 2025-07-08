@@ -105,26 +105,16 @@ rebuild_boot_configs() {
         return 0
     fi
 
-    fmtr::log "Updating bootloader configuration for GRUB-based system ($DISTRO)."
-    case "$DISTRO" in
-        Arch)
-            sudo grub-mkconfig -o /boot/grub/grub.cfg &>> "$LOG_FILE" && fmtr::log "Bootloader configuration updated."
-            ;;
-        Debian)
-            sudo update-grub &>> "$LOG_FILE" && fmtr::log "Bootloader configuration updated."
-            ;;
-        Fedora|openSUSE)
-            if command -v grub2-mkconfig &>/dev/null; then
-                sudo grub2-mkconfig -o /boot/grub2/grub.cfg &>> "$LOG_FILE" && fmtr::log "Bootloader configuration updated."
-            elif command -v grub-mkconfig &>/dev/null; then
-                sudo grub-mkconfig -o /boot/grub/grub.cfg &>> "$LOG_FILE" && fmtr::log "Bootloader configuration updated."
-            fi
-            ;;
-        *)
-            fmtr::error "Unsupported distro for bootloader config rebuild: $DISTRO"
-            return 1
-            ;;
-    esac
+    fmtr::log "Updating bootloader configuration for GRUB."
+
+    if command -v grub2-mkconfig &>/dev/null; then
+        sudo grub2-mkconfig -o /boot/grub2/grub.cfg &>> "$LOG_FILE" && fmtr::log "Bootloader configuration updated."
+    elif command -v grub-mkconfig &>/dev/null; then
+        sudo grub-mkconfig -o /boot/grub/grub.cfg &>> "$LOG_FILE" && fmtr::log "Bootloader configuration updated."
+    else
+        fmtr::error "No known GRUB configuration command found on this system."
+        return 1
+    fi
     return 0
 }
 
