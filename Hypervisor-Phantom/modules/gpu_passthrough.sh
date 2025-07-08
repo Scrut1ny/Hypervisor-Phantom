@@ -107,15 +107,15 @@ rebuild_boot_configs() {
 
     fmtr::log "Updating bootloader configuration for GRUB."
 
-    if command -v grub2-mkconfig &>/dev/null; then
-        sudo grub2-mkconfig -o /boot/grub2/grub.cfg &>> "$LOG_FILE" && fmtr::log "Bootloader configuration updated."
-    elif command -v grub-mkconfig &>/dev/null; then
-        sudo grub-mkconfig -o /boot/grub/grub.cfg &>> "$LOG_FILE" && fmtr::log "Bootloader configuration updated."
-    else
-        fmtr::error "No known GRUB configuration command found on this system."
-        return 1
-    fi
-    return 0
+    for prefix in "" "2"; do
+        if command -v grub${prefix}-mkconfig &>/dev/null; then
+            sudo grub${prefix}-mkconfig -o /boot/grub${prefix}/grub.cfg &>> "$LOG_FILE" && fmtr::log "Bootloader configuration updated."
+            return 0
+        fi
+    done
+
+    fmtr::error "No known GRUB configuration command found on this system."
+    return 1
 }
 
 revert_vfio() {
