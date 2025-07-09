@@ -13,7 +13,7 @@ declare -a SDBOOT_CONF_LOCATIONS=(
     "/efi/loader/entries"
 )
 
-isolate_gpu() {
+configure_vfio() {
     local gpus sel busid group
 
     mapfile -t gpus < <(for d in /sys/bus/pci/devices/*; do
@@ -21,36 +21,39 @@ isolate_gpu() {
         printf '%s %s\n' "$d" "$(lspci -s ${d##*/} | grep -oP '\[\K[^\]]+(?=\])')"
     done)
 
-    for i in "${!gpus[@]}"; do
-        printf '\n  %d) %s\n' $((i+1)) "${gpus[i]#* }"
+    while true; do
+        for i in "${!gpus[@]}"; do
+            printf '\n  %d) %s\n' $((i+1)) "${gpus[i]#* }"
+        done
+        read -rp "$(fmtr::ask 'Select device number: ')" sel; ((sel--))
+        if (( sel >= 0 && sel < ${#gpus[@]} )); then
+            break
+        fi
+        fmtr::error "Invalid selection. Please choose a valid number."
     done
-    read -rp "$(fmtr::ask 'Select device number: ')" sel; ((sel--))
 
-    busid=$(basename "${gpus[sel]%% *}")
-    group=$(basename "$(readlink -f "/sys/bus/pci/devices/$busid/iommu_group")")
+    busid="$(basename "${gpus[sel]%% *}")"
+    group="$(basename "$(readlink -f "/sys/bus/pci/devices/$busid/iommu_group")")"
 
     hwids=$(for d in /sys/kernel/iommu_groups/$group/devices/*; do
-                ven=$(<"$d/vendor"); dev=$(<"$d/device")
-                printf '%s:%s,' "${ven#0x}" "${dev#0x}"
-            done); hwids=${hwids%,}
+        printf '%s:%s,' "$(cat "$d/vendor" | cut -c3-)" "$(cat "$d/device" | cut -c3-)"
+    done); hwids="${hwids%,}"
 
     fmtr::log "Modifying VFIO config: $VFIO_CONF_PATH"
 
     if [[ $(<"/sys/bus/pci/devices/$busid/vendor") == "0x10de" ]]; then
-        printf 'options vfio-pci ids=%s\nsoftdep nvidia pre: vfio-pci\n' "$hwids" | \
-            sudo tee $VFIO_CONF_PATH >/dev/null
+        printf 'options vfio-pci ids=%s\nsoftdep nvidia pre: vfio-pci\n' "$hwids" | sudo tee "$VFIO_CONF_PATH" >/dev/null
     else
-        printf 'options vfio-pci ids=%s\n' "$hwids" | sudo tee $VFIO_CONF_PATH >/dev/null
+        printf 'options vfio-pci ids=%s\n' "$hwids" | sudo tee "$VFIO_CONF_PATH" >/dev/null
     fi
 }
 
 configure_bootloader() {
     local cpu_vendor kernel_opts boot_mode=""
-
     case "$VENDOR_ID" in
-        *AuthenticAMD*) cpu_vendor="amd" ;;
-        *GenuineIntel*) cpu_vendor="intel" ;;
-        *) fmtr::error "Unknown CPU Vendor ID."; return 1 ;;
+        *AuthenticAMD*) cpu_vendor="amd";;
+        *GenuineIntel*) cpu_vendor="intel";;
+        *) fmtr::error "Unknown CPU Vendor ID."; return 1;;
     esac
     kernel_opts="${cpu_vendor}_iommu=on iommu=pt vfio-pci.ids=${hwids}"
 
@@ -76,27 +79,12 @@ configure_bootloader() {
 
         fmtr::log "Modifying systemd-boot config: $config_file"
 
-        # Remove any vfio/iommu params from all options lines
         sudo sed -i -E \
             -e '/^options /s/(amd_iommu=on|intel_iommu=on|iommu=pt|vfio-pci.ids=[^ ]*)//g' \
             -e '/^options[[:space:]]*$/d' \
             "$config_file"
-
-        # Add vfio options on a new line, if not already present
-        if ! grep -q "^options[[:space:]]\+${kernel_opts}" "$config_file"; then
-            echo "options ${kernel_opts}" | sudo tee -a "$config_file" >/dev/null
-        fi
-
-        if [[ -f "/boot/loader/loader.conf" ]]; then
-            sudo sed -i "s/^default.*/default $(basename "$config_file")/" /boot/loader/loader.conf
-        fi
-        export BOOTLOADER_TYPE="systemd-boot"
-        return 0
+        echo "options ${kernel_opts}" | sudo tee -a "$config_file" >/dev/null
     done
-
-    fmtr::warn "No bootloader configuration found."
-    export BOOTLOADER_TYPE=""
-    return 1
 }
 
 rebuild_boot_configs() {
@@ -163,7 +151,7 @@ fi
 
 # Prompt 2: Re-configure VFIO now?
 if prmt::yes_or_no "$(fmtr::ask 'Configure VFIO now?')"; then
-    if ! isolate_gpu; then
+    if ! configure_vfio; then
         fmtr::log "Configuration aborted during device selection."
         exit 1
     fi
