@@ -87,7 +87,7 @@ configure_bootloader() {
     done
 }
 
-rebuild_boot_configs() {
+rebuild_bootloader_config() {
     if [[ "$BOOTLOADER_TYPE" != "grub" ]]; then
         fmtr::log "Bootloader config rebuild not required for non-GRUB bootloaders."
         return 0
@@ -164,7 +164,7 @@ fi
 
 # Prompt 4 - Rebuild bootloader config?
 if prmt::yes_or_no "$(fmtr::ask 'Proceed with rebuilding bootloader config?')"; then
-    if ! rebuild_boot_configs; then
+    if ! rebuild_bootloader_config; then
         fmtr::log "Failed to update bootloader configuration."
         exit 1
     fi
