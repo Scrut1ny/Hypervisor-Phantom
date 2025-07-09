@@ -59,11 +59,15 @@ REQUIRED_PKGS_Fedora=(
 install_looking_glass() {
 
   # openSUSE specific thing
-  if [[ "$DISTRO" -eq "openSUSE" && ! $((find /usr/lib64/libbfd.so) 2>/dev/null) ]]; then
+  if [[ "$DISTRO" == "openSUSE" && ! -e /usr/lib64/libbfd.so ]]; then
     fmtr::log "Configuring packages to ensure LG build completion"
     {
-      LIBBFD_OLD=$(find /usr -name "libbfd*.so*" 2>/dev/null)
-      sudo ln -sv $LIBBFD_OLD /usr/lib64/libbfd.so
+      LIBBFD_OLD=$(find /usr -name "libbfd*.so*" 2>/dev/null | head -n 1)
+      if [[ -n "$LIBBFD_OLD" ]]; then
+        sudo ln -sv "$LIBBFD_OLD" /usr/lib64/libbfd.so
+      else
+        fmtr::log "libbfd library not found in /usr"
+      fi
     } &>> "$LOG_FILE"
   fi
   
