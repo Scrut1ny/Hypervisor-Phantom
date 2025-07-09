@@ -42,9 +42,9 @@ configure_vfio() {
     fmtr::log "Modifying VFIO config: $VFIO_CONF_PATH"
 
     if [[ $(<"/sys/bus/pci/devices/$busid/vendor") == "0x10de" ]]; then
-        printf 'options vfio-pci ids=%s\nsoftdep nvidia pre: vfio-pci\n' "$hwids" | sudo tee "$VFIO_CONF_PATH" >/dev/null
+        printf 'options vfio-pci ids=%s\nsoftdep nvidia pre: vfio-pci\n' "$hwids" | sudo tee "$VFIO_CONF_PATH" &>> "$LOG_FILE"
     else
-        printf 'options vfio-pci ids=%s\n' "$hwids" | sudo tee "$VFIO_CONF_PATH" >/dev/null
+        printf 'options vfio-pci ids=%s\n' "$hwids" | sudo tee "$VFIO_CONF_PATH" &>> "$LOG_FILE"
     fi
 }
 
@@ -83,7 +83,7 @@ configure_bootloader() {
             -e '/^options /s/(amd_iommu=on|intel_iommu=on|iommu=pt|vfio-pci.ids=[^ ]*)//g' \
             -e '/^options[[:space:]]*$/d' \
             "$config_file"
-        echo "options ${kernel_opts}" | sudo tee -a "$config_file" >/dev/null
+        echo "options ${kernel_opts}" | sudo tee -a "$config_file" &>> "$LOG_FILE"
     done
 }
 
@@ -96,7 +96,7 @@ rebuild_boot_configs() {
     fmtr::log "Updating bootloader configuration for GRUB."
 
     for prefix in "" "2"; do
-        if command -v grub${prefix}-mkconfig &>/dev/null; then
+        if command -v grub${prefix}-mkconfig &>> "$LOG_FILE"; then
             sudo grub${prefix}-mkconfig -o /boot/grub${prefix}/grub.cfg &>> "$LOG_FILE" && fmtr::log "Bootloader configuration updated."
             return 0
         fi
@@ -144,12 +144,10 @@ if ! prmt::yes_or_no "$(fmtr::ask 'Acknowledge and proceed with this script?')";
     exit 0
 fi
 
-# Prompt 1: Remove VFIO configs (undo PCI passthrough)?
 if prmt::yes_or_no "$(fmtr::ask 'Remove VFIO configs? (undo PCI passthrough)')"; then
     revert_vfio
 fi
 
-# Prompt 2: Re-configure VFIO now?
 if prmt::yes_or_no "$(fmtr::ask 'Configure VFIO now?')"; then
     if ! configure_vfio; then
         fmtr::log "Configuration aborted during device selection."
@@ -161,7 +159,6 @@ if prmt::yes_or_no "$(fmtr::ask 'Configure VFIO now?')"; then
     fi
 fi
 
-# Prompt 3: Proceed with updating bootloader config?
 if prmt::yes_or_no "$(fmtr::ask 'Proceed with rebuilding bootloader config?')"; then
     if ! rebuild_boot_configs; then
         fmtr::log "Failed to update bootloader configuration."
