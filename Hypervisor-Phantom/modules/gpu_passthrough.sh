@@ -35,9 +35,10 @@ configure_vfio() {
     busid="$(basename "${gpus[sel]%% *}")"
     group="$(basename "$(readlink -f "/sys/bus/pci/devices/$busid/iommu_group")")"
 
-    hwids=$(for d in /sys/kernel/iommu_groups/$group/devices/*; do
-        printf '%s:%s,' "$(cat "$d/vendor" | cut -c3-)" "$(cat "$d/device" | cut -c3-)"
-    done); hwids="${hwids%,}"
+    hwids=; for d in /sys/kernel/iommu_groups/$group/devices/*; do
+        read -r v < "$d/vendor"; read -r i < "$d/device"
+        hwids+="${v:2}:${i:2},"
+    done; hwids="${hwids%,}"
 
     fmtr::log "Modifying VFIO config: $VFIO_CONF_PATH"
 
