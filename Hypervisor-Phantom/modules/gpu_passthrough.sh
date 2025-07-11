@@ -64,7 +64,6 @@ configure_bootloader() {
         sudo cp /etc/default/grub{,.bak}
         if ! grep -q "${kernel_opts}" /etc/default/grub; then
             sudo sed -i "s|\(GRUB_CMDLINE_LINUX_DEFAULT=\"[^\"]*\)|\1 ${kernel_opts}|" /etc/default/grub
-            sudo grub-mkconfig -o /boot/grub/grub.cfg || fmtr::warn "Manual GRUB update may be required."
         else
             fmtr::log "Kernel options already present in GRUB config."
         fi
