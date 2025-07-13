@@ -259,12 +259,12 @@ cert_injection () {
       "https://raw.githubusercontent.com/microsoft/secureboot_objects/main/PreSignedObjects/PK/Certificate/WindowsOEMDevicesPK.der"
 
       # KEK
-      "https://raw.githubusercontent.com/microsoft/secureboot_objects/main/PreSignedObjects/KEK/Certificates/MicCorKEKCA2011_2011-06-24.der"
+      # "https://raw.githubusercontent.com/microsoft/secureboot_objects/main/PreSignedObjects/KEK/Certificates/MicCorKEKCA2011_2011-06-24.der"
       "https://raw.githubusercontent.com/microsoft/secureboot_objects/main/PreSignedObjects/KEK/Certificates/microsoft%20corporation%20kek%202k%20ca%202023.der"
 
       # DB
-      "https://raw.githubusercontent.com/microsoft/secureboot_objects/main/PreSignedObjects/DB/Certificates/MicCorUEFCA2011_2011-06-27.der"
-      "https://raw.githubusercontent.com/microsoft/secureboot_objects/main/PreSignedObjects/DB/Certificates/MicWinProPCA2011_2011-10-19.der"
+      # "https://raw.githubusercontent.com/microsoft/secureboot_objects/main/PreSignedObjects/DB/Certificates/MicCorUEFCA2011_2011-06-27.der"
+      # "https://raw.githubusercontent.com/microsoft/secureboot_objects/main/PreSignedObjects/DB/Certificates/MicWinProPCA2011_2011-10-19.der"
       "https://raw.githubusercontent.com/microsoft/secureboot_objects/main/PreSignedObjects/DB/Certificates/microsoft%20option%20rom%20uefi%20ca%202023.der"
       "https://raw.githubusercontent.com/microsoft/secureboot_objects/main/PreSignedObjects/DB/Certificates/microsoft%20uefi%20ca%202023.der"
       "https://raw.githubusercontent.com/microsoft/secureboot_objects/main/PreSignedObjects/DB/Certificates/windows%20uefi%20ca%202023.der"
@@ -284,10 +284,10 @@ cert_injection () {
       --output "$NVRAM_DIR/${VM_NAME}_SECURE_VARS.qcow2" \
       --secure-boot \
       --set-pk "$UUID" "WindowsOEMDevicesPK.der" \
-      --add-kek "$UUID" "MicCorKEKCA2011_2011-06-24.der" \
+      # --add-kek "$UUID" "MicCorKEKCA2011_2011-06-24.der" \
       --add-kek "$UUID" "microsoft%20corporation%20kek%202k%20ca%202023.der" \
-      --add-db "$UUID" "MicCorUEFCA2011_2011-06-27.der" \
-      --add-db "$UUID" "MicWinProPCA2011_2011-10-19.der" \
+      # --add-db "$UUID" "MicCorUEFCA2011_2011-06-27.der" \
+      # --add-db "$UUID" "MicWinProPCA2011_2011-10-19.der" \
       --add-db "$UUID" "microsoft%20option%20rom%20uefi%20ca%202023.der" \
       --add-db "$UUID" "microsoft%20uefi%20ca%202023.der" \
       --add-db "$UUID" "windows%20uefi%20ca%202023.der" \
