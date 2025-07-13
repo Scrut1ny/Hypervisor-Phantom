@@ -20,28 +20,28 @@ readonly OVMF_PATCH="${CPU_VENDOR}-${EDK2_VERSION}.patch"
 readonly OVMF_CODE_DEST_DIR="/usr/share/edk2/x64"
 
 REQUIRED_PKGS_Arch=(
-  base-devel acpica git nasm python
+  base-devel acpica git nasm python patch
 
   # Includes virt-fw-vars tool
   virt-firmware
 )
 
 REQUIRED_PKGS_Debian=(
-  build-essential uuid-dev acpica-tools git nasm python-is-python3
+  build-essential uuid-dev acpica-tools git nasm python-is-python3 patch
 
   # Includes virt-fw-vars tool
   python3-virt-firmware
 )
 
 REQUIRED_PKGS_openSUSE=(
-  gcc gcc-c++ make acpica git nasm python3 libuuid-devel
+  gcc gcc-c++ make acpica git nasm python3 libuuid-devel patch
 
   # Includes virt-fw-vars tool
   virt-firmware
 )
 
 REQUIRED_PKGS_Fedora=(
-  gcc gcc-c++ make acpica-tools git nasm python3 libuuid-devel
+  gcc gcc-c++ make acpica-tools git nasm python3 libuuid-devel patch
 
   # Includes virt-fw-vars tool
   python3-virt-firmware
