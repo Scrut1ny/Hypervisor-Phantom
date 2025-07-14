@@ -13,6 +13,29 @@ declare -a SDBOOT_CONF_LOCATIONS=(
     "/efi/loader/entries"
 )
 
+revert_vfio() {
+    if [[ -f "$VFIO_CONF_PATH" ]]; then
+        sudo rm -v "$VFIO_CONF_PATH" | tee -a &>> "$LOG_FILE"
+    else
+        fmtr::log "$VFIO_CONF_PATH doesn't exist; nothing to remove."
+    fi
+
+    if [[ -f "/etc/default/grub" ]]; then
+        sudo sed -i '/GRUB_CMDLINE_LINUX_DEFAULT=/s/\(amd_iommu\|intel_iommu\|iommu\|vfio-pci.ids\|kvm.ignore_msrs\)=[^ "]*//g' /etc/default/grub
+    else
+        for location in "${SDBOOT_CONF_LOCATIONS[@]}"; do
+            [[ -d "$location" ]] || continue
+            local config_file
+            config_file=$(sudo find "$location" -maxdepth 1 -name '*.conf' ! -name '*-fallback.conf' -print -quit)
+            [[ -z "$config_file" ]] && continue
+            sudo sed -i -E \
+                -e '/options/ s/(amd_iommu=on|intel_iommu=on|iommu=pt|vfio-pci.ids=[^ ]*|kvm.ignore_msrs=1)//g' \
+                -e '/^options[[:space:]]*$/d' \
+                "$config_file"
+        done
+    fi
+}
+
 configure_vfio() {
     local gpus sel busid group
 
@@ -42,10 +65,23 @@ configure_vfio() {
 
     fmtr::log "Modifying VFIO config: $VFIO_CONF_PATH"
 
-    if [[ $(<"/sys/bus/pci/devices/$busid/vendor") == "0x10de" ]]; then
-        printf 'options vfio-pci ids=%s\nsoftdep nvidia pre: vfio-pci\n' "$hwids" | sudo tee "$VFIO_CONF_PATH" &>> "$LOG_FILE"
-    else
-        printf 'options vfio-pci ids=%s\n' "$hwids" | sudo tee "$VFIO_CONF_PATH" &>> "$LOG_FILE"
+    if [[ -f "/sys/bus/pci/devices/$busid/vendor" ]]; then
+        vendor=$(<"/sys/bus/pci/devices/$busid/vendor")
+
+        case "$vendor" in
+            "0x10de")  # NVIDIA
+                printf 'options vfio-pci ids=%s\nsoftdep nvidia pre: vfio-pci\nsoftdep nouveau pre: vfio-pci\nsoftdep drm pre: vfio-pci\nsoftdep drm_kms_helper pre: vfio-pci\n' "$hwids" | sudo tee "$VFIO_CONF_PATH" &>> "$LOG_FILE"
+                ;;
+            "0x1002")  # AMD
+                printf 'options vfio-pci ids=%s\nsoftdep amdgpu pre: vfio-pci\nsoftdep radeon pre: vfio-pci\nsoftdep drm pre: vfio-pci\nsoftdep drm_kms_helper pre: vfio-pci\n' "$hwids" | sudo tee "$VFIO_CONF_PATH" &>> "$LOG_FILE"
+                ;;
+            "0x8086")  # Intel
+                printf 'options vfio-pci ids=%s\nsoftdep i915 pre: vfio-pci\nsoftdep drm pre: vfio-pci\nsoftdep drm_kms_helper pre: vfio-pci\n' "$hwids" | sudo tee "$VFIO_CONF_PATH" &>> "$LOG_FILE"
+                ;;
+            *)  # Unknown, just add VFIO IDs
+                printf 'options vfio-pci ids=%s\n' "$hwids" | sudo tee "$VFIO_CONF_PATH" &>> "$LOG_FILE"
+                ;;
+        esac
     fi
 }
 
@@ -56,7 +92,7 @@ configure_bootloader() {
         *GenuineIntel*) cpu_vendor="intel";;
         *) fmtr::error "Unknown CPU Vendor ID."; return 1;;
     esac
-    kernel_opts="${cpu_vendor}_iommu=on iommu=pt vfio-pci.ids=${hwids}"
+    kernel_opts="${cpu_vendor}_iommu=on iommu=pt vfio-pci.ids=${hwids} kvm.ignore_msrs=1"
 
     if [[ -f "/etc/default/grub" ]]; then
         boot_mode="grub"
@@ -87,7 +123,7 @@ configure_bootloader() {
     done
 }
 
-rebuild_bootloader_config() {
+rebuild_bootloader() {
     if [[ "$BOOTLOADER_TYPE" != "grub" ]]; then
         fmtr::log "Bootloader config rebuild not required for non-GRUB bootloaders."
         return 0
@@ -106,24 +142,18 @@ rebuild_bootloader_config() {
     return 1
 }
 
-revert_vfio() {
-    if [[ -f "$VFIO_CONF_PATH" ]]; then
-        sudo rm -v "$VFIO_CONF_PATH" | tee -a &>> "$LOG_FILE"
+rebuild_initramfs() {
+    if command -v update-initramfs &>> "$LOG_FILE"; then
+        sudo update-initramfs -u &>> "$LOG_FILE" && fmtr::log "initramfs updated."
+    elif command -v dracut &>> "$LOG_FILE"; then
+        sudo dracut -f &>> "$LOG_FILE" && fmtr::log "initramfs updated."
+    elif command -v mkinitcpio &>> "$LOG_FILE"; then
+        sudo mkinitcpio -P &>> "$LOG_FILE" && fmtr::log "initramfs updated."
+    elif command -v mkinitrd &>> "$LOG_FILE"; then
+        sudo mkinitrd &>> "$LOG_FILE" && fmtr::log "initramfs updated."
     else
-        fmtr::log "$VFIO_CONF_PATH doesn't exist; nothing to remove."
-    fi
-
-    if [[ -f "/etc/default/grub" ]]; then
-        sudo sed -i '/GRUB_CMDLINE_LINUX_DEFAULT=/s/\(amd_iommu\|intel_iommu\|iommu\|vfio-pci.ids\)=[^ "]*//g' /etc/default/grub
-    else
-        for location in "${SDBOOT_CONF_LOCATIONS[@]}"; do
-            [[ -d "$location" ]] || continue
-            local config_file
-            config_file=$(sudo find "$location" -maxdepth 1 -name '*.conf' ! -name '*-fallback.conf' -print -quit)
-            [[ -z "$config_file" ]] && continue
-            sudo sed -i -e '/options/ s/\(amd_iommu\|intel_iommu\|iommu\|vfio-pci.ids\)=[^ ]*//g' \
-                        -e '/^options[[:space:]]*$/d' "$config_file"
-        done
+        fmtr::error "Could not detect initramfs tool - please rebuild manually."
+        return 1
     fi
 }
 
@@ -164,11 +194,22 @@ fi
 
 # Prompt 4 - Rebuild bootloader config?
 if prmt::yes_or_no "$(fmtr::ask 'Proceed with rebuilding bootloader config?')"; then
-    if ! rebuild_bootloader_config; then
+    if ! rebuild_bootloader; then
         fmtr::log "Failed to update bootloader configuration."
         exit 1
     fi
     fmtr::warn "REBOOT required for changes to take effect"
 else
     fmtr::warn "Proceeding without updating bootloader configuration."
+fi
+
+# Prompt 5 - Rebuild initramfs?
+if prmt::yes_or_no "$(fmtr::ask 'Proceed with rebuilding initramfs?')"; then
+    if ! rebuild_initramfs; then
+        fmtr::log "Failed to rebuild initramfs."
+        exit 1
+    fi
+    fmtr::warn "REBOOT required for changes to take effect"
+else
+    fmtr::warn "Proceeding without updating initramfs."
 fi
