@@ -14,9 +14,9 @@ esac)
 
 readonly SRC_DIR="src"
 readonly EDK2_URL="https://github.com/tianocore/edk2.git"
-readonly EDK2_VERSION="edk2-stable202505"
+readonly EDK2_TAG="edk2-stable202505"
 readonly PATCH_DIR="../../patches/EDK2"
-readonly OVMF_PATCH="${CPU_VENDOR}-${EDK2_VERSION}.patch"
+readonly OVMF_PATCH="${CPU_VENDOR}-${EDK2_TAG}.patch"
 readonly OVMF_CODE_DEST_DIR="/usr/share/edk2/x64"
 
 REQUIRED_PKGS_Arch=(
@@ -50,16 +50,16 @@ REQUIRED_PKGS_Fedora=(
 acquire_edk2_source() {
   mkdir -p "$SRC_DIR" && cd "$SRC_DIR"
 
-  if [ -d "$EDK2_VERSION" ]; then
+  if [ -d "$EDK2_TAG" ]; then
 
-    fmtr::warn "EDK2 source directory '$EDK2_VERSION' detected."
+    fmtr::warn "EDK2 source directory '$EDK2_TAG' detected."
     if prmt::yes_or_no "$(fmtr::ask 'Purge EDK2 source directory?')"; then
-      rm -rf "$EDK2_VERSION" || { fmtr::fatal "Failed to remove existing directory: $EDK2_VERSION"; exit 1; }
+      rm -rf "$EDK2_TAG" || { fmtr::fatal "Failed to remove existing directory: $EDK2_TAG"; exit 1; }
       fmtr::info "Directory purged successfully."
 
       if prmt::yes_or_no "$(fmtr::ask 'Clone the EDK2 repository?')"; then
-        git clone --single-branch --depth=1 --branch "$EDK2_VERSION" "$EDK2_URL" "$EDK2_VERSION" &>> "$LOG_FILE" || { fmtr::fatal "Failed to clone repository."; exit 1; }
-        cd "$EDK2_VERSION" || { fmtr::fatal "Failed to change to EDK2 directory after cloning: $EDK2_VERSION"; exit 1; }
+        git clone --single-branch --depth=1 --branch "$EDK2_TAG" "$EDK2_URL" "$EDK2_TAG" &>> "$LOG_FILE" || { fmtr::fatal "Failed to clone repository."; exit 1; }
+        cd "$EDK2_TAG" || { fmtr::fatal "Failed to change to EDK2 directory after cloning: $EDK2_TAG"; exit 1; }
         fmtr::info "Initializing submodules..."
         git submodule update --init &>> "$LOG_FILE" || { fmtr::fatal "Failed to initialize submodules."; exit 1; }
         fmtr::info "EDK2 source successfully acquired and submodules initialized."
@@ -73,11 +73,11 @@ acquire_edk2_source() {
       fi
     else
       fmtr::info "Kept existing directory; Skipping deletion."
-      cd "$EDK2_VERSION" || { fmtr::fatal "Failed to change to EDK2 directory: $EDK2_VERSION"; exit 1; }
+      cd "$EDK2_TAG" || { fmtr::fatal "Failed to change to EDK2 directory: $EDK2_TAG"; exit 1; }
     fi
   else
-    git clone --single-branch --depth=1 --branch "$EDK2_VERSION" "$EDK2_URL" "$EDK2_VERSION" &>> "$LOG_FILE" || { fmtr::fatal "Failed to clone repository."; exit 1; }
-    cd "$EDK2_VERSION" || { fmtr::fatal "Failed to change to EDK2 directory after cloning: $EDK2_VERSION"; exit 1; }
+    git clone --single-branch --depth=1 --branch "$EDK2_TAG" "$EDK2_URL" "$EDK2_TAG" &>> "$LOG_FILE" || { fmtr::fatal "Failed to clone repository."; exit 1; }
+    cd "$EDK2_TAG" || { fmtr::fatal "Failed to change to EDK2 directory after cloning: $EDK2_TAG"; exit 1; }
     fmtr::info "Initializing submodules..."
     git submodule update --init &>> "$LOG_FILE" || { fmtr::fatal "Failed to initialize submodules."; exit 1; }
     fmtr::info "EDK2 source successfully acquired and submodules initialized."
@@ -301,7 +301,7 @@ cert_injection () {
 
 cleanup() {
     fmtr::log "Cleaning up"
-    cd .. && rm -rf "$EDK2_VERSION"
+    cd .. && rm -rf "$EDK2_TAG"
     cd .. && rmdir --ignore-fail-on-non-empty "$SRC_DIR"
 }
 
