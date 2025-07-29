@@ -155,6 +155,7 @@ patch_ovmf() {
 compile_ovmf() {
     # https://github.com/tianocore/tianocore.github.io/wiki/Common-instructions
     # https://github.com/tianocore/tianocore.github.io/wiki/How-to-build-OVMF
+    # https://github.com/tianocore/edk2/tree/master/OvmfPkg
 
     export WORKSPACE="$(pwd)"
     export EDK_TOOLS_PATH="${WORKSPACE}/BaseTools"
@@ -166,14 +167,7 @@ compile_ovmf() {
     } &>> "$LOG_FILE"
 
     fmtr::log "Compiling OVMF firmware with Secure Boot and TPM support..."
-    build \
-        -a X64 \
-        -p OvmfPkg/OvmfPkgX64.dsc \
-        -b RELEASE \
-        -t GCC5 \
-        -n 0 \
-        -s \
-        -q \
+    build -a X64 -p OvmfPkg/OvmfPkgX64.dsc -b RELEASE -t GCC5 -n 0 -s -q \
         --define SECURE_BOOT_ENABLE=TRUE \
         --define TPM_CONFIG_ENABLE=TRUE \
         --define TPM_ENABLE=TRUE \
@@ -254,27 +248,25 @@ cert_injection () {
 
     fmtr::info "Downloading Microsoft Secure Boot certificates..."
 
-    declare -a URLS=(
-      # PK
-      "https://raw.githubusercontent.com/microsoft/secureboot_objects/main/PreSignedObjects/PK/Certificate/WindowsOEMDevicesPK.der"
-
-      # KEK
-      # "https://raw.githubusercontent.com/microsoft/secureboot_objects/main/PreSignedObjects/KEK/Certificates/MicCorKEKCA2011_2011-06-24.der"
-      "https://raw.githubusercontent.com/microsoft/secureboot_objects/main/PreSignedObjects/KEK/Certificates/microsoft%20corporation%20kek%202k%20ca%202023.der"
-
-      # DB
-      # "https://raw.githubusercontent.com/microsoft/secureboot_objects/main/PreSignedObjects/DB/Certificates/MicCorUEFCA2011_2011-06-27.der"
-      # "https://raw.githubusercontent.com/microsoft/secureboot_objects/main/PreSignedObjects/DB/Certificates/MicWinProPCA2011_2011-10-19.der"
-      "https://raw.githubusercontent.com/microsoft/secureboot_objects/main/PreSignedObjects/DB/Certificates/microsoft%20option%20rom%20uefi%20ca%202023.der"
-      "https://raw.githubusercontent.com/microsoft/secureboot_objects/main/PreSignedObjects/DB/Certificates/microsoft%20uefi%20ca%202023.der"
-      "https://raw.githubusercontent.com/microsoft/secureboot_objects/main/PreSignedObjects/DB/Certificates/windows%20uefi%20ca%202023.der"
-
-      # DBX
-      "https://uefi.org/sites/default/files/resources/dbxupdate_x64.bin"
+    declare -A CERTS=(
+        # PK Certificates
+        ["ms_pk_oem.der"]="https://raw.githubusercontent.com/microsoft/secureboot_objects/main/PreSignedObjects/PK/Certificate/WindowsOEMDevicesPK.der"
+      
+        # KEK Certificates
+        ["ms_kek_2023.der"]="https://raw.githubusercontent.com/microsoft/secureboot_objects/main/PreSignedObjects/KEK/Certificates/microsoft%20corporation%20kek%202k%20ca%202023.der"
+      
+        # DB Certificates
+        ["ms_db_optionrom_2023.der"]="https://raw.githubusercontent.com/microsoft/secureboot_objects/main/PreSignedObjects/DB/Certificates/microsoft%20option%20rom%20uefi%20ca%202023.der"
+        ["ms_db_uefi_2023.der"]="https://raw.githubusercontent.com/microsoft/secureboot_objects/main/PreSignedObjects/DB/Certificates/microsoft%20uefi%20ca%202023.der"
+        ["ms_db_windows_2023.der"]="https://raw.githubusercontent.com/microsoft/secureboot_objects/main/PreSignedObjects/DB/Certificates/windows%20uefi%20ca%202023.der"
+      
+        # DBX
+        ["dbxupdate_x64.bin"]="https://uefi.org/sites/default/files/resources/dbxupdate_x64.bin"
     )
-
-    for url in "${URLS[@]}"; do
-      curl -sOL "$url"
+    
+    for filename in "${!CERTS[@]}"; do
+        url="${CERTS[$filename]}"
+        wget -q -O "$filename" "$url"
     done
 
     fmtr::info "Injecting Secure Boot certs into '$VARS_FILE'..."
@@ -283,14 +275,11 @@ cert_injection () {
       --input "$VARS_FILE" \
       --output "$NVRAM_DIR/${VM_NAME}_SECURE_VARS.qcow2" \
       --secure-boot \
-      --set-pk "$UUID" "WindowsOEMDevicesPK.der" \
-      # --add-kek "$UUID" "MicCorKEKCA2011_2011-06-24.der" \
-      --add-kek "$UUID" "microsoft%20corporation%20kek%202k%20ca%202023.der" \
-      # --add-db "$UUID" "MicCorUEFCA2011_2011-06-27.der" \
-      # --add-db "$UUID" "MicWinProPCA2011_2011-10-19.der" \
-      --add-db "$UUID" "microsoft%20option%20rom%20uefi%20ca%202023.der" \
-      --add-db "$UUID" "microsoft%20uefi%20ca%202023.der" \
-      --add-db "$UUID" "windows%20uefi%20ca%202023.der" \
+      --set-pk "$UUID" "ms_pk_oem.der" \
+      --add-kek "$UUID" "ms_kek_2023.der" \
+      --add-db "$UUID" "ms_db_optionrom_2023.der" \
+      --add-db "$UUID" "ms_db_uefi_2023.der" \
+      --add-db "$UUID" "ms_db_windows_2023.der" \
       --set-dbx dbxupdate_x64.bin &>> "$LOG_FILE"
 
     fmtr::log "Secure VARS generated at '${NVRAM_DIR}/${VM_NAME}_SECURE_VARS.qcow2'"
