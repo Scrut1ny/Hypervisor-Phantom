@@ -162,9 +162,7 @@ compile_ovmf() {
     export CONF_PATH="${WORKSPACE}/Conf"
 
     fmtr::log "Building BaseTools (EDK II build tools)..."
-    {
-      make -C BaseTools; source edksetup.sh
-    } &>> "$LOG_FILE"
+    { make -C BaseTools; source edksetup.sh; } &>> "$LOG_FILE"
 
     fmtr::log "Compiling OVMF firmware with Secure Boot and TPM support..."
     build -a X64 -p OvmfPkg/OvmfPkgX64.dsc -b RELEASE -t GCC5 -n 0 -s -q \
