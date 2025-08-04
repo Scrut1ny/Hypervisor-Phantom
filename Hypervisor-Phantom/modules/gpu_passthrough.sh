@@ -60,7 +60,7 @@ configure_vfio() {
     group="$(basename "$(readlink -f "/sys/bus/pci/devices/$busid/iommu_group")")"
 
     hwids=""
-    for d in /sys/kernel/iommu_groups/"$group"/devices/*; do
+    for d in /sys/kernel/iommu_groups/$group/devices/*; do
         read -r v < "$d/vendor"
         read -r i < "$d/device"
         hwids+="${v:2}:${i:2},"
