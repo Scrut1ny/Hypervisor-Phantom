@@ -39,10 +39,12 @@ revert_vfio() {
 configure_vfio() {
     local id desc gpus sel busid group
 
-    mapfile -t gpus < <(for d in /sys/bus/pci/devices/*; do
-        [[ $(<"$d/class") == 0x03* ]] &&
-        printf '%s %s\n' "$d" "$(lspci -s ${d##*/} | grep -oP '\[\K[^\]]+(?=\])')"
-    done)
+    mapfile -t gpus < <(
+        for d in /sys/bus/pci/devices/*; do
+            [[ $(<"$d/class") == 0x03* ]] &&
+            printf '%s %s\n' "$d" "$(lspci -s "${d##*/}" | grep -oP '\[\K[^\]]+(?=\])')"
+        done
+    )
 
     while :; do
         printf '\n'
@@ -50,17 +52,20 @@ configure_vfio() {
             printf '  %d) %s\n' "$((i + 1))" "${gpus[i]#* }"
         done
         read -rp "$(fmtr::ask 'Select device number: ')" sel
-        ((sel-- >= 0 && sel < ${#gpus[@]})) && break
+        (( sel-- >= 0 && sel < ${#gpus[@]} )) && break
         fmtr::error "Invalid selection. Please choose a valid number."
     done
 
     busid="$(basename "${gpus[sel]%% *}")"
     group="$(basename "$(readlink -f "/sys/bus/pci/devices/$busid/iommu_group")")"
 
-    hwids=; for d in /sys/kernel/iommu_groups/$group/devices/*; do
-        read -r v < "$d/vendor"; read -r i < "$d/device"
+    hwids=""
+    for d in /sys/kernel/iommu_groups/"$group"/devices/*; do
+        read -r v < "$d/vendor"
+        read -r i < "$d/device"
         hwids+="${v:2}:${i:2},"
-    done; hwids="${hwids%,}"
+    done
+    hwids="${hwids%,}"
 
     fmtr::log "Modifying VFIO config: $VFIO_CONF_PATH"
 
