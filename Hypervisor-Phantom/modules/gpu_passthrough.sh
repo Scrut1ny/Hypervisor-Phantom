@@ -37,21 +37,20 @@ revert_vfio() {
 }
 
 configure_vfio() {
-    local gpus sel busid group
+    local id desc gpus sel busid group
 
     mapfile -t gpus < <(for d in /sys/bus/pci/devices/*; do
         [[ $(<"$d/class") == 0x03* ]] &&
         printf '%s %s\n' "$d" "$(lspci -s ${d##*/} | grep -oP '\[\K[^\]]+(?=\])')"
     done)
 
-    while true; do
+    while :; do
+        printf '\n'
         for i in "${!gpus[@]}"; do
-            printf '\n  %d) %s\n' $((i+1)) "${gpus[i]#* }"
+            printf '  %d) %s\n' "$((i + 1))" "${gpus[i]#* }"
         done
-        read -rp "$(fmtr::ask 'Select device number: ')" sel; ((sel--))
-        if (( sel >= 0 && sel < ${#gpus[@]} )); then
-            break
-        fi
+        read -rp "$(fmtr::ask 'Select device number: ')" sel
+        ((sel-- >= 0 && sel < ${#gpus[@]})) && break
         fmtr::error "Invalid selection. Please choose a valid number."
     done
 
