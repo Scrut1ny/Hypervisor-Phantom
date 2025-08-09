@@ -41,8 +41,8 @@ configure_vfio() {
 
     mapfile -t gpus < <(
         for d in /sys/bus/pci/devices/*; do
-            [[ $(<"$d/class") == 0x03* ]] &&
-            printf '%s %s\n' "$d" "$(lspci -s "${d##*/}" | grep -oP '\[\K[^\]]+(?=\])')"
+            [[ $(<"$d/class") == 0x03* ]] || continue
+            printf '%s %s\n' "$d" "$(lspci -s "${d##*/}" | grep -oP '\[\K[^\]]+')"
         done
     )
 
@@ -65,7 +65,7 @@ configure_vfio() {
         read -r i < "$d/device"
         hwids+="${v:2}:${i:2},"
     done
-    hwids="${hwids%,}"
+    hwids=${hwids%,}
 
     fmtr::log "Modifying VFIO config: $VFIO_CONF_PATH"
 
