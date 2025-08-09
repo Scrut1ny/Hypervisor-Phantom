@@ -65,7 +65,7 @@ configure_vfio() {
         read -r i < "$d/device"
         hwids+="${v:2}:${i:2},"
     done
-    hwids=${hwids%,}
+    hwids="${hwids%,}"
 
     fmtr::log "Modifying VFIO config: $VFIO_CONF_PATH"
 
