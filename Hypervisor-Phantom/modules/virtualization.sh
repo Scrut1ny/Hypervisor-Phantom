@@ -7,21 +7,21 @@ source "./utils/packages.sh"
 source "./utils/prompter.sh"
 
 REQUIRED_PKGS_Arch=(
-  qemu-base edk2-ovmf libvirt dnsmasq virt-manager
+  qemu-base edk2-ovmf libvirt dnsmasq virt-manager swtpm
 )
 
 REQUIRED_PKGS_Debian=(
-  qemu-system-x86 ovmf virt-manager libvirt-clients
+  qemu-system-x86 ovmf virt-manager libvirt-clients swtpm
   libvirt-daemon-system libvirt-daemon-config-network
 )
 
 REQUIRED_PKGS_openSUSE=(
   libvirt libvirt-client libvirt-daemon virt-manager
-  qemu qemu-kvm ovmf qemu-tools
+  qemu qemu-kvm ovmf qemu-tools swtpm
 )
 
 REQUIRED_PKGS_Fedora=(
-  @virtualization
+  @virtualization swtpm
 )
 
 configure_firewall_arch() {
