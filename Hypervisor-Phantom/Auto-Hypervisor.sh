@@ -70,19 +70,30 @@ print_system_info() {
     local show_output=0
     local output=""
 
+    if grep -q "GenuineIntel" /proc/cpuinfo; then
+        virt_name="VT-x"
+        iommu_name="VT-d"
+    elif grep -qi "amd" /proc/cpuinfo; then
+        virt_name="AMD-V"
+        iommu_name="AMD-Vi"
+    else
+        virt_name="Unknown"
+        iommu_name="Unknown"
+    fi
+
     # CPU Virtualization (Intel VT-x/AMD-V) - Required for KVM (hardware-assisted virtualization)
     if grep -qE 'vmx|svm' /proc/cpuinfo; then
-        output+="\n  [✅] VT-x/AMD-V (Virtualization): Supported"
+        output+="\n  [✅] ${virt_name} (Virtualization): Supported"
     else
-        output+="\n  [❌] VT-x/AMD-V (Virtualization): Not supported"
+        output+="\n  [❌] ${virt_name} (Virtualization): Not supported"
         show_output=1
     fi
 
     # IOMMU (VT-d/AMD-Vi) - Required for PCIe/GPU Passthrough
     if grep -qE "iommu=on" /proc/cmdline; then
-        output+="\n  [✅] VT-d/AMD-Vi (IOMMU): Enabled"
+        output+="\n  [✅] ${iommu_name} (IOMMU): Enabled"
     else
-        output+="\n  [❌] VT-d/AMD-Vi (IOMMU): Not enabled"
+        output+="\n  [❌] ${iommu_name} (IOMMU): Not enabled"
         show_output=1
     fi
 
