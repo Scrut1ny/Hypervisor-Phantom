@@ -70,10 +70,11 @@ print_system_info() {
     local show_output=0
     local output=""
 
+    # Virtualization technology name fetchers
     if grep -q "GenuineIntel" /proc/cpuinfo; then
         virt_name="VT-x"
         iommu_name="VT-d"
-    elif grep -qi "amd" /proc/cpuinfo; then
+    elif grep -q "AuthenticAMD" /proc/cpuinfo; then
         virt_name="AMD-V"
         iommu_name="AMD-Vi"
     else
