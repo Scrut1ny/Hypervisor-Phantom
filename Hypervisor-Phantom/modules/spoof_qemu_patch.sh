@@ -206,7 +206,9 @@ spoof_serial_numbers() {
 
 
 spoof_drive_serial_number() {
-  local core_file="hw/ide/core.c"
+
+  local ide="hw/ide/core.c"
+  local nvme="hw/nvme/ctrl.c"
 
   local ide_cd_models=(
     "HL-DT-ST BD-RE WH16NS60" "HL-DT-ST DVDRAM GH24NSC0"
@@ -272,9 +274,10 @@ spoof_drive_serial_number() {
   local new_ide_cfata_model=$(get_random_element "${ide_cfata_models[@]}")
   local new_default_model=$(get_random_element "${default_models[@]}")
 
-  sed -i "$core_file" -Ee "s/\"HL-DT-ST BD-RE WH16NS60\"/\"${new_ide_cd_model}\"/"
-  sed -i "$core_file" -Ee "s/\"Hitachi HMS360404D5CF00\"/\"${new_ide_cfata_model}\"/"
-  sed -i "$core_file" -Ee "s/\"Samsung SSD 980 500GB\"/\"${new_default_model}\"/"
+  sed -i "$ide" -Ee "s/\"HL-DT-ST BD-RE WH16NS60\"/\"${new_ide_cd_model}\"/"
+  sed -i "$ide" -Ee "s/\"Hitachi HMS360404D5CF00\"/\"${new_ide_cfata_model}\"/"
+  sed -i "$ide" -Ee "s/\"Samsung SSD 980 500GB\"/\"${new_default_model}\"/"
+  sed -i "$nvme" -Ee "s/\"NVMe Ctrl\"/\"${new_default_model}\"/"
 
 }
 
