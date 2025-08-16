@@ -37,7 +37,7 @@ revert_vfio() {
 }
 
 configure_vfio() {
-    local id desc gpus sel busid group bad_group
+    local gpus sel="" busid group class vendor device bad_group=0 bad_devices=() id desc
 
     mapfile -t gpus < <(
         for d in /sys/bus/pci/devices/*; do
@@ -51,40 +51,46 @@ configure_vfio() {
         for i in "${!gpus[@]}"; do
             printf '  %d) %s\n' "$((i + 1))" "${gpus[i]#* }"
         done
+
         read -rp "$(fmtr::ask 'Select device number: ')" sel
-        (( sel-- >= 0 && sel < ${#gpus[@]} )) && break
-        fmtr::error "Invalid selection. Please choose a valid number."
+
+        if [[ ! $sel =~ ^[0-9]+$ ]] || (( sel < 1 || sel > ${#gpus[@]} )); then
+            fmtr::error "Invalid selection. Please choose a valid number."
+            continue
+        fi
+        
+        (( sel-- ))
+        break
     done
 
-    busid="$(basename "${gpus[sel]%% *}")"
+    busid="${gpus[sel]%% *}"; busid="${busid##*/}"
     group="$(basename "$(readlink -f "/sys/bus/pci/devices/$busid/iommu_group")")"
 
-    bad_group=false
+    hwids=""
     for d in /sys/kernel/iommu_groups/$group/devices/*; do
+        id="${d##*/}"
         class="$(<"$d/class")"
+        vendor=$(<"$d/vendor")
+        device=$(<"$d/device")
+        hwids+="${vendor:2}:${device:2},"
+
         if [[ $class != 0x03* && $class != 0x04* ]]; then
-            bad_group=true
+            bad_group=1
+            bad_devices+=("$id")
         fi
     done
+    hwids="${hwids%,}"
 
-    if $bad_group; then
-        fmtr::error "Bad IOMMU grouping detected - IOMMU group #$group contains the incorrect device(s):"; echo ""
-        for d in /sys/kernel/iommu_groups/$group/devices/*; do
-            desc=$(lspci -s "$(basename "$d")" | cut -d' ' -f2-)
-            echo "  $(basename "$d") - $desc"
+    if (( bad_group )); then
+        fmtr::error "Bad IOMMU grouping detected - IOMMU group #$group contains incorrect device(s):"; echo ""
+        for id in "${bad_devices[@]}"; do
+            desc=$(lspci -s "$id" -nn)
+            echo "  [$id] = $desc"
         done
         fmtr::warn "VFIO PT requires the entire IOMMU group for isolation. Recommended possible solutions:
       (1) ACS override, (2) Update firmware, (3) Use hardware with proper IOMMU support."
         exit 1
     fi
-
-    hwids=""
-    for d in /sys/kernel/iommu_groups/$group/devices/*; do
-        read -r v < "$d/vendor"
-        read -r i < "$d/device"
-        hwids+="${v:2}:${i:2},"
-    done
-    hwids="${hwids%,}"
 
     fmtr::log "Modifying VFIO config: $VFIO_CONF_PATH"
 
