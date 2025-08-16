@@ -37,7 +37,7 @@ revert_vfio() {
 }
 
 configure_vfio() {
-    local id desc gpus sel busid group
+    local id desc gpus sel busid group bad_group
 
     mapfile -t gpus < <(
         for d in /sys/bus/pci/devices/*; do
@@ -58,6 +58,25 @@ configure_vfio() {
 
     busid="$(basename "${gpus[sel]%% *}")"
     group="$(basename "$(readlink -f "/sys/bus/pci/devices/$busid/iommu_group")")"
+
+    bad_group=false
+    for d in /sys/kernel/iommu_groups/$group/devices/*; do
+        class="$(<"$d/class")"
+        if [[ $class != 0x03* && $class != 0x04* ]]; then
+            bad_group=true
+        fi
+    done
+
+    if $bad_group; then
+        fmtr::error "Bad IOMMU grouping detected - IOMMU group #$group contains the incorrect device(s):"; echo ""
+        for d in /sys/kernel/iommu_groups/$group/devices/*; do
+            desc=$(lspci -s "$(basename "$d")" | cut -d' ' -f2-)
+            echo "  $(basename "$d") - $desc"
+        done
+        fmtr::warn "VFIO PT requires the entire IOMMU group for isolation. Recommended possible solutions:
+      (1) ACS override, (2) Update firmware, (3) Use hardware with proper IOMMU support."
+        exit 1
+    fi
 
     hwids=""
     for d in /sys/kernel/iommu_groups/$group/devices/*; do
