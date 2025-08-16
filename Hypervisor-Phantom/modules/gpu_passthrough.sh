@@ -67,7 +67,7 @@ configure_vfio() {
     done
 
     busid="${gpus[sel]%% *}"; busid="${busid##*/}"
-    group=$(readlink "/sys/bus/pci/devices/$busid/iommu_group"); group=${group##*/}
+    group=$(readlink -f "/sys/bus/pci/devices/$busid/iommu_group"); group=${group##*/}
 
     hwids=""
     for d in /sys/kernel/iommu_groups/$group/devices/*; do
