@@ -41,8 +41,11 @@ configure_vfio() {
 
     mapfile -t gpus < <(
         for d in /sys/bus/pci/devices/*; do
+            [[ -r "$d/class" ]] || continue
             [[ $(<"$d/class") == 0x03* ]] || continue
-            printf '%s %s\n' "$d" "$(lspci -s "${d##*/}" | grep -oP '\[\K[^\]]+')"
+            id=${d##*/}; desc=$(lspci -s "$id")
+            desc=${desc##*[}; desc=${desc%%]*}
+            printf '%s %s\n' "$d" "$desc"
         done
     )
 
@@ -58,13 +61,13 @@ configure_vfio() {
             fmtr::error "Invalid selection. Please choose a valid number."
             continue
         fi
-        
+
         (( sel-- ))
         break
     done
 
     busid="${gpus[sel]%% *}"; busid="${busid##*/}"
-    group="$(basename "$(readlink -f "/sys/bus/pci/devices/$busid/iommu_group")")"
+    group=$(readlink "/sys/bus/pci/devices/$busid/iommu_group"); group=${group##*/}
 
     hwids=""
     for d in /sys/kernel/iommu_groups/$group/devices/*; do
