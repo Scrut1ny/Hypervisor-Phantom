@@ -36,7 +36,7 @@
     <loader readonly="yes" secure="yes" type="pflash" format="qcow2">/usr/share/edk2/x64/OVMF_CODE.secboot.4m.qcow2</loader>
     <nvram template="/usr/share/edk2/x64/OVMF_VARS.4m.qcow2" format="qcow2"></nvram>
     <bootmenu enable="yes"/>
-    <smbios mode="host"/>
+    <smbios mode="host"/> <!-- Remove this if you use a host SMBIOS dump -->
   </os>
 
 
@@ -301,6 +301,10 @@
     <qemu:arg value="-acpitable"/>
     <qemu:arg value="file=/home/{USERNAME}/fake_battery.aml"/>
    
+    <!-- Spoofs the entire SMBIOS using a host dump -->
+    <qemu:arg value="-smbios"/>
+    <qemu:arg value="file=/home/{USERNAME}/smbios.bin"/>
+   
     <!-- Spoofs the SMBIOS DMI Type 1, 2, 3, 4 and 17 HWIDs
     Type 0 (BIOS / Firmware) <> https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_3.2.0.pdf#%5B%7B%22num%22%3A74%2C%22gen%22%3A0%7D%2C%7B%22name%22%3A%22XYZ%22%7D%2C70%2C260%2C0%5D
     Type 1 (System Information) <> https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_3.2.0.pdf#%5B%7B%22num%22%3A85%2C%22gen%22%3A0%7D%2C%7B%22name%22%3A%22XYZ%22%7D%2C70%2C212%2C0%5D
@@ -364,5 +368,6 @@
     </qemu:device>
   </qemu:override>
 </domain>
+
 
 
