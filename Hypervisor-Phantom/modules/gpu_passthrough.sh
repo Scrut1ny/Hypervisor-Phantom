@@ -40,7 +40,7 @@ configure_vfio() {
     local gpus sel="" pci_bdf group class pci_vendor pci_device_id \
           bad_group=0 bad_functions=() pci_desc
 
-    # Collect GPU candidates (class 0x03 = display controllers)
+    # Collect GPU candidates (PCI class 0x03* = all display controllers)
     mapfile -t gpus < <(
         for devpath in /sys/bus/pci/devices/*; do
             [[ -r "$devpath/class" ]] || continue
@@ -51,6 +51,14 @@ configure_vfio() {
             printf '%s %s\n' "$devpath" "$pci_desc"
         done
     )
+
+    if (( ${#gpus[@]} == 0 )); then
+        fmtr::error "No GPUs detected! Exiting."
+        exit 1
+    elif (( ${#gpus[@]} == 1 )); then
+        fmtr::warn "Only one GPU detected! Passing through your only GPU will leave the host with no display output.
+      It is strongly recommended to have a separate dedicated or integrated GPU for the host system."
+    fi
 
     # User chooses GPU
     while :; do
@@ -103,6 +111,8 @@ configure_vfio() {
     fi
 
     fmtr::log "Modifying VFIO config: $VFIO_CONF_PATH"
+
+    exit
 
     if [[ -f "/sys/bus/pci/devices/$pci_bdf/vendor" ]]; then
         pci_vendor=$(<"/sys/bus/pci/devices/$pci_bdf/vendor")
