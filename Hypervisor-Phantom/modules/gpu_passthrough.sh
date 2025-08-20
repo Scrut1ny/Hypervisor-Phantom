@@ -69,15 +69,16 @@ configure_vfio() {
     busid="${gpus[sel]%% *}"; busid="${busid##*/}"
     group=$(readlink -f "/sys/bus/pci/devices/$busid/iommu_group"); group=${group##*/}
 
+    gpu_slot="${busid%.*}"
     hwids=""
     for d in /sys/kernel/iommu_groups/$group/devices/*; do
         id="${d##*/}"
-        class="$(<"$d/class")"
         vendor=$(<"$d/vendor")
         device=$(<"$d/device")
         hwids+="${vendor:2}:${device:2},"
 
-        if [[ $class != 0x03* && $class != 0x04* ]]; then
+        slot="${id%.*}"
+        if [[ $slot != "$gpu_slot" ]]; then
             bad_group=1
             bad_devices+=("$id")
         fi
@@ -96,6 +97,8 @@ configure_vfio() {
     fi
 
     fmtr::log "Modifying VFIO config: $VFIO_CONF_PATH"
+
+    exit
 
     if [[ -f "/sys/bus/pci/devices/$busid/vendor" ]]; then
         vendor=$(<"/sys/bus/pci/devices/$busid/vendor")
@@ -191,28 +194,12 @@ rebuild_initramfs() {
 
 # ----- PROMPTS -----
 
-# Prompt 1 - Acknowledge agreement?
-fmtr::warn "DISCLAIMER: This VFIO script automates GPU isolation, bootloader reconfiguration, and
-      ramdisk regeneration. Due to potential IOMMU grouping issues on some motherboards, this
-      process may not execute correctly and could mess up your system. So I highly encourage
-      you to double check the work automated for your systems safety! Make sure the vendor and
-      device ids of your selected GPU are matching the ones set in the following config files:
-
-      - lspci -nn | grep -Ei 'vga|3d|audio device'    _____________________________________
-      - $VFIO_CONF_PATH                    / systemd-boot = /boot/loader/entries |
-      - Bootloader configuration entries ]__________/  GRUB         = /etc/default/grub    |"
-
-if ! prmt::yes_or_no "$(fmtr::ask 'Acknowledge and proceed with this script?')"; then
-    fmtr::log "Acknowledgement declined by $(whoami); therefore exiting."
-    exit 0
-fi
-
-# Prompt 2 - Remove VFIO config?
+# Prompt 1 - Remove VFIO config?
 if prmt::yes_or_no "$(fmtr::ask 'Remove VFIO configs? (undo PCI passthrough)')"; then
     revert_vfio
 fi
 
-# Prompt 3 - Configure VFIO config?
+# Prompt 2 - Configure VFIO config?
 if prmt::yes_or_no "$(fmtr::ask 'Configure VFIO now?')"; then
     if ! configure_vfio; then
         fmtr::log "Configuration aborted during device selection."
@@ -224,7 +211,7 @@ if prmt::yes_or_no "$(fmtr::ask 'Configure VFIO now?')"; then
     fi
 fi
 
-# Prompt 4 - Rebuild bootloader config?
+# Prompt 3 - Rebuild bootloader config?
 if prmt::yes_or_no "$(fmtr::ask 'Proceed with rebuilding bootloader config?')"; then
     if ! rebuild_bootloader; then
         fmtr::log "Failed to update bootloader configuration."
@@ -235,7 +222,7 @@ else
     fmtr::warn "Proceeding without updating bootloader configuration."
 fi
 
-# Prompt 5 - Rebuild initramfs?
+# Prompt 4 - Rebuild initramfs?
 if prmt::yes_or_no "$(fmtr::ask 'Proceed with rebuilding initramfs?')"; then
     if ! rebuild_initramfs; then
         fmtr::log "Failed to rebuild initramfs."
