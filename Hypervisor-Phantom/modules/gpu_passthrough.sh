@@ -52,31 +52,20 @@ configure_vfio() {
         done
     )
 
-    if (( ${#gpus[@]} == 0 )); then
-        fmtr::error "No GPUs detected! Exiting."
-        exit 1
-    elif (( ${#gpus[@]} == 1 )); then
-        fmtr::warn "Only one GPU detected! Passing through your only GPU will leave the host with no display output.
+    (( ${#gpus[@]} )) || { fmtr::error "No GPUs detected!"; exit 1; }
+    (( ${#gpus[@]} == 1 )) && fmtr::warn "Only one GPU detected! Passing through your only GPU will leave the host with no display output.
       It is strongly recommended to have a separate dedicated or integrated GPU for the host system."
-    fi
 
-    # User chooses GPU
-    while :; do
+    while true; do
         printf '\n'
         for i in "${!gpus[@]}"; do
-            printf '  %d) %s\n' "$((i + 1))" "${gpus[i]#* }"
+            printf '  %d) %s\n' "$((i+1))" "${gpus[i]#* }"
         done
-
         read -rp "$(fmtr::ask 'Select device number: ')" sel
-
-        if [[ ! $sel =~ ^[0-9]+$ ]] || (( sel < 1 || sel > ${#gpus[@]} )); then
-            fmtr::error "Invalid selection. Please choose a valid number."
-            continue
-        fi
-
-        (( sel-- ))
-        break
+        [[ $sel =~ ^[0-9]+$ && sel -ge 1 && sel -le ${#gpus[@]} ]] && break
+        fmtr::error "Invalid selection. Please choose a valid number."
     done
+    ((sel--))
 
     pci_bdf="${gpus[sel]%% *}"        # e.g. "0000:01:00.0"
     pci_bdf="${pci_bdf##*/}"          # Strip domain → "01:00.0"
@@ -87,8 +76,8 @@ configure_vfio() {
     hwids=""
     for devpath in /sys/kernel/iommu_groups/$group/devices/*; do
         pci_func_bdf="${devpath##*/}" # e.g. "01:00.1"
-        pci_vendor=$(<"$devpath/vendor")
-        pci_device_id=$(<"$devpath/device")
+        read -r pci_vendor < "$devpath/vendor"
+        read -r pci_device_id < "$devpath/device"
         hwids+="${pci_vendor:2}:${pci_device_id:2},"
 
         pci_bus_dev_current="${pci_func_bdf%.*}"
@@ -113,22 +102,20 @@ configure_vfio() {
     fmtr::log "Modifying VFIO config: $VFIO_CONF_PATH"
 
     if [[ -f "/sys/bus/pci/devices/$pci_bdf/vendor" ]]; then
-        pci_vendor=$(<"/sys/bus/pci/devices/$pci_bdf/vendor")
+        read -r pci_vendor < "/sys/bus/pci/devices/$pci_bdf/vendor"
 
-        case "$pci_vendor" in
-            "0x10de")  # NVIDIA
-                printf 'options vfio-pci ids=%s\nsoftdep nvidia pre: vfio-pci\nsoftdep nouveau pre: vfio-pci\nsoftdep drm pre: vfio-pci\nsoftdep drm_kms_helper pre: vfio-pci\n' "$hwids" | sudo tee "$VFIO_CONF_PATH" &>> "$LOG_FILE"
-                ;;
-            "0x1002")  # AMD
-                printf 'options vfio-pci ids=%s\nsoftdep amdgpu pre: vfio-pci\nsoftdep radeon pre: vfio-pci\nsoftdep drm pre: vfio-pci\nsoftdep drm_kms_helper pre: vfio-pci\n' "$hwids" | sudo tee "$VFIO_CONF_PATH" &>> "$LOG_FILE"
-                ;;
-            "0x8086")  # Intel
-                printf 'options vfio-pci ids=%s\nsoftdep i915 pre: vfio-pci\nsoftdep drm pre: vfio-pci\nsoftdep drm_kms_helper pre: vfio-pci\n' "$hwids" | sudo tee "$VFIO_CONF_PATH" &>> "$LOG_FILE"
-                ;;
-            *)  # Unknown, just add VFIO IDs
-                printf 'options vfio-pci ids=%s\n' "$hwids" | sudo tee "$VFIO_CONF_PATH" &>> "$LOG_FILE"
-                ;;
-        esac
+        declare -A softdeps=(
+            ["0x10de"]="nvidia nouveau drm drm_kms_helper" # NVIDIA
+            ["0x1002"]="amdgpu radeon drm drm_kms_helper"  # AMD
+            ["0x8086"]="i915 drm drm_kms_helper"           # Intel
+        )
+
+        {
+            printf 'options vfio-pci ids=%s\n' "$hwids"
+            for dep in ${softdeps[$pci_vendor]}; do
+                printf 'softdep %s pre: vfio-pci\n' "$dep"
+            done
+        } | sudo tee "$VFIO_CONF_PATH" &>> "$LOG_FILE"
     fi
 }
 
