@@ -37,18 +37,22 @@ revert_vfio() {
 }
 
 configure_vfio() {
-    local gpus sel="" busid group class vendor device bad_group=0 bad_devices=() id desc
+    local gpus sel="" pci_bdf group class pci_vendor pci_device_id \
+          bad_group=0 bad_functions=() pci_desc
 
+    # Collect GPU candidates (class 0x03 = display controllers)
     mapfile -t gpus < <(
-        for d in /sys/bus/pci/devices/*; do
-            [[ -r "$d/class" ]] || continue
-            [[ $(<"$d/class") == 0x03* ]] || continue
-            id=${d##*/}; desc=$(lspci -s "$id")
-            desc=${desc##*[}; desc=${desc%%]*}
-            printf '%s %s\n' "$d" "$desc"
+        for devpath in /sys/bus/pci/devices/*; do
+            [[ -r "$devpath/class" ]] || continue
+            [[ $(<"$devpath/class") == 0x03* ]] || continue
+            pci_bdf=${devpath##*/} # Full BDF, e.g. "01:00.0"
+            pci_desc=$(lspci -s "$pci_bdf")
+            pci_desc=${pci_desc##*[}; pci_desc=${pci_desc%%]*}
+            printf '%s %s\n' "$devpath" "$pci_desc"
         done
     )
 
+    # User chooses GPU
     while :; do
         printf '\n'
         for i in "${!gpus[@]}"; do
@@ -66,30 +70,32 @@ configure_vfio() {
         break
     done
 
-    busid="${gpus[sel]%% *}"; busid="${busid##*/}"
-    group=$(readlink -f "/sys/bus/pci/devices/$busid/iommu_group"); group=${group##*/}
+    pci_bdf="${gpus[sel]%% *}"        # e.g. "0000:01:00.0"
+    pci_bdf="${pci_bdf##*/}"          # Strip domain → "01:00.0"
+    group=$(readlink -f "/sys/bus/pci/devices/$pci_bdf/iommu_group")
+    group=${group##*/}
 
-    gpu_slot="${busid%.*}"
+    pci_bus_dev="${pci_bdf%.*}"       # Bus:Device only, e.g. "01:00"
     hwids=""
-    for d in /sys/kernel/iommu_groups/$group/devices/*; do
-        id="${d##*/}"
-        vendor=$(<"$d/vendor")
-        device=$(<"$d/device")
-        hwids+="${vendor:2}:${device:2},"
+    for devpath in /sys/kernel/iommu_groups/$group/devices/*; do
+        pci_func_bdf="${devpath##*/}" # e.g. "01:00.1"
+        pci_vendor=$(<"$devpath/vendor")
+        pci_device_id=$(<"$devpath/device")
+        hwids+="${pci_vendor:2}:${pci_device_id:2},"
 
-        slot="${id%.*}"
-        if [[ $slot != "$gpu_slot" ]]; then
+        pci_bus_dev_current="${pci_func_bdf%.*}"
+        if [[ $pci_bus_dev_current != "$pci_bus_dev" ]]; then
             bad_group=1
-            bad_devices+=("$id")
+            bad_functions+=("$pci_func_bdf")
         fi
     done
     hwids="${hwids%,}"
 
     if (( bad_group )); then
         fmtr::error "Bad IOMMU grouping detected - IOMMU group #$group contains incorrect device(s):"; echo ""
-        for id in "${bad_devices[@]}"; do
-            desc=$(lspci -s "$id" -nn)
-            echo "  [$id] = $desc"
+        for pci_func_bdf in "${bad_functions[@]}"; do
+            pci_desc=$(lspci -s "$pci_func_bdf" -nn)
+            echo "  [$pci_func_bdf] = $pci_desc"
         done
         fmtr::warn "VFIO PT requires the entire IOMMU group for isolation. Recommended possible solutions:
       (1) ACS override, (2) Update firmware, (3) Use hardware with proper IOMMU support."
@@ -98,10 +104,10 @@ configure_vfio() {
 
     fmtr::log "Modifying VFIO config: $VFIO_CONF_PATH"
 
-    if [[ -f "/sys/bus/pci/devices/$busid/vendor" ]]; then
-        vendor=$(<"/sys/bus/pci/devices/$busid/vendor")
+    if [[ -f "/sys/bus/pci/devices/$pci_bdf/vendor" ]]; then
+        pci_vendor=$(<"/sys/bus/pci/devices/$pci_bdf/vendor")
 
-        case "$vendor" in
+        case "$pci_vendor" in
             "0x10de")  # NVIDIA
                 printf 'options vfio-pci ids=%s\nsoftdep nvidia pre: vfio-pci\nsoftdep nouveau pre: vfio-pci\nsoftdep drm pre: vfio-pci\nsoftdep drm_kms_helper pre: vfio-pci\n' "$hwids" | sudo tee "$VFIO_CONF_PATH" &>> "$LOG_FILE"
                 ;;
