@@ -112,8 +112,6 @@ configure_vfio() {
 
     fmtr::log "Modifying VFIO config: $VFIO_CONF_PATH"
 
-    exit
-
     if [[ -f "/sys/bus/pci/devices/$pci_bdf/vendor" ]]; then
         pci_vendor=$(<"/sys/bus/pci/devices/$pci_bdf/vendor")
 
