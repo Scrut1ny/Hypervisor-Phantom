@@ -40,70 +40,60 @@ configure_vfio() {
     local gpus sel="" pci_bdf group class pci_vendor pci_device_id \
           bad_group=0 bad_functions=() pci_desc
 
-    # Collect GPU candidates (PCI class 0x03* = all display controllers)
+    # Collect GPU candidates (PCI class 0x03* = display controllers)
     mapfile -t gpus < <(
-        for devpath in /sys/bus/pci/devices/*; do
-            [[ -r "$devpath/class" ]] || continue
-            [[ $(<"$devpath/class") == 0x03* ]] || continue
-            pci_bdf=${devpath##*/} # Full BDF, e.g. "01:00.0"
-            pci_desc=$(lspci -s "$pci_bdf")
-            pci_desc=${pci_desc##*[}; pci_desc=${pci_desc%%]*}
-            printf '%s %s\n' "$devpath" "$pci_desc"
+        for dev in /sys/bus/pci/devices/*; do
+            [[ -r $dev/class && $(<"$dev/class") == 0x03* ]] || continue
+            bdf=${dev##*/}
+            desc=$(lspci -s "$bdf"); desc=${desc##*[}; desc=${desc%%]*}
+            printf '%s %s\n' "$dev" "$desc"
         done
     )
 
     (( ${#gpus[@]} )) || { fmtr::error "No GPUs detected!"; exit 1; }
-    (( ${#gpus[@]} == 1 )) && fmtr::warn "Only one GPU detected! Passing through your only GPU will leave the host with no display output.
-      It is strongly recommended to have a separate dedicated or integrated GPU for the host system."
+    (( ${#gpus[@]} == 1 )) && fmtr::warn "Only one GPU detected! Passing it through will leave the host without display output."
 
-    while true; do
-        printf '\n'
+    while :; do
         for i in "${!gpus[@]}"; do
             printf '  %d) %s\n' "$((i+1))" "${gpus[i]#* }"
         done
         read -rp "$(fmtr::ask 'Select device number: ')" sel
-        [[ $sel =~ ^[0-9]+$ && sel -ge 1 && sel -le ${#gpus[@]} ]] && break
+        if [[ $sel =~ ^[0-9]+$ && sel -ge 1 && sel -le ${#gpus[@]} ]]; then
+            sel=$((sel-1))
+            break
+        fi
         fmtr::error "Invalid selection. Please choose a valid number."
     done
-    ((sel--))
 
-    pci_bdf="${gpus[sel]%% *}"        # e.g. "0000:01:00.0"
-    pci_bdf="${pci_bdf##*/}"          # Strip domain → "01:00.0"
-    group=$(readlink -f "/sys/bus/pci/devices/$pci_bdf/iommu_group")
-    group=${group##*/}
+    pci_bdf="${gpus[sel]%% *}"        # "0000:01:00.0"
+    pci_bdf="${pci_bdf##*/}"          # → "01:00.0"
+    group=$(basename "$(realpath /sys/bus/pci/devices/$pci_bdf/iommu_group)")
+    pci_bus_dev="${pci_bdf%.*}"       # e.g. "01:00"
 
-    pci_bus_dev="${pci_bdf%.*}"       # Bus:Device only, e.g. "01:00"
-    hwids=""
-    for devpath in /sys/kernel/iommu_groups/$group/devices/*; do
-        pci_func_bdf="${devpath##*/}" # e.g. "01:00.1"
-        read -r pci_vendor < "$devpath/vendor"
-        read -r pci_device_id < "$devpath/device"
-        hwids+="${pci_vendor:2}:${pci_device_id:2},"
+    for dev in /sys/kernel/iommu_groups/$group/devices/*; do
+        func=${dev##*/}
+        read -r ven < "$dev/vendor"
+        read -r dev_id < "$dev/device"
+        hwids+=("${ven:2}:${dev_id:2}")
 
-        pci_bus_dev_current="${pci_func_bdf%.*}"
-        if [[ $pci_bus_dev_current != "$pci_bus_dev" ]]; then
-            bad_group=1
-            bad_functions+=("$pci_func_bdf")
-        fi
+        [[ ${func%.*} != $pci_bus_dev ]] && { bad_group=1; bad_functions+=("$func"); }
     done
-    hwids="${hwids%,}"
+    hwids=$(IFS=,; echo "${hwids[*]}")
 
     if (( bad_group )); then
-        fmtr::error "Bad IOMMU grouping detected - IOMMU group #$group contains incorrect device(s):"; echo ""
-        for pci_func_bdf in "${bad_functions[@]}"; do
-            pci_desc=$(lspci -s "$pci_func_bdf" -nn)
-            echo "  [$pci_func_bdf] = $pci_desc"
+        fmtr::error "Bad IOMMU grouping - group #$group contains:"
+        printf '\n'
+        for f in "${bad_functions[@]}"; do
+            printf '  [%s] = %s\n' "$f" "$(lspci -s "$f" -nn)"
         done
-        fmtr::warn "VFIO PT requires the entire IOMMU group for isolation. Recommended possible solutions:
-      (1) ACS override, (2) Update firmware, (3) Use hardware with proper IOMMU support."
+        fmtr::warn "VFIO PT requires full group isolation. Possible fixes: ACS override, firmware update, or proper hardware support."
         exit 1
     fi
 
     fmtr::log "Modifying VFIO config: $VFIO_CONF_PATH"
 
-    if [[ -f "/sys/bus/pci/devices/$pci_bdf/vendor" ]]; then
+    if [[ -f /sys/bus/pci/devices/$pci_bdf/vendor ]]; then
         read -r pci_vendor < "/sys/bus/pci/devices/$pci_bdf/vendor"
-
         declare -A softdeps=(
             ["0x10de"]="nvidia nouveau drm drm_kms_helper" # NVIDIA
             ["0x1002"]="amdgpu radeon drm drm_kms_helper"  # AMD
@@ -115,7 +105,7 @@ configure_vfio() {
             for dep in ${softdeps[$pci_vendor]}; do
                 printf 'softdep %s pre: vfio-pci\n' "$dep"
             done
-        } | sudo tee "$VFIO_CONF_PATH" &>> "$LOG_FILE"
+        } | sudo tee "$VFIO_CONF_PATH" >>"$LOG_FILE"
     fi
 }
 
@@ -150,7 +140,7 @@ configure_bootloader() {
         fmtr::log "Modifying systemd-boot config: $config_file"
 
         sudo sed -i -E \
-            -e '/^options /s/(amd_iommu=on|intel_iommu=on|iommu=pt|vfio-pci.ids=[^ ]*)//g' \
+            -e '/^options /s/(amd_iommu=on|intel_iommu=on|iommu=pt|vfio-pci.ids=[^ ]*|kvm.ignore_msrs=1)//g' \
             -e '/^options[[:space:]]*$/d' \
             "$config_file"
         echo "options ${kernel_opts}" | sudo tee -a "$config_file" &>> "$LOG_FILE"
