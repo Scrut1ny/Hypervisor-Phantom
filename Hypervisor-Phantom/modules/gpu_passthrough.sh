@@ -110,22 +110,38 @@ configure_vfio() {
 }
 
 configure_bootloader() {
-    local cpu_vendor kernel_opts boot_mode=""
+    local cpu_vendor kernel_opts boot_mode="" opts_regex="" config_file
+
     case "$VENDOR_ID" in
         *AuthenticAMD*) cpu_vendor="amd";;
         *GenuineIntel*) cpu_vendor="intel";;
         *) fmtr::error "Unknown CPU Vendor ID."; return 1;;
     esac
+
     kernel_opts="${cpu_vendor}_iommu=on iommu=pt vfio-pci.ids=${hwids} kvm.ignore_msrs=1"
+    opts_regex='(amd_iommu=on|intel_iommu=on|iommu=pt|vfio-pci.ids=[^ ]*|kvm.ignore_msrs=1)'
 
     if [[ -f "/etc/default/grub" ]]; then
         boot_mode="grub"
         fmtr::log "Configuring GRUB"
         sudo cp /etc/default/grub{,.bak}
+
         if ! grep -q "${kernel_opts}" /etc/default/grub; then
-            sudo sed -i "s|\(GRUB_CMDLINE_LINUX_DEFAULT=\"[^\"]*\)|\1 ${kernel_opts}|" /etc/default/grub
+            fmtr::log "Cleaning old kernel options from GRUB config..."
+            sudo sed -i -E \
+                -e "s/(GRUB_CMDLINE_LINUX_DEFAULT=\")([^\"]*)\"/\1\2 /" \
+                -e "/^GRUB_CMDLINE_LINUX_DEFAULT=/ s/${opts_regex}//g" \
+                -e "/^GRUB_CMDLINE_LINUX_DEFAULT=/ s/  */ /g" \
+                -e "/^GRUB_CMDLINE_LINUX_DEFAULT=/ s/\"[[:space:]]/\"/" \
+                /etc/default/grub
+
+            sudo sed -i -E \
+                "s|(GRUB_CMDLINE_LINUX_DEFAULT=\")([^\"]*)\"|\1\2 ${kernel_opts}\"|" \
+                /etc/default/grub
+
+            fmtr::log "Inserted new kernel options into GRUB config."
         else
-            fmtr::log "Kernel options already present in GRUB config."
+            fmtr::log "Kernel options already present in GRUB config. Skipping."
         fi
         export BOOTLOADER_TYPE="grub"
         return 0
@@ -139,11 +155,23 @@ configure_bootloader() {
 
         fmtr::log "Modifying systemd-boot config: $config_file"
 
+        # 1) Remove only the managed opts from the options line(s)
         sudo sed -i -E \
-            -e '/^options /s/(amd_iommu=on|intel_iommu=on|iommu=pt|vfio-pci.ids=[^ ]*|kvm.ignore_msrs=1)//g' \
-            -e '/^options[[:space:]]*$/d' \
+            -e "/^options / s/${opts_regex}//g" \
+            -e "/^options / s/  +/ /g" \
+            -e "/^options / s/[[:space:]]+$//" \
             "$config_file"
-        echo "options ${kernel_opts}" | sudo tee -a "$config_file" &>> "$LOG_FILE"
+
+        # 2) Append our clean kernel_opts back to the same options line(s) if missing
+        if ! grep -q "^options .*(${cpu_vendor}_iommu=on|iommu=pt|vfio-pci.ids=${hwids}|kvm.ignore_msrs=1)" "$config_file"; then
+            sudo sed -i -E \
+                -e "/^options / s/$/ ${kernel_opts}/" \
+                -e "/^options / s/  +/ /g" \
+                "$config_file"
+            fmtr::log "Updated kernel options in systemd-boot config."
+        else
+            fmtr::log "Kernel options already present in systemd-boot config. Skipping append."
+        fi
     done
 }
 
