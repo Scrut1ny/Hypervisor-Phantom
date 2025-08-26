@@ -28,7 +28,7 @@ readonly FAKE_BATTERY_ACPITABLE="${PATCH_DIR}/fake_battery.dsl"
 REQUIRED_PKGS_Arch=(
   # Basic Build Dependencie(s)
   acpica base-devel dmidecode glib2 ninja python-packaging
-  python-sphinx python-sphinx_rtd_theme gnupg patch
+  python-sphinx python-sphinx_rtd_theme gnupg patch curl
 
   # Spice Dependencie(s)
   spice gtk3
@@ -44,7 +44,7 @@ REQUIRED_PKGS_Debian=(
   # Basic Build Dependencie(s)
   acpica-tools build-essential libfdt-dev libglib2.0-dev
   libpixman-1-dev ninja-build python3-venv zlib1g-dev gnupg
-  python3-sphinx python3-sphinx-rtd-theme patch
+  python3-sphinx python3-sphinx-rtd-theme patch curl
 
   # Spice Dependencie(s)
   libspice-server-dev
@@ -59,7 +59,7 @@ REQUIRED_PKGS_Debian=(
 REQUIRED_PKGS_openSUSE=(
   # Basic Build Dependencie(s)
   acpica bzip2 gcc-c++ gpg2 glib2-devel make qemu
-  libpixman-1-0-devel patch python3-Sphinx ninja
+  libpixman-1-0-devel patch python3-Sphinx ninja curl
 
   # Spice Dependencie(s)
   spice-server
@@ -74,7 +74,7 @@ REQUIRED_PKGS_openSUSE=(
 REQUIRED_PKGS_Fedora=(
   # Basic Build Dependencie(s)
   acpica-tools bzip2 glib2-devel libfdt-devel ninja-build
-  pixman-devel python3 zlib-ng-devel gnupg2 patch
+  pixman-devel python3 zlib-ng-devel gnupg2 patch curl
 
   # Spice Dependencie(s)
   spice-server-devel
@@ -343,7 +343,7 @@ spoof_acpi_table_data() {
 
   sed -i 's/build_append_int_noprefix(tbl, 0 \/\* Unspecified \*\//build_append_int_noprefix(tbl, '"$pm_type"' \/\* '"$chassis_type"' \*\//g' "$c_file"
 
-  if [[ "$chassis_type" = "Notebook" ]]; then    
+  if [[ "$chassis_type" = "Notebook" ]]; then
     fmtr::warn "Host PM type equals '$pm_type' ($chassis_type)"
     fmtr::info "Generating fake battery SSDT ACPI table..."
 
