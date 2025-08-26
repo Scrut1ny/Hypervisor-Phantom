@@ -12,16 +12,16 @@ REQUIRED_PKGS_Arch=(
 
 REQUIRED_PKGS_Debian=(
   qemu-system-x86 ovmf virt-manager libvirt-clients swtpm
-  libvirt-daemon-system libvirt-daemon-config-network curl
+  libvirt-daemon-system libvirt-daemon-config-network
 )
 
 REQUIRED_PKGS_openSUSE=(
   libvirt libvirt-client libvirt-daemon virt-manager
-  qemu qemu-kvm ovmf qemu-tools swtpm curl
+  qemu qemu-kvm ovmf qemu-tools swtpm
 )
 
 REQUIRED_PKGS_Fedora=(
-  @virtualization swtpm curl
+  @virtualization swtpm
 )
 
 configure_firewall_arch() {
