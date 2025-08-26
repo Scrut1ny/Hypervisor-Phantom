@@ -16,13 +16,13 @@ readonly LG_ARCHIVE="looking-glass-$LG_VERSION.tar.gz"
 
 REQUIRED_PKGS_Arch=(
   cmake gcc libgl libegl fontconfig spice-protocol make nettle pkgconf binutils libxi libxinerama
-  libxss libxcursor libxpresent libxkbcommon wayland-protocols ttf-dejavu libsamplerate
+  libxss libxcursor libxpresent libxkbcommon wayland-protocols ttf-dejavu libsamplerate curl
 )
 
 REQUIRED_PKGS_Debian=(
   # https://looking-glass.io/docs/B7/build/#fetching-with-apt
   
-  binutils-dev cmake fonts-dejavu-core libfontconfig-dev
+  binutils-dev cmake fonts-dejavu-core libfontconfig-dev curl
   gcc g++ pkg-config libegl-dev libgl-dev libgles-dev libspice-protocol-dev
   nettle-dev libx11-dev libxcursor-dev libxi-dev libxinerama-dev
   libxpresent-dev libxss-dev libxkbcommon-dev libwayland-dev wayland-protocols
@@ -39,7 +39,7 @@ REQUIRED_PKGS_openSUSE=(
   libXrandr-devel libXss-devel libXss-devel make Mesa-libGLESv3-devel pipewire-devel
   pkgconf-pkg-config pkgconf spice-protocol-devel vulkan-devel wayland-devel
   zlib-devel-static libXi-devel libXinerama-devel libXcursor-devel dkms Mesa-libGL-devel
-  Mesa-libGLESv2-devel libzstd-devel-static libconfig++-devel SDL2-devel
+  Mesa-libGLESv2-devel libzstd-devel-static libconfig++-devel SDL2-devel curl
 
   # Add "libpulse-devel" and remove "pipewire-devel" if you use PulseAudio!
   # Not recommended though because LG doesn't support PulseAudio.
@@ -50,7 +50,7 @@ REQUIRED_PKGS_Fedora=(
   pkgconf-pkg-config binutils-devel libXi-devel libXinerama-devel libXcursor-devel
   libXpresent-devel libxkbcommon-x11-devel wayland-devel wayland-protocols-devel
   libXScrnSaver-devel libXrandr-devel dejavu-sans-mono-fonts libdecor-devel
-  pipewire-devel libsamplerate-devel dkms kernel-devel kernel-headers
+  pipewire-devel libsamplerate-devel dkms kernel-devel kernel-headers curl
 
   # Add "pulseaudio-libs-devel" and remove "pipewire-devel" if you use PulseAudio!
   # Not recommended though because LG doesn't support PulseAudio.
