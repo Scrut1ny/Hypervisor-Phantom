@@ -17,7 +17,17 @@ readonly EDK2_URL="https://github.com/tianocore/edk2.git"
 readonly EDK2_TAG="edk2-stable202508"
 readonly PATCH_DIR="../../patches/EDK2"
 readonly OVMF_PATCH="${CPU_VENDOR}-${EDK2_TAG}.patch"
-readonly OVMF_CODE_DEST_DIR="/usr/share/edk2/x64"
+
+
+
+
+
+
+
+
+
+
+
 
 REQUIRED_PKGS_Arch=(
   base-devel acpica git nasm python patch
@@ -47,6 +57,17 @@ REQUIRED_PKGS_Fedora=(
   python3-virt-firmware
 )
 
+
+
+
+
+
+
+
+
+
+
+
 acquire_edk2_source() {
   mkdir -p "$SRC_DIR" && cd "$SRC_DIR"
 
@@ -60,7 +81,7 @@ acquire_edk2_source() {
       if prmt::yes_or_no "$(fmtr::ask 'Clone the EDK2 repository?')"; then
         git clone --single-branch --depth=1 --branch "$EDK2_TAG" "$EDK2_URL" "$EDK2_TAG" &>> "$LOG_FILE" || { fmtr::fatal "Failed to clone repository."; exit 1; }
         cd "$EDK2_TAG" || { fmtr::fatal "Failed to change to EDK2 directory after cloning: $EDK2_TAG"; exit 1; }
-        fmtr::info "Initializing submodules..."
+        fmtr::info "Initializing submodules... (be patient)"
         git submodule update --init &>> "$LOG_FILE" || { fmtr::fatal "Failed to initialize submodules."; exit 1; }
         fmtr::info "EDK2 source successfully acquired and submodules initialized."
         patch_ovmf
@@ -78,38 +99,50 @@ acquire_edk2_source() {
   else
     git clone --single-branch --depth=1 --branch "$EDK2_TAG" "$EDK2_URL" "$EDK2_TAG" &>> "$LOG_FILE" || { fmtr::fatal "Failed to clone repository."; exit 1; }
     cd "$EDK2_TAG" || { fmtr::fatal "Failed to change to EDK2 directory after cloning: $EDK2_TAG"; exit 1; }
-    fmtr::info "Initializing submodules..."
+    fmtr::info "Initializing submodules... (be patient)"
     git submodule update --init &>> "$LOG_FILE" || { fmtr::fatal "Failed to initialize submodules."; exit 1; }
     fmtr::info "EDK2 source successfully acquired and submodules initialized."
     patch_ovmf
   fi
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 patch_ovmf() {
-  # Apply custom ovmf patches
+  # Apply custom OVMF patches
   [ -d "$PATCH_DIR" ] || fmtr::fatal "Patch directory $PATCH_DIR not found!"
   [ -f "${PATCH_DIR}/${OVMF_PATCH}" ] || { fmtr::error "Patch file ${PATCH_DIR}/${OVMF_PATCH} not found!"; return 1; }
   fmtr::log "Patching OVMF with ${OVMF_PATCH}..."
   git apply < "${PATCH_DIR}/${OVMF_PATCH}" &>> "$LOG_FILE" || { fmtr::error "Failed to apply patch ${OVMF_PATCH}!"; return 1; }
   fmtr::info "Patch ${OVMF_PATCH} applied successfully."
 
-  # Apply hosts Boot Graphics Resource Table (BGRT) image
-  fmtr::log "Choose BGRT logo image option for OVMF:"
-  fmtr::format_text '\n  ' "[1]" " Use host's BGRT image (from /sys/firmware/acpi/bgrt/)" "$TEXT_BRIGHT_YELLOW"
-  fmtr::format_text '  ' "[2]" " Use a custom BMP image (provide file path)" "$TEXT_BRIGHT_YELLOW"
-  fmtr::format_text '  ' "[3]" " No logo (delete Logo.bmp)" "$TEXT_BRIGHT_YELLOW"
-  fmtr::format_text '\n  ' "[0]" " Skip (keep current Logo.bmp, if present)" "$TEXT_BRIGHT_RED"
+  # Apply custom BGRT BMP boot logo image
+  fmtr::log "Choose BGRT BMP boot logo image option for OVMF:"
+  fmtr::format_text '\n  ' "[1]" " Apply host's (default)" "$TEXT_BRIGHT_YELLOW"
+  fmtr::format_text '  ' "[2]" " Apply custom (provide path)" "$TEXT_BRIGHT_YELLOW"
 
   while true; do
-    read -rp "$(fmtr::ask 'Enter choice [0-3]: ')" logo_choice
+    read -rp "$(fmtr::ask 'Enter choice [1-2]: ')" logo_choice
+    logo_choice=${logo_choice:-1} # default to 1 if empty
     case "$logo_choice" in
       1)
         image_file=$(find /sys/firmware/acpi/bgrt/ -type f -exec file {} \; | grep -i 'bitmap' | cut -d: -f1)
         if [ -n "$image_file" ]; then
           cp -f "$image_file" "MdeModulePkg/Logo/Logo.bmp"
-          fmtr::info "Host BGRT logo image copied successfully."
+          fmtr::info "Image replaced successfully."
         else
-          fmtr::info "No host BGRT bitmap image found."
+          fmtr::error "Image not found."
         fi
         break
         ;;
@@ -132,19 +165,6 @@ patch_ovmf() {
         done
         break
         ;;
-      3)
-        if [ -f "MdeModulePkg/Logo/Logo.bmp" ]; then
-          rm -f "MdeModulePkg/Logo/Logo.bmp"
-          fmtr::info "Logo.bmp deleted (no logo will be used)."
-        else
-          fmtr::info "Logo.bmp not present, nothing to delete."
-        fi
-        break
-        ;;
-      0)
-        fmtr::info "Skipping BGRT logo modification."
-        break
-        ;;
       *)
         fmtr::error "Invalid choice, please try again."
         ;;
@@ -152,11 +172,23 @@ patch_ovmf() {
   done
 }
 
-compile_ovmf() {
-    # https://github.com/tianocore/tianocore.github.io/wiki/Common-instructions
-    # https://github.com/tianocore/tianocore.github.io/wiki/How-to-build-OVMF
-    # https://github.com/tianocore/edk2/tree/master/OvmfPkg
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+compile_ovmf() {
     export WORKSPACE="$(pwd)"
     export EDK_TOOLS_PATH="${WORKSPACE}/BaseTools"
     export CONF_PATH="${WORKSPACE}/Conf"
@@ -164,7 +196,7 @@ compile_ovmf() {
     fmtr::log "Building BaseTools (EDK II build tools)..."
     { make -C BaseTools; source edksetup.sh; } &>> "$LOG_FILE"
 
-    fmtr::log "Compiling OVMF firmware with Secure Boot and TPM support..."
+    fmtr::log "Compiling OVMF with SB and TPM support..."
     build -a X64 -p OvmfPkg/OvmfPkgX64.dsc -b RELEASE -t GCC5 -n 0 -s -q \
         --define SECURE_BOOT_ENABLE=TRUE \
         --define TPM_CONFIG_ENABLE=TRUE \
@@ -173,22 +205,27 @@ compile_ovmf() {
         --define TPM2_ENABLE=TRUE \
         &>> "$LOG_FILE"
 
-    sudo mkdir -p "$OVMF_CODE_DEST_DIR"
-
-    fmtr::log "Converting compiled OVMF firmware to .qcow2 format..."
-    sudo qemu-img convert -f raw -O qcow2 "Build/OvmfX64/RELEASE_GCC5/FV/OVMF_CODE.fd" "$OVMF_CODE_DEST_DIR/OVMF_CODE.secboot.4m.qcow2"
-    sudo qemu-img convert -f raw -O qcow2 "Build/OvmfX64/RELEASE_GCC5/FV/OVMF_VARS.fd" "$OVMF_CODE_DEST_DIR/OVMF_VARS.4m.qcow2"
-
-    sudo chown root:root /usr/share/edk2/x64/*
-    sudo chmod 644 /usr/share/edk2/x64/*
+    fmtr::log "Converting compiled OVMF to .qcow2 format..."
+    mkdir -p "../output/firmware"
+    sudo qemu-img convert -f raw -O qcow2 "Build/OvmfX64/RELEASE_GCC5/FV/OVMF_CODE.fd" "../output/firmware/OVMF_CODE.secboot.4m.qcow2"
+    sudo qemu-img convert -f raw -O qcow2 "Build/OvmfX64/RELEASE_GCC5/FV/OVMF_VARS.fd" "../output/firmware/OVMF_VARS.4m.qcow2"
 }
 
-cert_injection () {
-    local UUID
-    local TEMP_DIR=$(mktemp -d)
-    local VM_NAME
-    local VARS_FILE
-    local NVRAM_DIR="/var/lib/libvirt/qemu/nvram"
+
+
+
+
+
+
+
+
+
+
+
+
+
+cert_injection() {
+    local UUID="77fa9abd-0359-4d32-bd60-28f4e78f784b" TEMP_DIR=$(mktemp -d) VM_NAME VARS_FILE NVRAM_DIR="/var/lib/libvirt/qemu/nvram"
 
     cd "$TEMP_DIR" || exit 1
 
@@ -228,24 +265,7 @@ cert_injection () {
       fi
     done
 
-    # Prompt the user to select the UUID type
-    fmtr::log "Select the UUID type to use for Secure Boot:"
-    fmtr::format_text '\n  ' "[1]" " Randomly generated UUID" "$TEXT_BRIGHT_YELLOW"
-    fmtr::format_text '  ' "[2]" " UEFI Global Variable UUID (EFI_GLOBAL_VARIABLE)" "$TEXT_BRIGHT_YELLOW"
-    fmtr::format_text '  ' "[3]" " Microsoft Vendor UUID (Microsoft Corporation)" "$TEXT_BRIGHT_YELLOW"
-    fmtr::format_text '\n  ' "[0]" " Exit" "$TEXT_BRIGHT_RED"
-
-    read -rp "$(fmtr::ask 'Enter choice [1-3]: ')" uuid_choice
-    case "$uuid_choice" in
-      0) exit 0 ;;
-      1) UUID=$(uuidgen) ;;
-      2) UUID="8be4df61-93ca-11d2-aa0d-00e098032b8c" ;;
-      3) UUID="77fa9abd-0359-4d32-bd60-28f4e78f784b" ;;
-      *) fmtr::error "Invalid choice. Defaulting to random UUID."; UUID=$(uuidgen) ;;
-    esac
-
     fmtr::info "Downloading Microsoft Secure Boot certificates..."
-
     declare -A CERTS=(
         # PK Certificates
         ["ms_pk_oem.der"]="https://raw.githubusercontent.com/microsoft/secureboot_objects/main/PreSignedObjects/PK/Certificate/WindowsOEMDevicesPK.der"
@@ -286,26 +306,44 @@ cert_injection () {
     rm -rf "/tmp/$TEMP_DIR"
 }
 
+
+
+
+
+
+
+
+
 cleanup() {
     fmtr::log "Cleaning up"
     cd .. && rm -rf "$EDK2_TAG"
     cd .. && rmdir --ignore-fail-on-non-empty "$SRC_DIR"
 }
 
+
+
+
+
+
+
+
+
+
+
 main() {
     install_req_pkgs "EDK2"
 
     while true; do
 
-      fmtr::format_text '\n  ' "[1]" " Install patched OVMF firmware" "$TEXT_BRIGHT_YELLOW"
-      fmtr::format_text '  ' "[2]" " Inject Secure Boot certificates into a VARS file" "$TEXT_BRIGHT_YELLOW"
+      fmtr::format_text '\n  ' "[1]" " Create patched OVMF" "$TEXT_BRIGHT_YELLOW"
+      fmtr::format_text '  ' "[2]" " VARS SB cert injection" "$TEXT_BRIGHT_YELLOW"
       fmtr::format_text '\n  ' "[0]" " Exit" "$TEXT_BRIGHT_RED"
 
       read -rp "$(fmtr::ask 'Enter choice [0-2]: ')" user_choice
       case "$user_choice" in
         1)
           acquire_edk2_source
-          if prmt::yes_or_no "$(fmtr::ask 'Build, compile, and install OVMF now?')"; then
+          if prmt::yes_or_no "$(fmtr::ask 'Create patched OVMF now?')"; then
             compile_ovmf
           fi
           ! prmt::yes_or_no "$(fmtr::ask 'Keep EDK2 source for faster re-patching?')" && cleanup
