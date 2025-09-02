@@ -15,7 +15,7 @@ esac)
 readonly SRC_DIR="$(pwd)/src"
 readonly EDK2_URL="https://github.com/tianocore/edk2.git"
 readonly EDK2_TAG="edk2-stable202508"
-readonly PATCH_DIR="$(pwd)/../../patches/EDK2"
+readonly PATCH_DIR="$(pwd)/patches/EDK2"
 readonly OVMF_PATCH="${CPU_VENDOR}-${EDK2_TAG}.patch"
 
 REQUIRED_PKGS_Arch=(base-devel acpica git nasm python patch virt-firmware)
@@ -174,7 +174,7 @@ cert_injection() {
   done
   wait || { fmtr::fatal "Failed to download one or more certs"; exit 1; }
 
-  fmtr::info "Injecting SB certs into '$VARS_FILE'..."
+  fmtr::info "Injecting MS SB certs into '$VARS_FILE'..."
   sudo virt-fw-vars \
     --input "$VARS_FILE" \
     --output "$NVRAM_DIR/${VM_NAME}_SECURE_VARS.qcow2" \
