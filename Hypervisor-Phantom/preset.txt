@@ -1,6 +1,6 @@
 VM_NAME="win10"
-CORES=6
-THREADS=2
+#CORES=6
+#THREADS=2
 #MAC_ADDRESS="60:C3:71:08:7C:2D"
 
 #cpu_manufacturer="AuthenticAMD"
