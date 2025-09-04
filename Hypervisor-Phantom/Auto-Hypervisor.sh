@@ -129,8 +129,8 @@ main_menu() {
     local choice="$(prmt::quick_prompt '  Enter your choice [0-7]: ')" && clear
     case $choice in
       1) fmtr::box_text "${options[1]}"; "./modules/virtualization.sh" ;;
-      2) fmtr::box_text "${options[2]}"; "./modules/spoof_qemu_patch.sh" ;;
-      3) fmtr::box_text "${options[3]}"; "./modules/spoof_edk2_patch.sh" ;;
+      2) fmtr::box_text "${options[2]}"; "./modules/patch_qemu.sh" ;;
+      3) fmtr::box_text "${options[3]}"; "./modules/patch_ovmf.sh" ;;
       4) fmtr::box_text "${options[4]}"; "./modules/gpu_passthrough.sh" ;;
       5) fmtr::box_text "${options[5]}"; "./modules/patch_kernel.sh" ;;
       6) fmtr::box_text "${options[6]}"; "./modules/looking_glass.sh" ;;
