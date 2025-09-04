@@ -53,9 +53,9 @@ detect_distro() {
 
 cpu_vendor_id() {
   VENDOR_ID=$(LANG=en_US.UTF-8 lscpu 2>/dev/null | awk -F': +' '/^Vendor ID:/ {print $2}' | xargs)
-  
+
   if [ -z "$VENDOR_ID" ]; then
-        VENDOR_ID=$(awk -F': +' '/vendor_id/ {print $2; exit}' /proc/cpuinfo | xargs) # Fallback method
+    VENDOR_ID=$(awk -F': +' '/vendor_id/ {print $2; exit}' /proc/cpuinfo | xargs) # Fallback method
   fi
 
   : "${VENDOR_ID:=Unknown}"
@@ -65,49 +65,42 @@ cpu_vendor_id() {
 }
 
 print_system_info() {
-  local show_output=0
-  local output=""
+    local show_output=0 output=""
 
-  case "$VENDOR_ID" in
-    GenuineIntel)
-      virt_name="VT-x"
-      iommu_name="VT-d"
-      ;;
-    AuthenticAMD)
-      virt_name="AMD-V"
-      iommu_name="AMD-Vi"
-      ;;
-    *)
-      virt_name="Unknown"
-      iommu_name="Unknown"
-      ;;
-  esac
+    declare -A virt_map=( ["GenuineIntel"]="VT-x" ["AuthenticAMD"]="AMD-V" )
+    declare -A iommu_map=( ["GenuineIntel"]="VT-d" ["AuthenticAMD"]="AMD-Vi" )
 
-  # CPU Virtualization - Required for KVM
-  if grep -qE 'vmx|svm' /proc/cpuinfo; then
-    output+="\n  [✅] ${virt_name} (Virtualization): Supported"
-  else
-    output+="\n  [❌] ${virt_name} (Virtualization): Not supported"
-    show_output=1
-  fi
+    virt_name=${virt_map[$VENDOR_ID]:-Unknown}
+    iommu_name=${iommu_map[$VENDOR_ID]:-Unknown}
 
-  # IOMMU - Required for PCIe/GPU Passthrough
-  if grep -qE "iommu=on" /proc/cmdline; then
-    output+="\n  [✅] ${iommu_name} (IOMMU): Enabled"
-  else
-    output+="\n  [❌] ${iommu_name} (IOMMU): Not enabled"
-    show_output=1
-  fi
+    for check in "Virtualization:vmx|svm:$virt_name" "IOMMU:iommu=on:$iommu_name"; do
+        IFS=':' read -r label pattern name <<< "$check"
 
-  # KVM module check
-  if lsmod | grep -q kvm; then
-    output+="\n  [✅] KVM Kernel Module: Loaded"
-  else
-    output+="\n  [❌] KVM Kernel Module: Not loaded"
-    show_output=1
-  fi
+        if [[ "$label" == "Virtualization" ]]; then
+            if grep -qE "$pattern" /proc/cpuinfo; then
+                output+="\n  [✅] $name (Virtualization): Supported"
+            else
+                output+="\n  [❌] $name (Virtualization): Not supported"
+                show_output=1
+            fi
+        elif [[ "$label" == "IOMMU" ]]; then
+            if grep -qE "$pattern" /proc/cmdline; then
+                output+="\n  [✅] $name (IOMMU): Enabled"
+            else
+                output+="\n  [❌] $name (IOMMU): Not enabled"
+                show_output=1
+            fi
+        fi
+    done
 
-  [ "$show_output" -eq 1 ] && echo -e "$output\n\n  ──────────────────────────────\n" || echo ""
+    if lsmod | grep -q kvm; then
+        output+="\n  [✅] KVM Kernel Module: Loaded"
+    else
+        output+="\n  [❌] KVM Kernel Module: Not loaded"
+        show_output=1
+    fi
+
+    [ "$show_output" -eq 1 ] && echo -e "$output\n\n  ──────────────────────────────\n" || echo ""
 }
 
 main_menu() {
