@@ -45,11 +45,19 @@ acquire_edk2_source() {
     if prmt::yes_or_no "$(fmtr::ask 'Purge EDK2 source directory?')"; then
       rm -rf "$EDK2_TAG" || { fmtr::fatal "Failed to remove existing directory: $EDK2_TAG"; exit 1; }
       fmtr::info "Directory purged successfully."
-      prmt::yes_or_no "$(fmtr::ask 'Clone the EDK2 repository?')" && clone_init \
-        || { prmt::yes_or_no "$(fmtr::ask 'Patch EDK2 source?')" && patch_ovmf || fmtr::info "Skipping clone and patch."; }
+      if prmt::yes_or_no "$(fmtr::ask 'Clone the EDK2 repository?')"; then
+        clone_init
+      else
+        fmtr::info "Skipping clone; nothing to patch since source was purged."
+      fi
     else
       fmtr::info "Kept existing directory; skipping deletion."
       cd "$EDK2_TAG" || { fmtr::fatal "Failed to enter EDK2 directory: $EDK2_TAG"; exit 1; }
+      if prmt::yes_or_no "$(fmtr::ask 'Patch EDK2?')"; then
+        patch_ovmf
+      else
+        fmtr::info "Skipping patch."
+      fi
     fi
   else
     clone_init
@@ -75,16 +83,40 @@ patch_ovmf() {
     read -rp "$(fmtr::ask 'Enter choice [1-2]: ')" logo_choice && : "${logo_choice:=1}"
     case "$logo_choice" in
       1)
-        image_file=$(file /sys/firmware/acpi/bgrt/* 2>/dev/null | awk -F: '/bitmap/{print $1; exit}')
-        [ -n "$image_file" ] && cp "$image_file" MdeModulePkg/Logo/Logo.bmp && fmtr::info "Image replaced successfully." || fmtr::error "Image not found or failed to copy."
+        [ -f /sys/firmware/acpi/bgrt/image ] && cp /sys/firmware/acpi/bgrt/image MdeModulePkg/Logo/Logo.bmp \
+          && fmtr::info "Image replaced successfully." \
+          || fmtr::error "Image not found or failed to copy."
         break
         ;;
       2)
         while :; do
           read -rp "$(fmtr::ask 'Enter full path to your BMP image: ')" custom_bmp
-          [ -f "$custom_bmp" ] || { fmtr::error "File does not exist. Try again."; continue; }
+          if [ ! -f "$custom_bmp" ]; then
+            fmtr::error "File does not exist. Try again."
+            continue
+          fi
+
+          # Validate BMP
           file_type=$(file -b --mime-type "$custom_bmp")
-          [[ "$file_type" == image/bmp || "$file_type" == application/octet-stream ]] || { fmtr::error "Not BMP (detected: $file_type)."; continue; }
+          head_magic=$(head -c2 "$custom_bmp")
+          file_info=$(file "$custom_bmp")
+
+          if ! case "$file_type" in image/bmp|image/x-bmp|image/x-ms-bmp|application/octet-stream) true;; *) false;; esac \
+             || [ "$head_magic" != "BM" ] \
+             || echo "$file_info" | grep -qi 'compressed' \
+             || ! echo "$file_info" | grep -qE '24-bit|32-bit'; then
+            fmtr::error "Invalid BMP: must be uncompressed 24/32-bit BMP with BM signature."
+            continue
+          fi
+
+          # Dimension check (parse BMP header)
+          width=$(od -An -t u4 -j 18 -N 4 "$custom_bmp" | tr -d ' ')
+          height=$(od -An -t u4 -j 22 -N 4 "$custom_bmp" | tr -d ' ')
+          if [ -n "$width" ] && [ -n "$height" ] && ([ "$width" -gt 1024 ] || [ "$height" -gt 768 ]); then
+            fmtr::error "BMP too large: ${width}×${height}, must be ≤1024×768."
+            continue
+          fi
+
           cp "$custom_bmp" MdeModulePkg/Logo/Logo.bmp && fmtr::info "Custom BMP copied successfully."
           break 2
         done
