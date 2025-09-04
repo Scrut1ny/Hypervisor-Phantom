@@ -53,10 +53,9 @@ detect_distro() {
 
 cpu_vendor_id() {
   VENDOR_ID=$(LANG=en_US.UTF-8 lscpu 2>/dev/null | awk -F': +' '/^Vendor ID:/ {print $2}' | xargs)
-
+  
   if [ -z "$VENDOR_ID" ]; then
-    # Fallback method
-    VENDOR_ID=$(awk -F': +' '/vendor_id/ {print $2; exit}' /proc/cpuinfo | xargs)
+        VENDOR_ID=$(awk -F': +' '/vendor_id/ {print $2; exit}' /proc/cpuinfo | xargs) # Fallback method
   fi
 
   : "${VENDOR_ID:=Unknown}"
@@ -66,54 +65,49 @@ cpu_vendor_id() {
 }
 
 print_system_info() {
+  local show_output=0
+  local output=""
 
-    local show_output=0
-    local output=""
+  case "$VENDOR_ID" in
+    GenuineIntel)
+      virt_name="VT-x"
+      iommu_name="VT-d"
+      ;;
+    AuthenticAMD)
+      virt_name="AMD-V"
+      iommu_name="AMD-Vi"
+      ;;
+    *)
+      virt_name="Unknown"
+      iommu_name="Unknown"
+      ;;
+  esac
 
-    # Virtualization technology name fetchers
-    if grep -q "GenuineIntel" /proc/cpuinfo; then
-        virt_name="VT-x"
-        iommu_name="VT-d"
-    elif grep -q "AuthenticAMD" /proc/cpuinfo; then
-        virt_name="AMD-V"
-        iommu_name="AMD-Vi"
-    else
-        virt_name="Unknown"
-        iommu_name="Unknown"
-    fi
+  # CPU Virtualization - Required for KVM
+  if grep -qE 'vmx|svm' /proc/cpuinfo; then
+    output+="\n  [✅] ${virt_name} (Virtualization): Supported"
+  else
+    output+="\n  [❌] ${virt_name} (Virtualization): Not supported"
+    show_output=1
+  fi
 
-    # CPU Virtualization (Intel VT-x/AMD-V) - Required for KVM (hardware-assisted virtualization)
-    if grep -qE 'vmx|svm' /proc/cpuinfo; then
-        output+="\n  [✅] ${virt_name} (Virtualization): Supported"
-    else
-        output+="\n  [❌] ${virt_name} (Virtualization): Not supported"
-        show_output=1
-    fi
+  # IOMMU - Required for PCIe/GPU Passthrough
+  if grep -qE "iommu=on" /proc/cmdline; then
+    output+="\n  [✅] ${iommu_name} (IOMMU): Enabled"
+  else
+    output+="\n  [❌] ${iommu_name} (IOMMU): Not enabled"
+    show_output=1
+  fi
 
-    # IOMMU (VT-d/AMD-Vi) - Required for PCIe/GPU Passthrough
-    if grep -qE "iommu=on" /proc/cmdline; then
-        output+="\n  [✅] ${iommu_name} (IOMMU): Enabled"
-    else
-        output+="\n  [❌] ${iommu_name} (IOMMU): Not enabled"
-        show_output=1
-    fi
+  # KVM module check
+  if lsmod | grep -q kvm; then
+    output+="\n  [✅] KVM Kernel Module: Loaded"
+  else
+    output+="\n  [❌] KVM Kernel Module: Not loaded"
+    show_output=1
+  fi
 
-    # KVM module check
-    if lsmod | grep -q kvm; then
-        output+="\n  [✅] KVM Kernel Module: Loaded"
-    else
-        output+="\n  [❌] KVM Kernel Module: Not loaded"
-        show_output=1
-    fi
-
-    # Final output logic
-    if [ "$show_output" -eq 1 ]; then
-        echo -e "$output"
-        echo -e "\n  ──────────────────────────────\n"
-    else
-        echo ""
-    fi
-
+  [ "$show_output" -eq 1 ] && echo -e "$output\n\n  ──────────────────────────────\n" || echo ""
 }
 
 main_menu() {
