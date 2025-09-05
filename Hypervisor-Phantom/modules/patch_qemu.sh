@@ -384,7 +384,7 @@ spoof_smbios_processor_data() {
   local chipset_file
   case "$QEMU_VERSION" in
     "8.2.6") chipset_file="hw/i386/pc_q35.c" ;;
-    "9.2.4"|"10.0.2") chipset_file="hw/i386/fw_cfg.c" ;;
+    "9.2.4"|"10.0.2"|"10.1.0") chipset_file="hw/i386/fw_cfg.c" ;;
     *) fmtr::warn "Unsupported QEMU version: $QEMU_VERSION" ;;
   esac
 
