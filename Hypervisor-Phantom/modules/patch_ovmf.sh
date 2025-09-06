@@ -194,7 +194,10 @@ cert_injection() {
   fmtr::info "Downloading Microsoft SB certs..."
   declare -A CERTS=(
     ["ms_pk_oem.der"]="$URL/PK/Certificate/WindowsOEMDevicesPK.der"
+    ["ms_kek_2011.der"]="$URL/KEK/Certificates/MicCorKEKCA2011_2011-06-24.der"
     ["ms_kek_2023.der"]="$URL/KEK/Certificates/microsoft%20corporation%20kek%202k%20ca%202023.der"
+    ["ms_db_uef_2011.der"]="$URL/DB/Certificates/MicCorUEFCA2011_2011-06-27.der"
+    ["ms_db_pro_2011.der"]="$URL/DB/Certificates/MicWinProPCA2011_2011-10-19.der"
     ["ms_db_optionrom_2023.der"]="$URL/DB/Certificates/microsoft%20option%20rom%20uefi%20ca%202023.der"
     ["ms_db_uefi_2023.der"]="$URL/DB/Certificates/microsoft%20uefi%20ca%202023.der"
     ["ms_db_windows_2023.der"]="$URL/DB/Certificates/windows%20uefi%20ca%202023.der"
@@ -207,12 +210,13 @@ cert_injection() {
   wait || { fmtr::fatal "Failed to download one or more certs"; exit 1; }
 
   fmtr::info "Injecting MS SB certs into '$VARS_FILE'..."
-  sudo virt-fw-vars \
-    --input "$VARS_FILE" \
-    --output "$NVRAM_DIR/${VM_NAME}_SECURE_VARS.qcow2" \
+  sudo virt-fw-vars --input "$VARS_FILE" --output "$NVRAM_DIR/${VM_NAME}_SECURE_VARS.qcow2" \
     --secure-boot \
     --set-pk "$UUID" ms_pk_oem.der \
+    --add-kek "$UUID" ms_kek_2011.der \
     --add-kek "$UUID" ms_kek_2023.der \
+    --add-db "$UUID" ms_db_uef_2011.der \
+    --add-db "$UUID" ms_db_pro_2011.der \
     --add-db "$UUID" ms_db_optionrom_2023.der \
     --add-db "$UUID" ms_db_uefi_2023.der \
     --add-db "$UUID" ms_db_windows_2023.der \
