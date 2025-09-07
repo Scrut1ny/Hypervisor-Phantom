@@ -97,7 +97,7 @@ chmod -R +x *
 
 ## 💾 Software
 <details>
-<summary>HV Detection, Anti-Cheat and Exam Software</summary>
+<summary>HV Analysis, AC Status, and Assessment Software</summary>
 
 ## Hypervisor Detection Software
 
