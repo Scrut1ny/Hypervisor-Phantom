@@ -45,7 +45,7 @@ check_disk_space() {
   local available_space_kb=$(df -P / | awk 'NR==2 {print $4}')
   if (( available_space_kb < required_space_kb )); then
     fmtr::error "Insufficient disk space."
-    fmtr::error "At least ${required_space_gb}GB of free space is required on / for kernel compilation."
+    fmtr::error "At least ${REQUIRED_DISK_SPACE}GB of free space is required on / for kernel compilation."
     exit 1
   fi
 }
