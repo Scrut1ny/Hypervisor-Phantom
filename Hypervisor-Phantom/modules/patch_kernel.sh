@@ -22,6 +22,26 @@ readonly KERNEL_MINOR="14"
 readonly KERNEL_PATCH="latest" # Set as "-latest" for linux-tkg
 readonly KERNEL_VERSION="${KERNEL_MAJOR}.${KERNEL_MINOR}-${KERNEL_PATCH}"
 readonly KERNEL_USER_PATCH="../../patches/Kernel/zen-kernel-${KERNEL_MAJOR}.${KERNEL_MINOR}-${KERNEL_PATCH}-${CPU_VENDOR}.mypatch"
+readonly REQUIRED_DISK_SPACE=35
+
+check_disk_space() {
+  local build_path="${1:-$(pwd)}"
+  local required_bytes=$((REQUIRED_DISK_SPACE * 1024 * 1024 * 1024))
+
+  local mountpoint
+  mountpoint=$(df --output=target "$build_path" | tail -1)
+  local available_bytes=$(($(stat -f --format="%a*%S" "$mountpoint")))
+  local required_gb=$(awk "BEGIN {printf \"%.1f\", $required_bytes/1024/1024/1024}")
+  local available_gb=$(awk "BEGIN {printf \"%.1f\", $available_bytes/1024/1024/1024}")
+
+  if (( available_bytes < required_bytes )); then
+    fmtr::error "Insufficient disk space on $mountpoint."
+    fmtr::error "Available: ${available_gb}GB, Required: ${required_gb}GB"
+    exit 1
+  fi
+
+  fmtr::info "Disk space check passed: ${available_gb}GB available on $mountpoint (Required: ${required_gb}GB)"
+}
 
 acquire_tkg_source() {
 
@@ -340,6 +360,7 @@ EOF
 
 }
 
+check_disk_space
 acquire_tkg_source
 select_distro
 modify_customization_cfg
