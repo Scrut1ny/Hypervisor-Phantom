@@ -103,7 +103,7 @@ chmod -R +x *
 
 | ⭐ Rating | 💻 Software | 🧪 System Test | ✅ Bypassed |
 |:------:|:--------:|:-----------:|:--------:|
-| 🥇 | VMAware | [Repository Link](https://github.com/kernelwernel/VMAware) <br> [⬇ Download - x64 - v2.4.1 ⬇](https://github.com/kernelwernel/VMAware/releases/download/v2.4.1/vmaware.exe) <br> [⬇ Download - x32 - v2.4.1 ⬇](https://github.com/kernelwernel/VMAware/releases/download/v2.4.1/vmaware32.exe) <br> [⬇ Download - DEBUG - v2.4.1 ⬇](https://github.com/kernelwernel/VMAware/releases/download/v2.4.1/vmaware_debug.exe) | ✅ |
+| 🥇 | VMAware | [Repository Link](https://github.com/kernelwernel/VMAware) <br> [⬇ Download - x64 - v2.4.1 ⬇](https://github.com/kernelwernel/VMAware/releases/download/v2.4.1/vmaware.exe) <br> [⬇ Download - x32 - v2.4.1 ⬇](https://github.com/kernelwernel/VMAware/releases/download/v2.4.1/vmaware32.exe) <br> [⬇ Download - DEBUG - v2.4.1 ⬇](https://github.com/kernelwernel/VMAware/releases/download/v2.4.1/vmaware_debug.exe) | ❌ |
 | 🥈 | Al-Khaser (Obsolete) | [Repository Link](https://github.com/LordNoteworthy/al-khaser) <br> [⬇ Download - x64 - v1.0.0 ⬇](https://github.com/ayoubfaouzi/al-khaser/releases/download/v1.0.0/al-khaser_x64.7z) <br> [⬇ Download - x32 - v1.0.0 ⬇](https://github.com/ayoubfaouzi/al-khaser/releases/download/v1.0.0/al-khaser_x86.7z) | ✅ |
 | 🥉 | Pafish (Obsolete) | [Repository Link](https://github.com/a0rtega/pafish) <br> [⬇ Download - x64 - v0.6 ⬇](https://github.com/a0rtega/pafish/releases/download/v0.6/pafish64.exe) <br> [⬇ Download - x32 - v0.6 ⬇](https://github.com/a0rtega/pafish/releases/download/v0.6/pafish.exe) | ✅ |
 
@@ -111,6 +111,8 @@ chmod -R +x *
 
 | 💻 Software | 🌐 Browser Extension | 🧪 System Test | ⬇️ Download | ✅ Bypassed |
 |:-----------:|:--------------------:|:--------------:|:-----------:|:------------:|
+
+| ETS Online Test (CLEP) |  |  | [⬇ Download ⬇](https://www.ets.org/browserinstall) | ✅ |
 | Bluebook |  |  | [⬇ Download ⬇](https://bluebook.app.collegeboard.org/) | ✅ |
 | ExamSoft: Examplify |  |  | [⬇ Download ⬇](https://releases.examsoft.com/Examplify/3.8.0/Examplify_3.8.0_win.exe) | ✅ |
 | Examity | ✅ | [System Test](https://on.v5.examity.com/systemcheck) | • [⬇ Firefox ⬇](https://addons.mozilla.org/en-US/firefox/addon/examity/) <br> • [⬇ Chrome ⬇](https://chromewebstore.google.com/detail/geapelpefnpekodnnlkcaadniodlgebj) | ✅ |
