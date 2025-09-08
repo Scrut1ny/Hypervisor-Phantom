@@ -24,30 +24,23 @@ readonly KERNEL_VERSION="${KERNEL_MAJOR}.${KERNEL_MINOR}-${KERNEL_PATCH}"
 readonly KERNEL_USER_PATCH="../../patches/Kernel/zen-kernel-${KERNEL_MAJOR}.${KERNEL_MINOR}-${KERNEL_PATCH}-${CPU_VENDOR}.mypatch"
 readonly REQUIRED_DISK_SPACE=35
 
-REQUIRED_PKGS_Arch=(
-  systemd-boot
-)
-
-REQUIRED_PKGS_Debian=(
-  systemd-boot
-)
-
-REQUIRED_PKGS_openSUSE=(
-  systemd-boot
-)
-
-REQUIRED_PKGS_Fedora=(
-  systemd-boot
-)
-
 check_disk_space() {
-  local required_space_kb=$((REQUIRED_DISK_SPACE * 1024 * 1024))
-  local available_space_kb=$(df -P / | awk 'NR==2 {print $4}')
-  if (( available_space_kb < required_space_kb )); then
-    fmtr::error "Insufficient disk space."
-    fmtr::error "At least ${REQUIRED_DISK_SPACE}GB of free space is required on / for kernel compilation."
+  local build_path="${1:-$(pwd)}"
+  local required_bytes=$((REQUIRED_DISK_SPACE * 1024 * 1024 * 1024))
+
+  local mountpoint
+  mountpoint=$(df --output=target "$build_path" | tail -1)
+  local available_bytes=$(($(stat -f --format="%a*%S" "$mountpoint")))
+  local required_gb=$(awk "BEGIN {printf \"%.1f\", $required_bytes/1024/1024/1024}")
+  local available_gb=$(awk "BEGIN {printf \"%.1f\", $available_bytes/1024/1024/1024}")
+
+  if (( available_bytes < required_bytes )); then
+    fmtr::error "Insufficient disk space on $mountpoint."
+    fmtr::error "Available: ${available_gb}GB, Required: ${required_gb}GB"
     exit 1
   fi
+
+  fmtr::info "Disk space check passed: ${available_gb}GB available on $mountpoint (Required: ${required_gb}GB)"
 }
 
 acquire_tkg_source() {
