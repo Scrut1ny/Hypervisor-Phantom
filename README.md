@@ -8,7 +8,7 @@ This tool provides automated setups for linux virtualization related stuff.
 
 </div>
 
-
+---
 
 
 
@@ -35,7 +35,7 @@ chmod -R +x *
 
 
 
-
+---
 
 
 
@@ -92,7 +92,7 @@ chmod -R +x *
 </details>
 
 
-
+---
 
 
 ## 💾 Software
@@ -146,7 +146,7 @@ chmod -R +x *
 
 
 
-
+---
 
 
 
@@ -174,6 +174,7 @@ chmod -R +x *
 
 
 
+---
 
 
 
@@ -196,7 +197,7 @@ chmod -R +x *
 
 
 
-
+---
 
 
 
@@ -228,7 +229,7 @@ chmod -R +x *
 
 
 
-
+---
 
 
 
@@ -295,7 +296,7 @@ chmod -R +x *
 
 
 
-
+---
 
 
 
@@ -353,7 +354,11 @@ Now, connect the capture card device back to your Linux host system now and open
 > 
 > Use at your own risk. The tool is provided "as-is" without any warranties.
 
+
+
+
 ---
+
 
 
 
@@ -372,6 +377,12 @@ Now, connect the capture card device back to your Linux host system now and open
     ```
     8C86X64ZWqmPEx72hNyBm8Ls6VL5j2nUH1G7pU9p7MAF9gWP4Nj7bbm5zz8SHngC4CHArmKY4BdVnKcoDH6dT8mw7kL2u9S
     ```
+
+
+
+
+---
+
 
 
 
