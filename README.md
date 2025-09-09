@@ -92,7 +92,7 @@ chmod -R +x *
 </details>
 
 
-
+---
 
 
 ## 💾 Software
@@ -229,7 +229,7 @@ chmod -R +x *
 
 
 
-
+---
 
 
 
