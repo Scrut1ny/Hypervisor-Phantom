@@ -171,14 +171,14 @@ cert_injection() {
   [ ${#VMS[@]} -gt 0 ] || { fmtr::fatal "No domains found!"; rm -rf "$TEMP_DIR"; exit 1; }
 
   for i in "${!VMS[@]}"; do
-    fmtr::format_text '  ' "[$((i+1))]" "  ${VMS[$i]}  " "$TEXT_BRIGHT_YELLOW"
+    fmtr::format_text '  ' "[$((i+1))]" " ${VMS[$i]}" "$TEXT_BRIGHT_YELLOW"
   done
-  fmtr::format_text '\n  ' "[0]" "  Cancel  " "$TEXT_BRIGHT_RED"
+  fmtr::format_text '\n  ' "[0]" " Cancel" "$TEXT_BRIGHT_RED"
 
   while :; do
     read -rp "$(fmtr::ask "Enter your choice [0-${#VMS[@]}]: ")" vm_choice
     case "$vm_choice" in
-      0) fmtr::log "Exiting SB cert injection setup."; rm -rf "$TEMP_DIR"; return ;;
+      0) fmtr::log "Exiting Secure Boot certification injection setup."; rm -rf "$TEMP_DIR"; return ;;
       ''|*[!0-9]*) fmtr::error "Invalid selection, try again." ;;
       *)
         (( vm_choice >= 1 && vm_choice <= ${#VMS[@]} )) || { fmtr::error "Invalid selection, try again."; continue; }
@@ -191,7 +191,7 @@ cert_injection() {
     esac
   done
 
-  fmtr::info "Downloading Microsoft SB certs..."
+  fmtr::info "Downloading Microsoft's Secure Boot certifications..."
   declare -A CERTS=(
     ["ms_pk_oem.der"]="$URL/PK/Certificate/WindowsOEMDevicesPK.der"
     ["ms_kek_2011.der"]="$URL/KEK/Certificates/MicCorKEKCA2011_2011-06-24.der"
