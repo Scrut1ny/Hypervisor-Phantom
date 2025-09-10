@@ -6,12 +6,6 @@ source "./utils/prompter.sh"
 source "./utils/formatter.sh"
 source "./utils/packages.sh"
 
-declare -r CPU_VENDOR=$(case "$VENDOR_ID" in
-  *AuthenticAMD*) echo "svm" ;;
-  *GenuineIntel*) echo "vmx" ;;
-  *) fmtr::error "Unknown CPU Vendor ID."; exit 1 ;;
-esac)
-
 readonly SRC_DIR="src"
 readonly TKG_URL="https://github.com/Frogging-Family/linux-tkg.git"
 readonly TKG_DIR="linux-tkg"
@@ -40,7 +34,7 @@ check_disk_space() {
     exit 1
   fi
 
-  fmtr::info "Disk space check passed: ${available_gb}GB available on $mountpoint (Required: ${required_gb}GB)"
+  fmtr::info "Sufficient drive space: ${available_gb}GB available on '$mountpoint' (Required: ${required_gb}GB)"
 }
 
 acquire_tkg_source() {
@@ -119,7 +113,7 @@ modify_customization_cfg() {
   ####################################################################################################
 
   fmtr::info "This patch enables corrected IOMMU grouping on
-      motherboards with poor PCI IOMMU grouping."
+      motherboards with bad PCI IOMMU grouping."
   if prmt::yes_or_no "$(fmtr::ask 'Apply ACS override bypass Kernel patch?')"; then
       acs="true"
   else
@@ -131,11 +125,12 @@ modify_customization_cfg() {
 
   while true; do
 
-    if [[ "$CPU_VENDOR" == "svm" ]]; then
-      vendor="AMD"
-      fmtr::info "Detected CPU Vendor: $vendor
+    if [[ "$VENDOR_ID" == *AuthenticAMD* ]]; then
+      vendor="AMD" && fmtr::info "Detected CPU Vendor: $vendor
 
-  Please select your AMD CPU microarchitecture's code name:
+  - https://wikipedia.org/wiki/List_of_${vendor}_CPU_microarchitectures
+
+  Please select your $vendor CPU μarch's code name:
 
   1) k8         5) bobcat      9) steamroller  13) zen3
   2) k8sse3     6) jaguar      10) excavator   14) zen4
@@ -167,11 +162,12 @@ modify_customization_cfg() {
           ;;
       esac
 
-    elif [[ "$CPU_VENDOR" == "vmx" ]]; then
-      vendor="Intel"
-      fmtr::info "Detected CPU Vendor: $vendor
+    elif [[ "$VENDOR_ID" == *GenuineIntel* ]]; then
+      vendor="Intel" && fmtr::info "Detected CPU Vendor: $vendor
 
-  Please select your Intel CPU microarchitecture's code name:
+  - https://wikipedia.org/wiki/List_of_${vendor}_CPU_microarchitectures
+
+  Please select your $vendor CPU μarch's code name:
 
   1) mpsc         8) ivybridge    15) icelake_server  22) rocketlake
   2) atom         9) haswell      16) goldmont        23) alderlake
