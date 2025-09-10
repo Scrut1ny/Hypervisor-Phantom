@@ -16,7 +16,7 @@ readonly KERNEL_MINOR="14"
 readonly KERNEL_PATCH="latest" # Set as "-latest" for linux-tkg
 readonly KERNEL_VERSION="${KERNEL_MAJOR}.${KERNEL_MINOR}-${KERNEL_PATCH}"
 readonly KERNEL_USER_PATCH="../../patches/Kernel/zen-kernel-${KERNEL_MAJOR}.${KERNEL_MINOR}-${KERNEL_PATCH}-${CPU_VENDOR}.mypatch"
-readonly REQUIRED_DISK_SPACE=35
+readonly REQUIRED_DISK_SPACE="35"
 
 check_disk_space() {
   local build_path="${1:-$(pwd)}"
