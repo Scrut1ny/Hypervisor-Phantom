@@ -13,34 +13,73 @@ declare -a SDBOOT_CONF_LOCATIONS=(
     "/efi/loader/entries"
 )
 
+readonly VFIO_KERNEL_OPTS_REGEX='(intel_iommu=[^ ]*|iommu=[^ ]*|vfio-pci.ids=[^ ]*|kvm.ignore_msrs=[^ ]*)'
+
+detect_bootloader() {
+    if [[ -f /etc/default/grub ]]; then
+        BOOTLOADER_TYPE="grub"
+    else
+        for location in "${SDBOOT_CONF_LOCATIONS[@]}"; do
+            if [[ -d "$location" ]]; then
+                BOOTLOADER_TYPE="systemd-boot"
+                export BOOTLOADER_TYPE
+                return 0
+            fi
+        done
+        BOOTLOADER_TYPE="unknown"
+    fi
+    export BOOTLOADER_TYPE
+}
+
+detect_bootloader
+if [[ "$BOOTLOADER_TYPE" == "unknown" ]]; then
+    fmtr::error "No supported bootloader detected (GRUB or systemd-boot). Exiting."
+    exit 1
+fi
+fmtr::log "Detected bootloader: $BOOTLOADER_TYPE"
+
 revert_vfio() {
     if [[ -f "$VFIO_CONF_PATH" ]]; then
         sudo rm -v "$VFIO_CONF_PATH" | tee -a &>> "$LOG_FILE"
+        fmtr::log "Removed VFIO Config: $VFIO_CONF_PATH"
     else
         fmtr::log "$VFIO_CONF_PATH doesn't exist; nothing to remove."
     fi
 
     if [[ -f "/etc/default/grub" ]]; then
-        sudo sed -i '/GRUB_CMDLINE_LINUX_DEFAULT=/s/\(amd_iommu\|intel_iommu\|iommu\|vfio-pci.ids\|kvm.ignore_msrs\)=[^ "]*//g' /etc/default/grub
+        sudo sed -E -i \
+            -e "/^GRUB_CMDLINE_LINUX_DEFAULT=/ {
+                    s/($VFIO_KERNEL_OPTS_REGEX)//g;
+                    s/[[:space:]]+/ /g;
+                    s/\"[[:space:]]+/\"/;
+                    s/[[:space:]]+\"/\"/
+                }" \
+            /etc/default/grub
+        fmtr::log "Removed VFIO kernel opts from GRUB config."
     else
         for location in "${SDBOOT_CONF_LOCATIONS[@]}"; do
             [[ -d "$location" ]] || continue
             local config_file
             config_file=$(sudo find "$location" -maxdepth 1 -name '*.conf' ! -name '*-fallback.conf' -print -quit)
             [[ -z "$config_file" ]] && continue
-            sudo sed -i -E \
-                -e '/options/ s/(amd_iommu=on|intel_iommu=on|iommu=pt|vfio-pci.ids=[^ ]*|kvm.ignore_msrs=1)//g' \
-                -e '/^options[[:space:]]*$/d' \
+
+            sudo sed -E -i \
+                -e "/^options / {
+                        s/($VFIO_KERNEL_OPTS_REGEX)//g;   # remove old managed options
+                        s/[[:space:]]+/ /g;               # normalize whitespace
+                        s/ options /options /;            # ensure 'options ' prefix correct
+                        s/[[:space:]]+$//;                # trim trailing space
+                    }" \
                 "$config_file"
+
+            fmtr::log "Removed VFIO kernel opts from: $config_file."
         done
     fi
 }
 
 configure_vfio() {
-    local gpus sel="" pci_bdf group class pci_vendor pci_device_id \
-          bad_group=0 bad_functions=()
+    local gpus sel="" pci_bdf group pci_bus_dev bad_group=0 bad_functions=()
 
-    # Collect GPU candidates (PCI class 0x03* = display controllers)
     mapfile -t gpus < <(
         for dev in /sys/bus/pci/devices/*; do
             [[ -r "$dev/class" && $(<"$dev/class") == 0x03* ]] || continue
@@ -73,14 +112,14 @@ configure_vfio() {
     group=$(basename "$(readlink -f /sys/bus/pci/devices/$pci_bdf/iommu_group)")
     pci_bus_dev="${pci_bdf%.*}"
 
-    for dev in /sys/kernel/iommu_groups/$group/devices/*; do
+    hwids=($(for dev in /sys/kernel/iommu_groups/$group/devices/*; do
         func=${dev##*/}
         read -r ven_id < "$dev/vendor"
         read -r dev_id < "$dev/device"
-        hwids+=("${ven_id:2}:${dev_id:2}")
+        printf '%s:%s ' "${ven_id:2}" "${dev_id:2}"
 
         [[ ${func%.*} != $pci_bus_dev ]] && { bad_group=1; bad_functions+=("$func"); }
-    done
+    done))
     hwids=$(IFS=,; echo "${hwids[*]}")
 
     if (( bad_group )); then
@@ -109,81 +148,63 @@ configure_vfio() {
                 printf 'softdep %s pre: vfio-pci\n' "$dep"
             done
         } | sudo tee "$VFIO_CONF_PATH" >>"$LOG_FILE"
+
+        export VFIO_CONF_CHANGED=1
     fi
 }
 
 configure_bootloader() {
-    local cpu_vendor kernel_opts boot_mode="" opts_regex="" config_file
+    local kernel_opts kernel_opts_str
+    kernel_opts=( "iommu=pt" "vfio-pci.ids=${hwids}" "kvm.ignore_msrs=1" )
+    [[ "$VENDOR_ID" == *GenuineIntel* ]] && kernel_opts=( "intel_iommu=on" "${kernel_opts[@]}" )
+    kernel_opts_str="${kernel_opts[*]}"
 
-    case "$VENDOR_ID" in
-        *AuthenticAMD*) cpu_vendor="amd";;
-        *GenuineIntel*) cpu_vendor="intel";;
-        *) fmtr::error "Unknown CPU Vendor ID."; return 1;;
-    esac
-
-    kernel_opts="${cpu_vendor}_iommu=on iommu=pt vfio-pci.ids=${hwids} kvm.ignore_msrs=1"
-    opts_regex='(amd_iommu=on|intel_iommu=on|iommu=pt|vfio-pci.ids=[^ ]*|kvm.ignore_msrs=1)'
-
-    if [[ -f "/etc/default/grub" ]]; then
-        boot_mode="grub"
+    if [[ "$BOOTLOADER_TYPE" == "grub" ]]; then
         fmtr::log "Configuring GRUB"
-        sudo cp /etc/default/grub{,.bak}
 
-        if ! grep -q "${kernel_opts}" /etc/default/grub; then
-            fmtr::log "Cleaning old kernel options from GRUB config..."
-            sudo sed -i -E \
-                -e "s/(GRUB_CMDLINE_LINUX_DEFAULT=\")([^\"]*)\"/\1\2 /" \
-                -e "/^GRUB_CMDLINE_LINUX_DEFAULT=/ s/${opts_regex}//g" \
-                -e "/^GRUB_CMDLINE_LINUX_DEFAULT=/ s/  */ /g" \
-                -e "/^GRUB_CMDLINE_LINUX_DEFAULT=/ s/\"[[:space:]]/\"/" \
+        if ! sudo grep -q -F "$kernel_opts_str" /etc/default/grub; then
+            sudo sed -E -i \
+                -e "/^GRUB_CMDLINE_LINUX_DEFAULT=/ {
+                        s/^[^=]+=//; s/^\"//; s/\"$//;
+                        s/($VFIO_KERNEL_OPTS_REGEX)//g; s/[[:space:]]+/ /g;
+                        s/^/GRUB_CMDLINE_LINUX_DEFAULT=\"/;
+                        s/$/ ${kernel_opts_str}\"/
+                    }" \
                 /etc/default/grub
-
-            sudo sed -i -E \
-                "s|(GRUB_CMDLINE_LINUX_DEFAULT=\")([^\"]*)\"|\1\2 ${kernel_opts}\"|" \
-                /etc/default/grub
-
             fmtr::log "Inserted new kernel options into GRUB config."
+            export BOOTLOADER_CHANGED=1
         else
             fmtr::log "Kernel options already present in GRUB config. Skipping."
         fi
-        export BOOTLOADER_TYPE="grub"
-        return 0
-    fi
+    elif [[ "$BOOTLOADER_TYPE" == "systemd-boot" ]]; then
+        for location in "${SDBOOT_CONF_LOCATIONS[@]}"; do
+            [[ -d "$location" ]] || continue
+            local config_file
+            config_file=$(sudo find "$location" -maxdepth 1 -type f -name '*.conf' ! -name '*-fallback.conf' -print -quit)
+            [[ -z "$config_file" ]] && fmtr::warn "No configuration file found in $location" && continue
 
-    for location in "${SDBOOT_CONF_LOCATIONS[@]}"; do
-        [[ -d "$location" ]] || continue
-        local config_file
-        config_file=$(sudo find "$location" -maxdepth 1 -name '*.conf' ! -name '*-fallback.conf' -print -quit)
-        [[ -z "$config_file" ]] && fmtr::warn "No configuration file found in $location" && continue
+            fmtr::log "Modifying systemd-boot config: $config_file"
 
-        fmtr::log "Modifying systemd-boot config: $config_file"
-
-        # 1) Remove only the managed opts from the options line(s)
-        sudo sed -i -E \
-            -e "/^options / s/${opts_regex}//g" \
-            -e "/^options / s/  +/ /g" \
-            -e "/^options / s/[[:space:]]+$//" \
-            "$config_file"
-
-        # 2) Append our clean kernel_opts back to the same options line(s) if missing
-        if ! grep -q "^options .*(${cpu_vendor}_iommu=on|iommu=pt|vfio-pci.ids=${hwids}|kvm.ignore_msrs=1)" "$config_file"; then
-            sudo sed -i -E \
-                -e "/^options / s/$/ ${kernel_opts}/" \
-                -e "/^options / s/  +/ /g" \
+            sudo sed -E -i \
+                -e "/^options / {
+                        s/($VFIO_KERNEL_OPTS_REGEX)//g;
+                        s/[[:space:]]+/ /g;
+                        s/ options /options /;
+                        s/[[:space:]]+$//
+                    }" \
                 "$config_file"
-            fmtr::log "Updated kernel options in systemd-boot config."
-        else
-            fmtr::log "Kernel options already present in systemd-boot config. Skipping append."
-        fi
-    done
+
+            if ! sudo grep -q -E "^options .*${kernel_opts[0]}" "$config_file"; then
+                sudo sed -E -i -e "/^options / s/$/ ${kernel_opts_str}/" "$config_file"
+                fmtr::log "Updated kernel options in systemd-boot config."
+            else
+                fmtr::log "Kernel opts already present in systemd-boot config. Skipping append."
+            fi
+        done
+    fi
 }
 
 rebuild_bootloader() {
-    if [[ "$BOOTLOADER_TYPE" != "grub" ]]; then
-        fmtr::log "Bootloader config rebuild not required for non-GRUB bootloaders."
-        return 0
-    fi
-
     fmtr::log "Updating bootloader configuration for GRUB."
 
     for prefix in "" "2"; do
@@ -198,21 +219,24 @@ rebuild_bootloader() {
 }
 
 rebuild_initramfs() {
-    if command -v update-initramfs &>> "$LOG_FILE"; then
-        sudo update-initramfs -u &>> "$LOG_FILE" && fmtr::log "initramfs updated."
-    elif command -v dracut &>> "$LOG_FILE"; then
-        sudo dracut -f &>> "$LOG_FILE" && fmtr::log "initramfs updated."
-    elif command -v mkinitcpio &>> "$LOG_FILE"; then
-        sudo mkinitcpio -P &>> "$LOG_FILE" && fmtr::log "initramfs updated."
-    elif command -v mkinitrd &>> "$LOG_FILE"; then
-        sudo mkinitrd &>> "$LOG_FILE" && fmtr::log "initramfs updated."
-    else
-        fmtr::error "Could not detect initramfs tool - please rebuild manually."
-        return 1
-    fi
+    local rebuilt=0
+    for cmd in update-initramfs dracut mkinitcpio mkinitrd; do
+        if command -v $cmd &>> "$LOG_FILE"; then
+            case $cmd in
+                update-initramfs) sudo update-initramfs -u &>> "$LOG_FILE" ;;
+                dracut) sudo dracut -f &>> "$LOG_FILE" ;;
+                mkinitcpio) sudo mkinitcpio -P &>> "$LOG_FILE" ;;
+                mkinitrd) sudo mkinitrd &>> "$LOG_FILE" ;;
+            esac
+            fmtr::log "initramfs updated via $cmd."
+            rebuilt=1
+            break
+        fi
+    done
+    (( rebuilt )) || fmtr::error "Could not detect initramfs tool - please rebuild manually."
 }
 
-# ----- PROMPTS -----
+# ----- MAIN PROMPTS -----
 
 # Prompt 1 - Remove VFIO config?
 if prmt::yes_or_no "$(fmtr::ask 'Remove VFIO configs? (undo PCI passthrough)')"; then
@@ -231,24 +255,34 @@ if prmt::yes_or_no "$(fmtr::ask 'Configure VFIO now?')"; then
     fi
 fi
 
-# Prompt 3 - Rebuild bootloader config?
-if prmt::yes_or_no "$(fmtr::ask 'Proceed with rebuilding bootloader config?')"; then
-    if ! rebuild_bootloader; then
-        fmtr::log "Failed to update bootloader configuration."
-        exit 1
+# Prompt 3 - Rebuild bootloader config? (only for GRUB)
+if [[ "$BOOTLOADER_TYPE" == "grub" && "$BOOTLOADER_CHANGED" == "1" ]]; then
+    if prmt::yes_or_no "$(fmtr::ask 'Proceed with rebuilding GRUB bootloader config?')"; then
+        if ! rebuild_bootloader; then
+            fmtr::log "Failed to update GRUB configuration."
+            exit 1
+        fi
+        fmtr::warn "REBOOT required for changes to take effect"
+    else
+        fmtr::warn "Proceeding without updating GRUB bootloader."
     fi
-    fmtr::warn "REBOOT required for changes to take effect"
+elif [[ "$BOOTLOADER_TYPE" == "grub" ]]; then
+    fmtr::log "No changes detected in GRUB config; skipping rebuild prompt."
 else
-    fmtr::warn "Proceeding without updating bootloader configuration."
+    fmtr::log "Detected systemd-boot; no bootloader rebuild required."
 fi
 
-# Prompt 4 - Rebuild initramfs?
-if prmt::yes_or_no "$(fmtr::ask 'Proceed with rebuilding initramfs?')"; then
-    if ! rebuild_initramfs; then
-        fmtr::log "Failed to rebuild initramfs."
-        exit 1
+# Prompt 4 - Rebuild initramfs? (only for GRUB and if vfio.conf changed)
+if [[ "$BOOTLOADER_TYPE" == "grub" && "$VFIO_CONF_CHANGED" == "1" ]]; then
+    if prmt::yes_or_no "$(fmtr::ask 'Proceed with rebuilding initramfs? (required since VFIO driver config changed)')"; then
+        if ! rebuild_initramfs; then
+            fmtr::log "Failed to rebuild initramfs."
+            exit 1
+        fi
+        fmtr::warn "REBOOT required for changes to take effect"
+    else
+        fmtr::warn "Proceeding without rebuilding initramfs."
     fi
-    fmtr::warn "REBOOT required for changes to take effect"
 else
-    fmtr::warn "Proceeding without updating initramfs."
+    fmtr::log "Initramfs rebuild not required for systemd-boot or no VFIO config changes."
 fi
