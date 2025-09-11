@@ -77,7 +77,7 @@ REQUIRED_PKGS_Fedora=(
   pixman-devel python3 zlib-ng-devel gnupg2 patch curl
 
   # Spice Dependencie(s)
-  spice-server
+  spice-server-devel
 
   # USB passthrough Dependencie(s)
   libusb1-devel

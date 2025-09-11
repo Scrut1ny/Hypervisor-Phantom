@@ -54,24 +54,14 @@ fmtr::info "Using template: $TEMPLATE_FILE"
 ##################################################
 ### CPU Topology
 
-if [[ -z "$CORES" ]]; then
-    fmtr::ask "Enter number of CPU cores (e.g. 6):"
-    read CORES
-fi
-if [[ -z "$THREADS" ]]; then
-    fmtr::ask "Enter number of CPU threads per core (e.g. 2):"
-    read THREADS
-fi
-
-VCPU=$((CORES * THREADS))
-fmtr::info "Configuring VM with ${VCPU} vCPUs..."
-
-# (continues with rest of your script...)
+CORES=$(lscpu --json | jq -r '[.lscpu[] | select(.field=="Core(s) per socket:") | .data] | join(" ")')
+THREADS=$(lscpu --json | jq -r '[.lscpu[] | select(.field=="Thread(s) per core:") | .data] | join(" ")')
 
 
 
 # Calculate vcpu count = cores * threads
 VCPU=$((CORES * THREADS))
+fmtr::info "Configuring VM with ${VCPU} vCPUs..."
 
 
 
@@ -101,7 +91,7 @@ fmtr::log "Number of threads set to : $THREADS"
 sudo virsh define "$TMP_XML" &>> "$LOG_FILE"
 rm -f "$TMP_XML"
 fmtr::info "VM '$VM_NAME' defined with $VCPU vCPUs."
-
+fmtr::info "THIS COULD BE WRONG IF YOU HAVE EFFICIENCY CORES, IF THAT'S THE CASE, GG!"
 
 
 
