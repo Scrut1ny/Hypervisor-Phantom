@@ -73,7 +73,7 @@ print_system_info() {
     virt_name=${virt_map[$VENDOR_ID]:-Unknown}
     iommu_name=${iommu_map[$VENDOR_ID]:-Unknown}
 
-    for check in "Virtualization:vmx|svm:$virt_name" "IOMMU:iommu=on:$iommu_name"; do
+    for check in "Virtualization:vmx|svm:$virt_name" "IOMMU:/sys/kernel/iommu_groups:$iommu_name"; do
         IFS=':' read -r label pattern name <<< "$check"
 
         if [[ "$label" == "Virtualization" ]]; then
@@ -84,7 +84,7 @@ print_system_info() {
                 show_output=1
             fi
         elif [[ "$label" == "IOMMU" ]]; then
-            if grep -qE "$pattern" /proc/cmdline; then
+            if [[ -d "$pattern" && "$(ls -A $pattern 2>/dev/null)" ]]; then
                 output+="\n  [✅] $name (IOMMU): Enabled"
             else
                 output+="\n  [❌] $name (IOMMU): Not enabled"
