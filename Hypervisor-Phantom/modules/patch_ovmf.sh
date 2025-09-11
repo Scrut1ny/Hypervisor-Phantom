@@ -151,7 +151,7 @@ compile_ovmf() {
   for f in CODE.secboot.4m VARS.4m; do
     src="Build/OvmfX64/RELEASE_GCC5/FV/OVMF_${f%%.*}.fd"
     dest="$out_dir/OVMF_${f}.qcow2"
-    sudo qemu-img convert -f raw -O qcow2 "$src" "$dest" || { fmtr::fatal "Failed to convert $src"; exit 1; }
+    qemu-img convert -f raw -O qcow2 "$src" "$dest" || { fmtr::fatal "Failed to convert $src"; exit 1; }
   done
 }
 
@@ -167,7 +167,7 @@ cert_injection() {
   cd "$TEMP_DIR" || { fmtr::fatal "Failed to enter temp dir"; exit 1; }
 
   fmtr::log "Available domains:"; echo ""
-  mapfile -t VMS < <(sudo virsh list --all --name | grep -v '^$')
+  mapfile -t VMS < <(virsh list --all --name | grep -v '^$')
   [ ${#VMS[@]} -gt 0 ] || { fmtr::fatal "No domains found!"; rm -rf "$TEMP_DIR"; exit 1; }
 
   for i in "${!VMS[@]}"; do
@@ -210,7 +210,7 @@ cert_injection() {
   wait || { fmtr::fatal "Failed to download one or more certs"; exit 1; }
 
   fmtr::info "Injecting MS SB certs into '$VARS_FILE'..."
-  sudo virt-fw-vars --input "$VARS_FILE" --output "$NVRAM_DIR/${VM_NAME}_SECURE_VARS.qcow2" \
+  virt-fw-vars --input "$VARS_FILE" --output "$NVRAM_DIR/${VM_NAME}_SECURE_VARS.qcow2" \
     --secure-boot \
     --set-pk "$UUID" ms_pk_oem.der \
     --add-kek "$UUID" ms_kek_2011.der \
