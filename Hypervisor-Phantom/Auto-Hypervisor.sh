@@ -147,6 +147,11 @@ main_menu() {
 }
 
 main() {
+  if [[ $EUID -ne 0 ]]; then
+    echo -e "\n  [❌] Script requires root/sudo privileges.\n       Please run: sudo $0"
+    exit 1
+  fi
+  
   if ! source "./utils/debugger.sh"; then
     echo "Log file at ${LOG_FILE} couldn't be generated. Check permissions!"
     exit 1
