@@ -288,7 +288,7 @@ arch_distro() {
 
 other_distro() {
 
-  clear; sudo ./install.sh install
+  clear; ./install.sh install
 
   if prmt::yes_or_no "$(fmtr::ask 'Would you like to add a systemd-boot entry for this kernel?')"; then
     systemd-boot_boot_entry_maker
@@ -308,9 +308,9 @@ systemd-boot_boot_entry_maker() {
 
   local ENTRY_NAME="HvP-RDTSC"
   local TIMESTAMP=$(date +"%Y-%m-%d_%H-%M-%S")
-  local ROOT_DEVICE=$(sudo findmnt -no SOURCE /)
-  local ROOTFSTYPE=$(sudo findmnt -no FSTYPE /)
-  local PARTUUID=$(sudo blkid -s PARTUUID -o value "$ROOT_DEVICE")
+  local ROOT_DEVICE=$(findmnt -no SOURCE /)
+  local ROOTFSTYPE=$(findmnt -no FSTYPE /)
+  local PARTUUID=$(blkid -s PARTUUID -o value "$ROOT_DEVICE")
 
   if [[ -z "$PARTUUID" ]]; then
     fmtr::error "Unable to determine PARTUUID for root device ($ROOT_DEVICE)."
@@ -339,8 +339,8 @@ EOF
 
   for ENTRY_DIR in "${SDBOOT_CONF_LOCATIONS[@]}"; do
     if [[ -d "$ENTRY_DIR" ]]; then
-      echo "$BOOT_ENTRY_CONTENT" | sudo tee "$ENTRY_DIR/$ENTRY_NAME.conf" &>> "$LOG_FILE"
-      echo "$FALLBACK_BOOT_ENTRY_CONTENT" | sudo tee "$ENTRY_DIR/$ENTRY_NAME-fallback.conf" &>> "$LOG_FILE"
+      echo "$BOOT_ENTRY_CONTENT" | tee "$ENTRY_DIR/$ENTRY_NAME.conf" &>> "$LOG_FILE"
+      echo "$FALLBACK_BOOT_ENTRY_CONTENT" | tee "$ENTRY_DIR/$ENTRY_NAME-fallback.conf" &>> "$LOG_FILE"
       if [[ $? -eq 0 ]]; then
         fmtr::info "Boot entries written to: $ENTRY_DIR/$ENTRY_NAME.conf and $ENTRY_DIR/$ENTRY_NAME-fallback.conf"
         return 0

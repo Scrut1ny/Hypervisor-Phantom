@@ -335,7 +335,7 @@ spoof_acpi_table_data() {
 
   local c_file="hw/acpi/aml-build.c"
   local pm_type="1" # Desktop
-  local chassis_type=$(sudo dmidecode --string chassis-type)
+  local chassis_type=$(dmidecode --string chassis-type)
 
   if [[ "$chassis_type" = "Notebook" ]]; then
     pm_type="2" # Notebook/Laptop/Mobile
@@ -388,7 +388,7 @@ spoof_smbios_processor_data() {
     *) fmtr::warn "Unsupported QEMU version: $QEMU_VERSION" ;;
   esac
 
-  local manufacturer=$(sudo dmidecode --string processor-manufacturer)
+  local manufacturer=$(dmidecode --string processor-manufacturer)
   sed -i "$chipset_file" -e "s/smbios_set_defaults(\"[^\"]*\",/smbios_set_defaults(\"${manufacturer}\",/"
 
   ##################################################
@@ -399,9 +399,9 @@ spoof_smbios_processor_data() {
   local smbios_file="hw/smbios/smbios.c"
   local t0_raw="/sys/firmware/dmi/entries/0-0/raw"
 
-  [[ -e $t0_raw ]] || sudo modprobe dmi_sysfs >>"$LOG_FILE"
+  [[ -e $t0_raw ]] || modprobe dmi_sysfs >>"$LOG_FILE"
 
-  local data=$(sudo hexdump -v -e '/1 "%02X"' "$t0_raw")
+  local data=$(hexdump -v -e '/1 "%02X"' "$t0_raw")
 
   local rom_size="${data:18:2}"
   local bios_characteristics="$(echo "${data:20:16}" | fold -w2 | tac | tr -d '\n')"
@@ -416,9 +416,9 @@ spoof_smbios_processor_data() {
   local smbios_file="hw/smbios/smbios.c"
   local t4_raw="/sys/firmware/dmi/entries/4-0/raw"
 
-  [[ -e $t4_raw ]] || sudo modprobe dmi_sysfs >>"$LOG_FILE"
+  [[ -e $t4_raw ]] || modprobe dmi_sysfs >>"$LOG_FILE"
 
-  local data=$(sudo hexdump -v -e '/1 "%02X"' "$t4_raw")
+  local data=$(hexdump -v -e '/1 "%02X"' "$t4_raw")
 
   local processor_type="${data:10:2}"
   local processor_family="${data:12:2}"
@@ -487,7 +487,7 @@ compile_qemu() {
   fi
 
   fmtr::log "Installing QEMU"
-  sudo make install &>> "$LOG_FILE"
+  make install &>> "$LOG_FILE"
   if [[ $? -ne 0 ]]; then
     fmtr::error "Install failed. Check $LOG_FILE"
     return 1
@@ -499,8 +499,8 @@ compile_qemu() {
 cleanup() {
 
   fmtr::log "Cleaning up"
-  cd .. && sudo rm -rf "$QEMU_ARCHIVE" "$QEMU_DIR" "$QEMU_SIG"
-  cd .. && sudo rmdir --ignore-fail-on-non-empty "$SRC_DIR"
+  cd .. && rm -rf "$QEMU_ARCHIVE" "$QEMU_DIR" "$QEMU_SIG"
+  cd .. && rmdir --ignore-fail-on-non-empty "$SRC_DIR"
 
 }
 

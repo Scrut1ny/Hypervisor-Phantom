@@ -64,7 +64,7 @@ install_looking_glass() {
     {
       LIBBFD_OLD=$(find /usr -name "libbfd*.so*" 2>/dev/null | head -n 1)
       if [[ -n "$LIBBFD_OLD" ]]; then
-        sudo ln -sv "$LIBBFD_OLD" /usr/lib64/libbfd.so
+        ln -sv "$LIBBFD_OLD" /usr/lib64/libbfd.so
       else
         fmtr::log "libbfd library not found in /usr"
       fi
@@ -93,7 +93,7 @@ install_looking_glass() {
   sed -i "s/0x1110/$NEW_DEVICE_ID/" "../../module/kvmfr.c"
 
   {
-    cmake ../ && sudo make install -j"$(nproc)"
+    cmake ../ && make install -j"$(nproc)"
   } &>> "$LOG_FILE"
 
   fmtr::info "Cleaning up..."
@@ -108,7 +108,7 @@ configure_ivshmem_shmem() {
 
     if [ ! -f "$conf_file" ]; then
       fmtr::info "Creating '10-looking-glass.conf'..."
-      echo "f /dev/shm/looking-glass 0660 ${username} kvm -" | sudo tee "$conf_file" &>> "$LOG_FILE"
+      echo "f /dev/shm/looking-glass 0660 ${username} kvm -" | tee "$conf_file" &>> "$LOG_FILE"
     else
       fmtr::log "'10-looking-glass.conf' already exists; skipping creation."
     fi
@@ -116,7 +116,7 @@ configure_ivshmem_shmem() {
     if [ ! -e /dev/shm/looking-glass ]; then
       fmtr::info "Creating '/dev/shm/looking-glass' and setting permissions..."
       touch /dev/shm/looking-glass
-      sudo chown "${username}:kvm" /dev/shm/looking-glass
+      chown "${username}:kvm" /dev/shm/looking-glass
       chmod 660 /dev/shm/looking-glass
     else
       fmtr::log "'/dev/shm/looking-glass' already exists; skipping creation."
@@ -154,16 +154,16 @@ configure_ivshmem_kvmfr() {
   local MEMORY_SIZE_MB="32"
 
   # Temporary
-  sudo modprobe kvmfr static_size_mb=$MEMORY_SIZE_MB
+  modprobe kvmfr static_size_mb=$MEMORY_SIZE_MB
 
   # Permanent
-  echo "options kvmfr static_size_mb=$MEMORY_SIZE_MB" | sudo tee /etc/modprobe.d/kvmfr.conf
+  echo "options kvmfr static_size_mb=$MEMORY_SIZE_MB" | tee /etc/modprobe.d/kvmfr.conf
 
   # Automatic (w/systemd)
-  echo -e "# KVMFR Looking Glass module\nkvmfr" | sudo tee /etc/modules-load.d/kvmfr.conf
+  echo -e "# KVMFR Looking Glass module\nkvmfr" | tee /etc/modules-load.d/kvmfr.conf
 
   # Permissions
-  sudo chown $(whoami):kvm /dev/kvmfr0
+  chown $(whoami):kvm /dev/kvmfr0
 
 }
 
