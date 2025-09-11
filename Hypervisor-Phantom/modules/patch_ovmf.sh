@@ -79,49 +79,56 @@ patch_ovmf() {
   fmtr::format_text '\n  ' "[1]" " Apply host's (default)" "$TEXT_BRIGHT_YELLOW"
   fmtr::format_text '  ' "[2]" " Apply custom (provide path)" "$TEXT_BRIGHT_YELLOW"
 
+  validate_bmp() {
+    local -a h
+    readarray -t h < <(od -An -v -j0 -N34 -t u1 -w1 "$1")
+
+    local wh=$(( h[18] + (h[19]<<8) + (h[20]<<16) + (h[21]<<24) )) \
+          ht=$(( h[22] + (h[23]<<8) + (h[24]<<16) + (h[25]<<24) )) \
+          bd=$(( h[28] + (h[29]<<8) )) \
+          cn=$(( h[30] + (h[31]<<8) + (h[32]<<16) + (h[33]<<24) ))
+
+    width=$wh; height=$ht; bit_depth=$bd; compression=$cn
+
+    if (( h[0] != 66 || h[1] != 77 || (bd != 24 && bd != 32) || cn != 0 || wh > 1024 || ht > 768 )); then
+      fmtr::error "INVALID: ${width}×${height} (≤1024×768), ${bit_depth}-bit (24/32-bit), ${compression} (0 compression)"
+      return 1
+    fi
+  }
+
   while :; do
     read -rp "$(fmtr::ask 'Enter choice [1-2]: ')" logo_choice && : "${logo_choice:=1}"
     case "$logo_choice" in
       1)
-        [ -f /sys/firmware/acpi/bgrt/image ] && cp /sys/firmware/acpi/bgrt/image MdeModulePkg/Logo/Logo.bmp \
-          && fmtr::info "Image replaced successfully." \
-          || fmtr::error "Image not found or failed to copy."
+        if [ -f /sys/firmware/acpi/bgrt/image ]; then
+          cp /sys/firmware/acpi/bgrt/image MdeModulePkg/Logo/Logo.bmp \
+            && fmtr::info "Image replaced successfully." \
+            || fmtr::error "Image not found or failed to copy."
+        else
+          fmtr::error "Host BMP image not found."
+        fi
         break
         ;;
       2)
         while :; do
-          read -rp "$(fmtr::ask 'Enter full path to your BMP image: ')" custom_bmp
+          read -rp "$(fmtr::ask 'Enter absolute path to your BMP image: ')" custom_bmp
           if [ ! -f "$custom_bmp" ]; then
             fmtr::error "File does not exist. Try again."
             continue
           fi
 
-          # Validate BMP
-          file_type=$(file -b --mime-type "$custom_bmp")
-          head_magic=$(head -c2 "$custom_bmp")
-          file_info=$(file "$custom_bmp")
-
-          if ! case "$file_type" in image/bmp|image/x-bmp|image/x-ms-bmp|application/octet-stream) true;; *) false;; esac \
-             || [ "$head_magic" != "BM" ] \
-             || echo "$file_info" | grep -qi 'compressed' \
-             || ! echo "$file_info" | grep -qE '24-bit|32-bit'; then
-            fmtr::error "Invalid BMP: must be uncompressed 24/32-bit BMP with BM signature."
-            continue
+          if validate_bmp "$custom_bmp"; then
+            fmtr::info "VALID: ${width}×${height} (≤1024×768), ${bit_depth}-bit (24/32-bit), ${compression} (0 compression)"
+            cp "$custom_bmp" MdeModulePkg/Logo/Logo.bmp \
+              && fmtr::info "Custom BMP copied successfully." \
+              || fmtr::error "Failed to copy custom BMP."
+            break 2
           fi
-
-          # Dimension check (parse BMP header)
-          width=$(od -An -t u4 -j 18 -N 4 "$custom_bmp" | tr -d ' ')
-          height=$(od -An -t u4 -j 22 -N 4 "$custom_bmp" | tr -d ' ')
-          if [ -n "$width" ] && [ -n "$height" ] && ([ "$width" -gt 1024 ] || [ "$height" -gt 768 ]); then
-            fmtr::error "BMP too large: ${width}×${height}, must be ≤1024×768."
-            continue
-          fi
-
-          cp "$custom_bmp" MdeModulePkg/Logo/Logo.bmp && fmtr::info "Custom BMP copied successfully."
-          break 2
         done
         ;;
-      *) fmtr::error "Invalid choice, try again." ;;
+      *)
+        fmtr::error "Invalid choice, try again."
+        ;;
     esac
   done
 }
