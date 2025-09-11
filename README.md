@@ -28,7 +28,7 @@ cd Hypervisor-Phantom/Hypervisor-Phantom/
 chmod -R +x *
 
 # 4. Run the script
-./Auto-Hypervisor.sh
+sudo ./Auto-Hypervisor.sh
 ```
 
 </details>
