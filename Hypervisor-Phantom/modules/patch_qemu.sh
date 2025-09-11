@@ -77,7 +77,7 @@ REQUIRED_PKGS_Fedora=(
   pixman-devel python3 zlib-ng-devel gnupg2 patch curl
 
   # Spice Dependencie(s)
-  spice-server-devel
+  spice-server
 
   # USB passthrough Dependencie(s)
   libusb1-devel
@@ -96,7 +96,7 @@ acquire_qemu_source() {
       cd "$QEMU_DIR" || { fmtr::fatal "Failed to change to QEMU directory: $QEMU_DIR"; exit 1; }
       return
     fi
-    sudo rm -rf "$QEMU_DIR/" "$QEMU_ARCHIVE" "$QEMU_SIG" || { fmtr::fatal "Failed to remove existing directory: $QEMU_DIR"; exit 1; }
+    rm -rf "$QEMU_DIR/" "$QEMU_ARCHIVE" "$QEMU_SIG" || { fmtr::fatal "Failed to remove existing directory: $QEMU_DIR"; exit 1; }
     fmtr::info "Directory purged."
   fi
 

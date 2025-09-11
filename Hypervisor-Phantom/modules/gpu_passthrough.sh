@@ -6,6 +6,7 @@ source "./utils/formatter.sh"
 source "./utils/prompter.sh"
 
 readonly VFIO_CONF_PATH="/etc/modprobe.d/vfio.conf"
+readonly VFIO_KERNEL_OPTS_REGEX='(intel_iommu=[^ ]*|iommu=[^ ]*|vfio-pci.ids=[^ ]*|kvm.ignore_msrs=[^ ]*)'
 
 declare -a SDBOOT_CONF_LOCATIONS=(
     "/boot/loader/entries"
@@ -13,8 +14,10 @@ declare -a SDBOOT_CONF_LOCATIONS=(
     "/efi/loader/entries"
 )
 
-readonly VFIO_KERNEL_OPTS_REGEX='(intel_iommu=[^ ]*|iommu=[^ ]*|vfio-pci.ids=[^ ]*|kvm.ignore_msrs=[^ ]*)'
 
+################################################################################
+# Bootloader Detection
+################################################################################
 detect_bootloader() {
     if [[ -f /etc/default/grub ]]; then
         BOOTLOADER_TYPE="grub"
@@ -22,32 +25,33 @@ detect_bootloader() {
         for location in "${SDBOOT_CONF_LOCATIONS[@]}"; do
             if [[ -d "$location" ]]; then
                 BOOTLOADER_TYPE="systemd-boot"
-                export BOOTLOADER_TYPE
-                return 0
+                SYSTEMD_BOOT_ENTRY_DIR="$location"
+                export SYSTEMD_BOOT_ENTRY_DIR
+                break
             fi
         done
-        BOOTLOADER_TYPE="unknown"
+        if [[ -z "$SYSTEMD_BOOT_ENTRY_DIR" ]]; then
+            BOOTLOADER_TYPE="unknown"
+            fmtr::error "No supported bootloader detected (GRUB or systemd-boot). Exiting."
+            exit 1
+        fi
     fi
     export BOOTLOADER_TYPE
 }
 
-detect_bootloader
-if [[ "$BOOTLOADER_TYPE" == "unknown" ]]; then
-    fmtr::error "No supported bootloader detected (GRUB or systemd-boot). Exiting."
-    exit 1
-fi
-fmtr::log "Detected bootloader: $BOOTLOADER_TYPE"
-
+################################################################################
+# Revert VFIO Configurations
+################################################################################
 revert_vfio() {
     if [[ -f "$VFIO_CONF_PATH" ]]; then
-        sudo rm -v "$VFIO_CONF_PATH" | tee -a &>> "$LOG_FILE"
+        rm -v "$VFIO_CONF_PATH" | tee -a &>> "$LOG_FILE"
         fmtr::log "Removed VFIO Config: $VFIO_CONF_PATH"
     else
         fmtr::log "$VFIO_CONF_PATH doesn't exist; nothing to remove."
     fi
 
-    if [[ -f "/etc/default/grub" ]]; then
-        sudo sed -E -i \
+    if [[ "$BOOTLOADER_TYPE" == "grub" ]]; then
+        sed -E -i \
             -e "/^GRUB_CMDLINE_LINUX_DEFAULT=/ {
                     s/($VFIO_KERNEL_OPTS_REGEX)//g;
                     s/[[:space:]]+/ /g;
@@ -56,27 +60,30 @@ revert_vfio() {
                 }" \
             /etc/default/grub
         fmtr::log "Removed VFIO kernel opts from GRUB config."
-    else
-        for location in "${SDBOOT_CONF_LOCATIONS[@]}"; do
-            [[ -d "$location" ]] || continue
-            local config_file
-            config_file=$(sudo find "$location" -maxdepth 1 -name '*.conf' ! -name '*-fallback.conf' -print -quit)
-            [[ -z "$config_file" ]] && continue
+    elif [[ "$BOOTLOADER_TYPE" == "systemd-boot" && -n "$SYSTEMD_BOOT_ENTRY_DIR" ]]; then
+        local config_file
+        config_file=$(find "$SYSTEMD_BOOT_ENTRY_DIR" -maxdepth 1 -name '*.conf' ! -name '*-fallback.conf' -print -quit)
+        if [[ -z "$config_file" ]]; then
+            fmtr::warn "No configuration file found in $SYSTEMD_BOOT_ENTRY_DIR"
+            return
+        fi
 
-            sudo sed -E -i \
-                -e "/^options / {
-                        s/($VFIO_KERNEL_OPTS_REGEX)//g;   # remove old managed options
-                        s/[[:space:]]+/ /g;               # normalize whitespace
-                        s/ options /options /;            # ensure 'options ' prefix correct
-                        s/[[:space:]]+$//;                # trim trailing space
-                    }" \
-                "$config_file"
+        sed -E -i \
+            -e "/^options / {
+                    s/($VFIO_KERNEL_OPTS_REGEX)//g;   # remove old managed options
+                    s/[[:space:]]+/ /g;               # normalize whitespace
+                    s/ options /options /;            # ensure 'options ' prefix correct
+                    s/[[:space:]]+$//;                # trim trailing space
+                }" \
+            "$config_file"
 
-            fmtr::log "Removed VFIO kernel opts from: $config_file"
-        done
+        fmtr::log "Removed VFIO kernel opts from: $config_file"
     fi
 }
 
+################################################################################
+# Configure VFIO
+################################################################################
 configure_vfio() {
     local gpus sel="" pci_bdf group pci_bus_dev bad_group=0 bad_functions=()
 
@@ -148,14 +155,17 @@ configure_vfio() {
             for dep in ${softdeps[$pci_vendor]}; do
                 printf 'softdep %s pre: vfio-pci\n' "$dep"
             done
-        } | sudo tee "$VFIO_CONF_PATH" >>"$LOG_FILE"
+        } | tee "$VFIO_CONF_PATH" >>"$LOG_FILE"
 
         export VFIO_CONF_CHANGED=1
     fi
 }
 
+################################################################################
+# Bootloader Configuration
+################################################################################
 configure_bootloader() {
-    local kernel_opts kernel_opts_str
+    local kernel_opts kernel_opts_str config_file
     kernel_opts=( "iommu=pt" "vfio-pci.ids=${hwids}" "kvm.ignore_msrs=1" )
     [[ "$VENDOR_ID" == *GenuineIntel* ]] && kernel_opts=( "intel_iommu=on" "${kernel_opts[@]}" )
     kernel_opts_str="${kernel_opts[*]}"
@@ -163,8 +173,8 @@ configure_bootloader() {
     if [[ "$BOOTLOADER_TYPE" == "grub" ]]; then
         fmtr::log "Configuring GRUB"
 
-        if ! sudo grep -q -F "$kernel_opts_str" /etc/default/grub; then
-            sudo sed -E -i \
+        if ! grep -q -F "$kernel_opts_str" /etc/default/grub; then
+            sed -E -i \
                 -e "/^GRUB_CMDLINE_LINUX_DEFAULT=/ {
                         s/^[^=]+=//; s/^\"//; s/\"$//;
                         s/($VFIO_KERNEL_OPTS_REGEX)//g; s/[[:space:]]+/ /g;
@@ -177,40 +187,48 @@ configure_bootloader() {
         else
             fmtr::log "Kernel opts already present in GRUB config. Skipping."
         fi
+
     elif [[ "$BOOTLOADER_TYPE" == "systemd-boot" ]]; then
-        for location in "${SDBOOT_CONF_LOCATIONS[@]}"; do
-            [[ -d "$location" ]] || continue
-            local config_file
-            config_file=$(sudo find "$location" -maxdepth 1 -type f -name '*.conf' ! -name '*-fallback.conf' -print -quit)
-            [[ -z "$config_file" ]] && fmtr::warn "No configuration file found in $location" && continue
+        if [[ -z "$SYSTEMD_BOOT_ENTRY_DIR" || ! -d "$SYSTEMD_BOOT_ENTRY_DIR" ]]; then
+            fmtr::error "Systemd-boot entry directory is not set or doesn't exist."
+            exit 1
+        fi
 
-            fmtr::log "Modifying systemd-boot config: $config_file"
+        config_file=$(find "$SYSTEMD_BOOT_ENTRY_DIR" -maxdepth 1 -type f -name '*.conf' ! -name '*-fallback.conf' -print -quit)
+        if [[ -z "$config_file" ]]; then
+            fmtr::warn "No configuration file found in $SYSTEMD_BOOT_ENTRY_DIR"
+            return 0
+        fi
 
-            sudo sed -E -i \
-                -e "/^options / {
-                        s/($VFIO_KERNEL_OPTS_REGEX)//g;
-                        s/[[:space:]]+/ /g;
-                        s/ options /options /;
-                        s/[[:space:]]+$//
-                    }" \
-                "$config_file"
+        fmtr::log "Modifying systemd-boot config: $config_file"
 
-            if ! sudo grep -q -E "^options .*${kernel_opts[0]}" "$config_file"; then
-                sudo sed -E -i -e "/^options / s/$/ ${kernel_opts_str}/" "$config_file"
-                fmtr::log "Updated kernel opts in systemd-boot config."
-            else
-                fmtr::log "Kernel opts already present in systemd-boot config. Skipping append."
-            fi
-        done
+        sed -E -i \
+            -e "/^options / {
+                    s/($VFIO_KERNEL_OPTS_REGEX)//g;
+                    s/[[:space:]]+/ /g;
+                    s/ options /options /;
+                    s/[[:space:]]+$//
+                }" \
+            "$config_file"
+
+        if ! grep -q -E "^options .*${kernel_opts[0]}" "$config_file"; then
+            sed -E -i -e "/^options / s/$/ ${kernel_opts_str}/" "$config_file"
+            fmtr::log "Updated kernel opts in systemd-boot config."
+        else
+            fmtr::log "Kernel opts already present in systemd-boot config. Skipping append."
+        fi
     fi
 }
 
+################################################################################
+# Rebuild Bootloader Configuration
+################################################################################
 rebuild_bootloader() {
     fmtr::log "Updating bootloader configuration for GRUB."
 
     for prefix in "" "2"; do
         if command -v grub${prefix}-mkconfig &>> "$LOG_FILE"; then
-            sudo grub${prefix}-mkconfig -o /boot/grub${prefix}/grub.cfg &>> "$LOG_FILE" && fmtr::log "Bootloader configuration updated."
+            grub${prefix}-mkconfig -o /boot/grub${prefix}/grub.cfg &>> "$LOG_FILE" && fmtr::log "Bootloader configuration updated."
             return 0
         fi
     done
@@ -219,10 +237,13 @@ rebuild_bootloader() {
     return 1
 }
 
-# ----- MAIN PROMPTS -----
+################################################################################
+# Script Steps
+################################################################################
+detect_bootloader
 
 # Prompt 1 - Remove VFIO config?
-if prmt::yes_or_no "$(fmtr::ask 'Remove VFIO configs? (undo PCI passthrough)')"; then
+if prmt::yes_or_no "$(fmtr::ask 'Remove VFIO configs?')"; then
     revert_vfio
 fi
 

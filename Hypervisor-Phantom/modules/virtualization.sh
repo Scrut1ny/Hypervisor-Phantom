@@ -31,11 +31,11 @@ configure_firewall_arch() {
     if grep -q '^firewall_backend *= *"iptables"' /etc/libvirt/network.conf; then
       fmtr::info "firewall_backend already set to iptables (compatibility layer)"
     else
-      sudo sed -i '/firewall_backend \=/s/^#//g' '/etc/libvirt/network.conf'
-      sudo sed -i '/etc/libvirt/network.conf' -e 's/\(firewall_backend \= *\).*/\1"iptables"/'
+      sed -i '/firewall_backend \=/s/^#//g' '/etc/libvirt/network.conf'
+      sed -i '/etc/libvirt/network.conf' -e 's/\(firewall_backend \= *\).*/\1"iptables"/'
       fmtr::info "Set firewall_backend to iptables (compatibility layer)"
     fi
-    sudo systemctl enable --now nftables.service &>> "$LOG_FILE"
+    systemctl enable --now nftables.service &>> "$LOG_FILE"
     fmtr::info "nftables service enabled"
 
   elif pacman -Qs "iptables" &>> "$LOG_FILE"; then
@@ -50,13 +50,13 @@ configure_firewall_arch() {
       rm -rf ebtables
       fmtr::info "ebtables installed"
     fi
-    sudo systemctl enable --now iptables.service &>> "$LOG_FILE"
+    systemctl enable --now iptables.service &>> "$LOG_FILE"
     fmtr::info "iptables service enabled"
 
   elif pacman -Qs "nftables" &>> "$LOG_FILE"; then
     fmtr::warn "Nftables without iptables compatibility isn't ideal for libvirt"
     echo "See: https://bbs.archlinux.org/viewtopic.php?id=284664"
-    sudo systemctl enable --now nftables.service &>> "$LOG_FILE"
+    systemctl enable --now nftables.service &>> "$LOG_FILE"
     fmtr::info "nftables service enabled"
 
   else
@@ -78,7 +78,7 @@ configure_system_installation() {
     if grep -q "^${key}" "$file"; then
       fmtr::info "$file: $key already set"
     else
-      sudo sed -i "/${key}/s/^#//g" "$file" || echo "${key} ${value}" | sudo tee -a "$file" > /dev/null
+      sed -i "/${key}/s/^#//g" "$file" || echo "${key} ${value}" | tee -a "$file" > /dev/null
       fmtr::info "$file: Enabled $key"
     fi
   }
@@ -89,7 +89,7 @@ configure_system_installation() {
     if grep -q "^${key} = \"${val}\"" "$conf"; then
       fmtr::info "$conf: $key already set to $val"
     else
-      sudo sed -i "s/#${key} = \".*\"/${key} = \"${val}\"/" "$conf" || echo "${key} = \"${val}\"" | sudo tee -a "$conf" > /dev/null
+      sed -i "s/#${key} = \".*\"/${key} = \"${val}\"/" "$conf" || echo "${key} = \"${val}\"" | tee -a "$conf" > /dev/null
       fmtr::info "$conf: Set $key = $val"
     fi
   }
@@ -105,23 +105,23 @@ configure_system_installation() {
     if id -nG "$current_user" | grep -qw "$grp"; then
       fmtr::info "User $current_user already in $grp group"
     else
-      sudo usermod -aG "$grp" "$current_user"
+      usermod -aG "$grp" "$current_user"
       fmtr::info "Added $current_user to $grp group"
     fi
   done
 
   # Enable libvirtd.socket if not enabled
-  if ! sudo systemctl is-enabled libvirtd.socket &> /dev/null; then
-    sudo systemctl enable --now libvirtd.socket &>> "$LOG_FILE"
+  if ! systemctl is-enabled libvirtd.socket &> /dev/null; then
+    systemctl enable --now libvirtd.socket &>> "$LOG_FILE"
     fmtr::info "Enabled and started libvirtd.socket"
   else
     fmtr::info "libvirtd.socket already enabled"
   fi
 
   # Ensure default network is running
-  if ! sudo virsh net-info default &> /dev/null; then
-    sudo virsh net-autostart default &>> "$LOG_FILE"
-    sudo virsh net-start default &>> "$LOG_FILE"
+  if ! virsh net-info default &> /dev/null; then
+    virsh net-autostart default &>> "$LOG_FILE"
+    virsh net-start default &>> "$LOG_FILE"
     fmtr::info "Started and enabled default libvirt network"
   else
     fmtr::info "Default libvirt network already exists and is active"
@@ -143,25 +143,3 @@ main() {
 }
 
 main
-
-
-
-
-
-# NVRAM Template:
-#
-# sudo pacman -S edk2-ovmf
-#
-# usr/share/edk2/x64/MICROVM.4m.fd
-# usr/share/edk2/x64/OVMF.4m.fd
-# usr/share/edk2/x64/OVMF_CODE.4m.fd
-# usr/share/edk2/x64/OVMF_CODE.secboot.4m.fd
-# usr/share/edk2/x64/OVMF_VARS.4m.fd
-#
-# STORAGE:
-#
-# /var/lib/libvirt/images/
-#
-# Generated firmware from template that is writable:
-#
-# /var/lib/libvirt/qemu/nvram
