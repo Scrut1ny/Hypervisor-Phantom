@@ -1,29 +1,29 @@
 #!/usr/bin/env bash
-#
-# Defines and creates the log file.
-# Should be sourced at the beginning of main.
-# Also don't forget to check for non-zero exit codes
-# as the log file creation could fail 
-#
 
-if [[ -z "$LOG_PATH" || -z "$LOG_FILE" ]]; then
-
-  readonly LOG_PATH="$(pwd)/logs"
-  export LOG_PATH
-
-  readonly LOG_FILE="${LOG_PATH}/$(date +%s).log"
-  export LOG_FILE
-
-  # makes sure the log file is created successfully
-  if ! ( mkdir -p "$LOG_PATH" && touch "$LOG_FILE" ); then
-    exit 1
+log::init() {
+  # Set default log path and file if not defined
+  if [[ -z "$LOG_PATH" ]]; then
+    readonly LOG_PATH="$(pwd)/logs"
+    export LOG_PATH
   fi
 
-fi
+  if [[ -z "$LOG_FILE" ]]; then
+    readonly LOG_FILE="${LOG_PATH}/$(date +%s).log"
+    export LOG_FILE
+  fi
+
+  # Create log directory and file
+  if ! mkdir -p "$LOG_PATH" || ! touch "$LOG_FILE"; then
+    echo "Failed to create log directory or log file." >&2
+    exit 1
+  fi
+}
+
+log::init
 
 source "utils/formatter.sh"
 
-function dbg::fail() {
+dbg::fail() {
   fmtr::fatal "$1"
   exit 1
 }
