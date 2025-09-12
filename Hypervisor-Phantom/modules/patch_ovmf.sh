@@ -81,7 +81,7 @@ patch_ovmf() {
 
   validate_bmp() {
     local -a h
-    readarray -t h < <(od -An -v -j0 -N34 -t u1 -w1 "$1")
+    readarray -t h < <(od -An -v -j0 -N54 -t u1 -w1 "$1")
 
     local wh=$(( h[18] + (h[19]<<8) + (h[20]<<16) + (h[21]<<24) )) \
           ht=$(( h[22] + (h[23]<<8) + (h[24]<<16) + (h[25]<<24) )) \
@@ -90,8 +90,8 @@ patch_ovmf() {
 
     width=$wh; height=$ht; bit_depth=$bd; compression=$cn
 
-    if (( h[0] != 66 || h[1] != 77 || (bd != 1 && bd != 4 && bd != 8 && bd != 24) || cn != 0 || wh > 1024 || ht > 768 )); then
-      fmtr::error "INVALID: ${width}×${height} (≤1024×768), ${bit_depth}-bit (1/4/8/24-bit), ${compression} (0 compression)"
+    if (( h[0] != 66 || h[1] != 77 || (bd != 1 && bd != 4 && bd != 8 && bd != 24) || cn != 0 || wh > 65535 || ht > 65535 )); then
+      fmtr::error "INVALID: ${width}×${height} (≤65535×65535), ${bit_depth}-bit (1/4/8/24-bit), ${compression} (0 compression)"
       return 1
     fi
   }
@@ -118,7 +118,7 @@ patch_ovmf() {
           fi
 
           if validate_bmp "$custom_bmp"; then
-            fmtr::info "VALID: ${width}×${height} (≤1024×768), ${bit_depth}-bit (1/4/8/24-bit), ${compression} (0 compression)"
+            fmtr::info "VALID: ${width}×${height} (≤65535×65535), ${bit_depth}-bit (1/4/8/24-bit), ${compression} (0 compression)"
             cp "$custom_bmp" MdeModulePkg/Logo/Logo.bmp \
               && fmtr::info "Custom BMP copied successfully." \
               || fmtr::error "Failed to copy custom BMP."
