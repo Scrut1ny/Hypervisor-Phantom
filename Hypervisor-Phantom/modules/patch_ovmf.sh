@@ -118,7 +118,7 @@ patch_ovmf() {
           fi
 
           if validate_bmp "$custom_bmp"; then
-            fmtr::info "VALID: ${width}×${height} (≤1024×768), ${bit_depth}-bit (24/32-bit), ${compression} (0 compression)"
+            fmtr::info "VALID: ${width}×${height} (≤1024×768), ${bit_depth}-bit (1/4/8/24-bit), ${compression} (0 compression)"
             cp "$custom_bmp" MdeModulePkg/Logo/Logo.bmp \
               && fmtr::info "Custom BMP copied successfully." \
               || fmtr::error "Failed to copy custom BMP."
