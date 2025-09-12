@@ -90,8 +90,8 @@ patch_ovmf() {
 
     width=$wh; height=$ht; bit_depth=$bd; compression=$cn
 
-    if (( h[0] != 66 || h[1] != 77 || (bd != 24 && bd != 32) || cn != 0 || wh > 1024 || ht > 768 )); then
-      fmtr::error "INVALID: ${width}×${height} (≤1024×768), ${bit_depth}-bit (24/32-bit), ${compression} (0 compression)"
+    if (( h[0] != 66 || h[1] != 77 || (bd != 1 && bd != 4 && bd != 8 && bd != 24) || cn != 0 || wh > 1024 || ht > 768 )); then
+      fmtr::error "INVALID: ${width}×${height} (≤1024×768), ${bit_depth}-bit (1/4/8/24-bit), ${compression} (0 compression)"
       return 1
     fi
   }
