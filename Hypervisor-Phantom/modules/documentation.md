@@ -30,6 +30,20 @@ usr/share/edk2/x64/OVMF_VARS.4m.fd
 /var/lib/libvirt/qemu/nvram
 ```
 
+#### BmpImageDecoder (BMP Validator)
+
+- https://github.com/tianocore/edk2/blob/master/BaseTools/Source/Python/AutoGen/GenC.py#L1892
+
+File Type: Bytes `0–1` must be `0x42 0x4D`
+Bit Depth: One of `1, 4, 8, 24`
+Compression: Must be `0`
+Width: `≤65535`
+Height: `≤65535`
+
+
+
+
+
 ---
 
 # QEMU / Emulator
