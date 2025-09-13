@@ -40,7 +40,7 @@ sudo ./Auto-Hypervisor.sh
 
 
 
-## 🛠️ Setup Instruction Guide
+## 🛠️ Common Troubleshooting
 
 <details>
 <summary>Expand for details...</summary>
