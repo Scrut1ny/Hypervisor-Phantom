@@ -40,6 +40,26 @@ sudo ./Auto-Hypervisor.sh
 
 
 
+## 🛠️ Setup Instruction Guide
+
+<details>
+<summary>Expand for details...</summary>
+
+- Windows 11 BSOD - USBXHCI.sys
+  - Switch from USB3 to USB2
+
+- Windows 10/11 w/Secure Boot BSOD after 5-30 mins from boot
+  - Increase pagefile size inside Windows
+
+</details>
+
+
+
+---
+
+
+
+
 ## 📝 Documentation & References
 
 <details>
