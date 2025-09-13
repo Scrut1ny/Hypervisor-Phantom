@@ -51,7 +51,7 @@ sudo ./Auto-Hypervisor.sh
 - Windows 10/11 w/Secure Boot BSOD after 5-30 mins from boot
   - Increase pagefile size inside Windows
 
-- Dumping host's SMBIOS
+- Dumping host's SMBIOS for QEMU passthrough
   - First try:
   ```
   sudo cat /sys/firmware/dmi/tables/{smbios_entry_point,DMI} > smbios.bin
