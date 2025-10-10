@@ -7,13 +7,7 @@ source "./utils/prompter.sh"
 
 readonly VFIO_CONF_PATH="/etc/modprobe.d/vfio.conf"
 readonly VFIO_KERNEL_OPTS_REGEX='(intel_iommu=[^ ]*|iommu=[^ ]*|vfio-pci.ids=[^ ]*|kvm.ignore_msrs=[^ ]*)'
-
-declare -a SDBOOT_CONF_LOCATIONS=(
-    "/boot/loader/entries"
-    "/boot/efi/loader/entries"
-    "/efi/loader/entries"
-)
-
+declare -a SDBOOT_CONF_LOCATIONS=(/boot/loader/entries /boot/efi/loader/entries /efi/loader/entries)
 
 ################################################################################
 # Bootloader Detection
@@ -22,19 +16,10 @@ detect_bootloader() {
     if [[ -f /etc/default/grub ]]; then
         BOOTLOADER_TYPE="grub"
     else
-        for location in "${SDBOOT_CONF_LOCATIONS[@]}"; do
-            if [[ -d "$location" ]]; then
-                BOOTLOADER_TYPE="systemd-boot"
-                SYSTEMD_BOOT_ENTRY_DIR="$location"
-                export SYSTEMD_BOOT_ENTRY_DIR
-                break
-            fi
+        for dir in "${SDBOOT_CONF_LOCATIONS[@]}"; do
+            [[ -d $dir ]] && { BOOTLOADER_TYPE="systemd-boot"; SYSTEMD_BOOT_ENTRY_DIR=$dir; export SYSTEMD_BOOT_ENTRY_DIR; break; }
         done
-        if [[ -z "$SYSTEMD_BOOT_ENTRY_DIR" ]]; then
-            BOOTLOADER_TYPE="unknown"
-            fmtr::error "No supported bootloader detected (GRUB or systemd-boot). Exiting."
-            exit 1
-        fi
+        [[ -z $SYSTEMD_BOOT_ENTRY_DIR ]] && { fmtr::error "No supported bootloader detected (GRUB or systemd-boot). Exiting."; exit 1; }
     fi
     export BOOTLOADER_TYPE
 }
@@ -43,40 +28,29 @@ detect_bootloader() {
 # Revert VFIO Configurations
 ################################################################################
 revert_vfio() {
-    if [[ -f "$VFIO_CONF_PATH" ]]; then
-        rm -v "$VFIO_CONF_PATH" | tee -a &>> "$LOG_FILE"
-        fmtr::log "Removed VFIO Config: $VFIO_CONF_PATH"
-    else
-        fmtr::log "$VFIO_CONF_PATH doesn't exist; nothing to remove."
-    fi
+    [[ -f $VFIO_CONF_PATH ]] && { rm -v "$VFIO_CONF_PATH" | tee -a &>> "$LOG_FILE"; fmtr::log "Removed VFIO Config: $VFIO_CONF_PATH"; } \
+        || fmtr::log "$VFIO_CONF_PATH doesn't exist; nothing to remove."
 
-    if [[ "$BOOTLOADER_TYPE" == "grub" ]]; then
-        sed -E -i \
-            -e "/^GRUB_CMDLINE_LINUX_DEFAULT=/ {
-                    s/($VFIO_KERNEL_OPTS_REGEX)//g;
-                    s/[[:space:]]+/ /g;
-                    s/\"[[:space:]]+/\"/;
-                    s/[[:space:]]+\"/\"/
-                }" \
-            /etc/default/grub
+    if [[ $BOOTLOADER_TYPE == "grub" ]]; then
+        sed -E -i "/^GRUB_CMDLINE_LINUX_DEFAULT=/ {
+            s/$VFIO_KERNEL_OPTS_REGEX//g;
+            s/[[:space:]]+/ /g;
+            s/\"[[:space:]]+/\"/;
+            s/[[:space:]]+\"/\"/
+        }" /etc/default/grub
         fmtr::log "Removed VFIO kernel opts from GRUB config."
-    elif [[ "$BOOTLOADER_TYPE" == "systemd-boot" && -n "$SYSTEMD_BOOT_ENTRY_DIR" ]]; then
+
+    elif [[ $BOOTLOADER_TYPE == "systemd-boot" && -n $SYSTEMD_BOOT_ENTRY_DIR ]]; then
         local config_file
         config_file=$(find "$SYSTEMD_BOOT_ENTRY_DIR" -maxdepth 1 -name '*.conf' ! -name '*-fallback.conf' -print -quit)
-        if [[ -z "$config_file" ]]; then
-            fmtr::warn "No configuration file found in $SYSTEMD_BOOT_ENTRY_DIR"
-            return
-        fi
+        [[ -z $config_file ]] && { fmtr::warn "No configuration file found in $SYSTEMD_BOOT_ENTRY_DIR"; return; }
 
-        sed -E -i \
-            -e "/^options / {
-                    s/($VFIO_KERNEL_OPTS_REGEX)//g;   # remove old managed options
-                    s/[[:space:]]+/ /g;               # normalize whitespace
-                    s/ options /options /;            # ensure 'options ' prefix correct
-                    s/[[:space:]]+$//;                # trim trailing space
-                }" \
-            "$config_file"
-
+        sed -E -i "/^options / {
+            s/$VFIO_KERNEL_OPTS_REGEX//g;
+            s/[[:space:]]+/ /g;
+            s/ options /options /;
+            s/[[:space:]]+$//
+        }" "$config_file"
         fmtr::log "Removed VFIO kernel opts from: $config_file"
     fi
 }
@@ -85,13 +59,11 @@ revert_vfio() {
 # Configure VFIO
 ################################################################################
 configure_vfio() {
-    local gpus sel="" pci_bdf group pci_bus_dev bad_group=0 bad_functions=()
+    local gpus bdf pci_desc sel pci_bdf group pci_bus_dev bad_group=0 bad_functions=()
 
-    # Collect GPU candidates (PCI class 0x03* = display controllers)
     mapfile -t gpus < <(
         for dev in /sys/bus/pci/devices/*; do
             [[ -r "$dev/class" && $(<"$dev/class") == 0x03* ]] || continue
-            local bdf pci_desc
             bdf=${dev##*/}
             pci_desc=$(lspci -s "$bdf")
             pci_desc=${pci_desc##*[}
@@ -104,38 +76,31 @@ configure_vfio() {
     (( ${#gpus[@]} == 1 )) && fmtr::warn "Only one GPU detected! Passing it through will leave the host without display output."
 
     while :; do
-        for i in "${!gpus[@]}"; do
-            printf '  %d) %s\n' "$((i+1))" "${gpus[i]#* }"
-        done
+        for i in "${!gpus[@]}"; do printf '  %d) %s\n' "$((i+1))" "${gpus[i]#* }"; done
         read -rp "$(fmtr::ask 'Select device number: ')" sel
-        if [[ $sel =~ ^[0-9]+$ && sel -ge 1 && sel -le ${#gpus[@]} ]]; then
-            sel=$((sel-1))
-            break
-        fi
+        [[ $sel =~ ^[0-9]+$ && sel -ge 1 && sel -le ${#gpus[@]} ]] && break
         fmtr::error "Invalid selection. Please choose a valid number."
     done
+    sel=$((sel-1))
 
     pci_bdf="${gpus[sel]%% *}"
     pci_bdf="${pci_bdf##*/}"
-    group=$(basename "$(readlink -f /sys/bus/pci/devices/$pci_bdf/iommu_group)")
+    group=$(basename "$(readlink -f "/sys/bus/pci/devices/$pci_bdf/iommu_group")")
     pci_bus_dev="${pci_bdf%.*}"
 
-    hwids=($(for dev in /sys/kernel/iommu_groups/$group/devices/*; do
+    hwids=()
+    for dev in /sys/kernel/iommu_groups/$group/devices/*; do
         func=${dev##*/}
-        read -r ven_id < "$dev/vendor"
-        read -r dev_id < "$dev/device"
-        printf '%s:%s ' "${ven_id:2}" "${dev_id:2}"
+        ven_id=$(<"$dev/vendor")
+        dev_id=$(<"$dev/device")
+        hwids+=("${ven_id:2}:${dev_id:2}")
 
-        [[ ${func%.*} != $pci_bus_dev ]] && { bad_group=1; bad_functions+=("$func"); }
-    done))
+        [[ ${func%.*} != "$pci_bus_dev" ]] && { bad_group=1; bad_functions+=("$func"); }
+    done
     hwids=$(IFS=,; echo "${hwids[*]}")
 
     if (( bad_group )); then
-        fmtr::error "Bad IOMMU grouping - group #$group contains:"
-        printf '\n'
-        for f in "${bad_functions[@]}"; do
-            printf '  [%s] = %s\n' "$f" "$(lspci -s "$f" -nn)"
-        done
+        fmtr::error "Bad IOMMU grouping - group #$group contains:\n$(printf '  [%s] = %s\n' "${bad_functions[@]}")"
         fmtr::warn "VFIO PT requires full group isolation. Possible fixes: ACS override, firmware update, or proper hardware support."
         exit 1
     fi
@@ -243,12 +208,12 @@ rebuild_bootloader() {
 detect_bootloader
 
 # Prompt 1 - Remove VFIO config?
-if prmt::yes_or_no "$(fmtr::ask 'Remove VFIO configs?')"; then
+if prmt::yes_or_no "$(fmtr::ask 'Remove GPU PT/VFIO configs?')"; then
     revert_vfio
 fi
 
 # Prompt 2 - Configure VFIO config?
-if prmt::yes_or_no "$(fmtr::ask 'Configure VFIO now?')"; then
+if prmt::yes_or_no "$(fmtr::ask 'Configure GPU PT/VFIO now?')"; then
     if ! configure_vfio; then
         fmtr::log "Configuration aborted during device selection."
         exit 1

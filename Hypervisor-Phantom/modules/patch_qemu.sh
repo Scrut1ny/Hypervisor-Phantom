@@ -28,7 +28,7 @@ readonly FAKE_BATTERY_ACPITABLE="${PATCH_DIR}/fake_battery.dsl"
 REQUIRED_PKGS_Arch=(
   # Basic Build Dependencie(s)
   acpica base-devel dmidecode glib2 ninja python-packaging
-  python-sphinx python-sphinx_rtd_theme gnupg patch curl
+  python-sphinx python-sphinx_rtd_theme gnupg patch curl libevdev
 
   # Spice Dependencie(s)
   spice gtk3

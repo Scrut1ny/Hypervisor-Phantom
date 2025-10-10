@@ -38,7 +38,6 @@ check_disk_space() {
 }
 
 acquire_tkg_source() {
-
   mkdir -p "$SRC_DIR" && cd "$SRC_DIR"
 
   if [ -d "$TKG_DIR" ]; then
@@ -70,12 +69,10 @@ acquire_tkg_source() {
       echo "$file"
       sed -i -e 's/-Werror=/\-W/g' -e 's/-Werror-/\-W/g' -e 's/-Werror/\-W/g' "$file"
   done &>> "$LOG_FILE" || { fmtr::fatal "Failed to disable warnings-as-errors!"; exit 1; }
-
 }
 
 
 select_distro() {
-
   while true; do
     clear; fmtr::info "Please select your Linux distribution:
 
@@ -103,12 +100,10 @@ select_distro() {
     echo ""; fmtr::info "Selected Linux distribution: $distro"
     break
   done
-
 }
 
 
 modify_customization_cfg() {
-
   ####################################################################################################
   ####################################################################################################
 
@@ -264,30 +259,32 @@ modify_customization_cfg() {
   for key in "${!config_values[@]}"; do
       sed -i "s|$key=\"[^\"]*\"|$key=\"${config_values[$key]}\"|" "$TKG_CFG_DIR" &>> "$LOG_FILE"
   done
-
 }
 
 patch_kernel() {
-
   mkdir -p "linux${KERNEL_MAJOR}${KERNEL_MINOR}-tkg-userpatches"
   cp "${KERNEL_USER_PATCH}" "linux${KERNEL_MAJOR}${KERNEL_MINOR}-tkg-userpatches"
-
 }
 
 arch_distro() {
+  clear
 
-  clear; makepkg -C -si --noconfirm
+  if [[ "${PRIV_ESC:-sudo}" == "sudo" ]]; then
+    orig_user="$SUDO_USER"
+  else
+    orig_user="$USER"
+  fi
+
+  ${PRIV_ESC:-sudo} -u "$orig_user" makepkg -C -si --noconfirm
 
   if prmt::yes_or_no "$(fmtr::ask 'Would you like to add a systemd-boot entry for this kernel?')"; then
     systemd-boot_boot_entry_maker
   else
     fmtr::info "Skipping systemd-boot entry creation."
   fi
-
 }
 
 other_distro() {
-
   clear; ./install.sh install
 
   if prmt::yes_or_no "$(fmtr::ask 'Would you like to add a systemd-boot entry for this kernel?')"; then
@@ -295,11 +292,9 @@ other_distro() {
   else
     fmtr::info "Skipping systemd-boot entry creation."
   fi
-
 }
 
 systemd-boot_boot_entry_maker() {
-
   declare -a SDBOOT_CONF_LOCATIONS=(
     "/boot/loader/entries"
     "/boot/efi/loader/entries"
@@ -353,7 +348,6 @@ EOF
 
   fmtr::error "No valid systemd-boot entry directory found."
   return 1
-
 }
 
 check_disk_space

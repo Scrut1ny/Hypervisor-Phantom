@@ -53,12 +53,17 @@ fmtr::info "Using template: $TEMPLATE_FILE"
 ##################################################
 ##################################################
 ### CPU Topology
-CORES=$(lscpu | awk -F: '/^Core\(s\) per socket:/ { gsub(/^[ \t]+/, "", $2); print $2 }')
-THREADS=$(lscpu | awk -F: '/^Thread\(s\) per core:/ { gsub(/^[ \t]+/, "", $2); print $2 }')
+
+CORES=$(lscpu --json | jq -r '[.lscpu[] | select(.field=="Core(s) per socket:") | .data] | join(" ")')
+THREADS=$(lscpu --json | jq -r '[.lscpu[] | select(.field=="Thread(s) per core:") | .data] | join(" ")')
+
+
 
 # Calculate vcpu count = cores * threads
 VCPU=$((CORES * THREADS))
 fmtr::info "Configuring VM with ${VCPU} vCPUs..."
+
+
 
 # Prepare updated XML with VM name and CPU topology
 TMP_XML=$(mktemp)
