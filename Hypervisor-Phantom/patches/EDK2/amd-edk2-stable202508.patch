@@ -206,6 +206,19 @@ index a70b99f..3293947 100644
  
  //
  // Common capability header for all hints.
+diff --git a/OvmfPkg/Library/QemuBootOrderLib/QemuBootOrderLib.c b/OvmfPkg/Library/QemuBootOrderLib/QemuBootOrderLib.c
+index 2fe6ab3..2d697df 100644
+--- a/OvmfPkg/Library/QemuBootOrderLib/QemuBootOrderLib.c
++++ b/OvmfPkg/Library/QemuBootOrderLib/QemuBootOrderLib.c
+@@ -1794,7 +1794,7 @@ StoreQemuBootOrder (
+       UnicodeSPrint (
+         VariableName,
+         sizeof (VariableName),
+-        L"VMMBootOrder%04x",
++        L"BootOrder%04x",
+         VariableIndex++
+         );
+       DEBUG ((DEBUG_INFO, "%a: %s = %s\n", __func__, VariableName, Translated));
 diff --git a/OvmfPkg/QemuVideoDxe/Driver.c b/OvmfPkg/QemuVideoDxe/Driver.c
 index 6feca83..a8d3313 100644
 --- a/OvmfPkg/QemuVideoDxe/Driver.c
