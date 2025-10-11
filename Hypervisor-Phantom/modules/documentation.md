@@ -11,11 +11,11 @@ sudo pacman -S edk2-ovmf
 ```
 
 ```
-usr/share/edk2/x64/MICROVM.4m.fd
-usr/share/edk2/x64/OVMF.4m.fd
-usr/share/edk2/x64/OVMF_CODE.4m.fd
-usr/share/edk2/x64/OVMF_CODE.secboot.4m.fd
-usr/share/edk2/x64/OVMF_VARS.4m.fd
+/usr/share/edk2/x64/MICROVM.4m.fd
+/usr/share/edk2/x64/OVMF.4m.fd
+/usr/share/edk2/x64/OVMF_CODE.4m.fd
+/usr/share/edk2/x64/OVMF_CODE.secboot.4m.fd
+/usr/share/edk2/x64/OVMF_VARS.4m.fd
 ```
 
 #### STORAGE:
