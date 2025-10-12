@@ -52,7 +52,7 @@ detect_distro() {
 }
 
 cpu_vendor_id() {
-  VENDOR_ID=$(LANG=en_US.UTF-8 lscpu 2>/dev/null | awk -F': +' '/^Vendor ID:/ {print $2}' | xargs)
+  VENDOR_ID=$(LC_ALL=C lscpu 2>/dev/null | awk -F': +' '/^Vendor ID:/ {print $2}' | xargs)
 
   if [ -z "$VENDOR_ID" ]; then
     VENDOR_ID=$(awk -F': +' '/vendor_id/ {print $2; exit}' /proc/cpuinfo | xargs) # Fallback method
