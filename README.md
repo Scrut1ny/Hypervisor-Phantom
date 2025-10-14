@@ -192,7 +192,7 @@ sudo ./Auto-Hypervisor.sh
     - [Windows Download](https://download.vb-audio.com/Download_CABLE/VBCABLE_Driver_Pack43.zip)
     - [macOS Download](https://download.vb-audio.com/Download_MAC/VBCable_MACDriver_Pack108.zip)
 
-## Virtual Display Driver
+## Virtual Displays
 - [Virtual-Display-Driver](https://github.com/itsmikethetech/Virtual-Display-Driver)
 - [memflow-mirror](https://github.com/ko1N/memflow-mirror)
 
