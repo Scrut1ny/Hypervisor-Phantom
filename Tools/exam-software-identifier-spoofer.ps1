@@ -10,7 +10,7 @@ Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Cryptography' -Name 'MachineGui
 
 
 
-# ========== Install Date + Time ==========
+# ========== Install Date & Time ==========
 
 # Generate random date between 2011-01-01 and 2022-12-31
 $randomDate = Get-Random -Minimum ([datetime]'2011-01-01').Ticks -Maximum (([datetime]'2022-12-31').Ticks) | ForEach-Object {[datetime]$_}
@@ -33,12 +33,11 @@ Restart-Service w32time -Force; w32tm /resync
 
 
 
-# ========== Device + NetBIOS Names ==========
+# ========== Device/NetBIOS Names ==========
 
-$RandomString = -join ((48..57) + (65..90) | Get-Random -Count '7' | % {[char]$_})
-
-# Local Computer Name (Device Name)
 # [System.Environment]::MachineName
+
+$RandomString = -join ([char[]](48..57 + 65..90) | Get-Random -Count 7)
 Rename-Computer -NewName "DESKTOP-$RandomString" -Force *>$null
 
 # ==================================
@@ -60,3 +59,4 @@ Set-NetAdapter -Name "$adapter" -MacAddress "$newMac" -Confirm:$false
 shutdown /r /t 0
 
 # ==================================
+
