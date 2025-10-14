@@ -1,48 +1,33 @@
+# VMware: Set Custom CPUID String from Local CPU ID
 # https://en.wikipedia.org/wiki/CPUID
-# VMware Set Custom CPUID String
 
-# Function to convert a single hex character to binary
-function Convert-HexCharToBinary {
-    param ([char]$hexChar)
-    switch ($hexChar) {
-        '0' { return '0000' }
-        '1' { return '0001' }
-        '2' { return '0010' }
-        '3' { return '0011' }
-        '4' { return '0100' }
-        '5' { return '0101' }
-        '6' { return '0110' }
-        '7' { return '0111' }
-        '8' { return '1000' }
-        '9' { return '1001' }
-        'A' { return '1010' }
-        'B' { return '1011' }
-        'C' { return '1100' }
-        'D' { return '1101' }
-        'E' { return '1110' }
-        'F' { return '1111' }
-        default { return '----' }
-    }
+# Hex to Binary Map (for fast conversion)
+$hexToBinMap = @{
+    '0' = '0000'; '1' = '0001'; '2' = '0010'; '3' = '0011'
+    '4' = '0100'; '5' = '0101'; '6' = '0110'; '7' = '0111'
+    '8' = '1000'; '9' = '1001'; 'A' = '1010'; 'B' = '1011'
+    'C' = '1100'; 'D' = '1101'; 'E' = '1110'; 'F' = '1111'
 }
 
-# Retrieve the Processor ID in hexadecimal
-$hexProcessorId = (Get-CimInstance Win32_Processor).ProcessorId
+# Retrieve Processor ID (64-bit hex string)
+$hexProcessorId = (Get-CimInstance Win32_Processor).ProcessorId.ToUpper()
 
-# Convert each hex character to binary and concatenate for the full binary string
-$binaryProcessorId = -join ($hexProcessorId.ToCharArray() | ForEach-Object { Convert-HexCharToBinary -hexChar $_ })
+# Split into two 32-bit halves (8 hex chars each)
+$edxHex = $hexProcessorId.Substring(0, 8)
+$eaxHex = $hexProcessorId.Substring(8, 8)
 
-# Calculate the midpoint of the binary string
-$midPoint = $binaryProcessorId.Length / 2
+# Convert each half from hex to binary (32 bits)
+$edxBin = ($edxHex.ToCharArray() | ForEach-Object { $hexToBinMap["$_"] }) -join ''
+$eaxBin = ($eaxHex.ToCharArray() | ForEach-Object { $hexToBinMap["$_"] }) -join ''
 
-# Split the binary string into two halves for EDX and EAX
-$edx = $binaryProcessorId.Substring(0, [math]::Floor($midPoint))
-$eax = $binaryProcessorId.Substring([math]::Floor($midPoint))
+$output = @"
+CPU ProcessorId (HEX):  [$hexProcessorId]
+EDX (Hex & Binary):     [$edxHex] - [$edxBin]
+EAX (Hex & Binary):     [$eaxHex] - [$eaxBin]
 
-# Output the variables to verify
-Write-Host "CPU ProcessorId (HEX): $hexProcessorId"
-Write-Host "CPU ProcessorId (Binary): $binaryProcessorId"
-Write-Host "EDX (first half): $edx"
-Write-Host "EAX (second half): $eax"
-Write-Host "`nAdd these lines to your *.vmx config:"
-Write-Host "cpuid.1.edx = `"$edx`""
-Write-Host "cpuid.1.edx = `"$eax`""
+Add these lines to your *.vmx config:
+cpuid.1.edx = "$edxBin"
+cpuid.1.eax = "$eaxBin"
+"@
+
+Write-Host $output
