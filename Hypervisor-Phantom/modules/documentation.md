@@ -39,7 +39,9 @@ sudo pacman -S edk2-ovmf
 - Compression: Must be `0`
 - Width/Height: `≤65535x65535`
 
+#### virt-fw-vars man page
 
+- https://man.archlinux.org/man/extra/virt-firmware/virt-fw-vars.1.en
 
 
 
