@@ -1,4 +1,4 @@
-# VMware: Set Custom CPUID String from Local CPU ID
+# Set custom VMware guest CPUID string reflecting host
 # https://en.wikipedia.org/wiki/CPUID
 
 # Get and split the 64-bit Processor ID
@@ -13,8 +13,9 @@ $eaxBin = [Convert]::ToString([Convert]::ToUInt32($eaxHex, 16), 2).PadLeft(32, '
 # Output
 Write-Host @"
 CPU ProcessorId (HEX):  [$processorId]
-EDX (Hex & Binary):     [$edxHex] - [$edxBin]
-EAX (Hex & Binary):     [$eaxHex] - [$eaxBin]
+
+EDX (Hex & Binary):     [$edxHex] = [$edxBin]
+EAX (Hex & Binary):     [$eaxHex] = [$eaxBin]
 
 Add these lines to your *.vmx config:
 cpuid.1.edx = "$edxBin"
