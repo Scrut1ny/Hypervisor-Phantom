@@ -1,25 +1,23 @@
 # VMware: Set Custom CPUID String from Local CPU ID
 # https://en.wikipedia.org/wiki/CPUID
 
-# Hex to Binary Map (for fast conversion)
-$hexToBinMap = @{
-    '0' = '0000'; '1' = '0001'; '2' = '0010'; '3' = '0011'
-    '4' = '0100'; '5' = '0101'; '6' = '0110'; '7' = '0111'
-    '8' = '1000'; '9' = '1001'; 'A' = '1010'; 'B' = '1011'
-    'C' = '1100'; 'D' = '1101'; 'E' = '1110'; 'F' = '1111'
-}
-
-# Retrieve Processor ID (64-bit hex string)
+# Get the 64-bit Processor ID in uppercase
 $hexProcessorId = (Get-CimInstance Win32_Processor).ProcessorId.ToUpper()
 
 # Split into two 32-bit halves (8 hex chars each)
 $edxHex = $hexProcessorId.Substring(0, 8)
 $eaxHex = $hexProcessorId.Substring(8, 8)
 
-# Convert each half from hex to binary (32 bits)
-$edxBin = ($edxHex.ToCharArray() | ForEach-Object { $hexToBinMap["$_"] }) -join ''
-$eaxBin = ($eaxHex.ToCharArray() | ForEach-Object { $hexToBinMap["$_"] }) -join ''
+# Function: Convert 8-digit hex string to 32-bit binary string
+function Convert-HexToBinary32($hex) {
+    return [Convert]::ToString([Convert]::ToUInt32($hex, 16), 2).PadLeft(32, '0')
+}
 
+# Convert to binary
+$edxBin = Convert-HexToBinary32 $edxHex
+$eaxBin = Convert-HexToBinary32 $eaxHex
+
+# Build the output
 $output = @"
 CPU ProcessorId (HEX):  [$hexProcessorId]
 EDX (Hex & Binary):     [$edxHex] - [$edxBin]
