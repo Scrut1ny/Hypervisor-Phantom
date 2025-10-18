@@ -145,7 +145,7 @@ compile_ovmf() {
   [ -d BaseTools/Build ] || { make -C BaseTools && source edksetup.sh; } &>>"$LOG_FILE" || { fmtr::fatal "Failed to build BaseTools"; exit 1; }
 
   fmtr::log "Compiling OVMF with SB and TPM support..."
-  build -a X64 -p OvmfPkg/OvmfPkgX64.dsc -b RELEASE -t GCC5 -n 0 -s -q \
+  build -a X64 -p OvmfPkg/OvmfPkgX64.dsc -b RELEASE -t GCC5 -n 0 -s \
     --define SECURE_BOOT_ENABLE=TRUE \
     --define TPM_CONFIG_ENABLE=TRUE \
     --define TPM_ENABLE=TRUE \
