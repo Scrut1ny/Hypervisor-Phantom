@@ -33,11 +33,10 @@ sudo pacman -S edk2-ovmf
 #### BmpImageDecoder (BMP Validator)
 
 - https://github.com/tianocore/edk2/blob/master/BaseTools/Source/Python/AutoGen/GenC.py#L1892
-
-- File Type: Bytes `0–1` must be `0x42 0x4D`
-- Bit Depth: Must be `1`, `4`, `8`, or `24`
-- Compression: Must be `0`
-- Width/Height: `≤65535x65535`
+  - File Type: Bytes `0–1` must be `0x42 0x4D`
+  - Bit Depth: Must be `1`, `4`, `8`, or `24`
+  - Compression: Must be `0`
+  - Width/Height: `≤65535x65535`
 
 #### virt-fw-vars man page
 
