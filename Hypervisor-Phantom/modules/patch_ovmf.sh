@@ -166,7 +166,7 @@ compile_ovmf() {
 # Certificate injection
 ################################################################################
 cert_injection() {
-  readonly URL="https://github.com/microsoft/secureboot_objects/raw/refs/heads/main/PreSignedObjects"
+  readonly URL="https://github.com/microsoft/secureboot_objects/raw/refs/heads/main"
   readonly UUID="77fa9abd-0359-4d32-bd60-28f4e78f784b"
   local TEMP_DIR VM_NAME VARS_FILE NVRAM_DIR="/var/lib/libvirt/qemu/nvram" DEFAULTS_JSON
 
@@ -201,21 +201,21 @@ cert_injection() {
   fmtr::info "Downloading Microsoft's Secure Boot certifications..."
   declare -A CERTS=(
     # PK (Platform Key)
-    ["ms_pk_oem.der"]="$URL/PK/Certificate/WindowsOEMDevicesPK.der"
+    ["ms_pk_oem.der"]="$URL/PreSignedObjects/PK/Certificate/WindowsOEMDevicesPK.der"
 
     # KEK (Key Exchange Key)
-    ["ms_kek_2011.der"]="$URL/KEK/Certificates/MicCorKEKCA2011_2011-06-24.der"
-    ["ms_kek_2023.der"]="$URL/KEK/Certificates/microsoft%20corporation%20kek%202k%20ca%202023.der"
+    ["ms_kek_2011.der"]="$URL/PreSignedObjects/KEK/Certificates/MicCorKEKCA2011_2011-06-24.der"
+    ["ms_kek_2023.der"]="$URL/PreSignedObjects/KEK/Certificates/microsoft%20corporation%20kek%202k%20ca%202023.der"
 
     # DB (Signature Database)
-    ["ms_db_uef_2011.der"]="$URL/DB/Certificates/MicCorUEFCA2011_2011-06-27.der"
-    ["ms_db_pro_2011.der"]="$URL/DB/Certificates/MicWinProPCA2011_2011-10-19.der"
-    ["ms_db_optionrom_2023.der"]="$URL/DB/Certificates/microsoft%20option%20rom%20uefi%20ca%202023.der"
-    ["ms_db_uefi_2023.der"]="$URL/DB/Certificates/microsoft%20uefi%20ca%202023.der"
-    ["ms_db_windows_2023.der"]="$URL/DB/Certificates/windows%20uefi%20ca%202023.der"
+    ["ms_db_uef_2011.der"]="$URL/PreSignedObjects/DB/Certificates/MicCorUEFCA2011_2011-06-27.der"
+    ["ms_db_pro_2011.der"]="$URL/PreSignedObjects/DB/Certificates/MicWinProPCA2011_2011-10-19.der"
+    ["ms_db_optionrom_2023.der"]="$URL/PreSignedObjects/DB/Certificates/microsoft%20option%20rom%20uefi%20ca%202023.der"
+    ["ms_db_uefi_2023.der"]="$URL/PreSignedObjects/DB/Certificates/microsoft%20uefi%20ca%202023.der"
+    ["ms_db_windows_2023.der"]="$URL/PreSignedObjects/DB/Certificates/windows%20uefi%20ca%202023.der"
 
     # DBX (Forbidden Signatures Database)
-    ["dbxupdate.bin"]="$URL/DBX/amd64/DBXUpdate.bin"
+    ["dbxupdate.bin"]="$URL/PostSignedObjects/DBX/amd64/DBXUpdate.bin"
   )
 
   for file in "${!CERTS[@]}"; do
