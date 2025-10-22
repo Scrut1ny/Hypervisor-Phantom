@@ -166,16 +166,16 @@ compile_ovmf() {
 # Certificate injection
 ################################################################################
 cert_injection() {
-  readonly URL="https://raw.githubusercontent.com/microsoft/secureboot_objects/main/PreSignedObjects"
+  readonly URL="https://github.com/microsoft/secureboot_objects/raw/refs/heads/main/PreSignedObjects"
   readonly UUID="77fa9abd-0359-4d32-bd60-28f4e78f784b"
-  local TEMP_DIR VM_NAME VARS_FILE NVRAM_DIR="/var/lib/libvirt/qemu/nvram"
+  local TEMP_DIR VM_NAME VARS_FILE NVRAM_DIR="/var/lib/libvirt/qemu/nvram" DEFAULTS_JSON
 
-  TEMP_DIR=$(mktemp -d)
-  cd "$TEMP_DIR" || { fmtr::fatal "Failed to enter temp dir"; exit 1; }
+  TEMP_DIR=$(mktemp -d) || { fmtr::fatal "Failed to create temp dir"; return 1; }
+  cd "$TEMP_DIR" || { fmtr::fatal "Failed to enter temp dir"; rm -rf "$TEMP_DIR"; return 1; }
 
   fmtr::log "Available domains:"; echo ""
   mapfile -t VMS < <(virsh list --all --name | grep -v '^$')
-  [ ${#VMS[@]} -gt 0 ] || { fmtr::fatal "No domains found!"; rm -rf "$TEMP_DIR"; exit 1; }
+  [ ${#VMS[@]} -gt 0 ] || { fmtr::fatal "No domains found!"; rm -rf "$TEMP_DIR"; return 1; }
 
   for i in "${!VMS[@]}"; do
     fmtr::format_text '  ' "[$((i+1))]" " ${VMS[$i]}" "$TEXT_BRIGHT_YELLOW"
@@ -191,7 +191,7 @@ cert_injection() {
         (( vm_choice >= 1 && vm_choice <= ${#VMS[@]} )) || { fmtr::error "Invalid selection, try again."; continue; }
         VM_NAME="${VMS[$((vm_choice-1))]}"
         VARS_FILE="$NVRAM_DIR/${VM_NAME}_VARS.qcow2"
-        [ -f "$VARS_FILE" ] || { fmtr::fatal "File not found: $VARS_FILE"; exit 1; }
+        [ -f "$VARS_FILE" ] || { fmtr::fatal "File not found: $VARS_FILE"; rm -rf "$TEMP_DIR"; return 1; }
         fmtr::log "Using '$VARS_FILE' as the base VARS file."
         break
         ;;
@@ -200,23 +200,78 @@ cert_injection() {
 
   fmtr::info "Downloading Microsoft's Secure Boot certifications..."
   declare -A CERTS=(
+    # PK (Platform Key)
     ["ms_pk_oem.der"]="$URL/PK/Certificate/WindowsOEMDevicesPK.der"
+
+    # KEK (Key Exchange Key)
     ["ms_kek_2011.der"]="$URL/KEK/Certificates/MicCorKEKCA2011_2011-06-24.der"
     ["ms_kek_2023.der"]="$URL/KEK/Certificates/microsoft%20corporation%20kek%202k%20ca%202023.der"
+
+    # DB (Signature Database)
     ["ms_db_uef_2011.der"]="$URL/DB/Certificates/MicCorUEFCA2011_2011-06-27.der"
     ["ms_db_pro_2011.der"]="$URL/DB/Certificates/MicWinProPCA2011_2011-10-19.der"
     ["ms_db_optionrom_2023.der"]="$URL/DB/Certificates/microsoft%20option%20rom%20uefi%20ca%202023.der"
     ["ms_db_uefi_2023.der"]="$URL/DB/Certificates/microsoft%20uefi%20ca%202023.der"
     ["ms_db_windows_2023.der"]="$URL/DB/Certificates/windows%20uefi%20ca%202023.der"
-    ["dbxupdate_x64.bin"]="https://uefi.org/sites/default/files/resources/dbxupdate_x64.bin"
+
+    # DBX (Forbidden Signatures Database)
+    ["dbxupdate.bin"]="$URL/DBX/amd64/DBXUpdate.bin"
   )
 
   for file in "${!CERTS[@]}"; do
     wget -q -O "$file" "${CERTS[$file]}" &
   done
-  wait || { fmtr::fatal "Failed to download one or more certs"; exit 1; }
+  wait || { fmtr::fatal "Failed to download one or more certs"; rm -rf "$TEMP_DIR"; return 1; }
 
-  fmtr::info "Injecting MS SB certs into '$VARS_FILE'..."
+  fmtr::info "Generating defaults.json from host efivars..."
+
+  EFIVAR_DIR="/sys/firmware/efi/efivars"
+  DEFAULTS_JSON="$TEMP_DIR/defaults.json"
+  VARS_LIST=("dbDefault" "KEKDefault" "PKDefault")
+  declare -A VAR_GUIDS=(
+    ["dbDefault"]="8be4df61-93ca-11d2-aa0d-00e098032b8c"
+    ["KEKDefault"]="8be4df61-93ca-11d2-aa0d-00e098032b8c"
+    ["PKDefault"]="8be4df61-93ca-11d2-aa0d-00e098032b8c"
+  )
+
+  {
+    printf '%s\n' '{'
+    printf '%s\n' '    "version": 2,'
+    printf '%s\n' '    "variables": ['
+
+    sep=""
+    if [[ -d "$EFIVAR_DIR" ]]; then
+      for var in "${VARS_LIST[@]}"; do
+        guid="${VAR_GUIDS[$var]}"
+        filepath="$EFIVAR_DIR/${var}-${guid}"
+        if [[ -f "$filepath" ]]; then
+          raw_data=$(hexdump -ve '1/1 "%.2x"' "$filepath" 2>/dev/null) || raw_data=""
+          if [[ -n "$raw_data" && ${#raw_data} -ge 8 ]]; then
+            attr_hex="${raw_data:6:2}${raw_data:4:2}${raw_data:2:2}${raw_data:0:2}"
+            if [[ "$attr_hex" =~ ^[0-9a-fA-F]+$ ]]; then
+              attr=$((16#$attr_hex))
+            else
+              attr=0
+            fi
+            data_hex="${raw_data:8}"
+            printf '%s\n' "        $sep{"
+            printf '            "name": "%s",\n' "$var"
+            printf '            "guid": "%s",\n' "$guid"
+            printf '            "attr": %d,\n' "$attr"
+            printf '            "data": "%s"\n' "$data_hex"
+            sep=","
+            printf '%s' "        }"
+            printf '\n'
+          fi
+        fi
+      done
+    fi
+
+    printf '%s\n' '    ]'
+    printf '%s\n' '}'
+  } > "$DEFAULTS_JSON"
+
+  fmtr::info "Injecting MS SB certs and vars into '$VARS_FILE'..."
   virt-fw-vars --input "$VARS_FILE" --output "$NVRAM_DIR/${VM_NAME}_SECURE_VARS.qcow2" \
     --secure-boot \
     --set-pk "$UUID" ms_pk_oem.der \
@@ -227,7 +282,8 @@ cert_injection() {
     --add-db "$UUID" ms_db_optionrom_2023.der \
     --add-db "$UUID" ms_db_uefi_2023.der \
     --add-db "$UUID" ms_db_windows_2023.der \
-    --set-dbx dbxupdate_x64.bin &>>"$LOG_FILE" || { fmtr::fatal "Failed to inject SB certs"; exit 1; }
+    --set-dbx dbxupdate.bin \
+    --set-json "$DEFAULTS_JSON" &>>"$LOG_FILE" || { fmtr::fatal "Failed to inject SB certs"; rm -rf "$TEMP_DIR"; return 1; }
 
   fmtr::log "Secure VARS generated at '$NVRAM_DIR/${VM_NAME}_SECURE_VARS.qcow2'"
   fmtr::info "Cleaning up..."
