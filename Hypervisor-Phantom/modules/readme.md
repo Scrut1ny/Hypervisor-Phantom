@@ -42,7 +42,13 @@ sudo pacman -S edk2-ovmf
 
 - https://man.archlinux.org/man/extra/virt-firmware/virt-fw-vars.1.en
 
+#### Secure Boot
 
+- [https://github.com/microsoft/secureboot_objects](https://github.com/microsoft/secureboot_objects)
+  - PostSignedObjects
+    - [DBXUpdate.bin](https://github.com/microsoft/secureboot_objects/blob/main/PostSignedObjects/DBX/amd64/DBXUpdate.bin)
+  - PreSignedObjects
+    - [PK,KEK,DB.der](https://github.com/microsoft/secureboot_objects/blob/main/PreSignedObjects)
 
 
 ---
