@@ -1,6 +1,6 @@
---- a/arch/x86/kvm/cpuid.c	2025-03-24 14:02:41.000000000 +0000
-+++ b/arch/x86/kvm/cpuid.c	2025-10-19 12:36:18.918837832 +0100
-@@ -2030,6 +2030,8 @@
+--- a/arch/x86/kvm/cpuid.c	2025-10-12 12:01:05.000000000 +0100
++++ b/arch/x86/kvm/cpuid.c	2025-10-28 14:05:52.459721756 +0000
+@@ -2046,6 +2046,8 @@
  }
  EXPORT_SYMBOL_GPL(kvm_cpuid);
  
@@ -9,7 +9,7 @@
  int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
  {
  	u32 eax, ebx, ecx, edx;
-@@ -2038,8 +2040,23 @@
+@@ -2054,8 +2056,23 @@
  		return 1;
  
  	eax = kvm_rax_read(vcpu);
