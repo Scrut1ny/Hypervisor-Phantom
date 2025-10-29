@@ -373,44 +373,7 @@ Now, connect the capture card device back to your Linux host system now and open
 
 ---
 
-> **⚠️ Legal Disclaimer**  
-> By using this tool, you agree to the following:
-> 
-> - This tool is intended **only for educational, research, and security analysis** purposes.
-> - **The author is not liable** for any damages, legal consequences, or misuse arising from your use of this tool.
-> - You are responsible for ensuring your use complies with all applicable laws. 
-> - Misuse, including cheating or illegal activities, is strictly prohibited.
-> 
-> Use at your own risk. The tool is provided "as-is" without any warranties.
 
-
-
-
----
-
-
-
-
-
-## Donations/Support ❤️
-  - <img src="https://external-content.duckduckgo.com/ip3/z.cash.ico" width="16" height="16">  Zcash (ZEC)
-    - Shielded: Unified Address (Orchard & Z-Sapling)
-    ```
-    u142lxl4z0q3tjv470zjcxtkc4qr8a62m083n4px70x7uccxgs56z5k60c4qf3lf0hxm67e0emyqzaafcnqv8afyjr2jj2vppl8qtf4f8wljxqwumn3eswcxc99e8mzsfclh4a76wtwylvhys2sqqqjaq37puj64zkp5l2zhhytnrn98v3wjdkegjwzd697s8vtxw5se20x3rzux9tev3
-    ```
-    - Exposed Transparent Address (*Fallback if your wallet doesn't support the address above*)
-    ```
-    t1J7x1Tria86sVBLfJr2qyJrHZJLUqU56Vu
-    ```
-  - <img src="https://external-content.duckduckgo.com/ip3/www.getmonero.org.ico" width="16" height="16">  Monero (XMR)
-    ```
-    8C86X64ZWqmPEx72hNyBm8Ls6VL5j2nUH1G7pU9p7MAF9gWP4Nj7bbm5zz8SHngC4CHArmKY4BdVnKcoDH6dT8mw7kL2u9S
-    ```
-
-
-
-
----
 
 
 
