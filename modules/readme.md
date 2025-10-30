@@ -38,9 +38,10 @@ sudo pacman -S edk2-ovmf
   - Compression: Must be `0`
   - Width/Height: `≤65535x65535`
 
-#### virt-fw-vars man page
+#### virt-fw-vars
 
-- https://man.archlinux.org/man/extra/virt-firmware/virt-fw-vars.1.en
+- [virt-fw-vars - man page](https://man.archlinux.org/man/extra/virt-firmware/virt-fw-vars.1.en)
+- [json support for efi - python script](https://gitlab.com/kraxel/virt-firmware/-/blob/master/virt/firmware/efi/efijson.py)
 
 #### Secure Boot
 
