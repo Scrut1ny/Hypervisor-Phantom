@@ -17,17 +17,13 @@ This tool provides automated setups for linux virtualization related stuff.
 <details>
 <summary>Expand for details...</summary>
 
+#### 1. Clone into the repository, CD into the directory, and set executable permissions
 ```
-# 1. Clone into the repository
-git clone --single-branch --depth=1 https://github.com/Scrut1ny/Hypervisor-Phantom
+git clone --single-branch --depth=1 https://github.com/Scrut1ny/Hypervisor-Phantom && cd Hypervisor-Phantom/ && chmod -R +x * && sudo ./Auto-Hypervisor.sh
+```
 
-# 2. CD into the repository
-cd Hypervisor-Phantom/Hypervisor-Phantom/
-
-# 3. Set executable permissions
-chmod -R +x *
-
-# 4. Run the script
+#### 2. Run the script
+```
 sudo ./Auto-Hypervisor.sh
 ```
 
