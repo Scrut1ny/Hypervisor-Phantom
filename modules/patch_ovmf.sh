@@ -166,7 +166,7 @@ compile_ovmf() {
 # Certificate injection
 ################################################################################
 cert_injection() {
-  readonly URL="https://github.com/microsoft/secureboot_objects/raw/refs/heads/main"
+  readonly URL="https://raw.githubusercontent.com/microsoft/secureboot_objects/main"
   readonly UUID="77fa9abd-0359-4d32-bd60-28f4e78f784b"
   local TEMP_DIR VM_NAME VARS_FILE NVRAM_DIR="/var/lib/libvirt/qemu/nvram" DEFAULTS_JSON
 
