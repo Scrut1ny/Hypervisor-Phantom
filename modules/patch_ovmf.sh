@@ -224,7 +224,6 @@ cert_injection() {
   wait || { fmtr::fatal "Failed to download one or more certs"; rm -rf "$TEMP_DIR"; return 1; }
 
   fmtr::info "Generating defaults.json from host efivars..."
-
   DEFAULTS_JSON="$TEMP_DIR/defaults.json"
   EFIVAR_DIR="/sys/firmware/efi/efivars"
   VARS_LIST=("dbDefault" "dbxDefault" "KEKDefault" "PKDefault" "MemoryOverwriteRequestControlLock")
@@ -249,18 +248,37 @@ cert_injection() {
         if [[ -f "$filepath" ]]; then
           raw_data=$(hexdump -ve '1/1 "%.2x"' "$filepath" 2>/dev/null) || raw_data=""
           if [[ -n "$raw_data" && ${#raw_data} -ge 8 ]]; then
+            # Parse attribute (little-endian 4 bytes)
             attr_hex="${raw_data:6:2}${raw_data:4:2}${raw_data:2:2}${raw_data:0:2}"
             if [[ "$attr_hex" =~ ^[0-9a-fA-F]+$ ]]; then
               attr=$((16#$attr_hex))
             else
               attr=0
             fi
+
+            # Extract data after the attr field
             data_hex="${raw_data:8}"
+
+            time_hex=""
+            remaining_data="$data_hex"
+
+            # Check for EFI_VARIABLE_TIME_BASED_AUTHENTICATED_WRITE_ACCESS (bit 0x20)
+            # and ensure there’s enough data for a timestamp (16 bytes = 32 hex chars)
+            if (( (attr & 0x20) != 0 )) && [[ ${#data_hex} -ge 32 ]]; then
+              time_hex="${data_hex:0:32}"
+              remaining_data="${data_hex:32}"
+            fi
+
             printf '%s\n' "        $sep{"
             printf '            "name": "%s",\n' "$var"
             printf '            "guid": "%s",\n' "$guid"
             printf '            "attr": %d,\n' "$attr"
-            printf '            "data": "%s"\n' "$data_hex"
+            if [[ -n "$time_hex" ]]; then
+              printf '            "data": "%s",\n' "$remaining_data"
+              printf '            "time": "%s"\n' "$time_hex"
+            else
+              printf '            "data": "%s"\n' "$remaining_data"
+            fi
             sep=","
             printf '%s' "        }"
             printf '\n'
