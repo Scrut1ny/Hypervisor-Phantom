@@ -227,12 +227,13 @@ cert_injection() {
 
   DEFAULTS_JSON="$TEMP_DIR/defaults.json"
   EFIVAR_DIR="/sys/firmware/efi/efivars"
-  VARS_LIST=("dbDefault" "dbxDefault" "KEKDefault" "PKDefault")
+  VARS_LIST=("dbDefault" "dbxDefault" "KEKDefault" "PKDefault" "MemoryOverwriteRequestControlLock")
   declare -A VAR_GUIDS=(
     ["dbDefault"]="8be4df61-93ca-11d2-aa0d-00e098032b8c"
     ["dbxDefault"]="8be4df61-93ca-11d2-aa0d-00e098032b8c"
     ["KEKDefault"]="8be4df61-93ca-11d2-aa0d-00e098032b8c"
     ["PKDefault"]="8be4df61-93ca-11d2-aa0d-00e098032b8c"
+    ["MemoryOverwriteRequestControlLock"]="bb983ccf-151d-40e1-a07b-4a17be168292"
   )
 
   {
