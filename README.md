@@ -24,7 +24,7 @@ git clone --single-branch --depth=1 https://github.com/Scrut1ny/Hypervisor-Phant
 
 #### 2. Run the script:
 ```
-sudo ./Auto-Hypervisor.sh
+sudo ./main.sh
 ```
 
 </details>
