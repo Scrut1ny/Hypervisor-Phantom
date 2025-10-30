@@ -272,7 +272,7 @@ cert_injection() {
     printf '%s\n' '}'
   } > "$DEFAULTS_JSON"
 
-  fmtr::info "Injecting MS SB certs and vars into '$VARS_FILE'..."
+  fmtr::info "Injecting MS SB certs and efivars into '$VARS_FILE'..."
   virt-fw-vars --input "$VARS_FILE" --output "$NVRAM_DIR/${VM_NAME}_SECURE_VARS.qcow2" \
     --secure-boot \
     --set-pk "$UUID" ms_pk_oem.der \
