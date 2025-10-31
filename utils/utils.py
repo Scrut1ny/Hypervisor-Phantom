@@ -96,7 +96,7 @@ def error(message: str) -> None:
     __styled_log("[-]", TEXT_BRIGHT_RED, message, stream="stderr")
 
 def fatal(message: str) -> None:
-    formatted = format_text("\n  ", "[X] " + message, "", TEXT_RED, TEXT_BOLD)
+    formatted = format_text("\n  ", "[X] " + message, "", TEXT_BRIGHT_RED, TEXT_BOLD)
     print(formatted, file=sys.stderr)
     with open(Path(LOG_FILE), "a", encoding="utf-8") as f:
         f.write(formatted + "\n")
@@ -110,12 +110,25 @@ def box_text(text: str) -> None:
 # -----------------------------------------------------------------------------
 # PROMPTER
 # -----------------------------------------------------------------------------
+def _format_question(text: str) -> str:
+    return format_text("\n  ", "[?]", f" {text}", TEXT_BLACK, BACK_BRIGHT_GREEN)
+
+def ask(text: str, end_newline: bool = True) -> str:
+    message = _format_question(text)
+    print(message, end="\n" if end_newline else "")
+    with open(Path(LOG_FILE), "a", encoding="utf-8") as f:
+        f.write(message + "\n")
+    return message
+
 def yes_or_no(question: str) -> bool:
     log_file = Path(LOG_FILE)
+    formatted = _format_question(question)
+
     while True:
-        answer = input(f"{question} [y/n]: ").strip().lower()
+        answer = input(f"{formatted} [y/n]: ").strip().lower()
         with open(log_file, "a", encoding="utf-8") as f:
             f.write(answer + "\n")
+
         if answer.startswith("y"):
             print()
             return True
@@ -139,13 +152,6 @@ def quick_prompt(prompt: str) -> str:
     with open(log_file, "a", encoding="utf-8") as f:
         f.write(response + "\n")
     return response
-
-def ask(text: str) -> str:
-    message = format_text("\n  ", "[?]", f" {text}", TEXT_BLACK, BACK_BRIGHT_GREEN)
-    print(message)
-    with open(Path(LOG_FILE), "a", encoding="utf-8") as f:
-        f.write(message + "\n")
-    return message
 
 # -----------------------------------------------------------------------------
 # PACKAGES / INSTALLATION
