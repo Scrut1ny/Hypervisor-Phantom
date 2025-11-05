@@ -28,29 +28,36 @@ detect_bootloader() {
 # Revert VFIO Configurations
 ################################################################################
 revert_vfio() {
-    [[ -f $VFIO_CONF_PATH ]] && { rm -v "$VFIO_CONF_PATH" | tee -a &>> "$LOG_FILE"; fmtr::log "Removed VFIO Config: $VFIO_CONF_PATH"; } \
-        || fmtr::log "$VFIO_CONF_PATH doesn't exist; nothing to remove."
+    [[ -f $VFIO_CONF_PATH ]] && {
+        rm -v "$VFIO_CONF_PATH" | tee -a &>> "$LOG_FILE"
+        fmtr::log "Removed VFIO Config: $VFIO_CONF_PATH"
+    } || fmtr::log "$VFIO_CONF_PATH doesn't exist; nothing to remove."
 
     if [[ $BOOTLOADER_TYPE == "grub" ]]; then
         sed -E -i "/^GRUB_CMDLINE_LINUX_DEFAULT=/ {
-            s/$VFIO_KERNEL_OPTS_REGEX//g;
-            s/[[:space:]]+/ /g;
-            s/\"[[:space:]]+/\"/;
-            s/[[:space:]]+\"/\"/
+            s/$VFIO_KERNEL_OPTS_REGEX//g;   # Remove VFIO-related options
+            s/[[:space:]]+/ /g;             # Collapse multiple spaces
+            s/\"[[:space:]]+/\"/;           # Trim space after opening quote
+            s/[[:space:]]+\"/\"/;           # Trim space before closing quote
         }" /etc/default/grub
+
         fmtr::log "Removed VFIO kernel opts from GRUB config."
 
     elif [[ $BOOTLOADER_TYPE == "systemd-boot" && -n $SYSTEMD_BOOT_ENTRY_DIR ]]; then
         local config_file
         config_file=$(find "$SYSTEMD_BOOT_ENTRY_DIR" -maxdepth 1 -name '*.conf' ! -name '*-fallback.conf' -print -quit)
-        [[ -z $config_file ]] && { fmtr::warn "No configuration file found in $SYSTEMD_BOOT_ENTRY_DIR"; return; }
+
+        [[ -z $config_file ]] && {
+            fmtr::warn "No configuration file found in $SYSTEMD_BOOT_ENTRY_DIR"
+            return
+        }
 
         sed -E -i "/^options / {
-            s/$VFIO_KERNEL_OPTS_REGEX//g;
-            s/[[:space:]]+/ /g;
-            s/ options /options /;
-            s/[[:space:]]+$//
+            s/$VFIO_KERNEL_OPTS_REGEX//g;   # Remove VFIO-related options
+            s/[[:space:]]+/ /g;             # Collapse multiple spaces
+            s/[[:space:]]+$//;              # Trim trailing space
         }" "$config_file"
+
         fmtr::log "Removed VFIO kernel opts from: $config_file"
     fi
 }
@@ -138,19 +145,21 @@ configure_bootloader() {
     if [[ "$BOOTLOADER_TYPE" == "grub" ]]; then
         fmtr::log "Configuring GRUB"
 
-        if ! grep -q -F "$kernel_opts_str" /etc/default/grub; then
-            sed -E -i \
-                -e "/^GRUB_CMDLINE_LINUX_DEFAULT=/ {
-                        s/^[^=]+=//; s/^\"//; s/\"$//;
-                        s/($VFIO_KERNEL_OPTS_REGEX)//g; s/[[:space:]]+/ /g;
-                        s/^/GRUB_CMDLINE_LINUX_DEFAULT=\"/;
-                        s/$/ ${kernel_opts_str}\"/
-                    }" \
-                /etc/default/grub
-            fmtr::log "Inserted new kernel opts into GRUB config."
+        if ! grep -Eq "^GRUB_CMDLINE_LINUX_DEFAULT=.*${kernel_opts[1]}" /etc/default/grub; then
+            sed -E -i "/^GRUB_CMDLINE_LINUX_DEFAULT=/ {
+                s/^GRUB_CMDLINE_LINUX_DEFAULT=//;           # Remove the variable prefix
+                s/^\"//; s/\"$//;                           # Strip surrounding quotes
+                s/$VFIO_KERNEL_OPTS_REGEX//g;               # Remove old VFIO opts
+                s/[[:space:]]+/ /g;                         # Normalize spacing
+                s/[[:space:]]+$//;                          # Trim trailing space
+                s|^|GRUB_CMDLINE_LINUX_DEFAULT=\"|;         # Rebuild variable
+                s|$| ${kernel_opts_str}\"|;                 # Append new kernel opts
+            }" /etc/default/grub
+
+            fmtr::log "Inserted new VFIO kernel opts into GRUB config."
             export BOOTLOADER_CHANGED=1
         else
-            fmtr::log "Kernel opts already present in GRUB config. Skipping."
+            fmtr::log "VFIO kernel opts already present in GRUB config. Skipping."
         fi
 
     elif [[ "$BOOTLOADER_TYPE" == "systemd-boot" ]]; then
@@ -167,20 +176,17 @@ configure_bootloader() {
 
         fmtr::log "Modifying systemd-boot config: $config_file"
 
-        sed -E -i \
-            -e "/^options / {
-                    s/($VFIO_KERNEL_OPTS_REGEX)//g;
-                    s/[[:space:]]+/ /g;
-                    s/ options /options /;
-                    s/[[:space:]]+$//
-                }" \
-            "$config_file"
+        sed -E -i "/^options / {
+            s/$VFIO_KERNEL_OPTS_REGEX//g;   # Remove existing VFIO-related opts
+            s/[[:space:]]+/ /g;             # Collapse multiple spaces
+            s/[[:space:]]+$//;              # Trim trailing space
+        }" "$config_file"
 
-        if ! grep -q -E "^options .*${kernel_opts[0]}" "$config_file"; then
+        if ! grep -q -E "^options .*${kernel_opts[1]}" "$config_file"; then
             sed -E -i -e "/^options / s/$/ ${kernel_opts_str}/" "$config_file"
-            fmtr::log "Updated kernel opts in systemd-boot config."
+            fmtr::log "Appended VFIO kernel opts to systemd-boot config."
         else
-            fmtr::log "Kernel opts already present in systemd-boot config. Skipping append."
+            fmtr::log "VFIO kernel opts already present in systemd-boot config. Skipping append."
         fi
     fi
 }
