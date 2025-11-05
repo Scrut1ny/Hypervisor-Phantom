@@ -72,9 +72,9 @@ configure_vfio() {
     mapfile -t gpus < <(
         for dev in /sys/bus/pci/devices/*; do
             [[ -r "$dev/class" && $(<"$dev/class") == 0x03* ]] || continue
-            bdf=${dev##*/}
-            desc=$(lspci -s "$bdf" | sed 's/.* \[//;s/\].*//')
-            printf '%s %s\n' "$dev" "$desc"
+            bdf=${dev##*/}; pci_desc=$(lspci -s "$bdf")
+            pci_desc=${pci_desc##*[}; pci_desc=${pci_desc%%]*}
+            printf '%s %s\n' "$dev" "$pci_desc"
         done
     )
     (( ${#gpus[@]} )) || { fmtr::error "No GPUs detected!"; exit 1; }
@@ -92,8 +92,7 @@ configure_vfio() {
     sel=$((sel - 1))
 
     # Extract PCI BDF, IOMMU group, and PCI bus/dev
-    pci_bdf="${gpus[sel]%% *}"
-    pci_bdf="${pci_bdf##*/}"
+    pci_bdf="${gpus[sel]%% *}"; pci_bdf="${pci_bdf##*/}"
     group=$(basename "$(readlink -f "/sys/bus/pci/devices/$pci_bdf/iommu_group")")
     pci_bus_dev="${pci_bdf%.*}"
 
