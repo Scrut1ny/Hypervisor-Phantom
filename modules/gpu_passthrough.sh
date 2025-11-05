@@ -66,71 +66,75 @@ revert_vfio() {
 # Configure VFIO
 ################################################################################
 configure_vfio() {
-    local gpus bdf pci_desc sel pci_bdf group pci_bus_dev bad_group=0 bad_functions=()
+    local gpus sel pci_bdf group pci_bus_dev bad_group=0 bad_functions=() pci_vendor
 
+    # Detect all GPUs
     mapfile -t gpus < <(
         for dev in /sys/bus/pci/devices/*; do
             [[ -r "$dev/class" && $(<"$dev/class") == 0x03* ]] || continue
             bdf=${dev##*/}
-            pci_desc=$(lspci -s "$bdf")
-            pci_desc=${pci_desc##*[}
-            pci_desc=${pci_desc%%]*}
-            printf '%s %s\n' "$dev" "$pci_desc"
+            desc=$(lspci -s "$bdf" | sed 's/.* \[//;s/\].*//')
+            printf '%s %s\n' "$dev" "$desc"
         done
     )
-
     (( ${#gpus[@]} )) || { fmtr::error "No GPUs detected!"; exit 1; }
     (( ${#gpus[@]} == 1 )) && fmtr::warn "Only one GPU detected! Passing it through will leave the host without display output."
 
+    # Prompt user to select GPU
     while :; do
-        for i in "${!gpus[@]}"; do printf '  %d) %s\n' "$((i+1))" "${gpus[i]#* }"; done
+        for i in "${!gpus[@]}"; do
+            printf '  %d) %s\n' "$((i+1))" "${gpus[i]#* }"
+        done
         read -rp "$(fmtr::ask 'Select device number: ')" sel
         [[ $sel =~ ^[0-9]+$ && sel -ge 1 && sel -le ${#gpus[@]} ]] && break
         fmtr::error "Invalid selection. Please choose a valid number."
     done
-    sel=$((sel-1))
+    sel=$((sel - 1))
 
+    # Extract PCI BDF, IOMMU group, and PCI bus/dev
     pci_bdf="${gpus[sel]%% *}"
     pci_bdf="${pci_bdf##*/}"
     group=$(basename "$(readlink -f "/sys/bus/pci/devices/$pci_bdf/iommu_group")")
     pci_bus_dev="${pci_bdf%.*}"
 
+    # Gather all devices in the IOMMU group
     hwids=()
     for dev in /sys/kernel/iommu_groups/$group/devices/*; do
         func=${dev##*/}
         ven_id=$(<"$dev/vendor")
         dev_id=$(<"$dev/device")
         hwids+=("${ven_id:2}:${dev_id:2}")
-
-        [[ ${func%.*} != "$pci_bus_dev" ]] && { bad_group=1; bad_functions+=("$func"); }
+        [[ "${func%.*}" != "$pci_bus_dev" ]] && bad_group=1 && bad_functions+=("$func")
     done
     hwids=$(IFS=,; echo "${hwids[*]}")
 
+    # Validate group isolation
     if (( bad_group )); then
-        fmtr::error "Bad IOMMU grouping - group #$group contains:\n$(printf '  [%s] = %s\n' "${bad_functions[@]}")"
-        fmtr::warn "VFIO PT requires full group isolation. Possible fixes: ACS override, firmware update, or proper hardware support."
+        fmtr::error "Bad IOMMU grouping - group #$group contains:\n$(printf '  [%s]\n' "${bad_functions[@]}")"
+        fmtr::warn "VFIO PT requires full group isolation. Fix with ACS override, firmware update, or proper hardware support."
         exit 1
     fi
 
     fmtr::log "Modifying VFIO config: $VFIO_CONF_PATH"
 
-    if [[ -f /sys/bus/pci/devices/$pci_bdf/vendor ]]; then
-        read -r pci_vendor < "/sys/bus/pci/devices/$pci_bdf/vendor"
-        declare -A softdeps=(
-            ["0x10de"]="nvidia nouveau drm drm_kms_helper" # NVIDIA
-            ["0x1002"]="amdgpu radeon drm drm_kms_helper"  # AMD
-            ["0x8086"]="i915 drm drm_kms_helper"           # Intel
-        )
+    # Generate VFIO configuration
+    [[ -f /sys/bus/pci/devices/$pci_bdf/vendor ]] || return
+    read -r pci_vendor < "/sys/bus/pci/devices/$pci_bdf/vendor"
 
-        {
-            printf 'options vfio-pci ids=%s\n' "$hwids"
-            for dep in ${softdeps[$pci_vendor]}; do
-                printf 'softdep %s pre: vfio-pci\n' "$dep"
-            done
-        } | tee "$VFIO_CONF_PATH" >>"$LOG_FILE"
+    declare -A softdeps=(
+        ["0x10de"]="nvidia nouveau drm drm_kms_helper" # NVIDIA
+        ["0x1002"]="amdgpu radeon drm drm_kms_helper"  # AMD
+        ["0x8086"]="i915 drm drm_kms_helper"           # Intel
+    )
 
-        export VFIO_CONF_CHANGED=1
-    fi
+    {
+        printf 'options vfio-pci ids=%s\n' "$hwids"
+        for dep in ${softdeps[$pci_vendor]}; do
+            printf 'softdep %s pre: vfio-pci\n' "$dep"
+        done
+    } | tee "$VFIO_CONF_PATH" >>"$LOG_FILE"
+
+    export VFIO_CONF_CHANGED=1
 }
 
 ################################################################################
