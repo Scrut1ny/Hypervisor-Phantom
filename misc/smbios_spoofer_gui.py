@@ -7,9 +7,9 @@ from PyQt6.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QHBoxLayout,
 from PyQt6.QtCore import QThread, pyqtSignal, Qt
 from PyQt6.QtGui import QFont
 
-HEX_PATTERN = re.compile(r'^[0-9A-F]{8}$')
-DMI_SERIALS = "To be filled by O.E.M."
-RAM_SERIAL = b"00000000"
+HEX_PATTERN  = re.compile(r'^[0-9A-F]{8}$')
+DMI_SERIALS  = "To be filled by O.E.M."
+RAM_SERIAL   = b"00000000"
 SERIAL_PATHS = ("/sys/class/dmi/id/product_serial", "/sys/class/dmi/id/board_serial", "/sys/class/dmi/id/chassis_serial")
 SMBIOS_FILES = ("/sys/firmware/dmi/tables/smbios_entry_point", "/sys/firmware/dmi/tables/DMI")
 
