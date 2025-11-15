@@ -8,7 +8,8 @@ from PyQt6.QtCore import QThread, pyqtSignal, Qt
 from PyQt6.QtGui import QFont
 
 HEX_PATTERN = re.compile(r'^[0-9A-F]{8}$')
-SPOOFER_STR = "To be filled by O.E.M."
+DMI_SERIALS = "To be filled by O.E.M."
+RAM_SERIAL = b"00000000"
 SERIAL_PATHS = ("/sys/class/dmi/id/product_serial", "/sys/class/dmi/id/board_serial", "/sys/class/dmi/id/chassis_serial")
 SMBIOS_FILES = ("/sys/firmware/dmi/tables/smbios_entry_point", "/sys/firmware/dmi/tables/DMI")
 
@@ -79,22 +80,21 @@ class SMBIOSWorker(QThread):
         return data
 
     def spoof_serials(self, data: bytearray) -> bytearray:
-        spoofer_encoded = SPOOFER_STR.encode("latin-1", errors="ignore")
+        dmi_serials_encoded = DMI_SERIALS.encode("latin-1", errors="ignore")
         for serial_path in SERIAL_PATHS:
             if (fp := Path(serial_path)).exists() and (val := fp.read_text(errors="ignore").strip()):
-                if val not in ("Not Specified", SPOOFER_STR) and (old := val.encode("latin-1", errors="ignore")) and old != spoofer_encoded:
-                    data = data.replace(old, spoofer_encoded)
-                    self.emit_log(f"[SPOOF] ✓ {fp.name}: \"{val}\" → \"{SPOOFER_STR}\"")
+                if val not in ("Not Specified", DMI_SERIALS) and (old := val.encode("latin-1", errors="ignore")) and old != dmi_serials_encoded:
+                    data = data.replace(old, dmi_serials_encoded)
+                    self.emit_log(f"[SPOOF] ✓ {fp.name}: \"{val}\" → \"{DMI_SERIALS}\"")
         return data
 
     def spoof_ram_serials(self, data: bytearray) -> bytearray:
         ram_serials = get_ram_serials()
         if ram_serials:
-            null_serial = b"00000000"
             for ram_serial in ram_serials:
                 for encoded in (ram_serial.encode("ascii"), ram_serial.lower().encode("ascii")):
-                    data = data.replace(encoded, null_serial)
-                self.emit_log(f"[SPOOF] ✓ memory_serial: \"{ram_serial}\" → \"00000000\"")
+                    data = data.replace(encoded, RAM_SERIAL)
+                self.emit_log(f"[SPOOF] ✓ memory_serial: \"{ram_serial}\" → \"{RAM_SERIAL.decode('ascii')}\"")
         else:
             self.emit_log("[SPOOF] ℹ memory_serial: no serials found")
         return data

@@ -3,8 +3,9 @@ from pathlib import Path
 import uuid
 import re
 
-HEX_PATTERN = re.compile(r'^[0-9A-F]{8}$')
-SPOOFER_STR = "To be filled by O.E.M."
+HEX_PATTERN  = re.compile(r'^[0-9A-F]{8}$')
+DMI_SERIALS  = "To be filled by O.E.M."
+RAM_SERIAL   = b"00000000"
 SERIAL_PATHS = ("/sys/class/dmi/id/product_serial", "/sys/class/dmi/id/board_serial", "/sys/class/dmi/id/chassis_serial")
 
 def get_ram_serials():
@@ -44,17 +45,16 @@ if (uuid_path := Path("/sys/class/dmi/id/product_uuid")).exists() and (uuid_val 
         pass
 
 # Replace serial numbers
-spoofer_encoded = SPOOFER_STR.encode("latin-1", errors="ignore")
+spoofer_encoded = DMI_SERIALS.encode("latin-1", errors="ignore")
 for serial_path in SERIAL_PATHS:
     if (fp := Path(serial_path)).exists() and (val := fp.read_text(errors="ignore").strip()):
-        if val not in ("Not Specified", SPOOFER_STR) and (old := val.encode("latin-1", errors="ignore")) and old != spoofer_encoded:
+        if val not in ("Not Specified", DMI_SERIALS) and (old := val.encode("latin-1", errors="ignore")) and old != spoofer_encoded:
             data = data.replace(old, spoofer_encoded)
 
 # Replace RAM serials
-null_serial = b"00000000"
 for ram_serial in get_ram_serials():
     for encoded in (ram_serial.encode("ascii"), ram_serial.lower().encode("ascii")):
-        data = data.replace(encoded, null_serial)
+        data = data.replace(encoded, RAM_SERIAL)
 
 # Write if changed
 if data != smbios_path.read_bytes():
