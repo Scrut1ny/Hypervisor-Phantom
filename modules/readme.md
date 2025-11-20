@@ -60,6 +60,7 @@ sudo pacman -S edk2-ovmf
 #### evdev
 
 - [Libvirt - Input devices](https://libvirt.org/formatdomain.html#input-devices)
+- [Arch Wiki - Passing keyboard/mouse via Evdev](https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#Passing_keyboard/mouse_via_Evdev)
 - [Guide - "Evdev Passthrough Explained — Cheap, Seamless VM Input"](https://passthroughpo.st/using-evdev-passthrough-seamless-vm-input/)
 
 | **Category**              | **Attribute**   | **Value / Options**                                                       |
