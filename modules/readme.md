@@ -59,6 +59,7 @@ sudo pacman -S edk2-ovmf
 #### evdev
 
 - [Input devices](https://libvirt.org/formatdomain.html#input-devices)
+- [Guide - "Evdev Passthrough Explained — Cheap, Seamless VM Input"](https://passthroughpo.st/using-evdev-passthrough-seamless-vm-input/)
 
 | **Category**              | **Attribute**   | **Value / Options**                                                       |
 |---------------------------|-----------------|---------------------------------------------------------------------------|
