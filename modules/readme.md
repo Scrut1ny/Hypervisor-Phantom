@@ -60,12 +60,13 @@ sudo pacman -S edk2-ovmf
 
 - [Input devices](https://libvirt.org/formatdomain.html#input-devices)
 
-| Category             | Attribute       | Value / Options                                                                  |
-|----------------------|-----------------|----------------------------------------------------------------------------------|
-| **Keyboards**        | grab            | all                                                                              |
-|                      | grabToggle      | shift-shift                                                                      |
-|                      | repeat          | on                                                                               |
-| **Mice**             | grabToggle      | shift-shift                                                                      |
-| **evdev attributes** | grab            | all                                                                              |
-|                      | repeat          | on / off                                                                         |
-|                      | grabToggle      | ctrl-ctrl, alt-alt, shift-shift, meta-meta, scrolllock, ctrl-scrolllock          |
+| **Category**        | **Attribute**    | **Value / Options**                                                       |
+|---------------------|------------------|---------------------------------------------------------------------------|
+| **Keyboards**       | grab             | all                                                                       |
+|                     | grabToggle       | shift-shift                                                               |
+|                     | repeat           | on                                                                        |
+| **Mice**            | grabToggle       | shift-shift                                                               |
+| **evdev Attributes**| grab             | all                                                                       |
+|                     | repeat           | on, off                                                                   |
+|                     | grabToggle       | ctrl-ctrl, alt-alt, shift-shift, meta-meta, scrolllock, ctrl-scrolllock   |
+
