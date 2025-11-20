@@ -18,18 +18,6 @@ sudo pacman -S edk2-ovmf
 /usr/share/edk2/x64/OVMF_VARS.4m.fd
 ```
 
-#### STORAGE:
-
-```
-/var/lib/libvirt/images/
-```
-
-#### Generated firmware from template that is writable:
-
-```
-/var/lib/libvirt/qemu/nvram
-```
-
 #### BmpImageDecoder (BMP Validator)
 
 - https://github.com/tianocore/edk2/blob/master/BaseTools/Source/Python/AutoGen/GenC.py#L1892
@@ -51,9 +39,33 @@ sudo pacman -S edk2-ovmf
   - PreSignedObjects
     - [PK,KEK,DB.der](https://github.com/microsoft/secureboot_objects/blob/main/PreSignedObjects)
 
+#### Generated firmware from template that is writable:
+
+```
+/var/lib/libvirt/qemu/nvram
+```
+
+#### STORAGE:
+
+```
+/var/lib/libvirt/images/
+```
+
 
 ---
 
 # QEMU / Emulator
 
+#### evdev
 
+- [Input devices](https://libvirt.org/formatdomain.html#input-devices)
+
+| Category             | Attribute       | Value / Options                                                                  |
+|----------------------|-----------------|----------------------------------------------------------------------------------|
+| **Keyboards**        | grab            | all                                                                              |
+|                      | grabToggle      | shift-shift                                                                      |
+|                      | repeat          | on                                                                               |
+| **Mice**             | grabToggle      | shift-shift                                                                      |
+| **evdev attributes** | grab            | all                                                                              |
+|                      | repeat          | on / off                                                                         |
+|                      | grabToggle      | ctrl-ctrl, alt-alt, shift-shift, meta-meta, scrolllock, ctrl-scrolllock          |
