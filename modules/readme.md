@@ -63,9 +63,9 @@ sudo pacman -S edk2-ovmf
 | **Category**              | **Attribute**   | **Value / Options**                                                       |
 |---------------------------|-----------------|---------------------------------------------------------------------------|
 | **Keyboards**             | grab            | all                                                                       |
-| ├── **Keyboards**         | grabToggle      | shift-shift                                                               |
-| └── **Keyboards**         | repeat          | on                                                                        |
+|                           | grabToggle      | shift-shift                                                               |
+|                           | repeat          | on                                                                        |
 | **Mice**                  | grabToggle      | shift-shift                                                               |
 | **evdev Attributes**      | grab            | all                                                                       |
-| ├──────────────────────── | grabToggle      | ctrl-ctrl, alt-alt, shift-shift, meta-meta, scrolllock, ctrl-scrolllock   |
-| └──────────────────────── | repeat          | on, off                                                                   |
+|                           | grabToggle      | ctrl-ctrl, alt-alt, shift-shift, meta-meta, scrolllock, ctrl-scrolllock   |
+|                           | repeat          | on, off                                                                   |
