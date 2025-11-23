@@ -2,184 +2,247 @@
 import os
 import sys
 import subprocess
-from pathlib import Path
+import shutil
 from utils import utils
 
-DISTRO = None
-VENDOR_ID = None
+# =============================================================================
+# SYSTEM CHECKS
+# =============================================================================
 
 def detect_distro():
-    global DISTRO
+    """Detects the Linux distribution and exports it to env."""
+    distro_name = "Unknown"
     distro_id = ""
-    if Path("/etc/os-release").exists():
-        with open("/etc/os-release") as f:
+
+    # Method 1: Read /etc/os-release
+    if os.path.exists("/etc/os-release"):
+        with open("/etc/os-release", "r") as f:
             for line in f:
                 if line.startswith("ID="):
-                    distro_id = line.strip().split("=")[1].replace('"', "")
+                    distro_id = line.split("=", 1)[1].strip().strip('"')
                     break
-    arch_like = {"arch", "manjaro", "endeavouros", "arcolinux", "garuda", "artix"}
-    opensuse_like = {"opensuse-tumbleweed", "opensuse-slowroll", "opensuse-leap", "sles"}
-    debian_like = {"debian","ubuntu","linuxmint","kali","pureos","pop","elementary","zorin",
-                   "mx","parrot","deepin","peppermint","trisquel","bodhi","linuxlite","neon"}
-    fedora_like = {"fedora","centos","rhel","rocky","alma","oracle"}
 
-    if distro_id in arch_like:
-        DISTRO = "Arch"
-    elif distro_id in opensuse_like:
-        DISTRO = "openSUSE"
-    elif distro_id in debian_like:
-        DISTRO = "Debian"
-    elif distro_id in fedora_like:
-        DISTRO = "Fedora"
+        if distro_id in ["arch", "manjaro", "endeavouros", "arcolinux", "garuda", "artix"]:
+            distro_name = "Arch"
+        elif distro_id in ["opensuse-tumbleweed", "opensuse-slowroll", "opensuse-leap", "sles"]:
+            distro_name = "openSUSE"
+        elif distro_id in ["debian", "ubuntu", "linuxmint", "kali", "pureos", "pop", "elementary",
+                           "zorin", "mx", "parrot", "deepin", "peppermint", "trisquel", "bodhi",
+                           "linuxlite", "neon"]:
+            distro_name = "Debian"
+        elif distro_id in ["fedora", "centos", "rhel", "rocky", "alma", "oracle"]:
+            distro_name = "Fedora"
 
-    if not DISTRO:
-        import shutil
+    # Method 2: Fallback to package managers
+    if distro_name == "Unknown":
         if shutil.which("pacman"):
-            DISTRO = "Arch"
+            distro_name = "Arch"
         elif shutil.which("apt"):
-            DISTRO = "Debian"
+            distro_name = "Debian"
         elif shutil.which("zypper"):
-            DISTRO = "openSUSE"
+            distro_name = "openSUSE"
         elif shutil.which("dnf"):
-            DISTRO = "Fedora"
-        else:
-            DISTRO = f"Unknown ({distro_id})" if distro_id else "Unknown"
+            distro_name = "Fedora"
+        elif distro_id:
+            distro_name = f"Unknown ({distro_id})"
 
-def cpu_vendor_id():
-    global VENDOR_ID
-    try:
-        output = subprocess.check_output("lscpu", shell=True, text=True, stderr=subprocess.DEVNULL)
-        for line in output.splitlines():
-            if line.startswith("Vendor ID:"):
-                VENDOR_ID = line.split(":")[1].strip()
-                break
-    except Exception:
-        pass
+    # Export for child processes
+    os.environ["DISTRO"] = distro_name
+    return distro_name
 
-    if not VENDOR_ID:
+def get_cpu_vendor_id():
+    """Gets CPU vendor ID and exports it to env."""
+    vendor_id = "Unknown"
+
+    # Method 1: lscpu (standard but requires subprocess)
+    if shutil.which("lscpu"):
         try:
-            with open("/proc/cpuinfo") as f:
+            output = subprocess.check_output(["lscpu"], text=True)
+            for line in output.splitlines():
+                if "Vendor ID:" in line:
+                    vendor_id = line.split(":")[1].strip()
+                    break
+        except Exception:
+            pass
+
+    # Method 2: /proc/cpuinfo (faster fallback)
+    if vendor_id == "Unknown" and os.path.exists("/proc/cpuinfo"):
+        try:
+            with open("/proc/cpuinfo", "r") as f:
                 for line in f:
                     if "vendor_id" in line:
-                        VENDOR_ID = line.split(":")[1].strip()
+                        vendor_id = line.split(":")[1].strip()
                         break
         except Exception:
             pass
 
-    if not VENDOR_ID:
-        VENDOR_ID = "Unknown"
+    # Export for child processes
+    os.environ["VENDOR_ID"] = vendor_id
+    return vendor_id
 
-def print_system_info():
+def print_system_info(vendor_id):
+    """Checks and prints virtualization/IOMMU status."""
+    output = []
+    show_error = False
+
+    # Mappings
     virt_map = {"GenuineIntel": "VT-x", "AuthenticAMD": "AMD-V"}
     iommu_map = {"GenuineIntel": "VT-d", "AuthenticAMD": "AMD-Vi"}
 
-    virt_name = virt_map.get(VENDOR_ID, "Unknown")
-    iommu_name = iommu_map.get(VENDOR_ID, "Unknown")
-    show_output = False
-    output = ""
+    virt_name = virt_map.get(vendor_id, "Unknown")
+    iommu_name = iommu_map.get(vendor_id, "Unknown")
+
+    # Check 1: Virtualization Support in CPU
+    has_virt = False
+    try:
+        with open("/proc/cpuinfo", "r") as f:
+            content = f.read()
+            if "vmx" in content or "svm" in content:
+                has_virt = True
+    except OSError:
+        pass
+
+    if has_virt:
+        output.append(f"  [✅] {virt_name} (Virtualization): Supported")
+    else:
+        output.append(f"  [❌] {virt_name} (Virtualization): Not supported")
+        show_error = True
+
+    # Check 2: IOMMU Groups
+    iommu_path = "/sys/kernel/iommu_groups"
+    has_iommu = False
+    if os.path.isdir(iommu_path):
+        try:
+            if os.listdir(iommu_path):
+                has_iommu = True
+        except OSError:
+            pass
+
+    if has_iommu:
+        output.append(f"  [✅] {iommu_name} (IOMMU): Enabled")
+    else:
+        output.append(f"  [❌] {iommu_name} (IOMMU): Not enabled")
+        show_error = True
+
+    # Check 3: KVM Kernel Module
+    has_kvm = False
+    try:
+        with open("/proc/modules", "r") as f:
+            if "kvm" in f.read():
+                has_kvm = True
+    except OSError:
+        pass
+
+    if has_kvm:
+        output.append(f"  [✅] KVM Kernel Module: Loaded")
+    else:
+        output.append(f"  [❌] KVM Kernel Module: Not loaded")
+        show_error = True
+
+    # Print results if there are errors or just info
+    if show_error:
+        print("\n" + "\n".join(output))
+        print("\n  ──────────────────────────────\n")
+    else:
+        # Just print newline if all good, matching original script behavior?
+        # Original script: [ "$show_output" -eq 1 ] && echo ... || echo ""
+        print("")
+
+# =============================================================================
+# MAIN LOGIC
+# =============================================================================
+
+def run_script(script_path):
+    """Helper to execute a script if it exists."""
+    if not os.path.exists(script_path):
+        utils.error(f"Script not found: {script_path}")
+        return
+
+    # Check if executable
+    if not os.access(script_path, os.X_OK):
+        # Try to run with bash explicitly if not executable
+        cmd = ["bash", script_path]
+    else:
+        cmd = [script_path]
 
     try:
-        with open("/proc/cpuinfo") as f:
-            cpuinfo = f.read()
-        if ("vmx" in cpuinfo or "svm" in cpuinfo):
-            output += f"\n  [✅] {virt_name} (Virtualization): Supported"
-        else:
-            output += f"\n  [❌] {virt_name} (Virtualization): Not supported"
-            show_output = True
-    except Exception:
-        output += f"\n  [❌] {virt_name} (Virtualization): Unknown"
-        show_output = True
+        subprocess.run(cmd, check=False)
+    except KeyboardInterrupt:
+        print() # Handle Ctrl+C gracefully during child script
 
-    if Path("/sys/kernel/iommu_groups").exists() and any(Path("/sys/kernel/iommu_groups").iterdir()):
-        output += f"\n  [✅] {iommu_name} (IOMMU): Enabled"
-    else:
-        output += f"\n  [❌] {iommu_name} (IOMMU): Not enabled"
-        show_output = True
-
-    try:
-        lsmod = subprocess.check_output("lsmod", shell=True, text=True)
-        if "kvm" in lsmod:
-            output += f"\n  [✅] KVM Kernel Module: Loaded"
-        else:
-            output += f"\n  [❌] KVM Kernel Module: Not loaded"
-            show_output = True
-    except Exception:
-        output += f"\n  [❌] KVM Kernel Module: Unknown"
-        show_output = True
-
-    if show_output:
-        print(output + "\n\n  ──────────────────────────────\n")
-
-def execute_module(script_name):
-    """Helper to execute a module shell script safely"""
-    script_path = Path(f"./modules/{script_name}")
-    if script_path.exists() and script_path.is_file():
-        subprocess.call([str(script_path)])
-    else:
-        utils.error(f"Module {script_name} not found!")
-
-def main_menu():
-    options = {
-        "1": "Virtualization Setup",
-        "2": "QEMU (Patched) Setup",
-        "3": "EDK2 (Patched) Setup",
-        "4": "GPU Passthrough Setup",
-        "5": "Kernel (Patched) Setup",
-        "6": "Looking Glass Setup",
-        "7": "Auto Libvirt XML Setup"
-    }
-
-    exit_option = "Exit"
-
-    modules = {
-        "1": "virtualization.sh",
-        "2": "patch_qemu.sh",
-        "3": "patch_ovmf.sh",
-        "4": "gpu_passthrough.sh",
-        "5": "patch_kernel.sh",
-        "6": "looking_glass.sh",
-        "7": "auto_xml.sh"
-    }
+def main_menu(distro, vendor_id):
+    options = [
+        ("Exit", None),
+        ("Virtualization Setup", "./modules/virtualization.sh"),
+        ("QEMU (Patched) Setup", "./modules/patch_qemu.sh"),
+        ("EDK2 (Patched) Setup", "./modules/patch_ovmf.sh"),
+        ("GPU Passthrough Setup", "./modules/gpu_passthrough.sh"),
+        ("Kernel (Patched) Setup", "./modules/patch_kernel.sh"),
+        ("Looking Glass Setup", "./modules/looking_glass.sh"),
+        ("Auto Libvirt XML Setup", "./modules/auto_xml.sh"),
+    ]
 
     while True:
-        os.system("clear")
+        os.system('clear')
         utils.box_text(" >> Hypervisor Phantom << ")
-        print_system_info()
+        print_system_info(vendor_id)
 
-        menu = "\n".join([
-            utils.format_text("  ", f"[{key}]", f" {options[key]}", utils.TEXT_BRIGHT_YELLOW)
-            for key in options
-        ])
+        # Print Options (1-7)
+        for i in range(1, len(options)):
+            name = options[i][0]
+            utils.format_text(f"  ", f"[{i}]", f" {name}", utils.Colors.BRIGHT_YELLOW)
+            # Assuming utils.format_text prints. The python version returns string.
+            # Let's fix that usage:
+            print(utils.format_text(f"  ", f"[{i}]", f" {name}", utils.Colors.BRIGHT_YELLOW))
 
-        menu += f"\n\n{utils.format_text('  ', '[0]', f' {exit_option}', utils.TEXT_BRIGHT_RED)}\n"
-
-        print(f"\n{menu}")
+        # Print Exit (0)
+        print(utils.format_text(f"\n  ", "[0]", f" {options[0][0]}\n", utils.Colors.BRIGHT_RED))
 
         choice = utils.quick_prompt("  Enter your choice [0-7]: ")
+        os.system('clear')
 
-        os.system("clear")
-        if choice == "0":
-            if utils.yes_or_no("Do you want to clear the logs directory?"):
-                for log_file in Path(utils.LOG_PATH).glob("*.log"):
-                    log_file.unlink()
+        if choice == '0':
+            # Exit Logic
+            if utils.yes_or_no(utils.ask_prompt("Do you want to clear the logs directory?")):
+                log_dir = os.path.dirname(utils.LOG_FILE)
+                try:
+                    for filename in os.listdir(log_dir):
+                        file_path = os.path.join(log_dir, filename)
+                        if os.path.isfile(file_path) and file_path.endswith(".log"):
+                            os.remove(file_path)
+                except Exception as e:
+                    utils.error(f"Failed to clear logs: {e}")
             sys.exit(0)
-        elif choice in modules:
-            utils.box_text(options[choice])
-            execute_module(modules[choice])
+
+        elif choice in [str(i) for i in range(1, len(options))]:
+            idx = int(choice)
+            name, script = options[idx]
+            utils.box_text(name)
+            run_script(script)
+
         else:
             utils.error("Invalid option, please try again.")
 
-        utils.quick_prompt(utils.info("Press any key to continue..."))
+        utils.quick_prompt(utils.format_text("\n  ", "[i]", " Press any key to continue...", utils.Colors.BRIGHT_CYAN))
 
 def main():
+    # Root Check
     if os.geteuid() != 0:
-        print("\n  [❌] Script requires root/sudo privileges.\n       Please run: sudo python3 main.py")
+        print("\n  [❌] Script requires root/sudo privileges.\n       Please run: sudo ./main.py")
         sys.exit(1)
 
-    utils.init_log()
-    detect_distro()
-    cpu_vendor_id()
-    main_menu()
+    # Export LOG_FILE to env so child scripts can use it if needed
+    if utils.LOG_FILE:
+        os.environ["LOG_FILE"] = utils.LOG_FILE
+
+    distro = detect_distro()
+    vendor_id = get_cpu_vendor_id()
+
+    try:
+        main_menu(distro, vendor_id)
+    except KeyboardInterrupt:
+        print("\nExiting...")
+        sys.exit(0)
 
 if __name__ == "__main__":
     main()
