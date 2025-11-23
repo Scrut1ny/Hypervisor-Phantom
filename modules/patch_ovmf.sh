@@ -14,7 +14,7 @@ esac)
 
 readonly SRC_DIR="$(pwd)/src"
 readonly EDK2_URL="https://github.com/tianocore/edk2.git"
-readonly EDK2_TAG="edk2-stable202508"
+readonly EDK2_TAG="edk2-stable202511"
 readonly PATCH_DIR="$(pwd)/patches/EDK2"
 readonly OVMF_PATCH="${CPU_VENDOR}-${EDK2_TAG}.patch"
 
