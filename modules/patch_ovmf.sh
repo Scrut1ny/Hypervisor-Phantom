@@ -30,6 +30,7 @@ acquire_edk2_source() {
   mkdir -p "$SRC_DIR" && cd "$SRC_DIR" || { fmtr::fatal "Failed to enter source dir: $SRC_DIR"; exit 1; }
 
   clone_init() {
+    fmtr::info "Cloning EDK2 repository..."
     git clone --single-branch --depth=1 --branch "$EDK2_TAG" "$EDK2_URL" "$EDK2_TAG" &>>"$LOG_FILE" \
       || { fmtr::fatal "Failed to clone repository."; exit 1; }
     cd "$EDK2_TAG" || { fmtr::fatal "Failed to enter EDK2 directory: $EDK2_TAG"; exit 1; }
@@ -53,11 +54,6 @@ acquire_edk2_source() {
     else
       fmtr::info "Kept existing directory; skipping deletion."
       cd "$EDK2_TAG" || { fmtr::fatal "Failed to enter EDK2 directory: $EDK2_TAG"; exit 1; }
-      if prmt::yes_or_no "$(fmtr::ask 'Patch EDK2?')"; then
-        patch_ovmf
-      else
-        fmtr::info "Skipping patch."
-      fi
     fi
   else
     clone_init
@@ -134,9 +130,9 @@ patch_ovmf() {
 }
 
 ################################################################################
-# Compile OVMF
+# Compile OVMF and inject Secure Boot certs into template VARS
 ################################################################################
-compile_ovmf() {
+compile_and_inject_ovmf() {
   export WORKSPACE=$(pwd)
   export EDK_TOOLS_PATH="$WORKSPACE/BaseTools"
   export CONF_PATH="$WORKSPACE/Conf"
@@ -153,50 +149,24 @@ compile_ovmf() {
     --define TPM2_ENABLE=TRUE &>>"$LOG_FILE" || { fmtr::fatal "OVMF build failed"; exit 1; }
 
   fmtr::log "Converting compiled OVMF to .qcow2 format..."
-  out_dir="../output/firmware"
+  out_dir="$SRC_DIR/output/firmware"
   mkdir -p "$out_dir"
   for f in CODE.secboot.4m VARS.4m; do
     src="Build/OvmfX64/RELEASE_GCC5/FV/OVMF_${f%%.*}.fd"
     dest="$out_dir/OVMF_${f}.qcow2"
     qemu-img convert -f raw -O qcow2 "$src" "$dest" || { fmtr::fatal "Failed to convert $src"; exit 1; }
   done
-}
 
-################################################################################
-# Certificate injection
-################################################################################
-cert_injection() {
+  fmtr::log "Injecting Microsoft Secure Boot certificates into template VARS..."
   readonly URL="https://raw.githubusercontent.com/microsoft/secureboot_objects/main"
   readonly UUID="77fa9abd-0359-4d32-bd60-28f4e78f784b"
-  local TEMP_DIR VM_NAME VARS_FILE NVRAM_DIR="/var/lib/libvirt/qemu/nvram" DEFAULTS_JSON
+  local TEMP_DIR VARS_FILE DEFAULTS_JSON
 
   TEMP_DIR=$(mktemp -d) || { fmtr::fatal "Failed to create temp dir"; return 1; }
   cd "$TEMP_DIR" || { fmtr::fatal "Failed to enter temp dir"; rm -rf "$TEMP_DIR"; return 1; }
 
-  fmtr::log "Available domains:"; echo ""
-  mapfile -t VMS < <(virsh list --all --name | grep -v '^$')
-  [ ${#VMS[@]} -gt 0 ] || { fmtr::fatal "No domains found!"; rm -rf "$TEMP_DIR"; return 1; }
-
-  for i in "${!VMS[@]}"; do
-    fmtr::format_text '  ' "[$((i+1))]" " ${VMS[$i]}" "$TEXT_BRIGHT_YELLOW"
-  done
-  fmtr::format_text '\n  ' "[0]" " Cancel" "$TEXT_BRIGHT_RED"
-
-  while :; do
-    read -rp "$(fmtr::ask "Enter your choice [0-${#VMS[@]}]: ")" vm_choice
-    case "$vm_choice" in
-      0) fmtr::log "Exiting Secure Boot certification injection setup."; rm -rf "$TEMP_DIR"; return ;;
-      ''|*[!0-9]*) fmtr::error "Invalid selection, try again." ;;
-      *)
-        (( vm_choice >= 1 && vm_choice <= ${#VMS[@]} )) || { fmtr::error "Invalid selection, try again."; continue; }
-        VM_NAME="${VMS[$((vm_choice-1))]}"
-        VARS_FILE="$NVRAM_DIR/${VM_NAME}_VARS.qcow2"
-        [ -f "$VARS_FILE" ] || { fmtr::fatal "File not found: $VARS_FILE"; rm -rf "$TEMP_DIR"; return 1; }
-        fmtr::log "Using '$VARS_FILE' as the base VARS file."
-        break
-        ;;
-    esac
-  done
+  VARS_FILE="$out_dir/OVMF_VARS.4m.qcow2"
+  [ -f "$VARS_FILE" ] || { fmtr::fatal "Template VARS file not found: $VARS_FILE"; rm -rf "$TEMP_DIR"; return 1; }
 
   fmtr::info "Downloading Microsoft's Secure Boot certifications..."
   declare -A CERTS=(
@@ -263,7 +233,7 @@ cert_injection() {
             remaining_data="$data_hex"
 
             # Check for EFI_VARIABLE_TIME_BASED_AUTHENTICATED_WRITE_ACCESS (bit 0x20)
-            # and ensure there’s enough data for a timestamp (16 bytes = 32 hex chars)
+            # and ensure there's enough data for a timestamp (16 bytes = 32 hex chars)
             if (( (attr & 0x20) != 0 )) && [[ ${#data_hex} -ge 32 ]]; then
               time_hex="${data_hex:0:32}"
               remaining_data="${data_hex:32}"
@@ -291,8 +261,8 @@ cert_injection() {
     printf '%s\n' '}'
   } > "$DEFAULTS_JSON"
 
-  fmtr::info "Injecting MS SB certs and efivars into '$VARS_FILE'..."
-  virt-fw-vars --input "$VARS_FILE" --output "$NVRAM_DIR/${VM_NAME}_SECURE_VARS.qcow2" \
+  fmtr::info "Injecting MS SB certs into template VARS file..."
+  virt-fw-vars --input "$VARS_FILE" --output "$out_dir/OVMF_VARS.secboot.qcow2" \
     --secure-boot \
     --set-pk "$UUID" ms_pk_oem.der \
     --add-kek "$UUID" ms_kek_2011.der \
@@ -305,7 +275,8 @@ cert_injection() {
     --set-dbx dbxupdate.bin \
     --set-json "$DEFAULTS_JSON" &>>"$LOG_FILE" || { fmtr::fatal "Failed to inject SB certs"; rm -rf "$TEMP_DIR"; return 1; }
 
-  fmtr::log "Secure VARS generated at '$NVRAM_DIR/${VM_NAME}_SECURE_VARS.qcow2'"
+  fmtr::info "Secure VARS template generated at '$out_dir/OVMF_VARS.secboot.qcow2'"
+  fmtr::info "All new domains will use this template with pre-injected Secure Boot certs."
   fmtr::info "Cleaning up..."
   rm -rf "$TEMP_DIR"
 }
@@ -325,26 +296,10 @@ cleanup() {
 main() {
   install_req_pkgs "EDK2"
 
-  while :; do
-    fmtr::format_text '\n  ' "[1]" " Create patched OVMF" "$TEXT_BRIGHT_YELLOW"
-    fmtr::format_text '  ' "[2]" " VARS SB cert injection" "$TEXT_BRIGHT_YELLOW"
-    fmtr::format_text '\n  ' "[0]" " Exit" "$TEXT_BRIGHT_RED"
-
-    read -rp "$(fmtr::ask 'Enter choice [0-2]: ')" user_choice
-    case "$user_choice" in
-      1)
-        acquire_edk2_source
-        prmt::yes_or_no "$(fmtr::ask 'Create patched OVMF now?')" && compile_ovmf
-        ! prmt::yes_or_no "$(fmtr::ask 'Keep EDK2 source for faster re-patching?')" && cleanup
-        exit 0
-        ;;
-      2) cert_injection; exit 0 ;;
-      0) fmtr::info "Exiting."; exit 0 ;;
-      *) fmtr::error "Invalid option, please try again." ;;
-    esac
-
-    prmt::quick_prompt "$(fmtr::info 'Press any key to continue...')"
-  done
+  acquire_edk2_source
+  compile_and_inject_ovmf
+  ! prmt::yes_or_no "$(fmtr::ask 'Keep EDK2 source for faster re-patching?')" && cleanup
+  fmtr::info "Done."
 }
 
 main "$@"
