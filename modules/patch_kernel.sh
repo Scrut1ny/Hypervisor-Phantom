@@ -268,14 +268,18 @@ patch_kernel() {
 
 arch_distro() {
   clear
+  local build_user="${SUDO_USER:-${DOAS_USER}}"
+  [[ -z "$build_user" ]] && { fmtr::error "Cannot determine original user (SUDO_USER not set)."; exit 1; }
 
-  if [[ "${PRIV_ESC:-sudo}" == "sudo" ]]; then
-    orig_user="$SUDO_USER"
+  chown -R "$build_user:$build_user" .
+
+  if command -v sudo >/dev/null; then
+    sudo -u "$build_user" HOME="$(getent passwd "$build_user" | cut -d: -f6)" makepkg -C -si --noconfirm
+  elif command -v doas >/dev/null; then
+    doas -u "$build_user" env HOME="$(getent passwd "$build_user" | cut -d: -f6)" makepkg -C -si --noconfirm
   else
-    orig_user="$USER"
+    su "$build_user" -c "makepkg -C -si --noconfirm"
   fi
-
-  ${PRIV_ESC:-sudo} -u "$orig_user" makepkg -C -si --noconfirm
 
   if prmt::yes_or_no "$(fmtr::ask 'Would you like to add a systemd-boot entry for this kernel?')"; then
     systemd-boot_boot_entry_maker
