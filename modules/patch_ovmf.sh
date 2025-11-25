@@ -133,71 +133,61 @@ patch_ovmf() {
 # Compile OVMF and inject Secure Boot certs into template VARS
 ################################################################################
 compile_and_inject_ovmf() {
-  export WORKSPACE=$(pwd)
+  local WORKSPACE EDK_TOOLS_PATH CONF_PATH OUT_DIR TEMP_DIR URL UUID
+
+  export WORKSPACE="$(pwd)"
   export EDK_TOOLS_PATH="$WORKSPACE/BaseTools"
   export CONF_PATH="$WORKSPACE/Conf"
+  export OUT_DIR="$SRC_DIR/output/firmware"
 
-  fmtr::log "Building BaseTools (EDK II build tools)..."
-  [ -d BaseTools/Build ] || { make -C BaseTools && source edksetup.sh; } &>>"$LOG_FILE" || { fmtr::fatal "Failed to build BaseTools"; exit 1; }
+  fmtr::log "Building BaseTools..."
+  [ -d BaseTools/Build ] || { make -C BaseTools -j"$(nproc)" && source edksetup.sh; } &>>"$LOG_FILE" || { fmtr::fatal "Failed to build BaseTools"; return 1; }
 
-  fmtr::log "Compiling OVMF with SB and TPM support..."
+  fmtr::log "Compiling OVMF..."
   build -a X64 -p OvmfPkg/OvmfPkgX64.dsc -b RELEASE -t GCC5 -n 0 -s \
     --define SECURE_BOOT_ENABLE=TRUE \
     --define TPM_CONFIG_ENABLE=TRUE \
     --define TPM_ENABLE=TRUE \
     --define TPM1_ENABLE=TRUE \
-    --define TPM2_ENABLE=TRUE &>>"$LOG_FILE" || { fmtr::fatal "OVMF build failed"; exit 1; }
+    --define TPM2_ENABLE=TRUE &>>"$LOG_FILE" || { fmtr::fatal "OVMF build failed"; return 1; }
 
-  fmtr::log "Converting compiled OVMF to .qcow2 format..."
-  out_dir="$SRC_DIR/output/firmware"
-  mkdir -p "$out_dir"
-  for f in CODE.secboot.4m VARS.4m; do
-    src="Build/OvmfX64/RELEASE_GCC5/FV/OVMF_${f%%.*}.fd"
-    dest="$out_dir/OVMF_${f}.qcow2"
-    qemu-img convert -f raw -O qcow2 "$src" "$dest" || { fmtr::fatal "Failed to convert $src"; exit 1; }
+  fmtr::log "Converting to qcow2..."
+  mkdir -p "$OUT_DIR"
+  for f in CODE VARS; do
+    qemu-img convert -f raw -O qcow2 "Build/OvmfX64/RELEASE_GCC5/FV/OVMF_${f}.fd" "$OUT_DIR/OVMF_${f}.qcow2" || return 1
   done
 
-  fmtr::log "Injecting Microsoft Secure Boot certificates into template VARS..."
-  readonly URL="https://raw.githubusercontent.com/microsoft/secureboot_objects/main"
-  readonly UUID="77fa9abd-0359-4d32-bd60-28f4e78f784b"
-  local TEMP_DIR VARS_FILE DEFAULTS_JSON
+  fmtr::log "Preparing Secure Boot injection..."
+  TEMP_DIR="$(mktemp -d)" || return 1
+  trap 'rm -rf "$TEMP_DIR"' RETURN
 
-  TEMP_DIR=$(mktemp -d) || { fmtr::fatal "Failed to create temp dir"; return 1; }
-  cd "$TEMP_DIR" || { fmtr::fatal "Failed to enter temp dir"; rm -rf "$TEMP_DIR"; return 1; }
+  URL="https://raw.githubusercontent.com/microsoft/secureboot_objects/main"
+  UUID="77fa9abd-0359-4d32-bd60-28f4e78f784b"
 
-  VARS_FILE="$out_dir/OVMF_VARS.4m.qcow2"
-  [ -f "$VARS_FILE" ] || { fmtr::fatal "Template VARS file not found: $VARS_FILE"; rm -rf "$TEMP_DIR"; return 1; }
-
-  fmtr::info "Downloading Microsoft's Secure Boot certifications..."
-  declare -A CERTS=(
+  local -A certs=(
     # PK (Platform Key)
     ["ms_pk_oem.der"]="$URL/PreSignedObjects/PK/Certificate/WindowsOEMDevicesPK.der"
-
     # KEK (Key Exchange Key)
     ["ms_kek_2011.der"]="$URL/PreSignedObjects/KEK/Certificates/MicCorKEKCA2011_2011-06-24.der"
     ["ms_kek_2023.der"]="$URL/PreSignedObjects/KEK/Certificates/microsoft%20corporation%20kek%202k%20ca%202023.der"
-
     # DB (Signature Database)
     ["ms_db_uefi_2011.der"]="$URL/PreSignedObjects/DB/Certificates/MicCorUEFCA2011_2011-06-27.der"
     ["ms_db_pro_2011.der"]="$URL/PreSignedObjects/DB/Certificates/MicWinProPCA2011_2011-10-19.der"
     ["ms_db_optionrom_2023.der"]="$URL/PreSignedObjects/DB/Certificates/microsoft%20option%20rom%20uefi%20ca%202023.der"
     ["ms_db_uefi_2023.der"]="$URL/PreSignedObjects/DB/Certificates/microsoft%20uefi%20ca%202023.der"
     ["ms_db_windows_2023.der"]="$URL/PreSignedObjects/DB/Certificates/windows%20uefi%20ca%202023.der"
-
     # DBX (Forbidden Signatures Database)
     ["dbxupdate.bin"]="$URL/PostSignedObjects/DBX/amd64/DBXUpdate.bin"
   )
 
-  for file in "${!CERTS[@]}"; do
-    wget -q -O "$file" "${CERTS[$file]}" &
+  for c in "${!certs[@]}"; do
+    wget -q -O "$TEMP_DIR/$c" "${certs[$c]}" &
   done
-  wait || { fmtr::fatal "Failed to download one or more certs"; rm -rf "$TEMP_DIR"; return 1; }
+  wait || { fmtr::fatal "Failed to download one or more certs"; return 1; }
 
-  fmtr::info "Generating defaults.json from host efivars..."
-  DEFAULTS_JSON="$TEMP_DIR/defaults.json"
-  EFIVAR_DIR="/sys/firmware/efi/efivars"
-  VARS_LIST=("dbDefault" "dbxDefault" "KEKDefault" "PKDefault" "MemoryOverwriteRequestControlLock")
-  declare -A VAR_GUIDS=(
+  # Generate efivars.json
+  local efivars_json="$TEMP_DIR/efivars.json"
+  local -A guids=(
     ["dbDefault"]="8be4df61-93ca-11d2-aa0d-00e098032b8c"
     ["dbxDefault"]="8be4df61-93ca-11d2-aa0d-00e098032b8c"
     ["KEKDefault"]="8be4df61-93ca-11d2-aa0d-00e098032b8c"
@@ -206,79 +196,60 @@ compile_and_inject_ovmf() {
   )
 
   {
-    printf '%s\n' '{'
-    printf '%s\n' '    "version": 2,'
-    printf '%s\n' '    "variables": ['
+    local entries=() var path hex attr data entry
 
-    sep=""
-    if [[ -d "$EFIVAR_DIR" ]]; then
-      for var in "${VARS_LIST[@]}"; do
-        guid="${VAR_GUIDS[$var]}"
-        filepath="$EFIVAR_DIR/${var}-${guid}"
-        if [[ -f "$filepath" ]]; then
-          raw_data=$(hexdump -ve '1/1 "%.2x"' "$filepath" 2>/dev/null) || raw_data=""
-          if [[ -n "$raw_data" && ${#raw_data} -ge 8 ]]; then
-            # Parse attribute (little-endian 4 bytes)
-            attr_hex="${raw_data:6:2}${raw_data:4:2}${raw_data:2:2}${raw_data:0:2}"
-            if [[ "$attr_hex" =~ ^[0-9a-fA-F]+$ ]]; then
-              attr=$((16#$attr_hex))
-            else
-              attr=0
-            fi
+    for var in "${!guids[@]}"; do
+      path="/sys/firmware/efi/efivars/${var}-${guids[$var]}"
+      [[ -f "$path" ]] || continue
 
-            # Extract data after the attr field
-            data_hex="${raw_data:8}"
+      hex=$(hexdump -ve '1/1 "%.2x"' "$path" 2>/dev/null)
+      [[ ${#hex} -ge 8 ]] || continue
 
-            time_hex=""
-            remaining_data="$data_hex"
+      # Parse attribute (little-endian 4 bytes) and data
+      attr=$(( 16#${hex:6:2}${hex:4:2}${hex:2:2}${hex:0:2} ))
+      data=${hex:8}
 
-            # Check for EFI_VARIABLE_TIME_BASED_AUTHENTICATED_WRITE_ACCESS (bit 0x20)
-            # and ensure there's enough data for a timestamp (16 bytes = 32 hex chars)
-            if (( (attr & 0x20) != 0 )) && [[ ${#data_hex} -ge 32 ]]; then
-              time_hex="${data_hex:0:32}"
-              remaining_data="${data_hex:32}"
-            fi
+      # Build JSON entry
+      entry=$(printf '        {
+              "name": "%s",
+              "guid": "%s",
+              "attr": %d,' "$var" "${guids[$var]}" "$attr")
 
-            printf '%s\n' "        $sep{"
-            printf '            "name": "%s",\n' "$var"
-            printf '            "guid": "%s",\n' "$guid"
-            printf '            "attr": %d,\n' "$attr"
-            if [[ -n "$time_hex" ]]; then
-              printf '            "data": "%s",\n' "$remaining_data"
-              printf '            "time": "%s"\n' "$time_hex"
-            else
-              printf '            "data": "%s"\n' "$remaining_data"
-            fi
-            sep=","
-            printf '%s' "        }"
-            printf '\n'
-          fi
-        fi
-      done
-    fi
+      # Handle EFI_VARIABLE_TIME_BASED_AUTHENTICATED_WRITE_ACCESS (0x20)
+      if (( attr & 0x20 )) && [[ ${#data} -ge 32 ]]; then
+        entry+=$(printf '
+              "data": "%s",
+              "time": "%s"
+          }' "${data:32}" "${data:0:32}")
+      else
+        entry+=$(printf '
+              "data": "%s"
+          }' "$data")
+      fi
 
-    printf '%s\n' '    ]'
-    printf '%s\n' '}'
-  } > "$DEFAULTS_JSON"
+      entries+=("$entry")
+    done
 
-  fmtr::info "Injecting MS SB certs into template VARS file..."
-  virt-fw-vars --input "$VARS_FILE" --output "$out_dir/OVMF_VARS.secboot.qcow2" \
+    # Output complete JSON
+    printf '{\n    "version": 2,\n    "variables": [\n'
+    local IFS=','$'\n'
+    echo "${entries[*]}"
+    printf '    ]\n}\n'
+  } > "$efivars_json"
+
+  fmtr::log "Injecting certificates..."
+  virt-fw-vars --input "$OUT_DIR/OVMF_VARS.qcow2" --output "$OUT_DIR/OVMF_VARS.qcow2" \
     --secure-boot \
-    --set-pk "$UUID" ms_pk_oem.der \
-    --add-kek "$UUID" ms_kek_2011.der \
-    --add-kek "$UUID" ms_kek_2023.der \
-    --add-db "$UUID" ms_db_uefi_2011.der \
-    --add-db "$UUID" ms_db_pro_2011.der \
-    --add-db "$UUID" ms_db_optionrom_2023.der \
-    --add-db "$UUID" ms_db_uefi_2023.der \
-    --add-db "$UUID" ms_db_windows_2023.der \
-    --set-dbx dbxupdate.bin \
-    --set-json "$DEFAULTS_JSON" &>>"$LOG_FILE" || { fmtr::fatal "Failed to inject SB certs"; rm -rf "$TEMP_DIR"; return 1; }
-
-  fmtr::info "Secure VARS template generated at '$out_dir/OVMF_VARS.secboot.qcow2'"
-  fmtr::info "All new domains will use this template with pre-injected Secure Boot certs."
-  fmtr::info "Cleaning up..."
-  rm -rf "$TEMP_DIR"
+    --set-pk "$UUID" "$TEMP_DIR/ms_pk_oem.der" \
+    --add-kek "$UUID" "$TEMP_DIR/ms_kek_2011.der" \
+    --add-kek "$UUID" "$TEMP_DIR/ms_kek_2023.der" \
+    --add-db "$UUID" "$TEMP_DIR/ms_db_uefi_2011.der" \
+    --add-db "$UUID" "$TEMP_DIR/ms_db_pro_2011.der" \
+    --add-db "$UUID" "$TEMP_DIR/ms_db_optionrom_2023.der" \
+    --add-db "$UUID" "$TEMP_DIR/ms_db_uefi_2023.der" \
+    --add-db "$UUID" "$TEMP_DIR/ms_db_windows_2023.der" \
+    --set-dbx "$TEMP_DIR/dbxupdate.bin" \
+    --set-json "$efivars_json" &>>"$LOG_FILE" || { fmtr::fatal "Injection failed"; return 1; }
 }
 
 ################################################################################
@@ -295,11 +266,9 @@ cleanup() {
 ################################################################################
 main() {
   install_req_pkgs "EDK2"
-
   acquire_edk2_source
   compile_and_inject_ovmf
   ! prmt::yes_or_no "$(fmtr::ask 'Keep EDK2 source for faster re-patching?')" && cleanup
-  fmtr::info "Done."
 }
 
 main "$@"
