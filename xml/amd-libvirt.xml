@@ -33,8 +33,8 @@
   -->
   <os>
     <type arch="x86_64" machine="pc-q35-10.1">hvm</type>
-    <loader readonly="yes" secure="yes" type="pflash" format="qcow2">/{PATH TO}/Hypervisor-Phantom/src/output/firmware/OVMF_CODE.secboot.qcow2</loader>
-    <nvram template="/{PATH TO}/Hypervisor-Phantom/src/output/firmware/OVMF_VARS.secboot.qcow2" format="qcow2"></nvram>
+    <loader readonly="yes" secure="yes" type="pflash" format="qcow2">/{PATH TO}/Hypervisor-Phantom/src/output/firmware/OVMF_CODE.qcow2</loader>
+    <nvram template="/{PATH TO}/Hypervisor-Phantom/src/output/firmware/OVMF_VARS.qcow2" format="qcow2"></nvram>
     <bootmenu enable="yes"/>
     <smbios mode="host"/> <!-- Remove this if you use a host SMBIOS dump -->
   </os>
@@ -368,6 +368,7 @@
     </qemu:device>
   </qemu:override>
 </domain>
+
 
 
 
