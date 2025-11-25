@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="image.png" width="400">
+
 # AutoVirt
 
 This tool provides automated setups for linux virtualization related stuff.
