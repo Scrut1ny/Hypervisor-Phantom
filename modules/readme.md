@@ -1,3 +1,5 @@
+---
+
 # EDK2 / OVMF / Firmware
 
 - https://github.com/tianocore/tianocore.github.io/wiki/Common-instructions
@@ -18,7 +20,7 @@ sudo pacman -S edk2-ovmf
 /usr/share/edk2/x64/OVMF_VARS.4m.fd
 ```
 
-#### BmpImageDecoder (BMP Validator)
+## BmpImageDecoder (BMP Validator)
 
 - https://github.com/tianocore/edk2/blob/master/BaseTools/Source/Python/AutoGen/GenC.py#L1892
   - File Type: Bytes `0–1` must be `0x42 0x4D`
@@ -26,13 +28,13 @@ sudo pacman -S edk2-ovmf
   - Compression: Must be `0`
   - Width/Height: `≤65535x65535`
 
-#### virt-fw-vars
+## virt-fw-vars
 
 - [uefi-variable-store](https://www.qemu.org/docs/master/interop/qemu-qmp-ref.html#uefi-variable-store)
 - [virt-fw-vars - man page](https://man.archlinux.org/man/extra/virt-firmware/virt-fw-vars.1.en)
 - [json support for efi - python script](https://gitlab.com/kraxel/virt-firmware/-/blob/master/virt/firmware/efi/efijson.py)
 
-#### TPM Support
+## TPM Support
 - https://github.com/tianocore/edk2/blob/master/OvmfPkg/OvmfPkgX64.dsc#L39
 - https://github.com/tianocore/edk2/blob/master/OvmfPkg/Include/Dsc/OvmfTpmDefines.dsc.inc
 
@@ -42,7 +44,7 @@ OVMF Build Args:
 --define TPM2_ENABLE=TRUE
 ```
 
-#### Secure Boot
+## Secure Boot
 
 - [https://github.com/microsoft/secureboot_objects](https://github.com/microsoft/secureboot_objects)
   - PostSignedObjects
@@ -50,7 +52,7 @@ OVMF Build Args:
   - PreSignedObjects
     - [PK,KEK,DB.der](https://github.com/microsoft/secureboot_objects/blob/main/PreSignedObjects)
 
-#### Enabling MOR/MORLock support in OVMF
+## Enabling MOR/MORLock support in OVMF
 - https://github.com/tianocore/edk2/blob/master/OvmfPkg/README#L160
 - https://github.com/tianocore/tianocore.github.io/wiki/How-to-Enable-Security
 - https://github.com/tianocore/edk2/tree/master/SecurityPkg/Tcg/MemoryOverwriteControl
@@ -62,6 +64,7 @@ OVMF Build Arg:
 ```
 --define SMM_REQUIRE=TRUE
 ```
+
 QEMU XML:
 ```xml
   <features>
@@ -71,13 +74,13 @@ QEMU XML:
   </features>
 ```
 
-#### Generated firmware from template that is writable:
+## Generated firmware from template that is writable:
 
 ```
 /var/lib/libvirt/qemu/nvram
 ```
 
-#### STORAGE:
+## STORAGE:
 
 ```
 /var/lib/libvirt/images/
