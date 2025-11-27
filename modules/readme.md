@@ -4,7 +4,7 @@
 - https://github.com/tianocore/tianocore.github.io/wiki/How-to-build-OVMF
 - https://github.com/tianocore/edk2/tree/master/OvmfPkg
 
-#### NVRAM Template:
+## NVRAM Template:
 
 ```
 sudo pacman -S edk2-ovmf
