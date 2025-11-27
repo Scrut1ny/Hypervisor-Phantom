@@ -35,6 +35,7 @@ sudo pacman -S edk2-ovmf
 #### TPM Support
 - https://github.com/tianocore/edk2/blob/master/OvmfPkg/OvmfPkgX64.dsc#L39
 - https://github.com/tianocore/edk2/blob/master/OvmfPkg/Include/Dsc/OvmfTpmDefines.dsc.inc
+
 OVMF Build Args:
 ```
 --define TPM1_ENABLE=TRUE
