@@ -149,7 +149,8 @@ compile_and_inject_ovmf() {
     --define TPM_CONFIG_ENABLE=TRUE \
     --define TPM_ENABLE=TRUE \
     --define TPM1_ENABLE=TRUE \
-    --define TPM2_ENABLE=TRUE &>>"$LOG_FILE" || { fmtr::fatal "OVMF build failed"; return 1; }
+    --define TPM2_ENABLE=TRUE \
+    --define SMM_REQUIRE=TRUE &>>"$LOG_FILE" || { fmtr::fatal "OVMF build failed"; return 1; }
 
   fmtr::log "Converting to qcow2..."
   mkdir -p "$OUT_DIR"
