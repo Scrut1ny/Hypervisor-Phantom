@@ -146,8 +146,6 @@ compile_and_inject_ovmf() {
   fmtr::log "Compiling OVMF..."
   build -a X64 -p OvmfPkg/OvmfPkgX64.dsc -b RELEASE -t GCC5 -n 0 -s \
     --define SECURE_BOOT_ENABLE=TRUE \
-    --define TPM_CONFIG_ENABLE=TRUE \
-    --define TPM_ENABLE=TRUE \
     --define TPM1_ENABLE=TRUE \
     --define TPM2_ENABLE=TRUE \
     --define SMM_REQUIRE=TRUE &>>"$LOG_FILE" || { fmtr::fatal "OVMF build failed"; return 1; }
