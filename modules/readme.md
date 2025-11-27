@@ -32,6 +32,15 @@ sudo pacman -S edk2-ovmf
 - [virt-fw-vars - man page](https://man.archlinux.org/man/extra/virt-firmware/virt-fw-vars.1.en)
 - [json support for efi - python script](https://gitlab.com/kraxel/virt-firmware/-/blob/master/virt/firmware/efi/efijson.py)
 
+#### TPM Support
+- https://github.com/tianocore/edk2/blob/master/OvmfPkg/OvmfPkgX64.dsc#L39
+- https://github.com/tianocore/edk2/blob/master/OvmfPkg/Include/Dsc/OvmfTpmDefines.dsc.inc
+OVMF Build Args:
+```
+--define TPM1_ENABLE=TRUE
+--define TPM2_ENABLE=TRUE
+```
+
 #### Secure Boot
 
 - [https://github.com/microsoft/secureboot_objects](https://github.com/microsoft/secureboot_objects)
