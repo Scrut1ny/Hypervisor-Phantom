@@ -1,5 +1,3 @@
----
-
 # EDK2 / OVMF / Firmware
 
 - https://github.com/tianocore/tianocore.github.io/wiki/Common-instructions
