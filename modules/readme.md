@@ -26,12 +26,6 @@ sudo pacman -S edk2-ovmf
   - Compression: Must be `0`
   - Width/Height: `≤65535x65535`
 
-## virt-fw-vars
-
-- [uefi-variable-store](https://www.qemu.org/docs/master/interop/qemu-qmp-ref.html#uefi-variable-store)
-- [virt-fw-vars - man page](https://man.archlinux.org/man/extra/virt-firmware/virt-fw-vars.1.en)
-- [json support for efi - python script](https://gitlab.com/kraxel/virt-firmware/-/blob/master/virt/firmware/efi/efijson.py)
-
 ## TPM Support
 - https://github.com/tianocore/edk2/blob/master/OvmfPkg/OvmfPkgX64.dsc#L39
 - https://github.com/tianocore/edk2/blob/master/OvmfPkg/Include/Dsc/OvmfTpmDefines.dsc.inc
@@ -41,14 +35,6 @@ OVMF Build Args:
 --define TPM1_ENABLE=TRUE
 --define TPM2_ENABLE=TRUE
 ```
-
-## Secure Boot
-
-- [https://github.com/microsoft/secureboot_objects](https://github.com/microsoft/secureboot_objects)
-  - PostSignedObjects
-    - [DBXUpdate.bin](https://github.com/microsoft/secureboot_objects/blob/main/PostSignedObjects/DBX/amd64/DBXUpdate.bin)
-  - PreSignedObjects
-    - [PK,KEK,DB.der](https://github.com/microsoft/secureboot_objects/blob/main/PreSignedObjects)
 
 ## Enabling MOR/MORLock support in OVMF
 - https://github.com/tianocore/edk2/blob/master/OvmfPkg/README#L160
@@ -71,6 +57,19 @@ QEMU XML:
     <smm state="on"/>
   </features>
 ```
+
+## Secure Boot
+
+- [https://github.com/microsoft/secureboot_objects](https://github.com/microsoft/secureboot_objects)
+  - PostSignedObjects
+    - [DBXUpdate.bin](https://github.com/microsoft/secureboot_objects/blob/main/PostSignedObjects/DBX/amd64/DBXUpdate.bin)
+  - PreSignedObjects
+    - [PK,KEK,DB.der](https://github.com/microsoft/secureboot_objects/blob/main/PreSignedObjects)
+
+## virt-fw-vars
+- [uefi-variable-store](https://www.qemu.org/docs/master/interop/qemu-qmp-ref.html#uefi-variable-store)
+- [virt-fw-vars - man page](https://man.archlinux.org/man/extra/virt-firmware/virt-fw-vars.1.en)
+- [json support for efi - python script](https://gitlab.com/kraxel/virt-firmware/-/blob/master/virt/firmware/efi/efijson.py)
 
 ## Generated firmware from template that is writable:
 
