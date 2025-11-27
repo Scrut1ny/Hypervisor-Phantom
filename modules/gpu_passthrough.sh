@@ -12,7 +12,7 @@ readonly -a SDBOOT_CONF_LOCATIONS=(/boot/loader/entries /boot/efi/loader/entries
 # Global variables (need to persist across functions)
 hwids=""
 declare -A SOFTDEPS=(
-    ["0x10de"]="nvidia nouveau drm drm_kms_helper"
+    ["0x10de"]="nouveau nvidia nvidia_drm drm drm_kms_helper"
     ["0x1002"]="amdgpu radeon drm drm_kms_helper"
     ["0x8086"]="i915 drm drm_kms_helper"
 )
