@@ -45,6 +45,7 @@ sudo pacman -S edk2-ovmf
 - https://github.com/tianocore/tianocore.github.io/wiki/How-to-Enable-Security
 - https://github.com/tianocore/edk2/tree/master/SecurityPkg/Tcg/MemoryOverwriteControl
 - https://github.com/tianocore/edk2/tree/master/SecurityPkg/Tcg/MemoryOverwriteRequestControlLock
+
 OVMF Build Arg:
 ```
 --define SMM_REQUIRE=TRUE
