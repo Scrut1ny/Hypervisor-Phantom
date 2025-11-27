@@ -40,6 +40,22 @@ sudo pacman -S edk2-ovmf
   - PreSignedObjects
     - [PK,KEK,DB.der](https://github.com/microsoft/secureboot_objects/blob/main/PreSignedObjects)
 
+#### Enabling MOR/MORLock support in OVMF
+- https://github.com/tianocore/edk2/blob/master/OvmfPkg/README#L160
+- https://github.com/tianocore/tianocore.github.io/wiki/How-to-Enable-Security
+- https://github.com/tianocore/edk2/tree/master/SecurityPkg/Tcg/MemoryOverwriteControl
+- https://github.com/tianocore/edk2/tree/master/SecurityPkg/Tcg/MemoryOverwriteRequestControlLock
+```
+--define SMM_REQUIRE=TRUE
+```
+```xml
+  <features>
+    <acpi/>
+    <apic/>
+    <smm state="on"/>
+  </features>
+```
+
 #### Generated firmware from template that is writable:
 
 ```
