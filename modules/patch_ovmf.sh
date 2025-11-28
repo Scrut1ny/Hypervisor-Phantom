@@ -191,7 +191,6 @@ compile_and_inject_ovmf() {
     ["dbxDefault"]="8be4df61-93ca-11d2-aa0d-00e098032b8c"
     ["KEKDefault"]="8be4df61-93ca-11d2-aa0d-00e098032b8c"
     ["PKDefault"]="8be4df61-93ca-11d2-aa0d-00e098032b8c"
-    ["MemoryOverwriteRequestControlLock"]="bb983ccf-151d-40e1-a07b-4a17be168292"
   )
 
   {
