@@ -26,23 +26,17 @@ sudo pacman -S edk2-ovmf
   - Compression: Must be `0`
   - Width/Height: `≤65535x65535`
 
-## TPM Support
-- https://github.com/tianocore/edk2/blob/master/OvmfPkg/OvmfPkgX64.dsc#L39
-- https://github.com/tianocore/edk2/blob/master/OvmfPkg/Include/Dsc/OvmfTpmDefines.dsc.inc
-
-OVMF Build Args:
-```
---define TPM1_ENABLE=TRUE
---define TPM2_ENABLE=TRUE
-```
-
-## Enabling MOR/MORLock support in OVMF
+## OVMF MOR/MORLock support:
 - https://github.com/tianocore/edk2/blob/master/OvmfPkg/README#L160
 - https://github.com/tianocore/tianocore.github.io/wiki/How-to-Enable-Security
 - https://github.com/tianocore/edk2/tree/master/SecurityPkg/Tcg/MemoryOverwriteControl
 - https://github.com/tianocore/edk2/tree/master/SecurityPkg/Tcg/MemoryOverwriteRequestControlLock
 - https://github.com/tianocore/edk2/blob/master/OvmfPkg/Include/Dsc/MorLock.dsc.inc
 - https://github.com/tianocore/edk2/blob/master/OvmfPkg/Include/Fdf/MorLock.fdf.inc
+
+## OVMF TPM support:
+- https://github.com/tianocore/edk2/blob/master/OvmfPkg/OvmfPkgX64.dsc#L39
+- https://github.com/tianocore/edk2/blob/master/OvmfPkg/Include/Dsc/OvmfTpmDefines.dsc.inc
 
 OVMF Build Args:
 ```
