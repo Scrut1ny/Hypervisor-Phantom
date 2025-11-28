@@ -138,25 +138,22 @@ compile_and_inject_ovmf() {
   export WORKSPACE="$(pwd)"
   export EDK_TOOLS_PATH="$WORKSPACE/BaseTools"
   export CONF_PATH="$WORKSPACE/Conf"
-  export OUT_DIR="$SRC_DIR/output/firmware"
 
-  fmtr::log "Building BaseTools..."
   [ -d BaseTools/Build ] || { make -C BaseTools -j"$(nproc)" && source edksetup.sh; } &>>"$LOG_FILE" || { fmtr::fatal "Failed to build BaseTools"; return 1; }
 
-  fmtr::log "Compiling OVMF..."
   build -a X64 -p OvmfPkg/OvmfPkgX64.dsc -b RELEASE -t GCC5 -n 0 -s \
     --define SECURE_BOOT_ENABLE=TRUE \
     --define TPM1_ENABLE=TRUE \
     --define TPM2_ENABLE=TRUE \
-    --define SMM_REQUIRE=TRUE &>>"$LOG_FILE" || { fmtr::fatal "OVMF build failed"; return 1; }
+    --define SMM_REQUIRE=TRUE &>>"$LOG_FILE" || { fmtr::fatal "Failed to build OVMF"; return 1; }
 
-  fmtr::log "Converting to qcow2..."
+  OUT_DIR="$SRC_DIR/output/firmware"
   mkdir -p "$OUT_DIR"
+
   for f in CODE VARS; do
     qemu-img convert -f raw -O qcow2 "Build/OvmfX64/RELEASE_GCC5/FV/OVMF_${f}.fd" "$OUT_DIR/OVMF_${f}.qcow2" || return 1
   done
 
-  fmtr::log "Preparing Secure Boot injection..."
   TEMP_DIR="$(mktemp -d)" || return 1
   trap 'rm -rf "$TEMP_DIR"' RETURN
 
@@ -182,7 +179,7 @@ compile_and_inject_ovmf() {
   for c in "${!certs[@]}"; do
     wget -q -O "$TEMP_DIR/$c" "${certs[$c]}" &
   done
-  wait || { fmtr::fatal "Failed to download one or more certs"; return 1; }
+  wait || { fmtr::fatal "Failed to download one or more certificates"; return 1; }
 
   # Generate efivars.json
   local efivars_json="$TEMP_DIR/efivars.json"
@@ -235,7 +232,6 @@ compile_and_inject_ovmf() {
     printf '    ]\n}\n'
   } > "$efivars_json"
 
-  fmtr::log "Injecting certificates..."
   virt-fw-vars --input "$OUT_DIR/OVMF_VARS.qcow2" --output "$OUT_DIR/OVMF_VARS.qcow2" \
     --secure-boot \
     --set-pk "$UUID" "$TEMP_DIR/ms_pk_oem.der" \
@@ -247,7 +243,7 @@ compile_and_inject_ovmf() {
     --add-db "$UUID" "$TEMP_DIR/ms_db_uefi_2023.der" \
     --add-db "$UUID" "$TEMP_DIR/ms_db_windows_2023.der" \
     --set-dbx "$TEMP_DIR/dbxupdate.bin" \
-    --set-json "$efivars_json" &>>"$LOG_FILE" || { fmtr::fatal "Injection failed"; return 1; }
+    --set-json "$efivars_json" &>>"$LOG_FILE" || { fmtr::fatal "Failed to inject"; return 1; }
 }
 
 ################################################################################
