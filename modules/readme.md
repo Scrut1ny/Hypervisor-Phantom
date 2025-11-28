@@ -44,9 +44,13 @@ OVMF Build Args:
 - https://github.com/tianocore/edk2/blob/master/OvmfPkg/Include/Dsc/MorLock.dsc.inc
 - https://github.com/tianocore/edk2/blob/master/OvmfPkg/Include/Fdf/MorLock.fdf.inc
 
-OVMF Build Arg:
+OVMF Build Args:
 ```
---define SMM_REQUIRE=TRUE
+build -a X64 -p OvmfPkg/OvmfPkgX64.dsc -b RELEASE -t GCC5 -n 0 -s \
+  --define SECURE_BOOT_ENABLE=TRUE \
+  --define TPM1_ENABLE=TRUE \
+  --define TPM2_ENABLE=TRUE \
+  --define SMM_REQUIRE=TRUE
 ```
 
 QEMU XML:
@@ -56,6 +60,10 @@ QEMU XML:
     <apic/>
     <smm state="on"/>
   </features>
+...
+    <tpm model="tpm-crb">
+      <backend type="emulator" version="2.0"/>
+    </tpm>
 ```
 
 ## Secure Boot
