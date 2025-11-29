@@ -60,6 +60,23 @@ QEMU XML:
     </tpm>
 ```
 
+## Last BIOS time: 0.0
+- ```MdeModulePkg/Universal/Acpi/FirmwarePerformanceDataTableDxe/FirmwarePerformanceDxe.c```
+- ```OvmfPkg/OvmfPkgX64.dsc```
+```
+  #
+  # ACPI Support
+  #
+  MdeModulePkg/Universal/Acpi/AcpiTableDxe/AcpiTableDxe.inf
+  OvmfPkg/AcpiPlatformDxe/AcpiPlatformDxe.inf
+!if $(STANDALONE_MM_ENABLE) != TRUE
+  MdeModulePkg/Universal/Acpi/S3SaveStateDxe/S3SaveStateDxe.inf
+  MdeModulePkg/Universal/Acpi/BootScriptExecutorDxe/BootScriptExecutorDxe.inf
+!endif
+  MdeModulePkg/Universal/Acpi/BootGraphicsResourceTableDxe/BootGraphicsResourceTableDxe.inf
+  MdeModulePkg/Universal/Acpi/FirmwarePerformanceDataTableDxe/FirmwarePerformanceDxe.inf
+```
+
 ## Secure Boot
 
 - [https://github.com/microsoft/secureboot_objects](https://github.com/microsoft/secureboot_objects)
