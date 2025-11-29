@@ -1,3 +1,186 @@
+diff --git a/hw/i386/acpi-build.c b/hw/i386/acpi-build.c
+index 423c495..b82fe93 100644
+--- a/hw/i386/acpi-build.c
++++ b/hw/i386/acpi-build.c
+@@ -161,8 +161,8 @@ static void init_common_fadt_data(MachineState *ms, Object *o,
+                         (1 << ACPI_FADT_F_FORCE_APIC_CLUSTER_MODEL) : 0),
+         .int_model = 1 /* Multiple APIC */,
+         .rtc_century = RTC_CENTURY,
+-        .plvl2_lat = 0xfff /* C2 state not supported */,
+-        .plvl3_lat = 0xfff /* C3 state not supported */,
++        .plvl2_lat = 0x0065 /* C2 state not supported */,
++        .plvl3_lat = 0x03e9 /* C3 state not supported */,
+         .smi_cmd = smm_enabled ? ACPI_PORT_SMI_CMD : 0,
+         .sci_int = object_property_get_uint(o, ACPI_PM_PROP_SCI_INT, NULL),
+         .acpi_enable_cmd =
+diff --git a/hw/acpi/pcihp.c b/hw/acpi/pcihp.c
+index 4922bbc778..54cd714363 100644
+--- a/hw/acpi/pcihp.c
++++ b/hw/acpi/pcihp.c
+@@ -701,6 +701,82 @@ void build_append_pcihp_resources(Aml *scope /* \\_SB.PCI0 */,
+     aml_append(scope, dev);
+ }
+ 
++/* 
++ * Helper to generate "Real Hardware" looking ACPI names.
++ * This removes the "S<hex>" signature and ensures unique naming
++ * for multifunction devices.
++ */
++static void get_mimic_pci_name(char *name, int devfn) {
++    int slot = PCI_SLOT(devfn);
++    int func = PCI_FUNC(devfn);
++
++    switch (slot) {
++        case 0:
++            // Host Bridge is almost always Function 0
++            sprintf(name, "MCHC"); 
++            break;
++            
++        case 2:
++            // Slot 2: Graphics + associated HDMI Audio
++            if (func == 0) sprintf(name, "GFX0");      // Primary GPU
++            else if (func == 1) sprintf(name, "HDAU"); // HDMI Audio
++            else sprintf(name, "GFX%X", func);         // Fallback uniqueness
++            break;
++            
++        case 3:
++            // Slot 3: Network
++            if (func == 0) sprintf(name, "GLAN");
++            else sprintf(name, "NET%X", func);
++            break;
++            
++        case 4:
++            // Slot 4: Multimedia / Audio
++            if (func == 0) sprintf(name, "HDEF");
++            else sprintf(name, "MM%02X", func);
++            break;
++
++        case 5:
++            // Slot 5: USB XHCI (QEMU default often)
++            if (func == 0) sprintf(name, "XHC1");
++            else sprintf(name, "XHC%X", func);
++            break;
++
++        case 6:
++            // Slot 6: SATA (AHCI)
++            if (func == 0) sprintf(name, "SAT0");
++            else sprintf(name, "SAT%X", func);
++            break;
++
++        case 29:
++            // Slot 29 (0x1D): USB EHCI (Intel Standard)
++            if (func == 0) sprintf(name, "EHC1");
++            else sprintf(name, "EHC%X", func);
++            break;
++
++        case 31:
++            // Slot 31 (0x1F): LPC / SMBus / SATA 2
++            if (func == 0) sprintf(name, "LPCB");      // ISA Bridge
++            else if (func == 2) sprintf(name, "SAT1"); // 2nd SATA
++            else if (func == 3) sprintf(name, "SBUS"); // SMBus
++            else sprintf(name, "S31%X", func);         // Fallback
++            break;
++
++        default:
++            /* 
++             * For generic slots, we use "RP" (Root Port) + devfn (Hex).
++             * 
++             * Why 'devfn' and not 'slot'?
++             * - Slot 10, Func 0 (devfn 0x50) -> RP50
++             * - Slot 10, Func 1 (devfn 0x51) -> RP51
++             * 
++             * This guarantees ACPI uniqueness for multifunction devices
++             * while completely breaking the "S" + hex signature.
++             */
++            sprintf(name, "RP%02X", devfn);
++            break;
++    }
++}
++
+ bool build_append_notification_callback(Aml *parent_scope, const PCIBus *bus)
+ {
+     Aml *method;
+@@ -710,7 +786,11 @@ bool build_append_notification_callback(Aml *parent_scope, const PCIBus *bus)
+     GQueue *pcnt_bus_list = g_queue_new();
+ 
+     QLIST_FOREACH(sec, &bus->child, sibling) {
+-        Aml *br_scope = aml_scope("S%.02X", sec->parent_dev->devfn);
++        char mimic_name[5];
++        get_mimic_pci_name(mimic_name, sec->parent_dev->devfn);
++        
++        Aml *br_scope = aml_scope("%s", mimic_name);
++        
+         if (pci_bus_is_root(sec)) {
+             continue;
+         }
+@@ -749,7 +829,9 @@ bool build_append_notification_callback(Aml *parent_scope, const PCIBus *bus)
+ 
+     /* Notify about child bus events in any case */
+     while ((sec = g_queue_pop_head(pcnt_bus_list))) {
+-        aml_append(method, aml_name("^S%.02X.PCNT", sec->parent_dev->devfn));
++        char mimic_name[5];
++        get_mimic_pci_name(mimic_name, sec->parent_dev->devfn);
++        aml_append(method, aml_name("^%s.PCNT", mimic_name));
+     }
+ 
+     aml_append(parent_scope, method);
+@@ -805,8 +887,13 @@ static void build_append_pcihp_notify_entry(Aml *method, int slot)
+     Aml *if_ctx;
+     int32_t devfn = PCI_DEVFN(slot, 0);
+ 
++    char mimic_name[5];
++    get_mimic_pci_name(mimic_name, devfn);
++
+     if_ctx = aml_if(aml_and(aml_arg(0), aml_int(0x1U << slot), NULL));
+-    aml_append(if_ctx, aml_notify(aml_name("S%.02X", devfn), aml_arg(1)));
++
++    aml_append(if_ctx, aml_notify(aml_name("%s", mimic_name), aml_arg(1)));
++    
+     aml_append(method, if_ctx);
+ }
+ 
+@@ -869,10 +956,13 @@ void build_append_pcihp_slots(Aml *parent_scope, PCIBus *bus)
+             continue;
+         }
+ 
++        char mimic_name[5];
++        get_mimic_pci_name(mimic_name, devfn);
++
+         if (bus->devices[devfn]) {
+-            dev = aml_scope("S%.02X", devfn);
++            dev = aml_scope("%s", mimic_name);
+         } else {
+-            dev = aml_device("S%.02X", devfn);
++            dev = aml_device("%s", mimic_name);
+             aml_append(dev, aml_name_decl("_ADR", aml_int(adr)));
+         }
+ 
+@@ -914,7 +1004,11 @@ void build_append_pci_bus_devices(Aml *parent_scope, PCIBus *bus)
+         }
+ 
+         /* start to compose PCI device descriptor */
+-        dev = aml_device("S%.02X", devfn);
++        
++        char mimic_name[5];
++        get_mimic_pci_name(mimic_name, devfn);
++        dev = aml_device("%s", mimic_name);
++
+         aml_append(dev, aml_name_decl("_ADR", aml_int(adr)));
+ 
+         call_dev_aml_func(DEVICE(bus->devices[devfn]), dev);
+diff --git a/hw/isa/lpc_ich9.c b/hw/isa/lpc_ich9.c
+index c9cb8f7779..c1c7bdc36d 100644
+--- a/hw/isa/lpc_ich9.c
++++ b/hw/isa/lpc_ich9.c
+@@ -863,7 +863,7 @@ static void build_ich9_isa_aml(AcpiDevAmlIf *adev, Aml *scope)
+     aml_append(scope, aml_operation_region("PIRQ", AML_PCI_CONFIG,
+                                            aml_int(0x60), 0x0C));
+     /* Fields declarion has to happen *after* operation region */
+-    field = aml_field("PCI0.SF8.PIRQ", AML_BYTE_ACC, AML_NOLOCK, AML_PRESERVE);
++    field = aml_field("PCI0.LPCB.PIRQ", AML_BYTE_ACC, AML_NOLOCK, AML_PRESERVE);
+     aml_append(field, aml_named_field("PRQA", 8));
+     aml_append(field, aml_named_field("PRQB", 8));
+     aml_append(field, aml_named_field("PRQC", 8));
 diff --git a/block/vhdx.c b/block/vhdx.c
 index b2a4b81..dffe9f8 100644
 --- a/block/vhdx.c
