@@ -76,6 +76,8 @@ QEMU XML:
   MdeModulePkg/Universal/Acpi/BootGraphicsResourceTableDxe/BootGraphicsResourceTableDxe.inf
   MdeModulePkg/Universal/Acpi/FirmwarePerformanceDataTableDxe/FirmwarePerformanceDxe.inf     <---- Add
 ```
+- ```OvmfPkg/Library/QemuBootOrderLib/QemuBootOrderLib.c```
+  - Search for function: `GetFrontPageTimeoutFromQemu`
 
 ## Secure Boot
 
