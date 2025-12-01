@@ -152,7 +152,7 @@ main() {
     exit 1
   fi
 
-  if ! source "./utils. sh"; then
+  if ! source "./utils.sh"; then
     echo "Failed to load utilities module!"
     exit 1
   fi
