@@ -105,7 +105,7 @@ fmtr::box_text() {
 # Question prompt
 fmtr::ask() {
   local message
-  message="$(fmtr::format_text '\n  ' "[?]" " $1" "$TEXT_BLACK" "$BACK_BRIGHT_GREEN")"
+  message="$(fmtr::format_text '\n ' "[?]" " $1" "$TEXT_BLACK" "$BACK_BRIGHT_GREEN")"
   echo "$message" | tee -a "$LOG_FILE"
 }
 
