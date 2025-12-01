@@ -58,14 +58,14 @@ readonly BACK_WHITE="\033[47m"       BACK_BRIGHT_WHITE="\033[107m"
 # FORMATTER FUNCTIONS
 # =============================================================================
 
-# Format text with ANSI styles - optimized
+# Format text with ANSI styles
 fmtr::format_text() {
   local prefix="$1" text="$2" suffix="$3"
   shift 3
   echo -e "${prefix}${*// }${text}${RESET}${suffix}"
 }
 
-# Internal unified logging function - eliminates duplication
+# Internal unified logging function
 __fmtr::log() {
   local icon="$1" color="$2" stream="$3"
   shift 3
@@ -94,18 +94,15 @@ fmtr::fatal() {
   echo "$message" >> "$LOG_FILE"
 }
 
-# Optimized box drawing - pure bash, no subshells
+# Box drawing
 fmtr::box_text() {
-  local text="$1" width=$(( ${#text} + 2 )) i
-
-  printf "\n  ╔"
-  for (( i = 0; i < width; i++ )); do printf "═"; done
-  printf "╗\n  ║ %s ║\n  ╚" "$text"
-  for (( i = 0; i < width; i++ )); do printf "═"; done
-  printf "╝\n"
+  local text=$1 pad border
+  printf -v pad '%*s' $((${#text} + 2))
+  border=${pad// /═}
+  printf '\n  ╔%s╗\n  ║ %s ║\n  ╚%s╝\n' "$border" "$text" "$border"
 }
 
-# Stylized prompt for user questions
+# Question prompt
 fmtr::ask() {
   local message
   message="$(fmtr::format_text '\n  ' "[?]" " $1" "$TEXT_BLACK" "$BACK_BRIGHT_GREEN")"
@@ -116,7 +113,7 @@ fmtr::ask() {
 # PROMPTER FUNCTIONS
 # =============================================================================
 
-# Yes/No prompt - optimized
+# Yes/No prompt
 prmt::yes_or_no() {
   local answer
   while true; do
@@ -142,7 +139,7 @@ prmt::quick_prompt() {
 # PACKAGE MANAGEMENT FUNCTIONS
 # =============================================================================
 
-# Install required packages - optimized for efficiency
+# Install required packages
 install_req_pkgs() {
   local component="$1"
   [[ -z "$component" ]] && { fmtr::error "Component name not specified! "; exit 1; }
