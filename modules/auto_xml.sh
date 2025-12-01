@@ -2,8 +2,7 @@
 
 [[ -z "$DISTRO" || -z "$LOG_FILE" ]] && { echo "Required environment variables not set."; exit 1; }
 
-source "./utils/formatter.sh"
-source "./utils/prompter.sh"
+source "./utils.sh"
 
 PRESET_FILE="preset.txt"
 

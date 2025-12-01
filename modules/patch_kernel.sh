@@ -2,9 +2,7 @@
 
 [[ -z "$DISTRO" || -z "$LOG_FILE" ]] && { echo "Required environment variables not set."; exit 1; }
 
-source "./utils/prompter.sh"
-source "./utils/formatter.sh"
-source "./utils/packages.sh"
+source "./utils.sh"
 
 readonly SRC_DIR="src"
 readonly TKG_URL="https://github.com/Frogging-Family/linux-tkg.git"

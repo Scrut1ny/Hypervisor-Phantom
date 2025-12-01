@@ -2,9 +2,7 @@
 
 [[ -z "$DISTRO" || -z "$LOG_FILE" ]] && { echo "Required environment variables not set."; exit 1; }
 
-source "./utils/formatter.sh"
-source "./utils/prompter.sh"
-source "./utils/packages.sh"
+source "./utils.sh"
 
 readonly SRC_DIR="src"
 readonly LG_URL="https://looking-glass.io/artifact/stable/source"
