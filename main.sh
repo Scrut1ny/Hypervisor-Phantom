@@ -152,18 +152,8 @@ main() {
     exit 1
   fi
 
-  if ! source "./utils/debugger.sh"; then
-    echo "Log file at ${LOG_FILE} couldn't be generated. Check permissions!"
-    exit 1
-  fi
-
-  if ! declare -f fmtr::format_text &>/dev/null && ! source "./utils/formatter.sh"; then
-    echo "Library 'formatter.sh' couldn't be loaded!"
-    exit 1
-  fi
-
-  if ! source "./utils/prompter.sh"; then
-    echo "Library 'prompter.sh' couldn't be loaded!"
+  if ! source "./utils. sh"; then
+    echo "Failed to load utilities module!"
     exit 1
   fi
 
