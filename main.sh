@@ -113,6 +113,8 @@ main_menu() {
     "Kernel (Patched) Setup"
     "Looking Glass Setup"
     "Auto Libvirt XML Setup"
+    "Check System Compatibility"
+    "Uninstall/Cleanup"
   )
   readonly options
 
@@ -125,7 +127,7 @@ main_menu() {
     done
     fmtr::format_text '\n  ' "[0]" " ${options[0]}\n" "$TEXT_BRIGHT_RED"
 
-    local choice="$(prmt::quick_prompt '  Enter your choice [0-7]: ')" && clear
+    local choice="$(prmt::quick_prompt '  Enter your choice [0-9]: ')" && clear
     case $choice in
       1) fmtr::box_text "${options[1]}"; "./modules/virtualization.sh" ;;
       2) fmtr::box_text "${options[2]}"; "./modules/patch_qemu.sh" ;;
@@ -134,6 +136,8 @@ main_menu() {
       5) fmtr::box_text "${options[5]}"; "./modules/patch_kernel.sh" ;;
       6) fmtr::box_text "${options[6]}"; "./modules/looking_glass.sh" ;;
       7) fmtr::box_text "${options[7]}"; "./modules/auto_xml.sh" ;;
+      8) fmtr::box_text "${options[8]}"; "./modules/check_compat.sh" ;;
+      9) fmtr::box_text "${options[9]}"; "./modules/uninstall.sh" ;;
       0)
         if prmt::yes_or_no "$(fmtr::ask 'Do you want to clear the logs directory?')"; then
           rm "${LOG_PATH}"/*.log

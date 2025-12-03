@@ -2,6 +2,8 @@
 
 [[ -z "$DISTRO" || -z "$LOG_FILE" ]] && { echo "Required environment variables not set."; exit 1; }
 
+set -o pipefail
+
 source "./utils.sh"
 
 declare -r CPU_VENDOR=$(case "$VENDOR_ID" in
@@ -103,7 +105,7 @@ acquire_qemu_source() {
   curl -sSO "$QEMU_SIG_URL" || { fmtr::fatal "Failed to download QEMU signature file."; exit 1; }
 
   fmtr::log "Verifying source authenticity..."
-  if ! gpg --keyserver keys.openpgp.org --recv-keys "$GPG_KEY" &>> "$LOG_FILE"; then
+  if ! gpg --keyserver keys.openpgp.org --recv-keys "$GPG_KEY" >> "$LOG_FILE" 2>&1; then
     fmtr::warn "Failed to import QEMU signing key."
     if ! prmt::yes_or_no "$(fmtr::ask 'Continue anyway despite key import failure?'))"; then
       fmtr::fatal "Aborting due to key import failure."
@@ -112,7 +114,7 @@ acquire_qemu_source() {
     fmtr::warn "Continuing despite failed key import..."
   fi
 
-  if ! gpg --verify "$QEMU_SIG" "$QEMU_ARCHIVE" &>> "$LOG_FILE"; then
+  if ! gpg --verify "$QEMU_SIG" "$QEMU_ARCHIVE" >> "$LOG_FILE" 2>&1; then
     fmtr::warn "Signature verification FAILED! Archive may be compromised."
     if ! prmt::yes_or_no "$(fmtr::ask 'Continue anyway despite failed signature verification?'))"; then
       fmtr::fatal "Aborting due to failed signature verification."
@@ -146,13 +148,13 @@ patch_qemu() {
 
   fmtr::info "Applying patches to QEMU..."
 
-  patch -fsp1 < "${PATCH_DIR}/${QEMU_PATCH}" &>> "$LOG_FILE" || {
+  patch -fsp1 < "${PATCH_DIR}/${QEMU_PATCH}" >> "$LOG_FILE" 2>&1 || {
     fmtr::error "Failed to apply patch ${QEMU_PATCH}!"
     fmtr::fatal "Patch application failed. Please check the log for errors."
     exit 1
   }
 
-  patch -fsp1 < "${PATCH_DIR}/${QEMU_LIBNFS_PATCH}" &>> "$LOG_FILE" || {
+  patch -fsp1 < "${PATCH_DIR}/${QEMU_LIBNFS_PATCH}" >> "$LOG_FILE" 2>&1 || {
     fmtr::error "Failed to apply patch ${QEMU_LIBNFS_PATCH}!"
     fmtr::fatal "libNFS patch application failed. Please check the log for errors."
     exit 1
@@ -348,7 +350,7 @@ spoof_acpi_table_data() {
     cat "${FAKE_BATTERY_ACPITABLE}" \
       | sed "s/BOCHS/$appname6/" \
       | sed "s/BXPCSSDT/$appname8/" > "$HOME/fake_battery.dsl"
-    iasl -tc "$HOME/fake_battery.dsl" &>> "$LOG_FILE"
+    iasl -tc "$HOME/fake_battery.dsl" >> "$LOG_FILE" 2>&1
 
     fmtr::info "ACPI table saved to '$HOME/fake_battery.aml'"
     fmtr::info "It's highly recommended to passthrough the ACPI Table via QEMU's args/xml:
@@ -477,7 +479,7 @@ compile_qemu() {
               --enable-usb-redir \
               --enable-spice \
               --enable-spice-protocol \
-              --disable-werror &>> "$LOG_FILE"
+              --disable-werror >> "$LOG_FILE" 2>&1
 
   if [[ $? -ne 0 ]]; then
     fmtr::error "Configure failed. Check $LOG_FILE"
@@ -485,14 +487,14 @@ compile_qemu() {
   fi
 
   fmtr::log "Building QEMU"
-  make -j"$(nproc)" &>> "$LOG_FILE"
+  make -j"$(nproc)" >> "$LOG_FILE" 2>&1
   if [[ $? -ne 0 ]]; then
     fmtr::error "Build failed. Check $LOG_FILE"
     return 1
   fi
 
   fmtr::log "Installing QEMU"
-  make install &>> "$LOG_FILE"
+  make install >> "$LOG_FILE" 2>&1
   if [[ $? -ne 0 ]]; then
     fmtr::error "Install failed. Check $LOG_FILE"
     return 1

@@ -84,10 +84,16 @@ fmtr::log "Number of cores set to : $CORES"
 sed -i "s|@NUMBER_OF_THREADS@|$THREADS|g" "$TMP_XML"
 fmtr::log "Number of threads set to : $THREADS"
 
+# Randomize Hyper-V Vendor ID
+HV_VENDOR_ID=$(tr -dc 'A-Za-z0-9' </dev/urandom | head -c12)
+sed -i "s|value=\"GenuineIntel\"|value=\"$HV_VENDOR_ID\"|g" "$TMP_XML"
+sed -i "s|value=\"AuthenticAMD\"|value=\"$HV_VENDOR_ID\"|g" "$TMP_XML"
+fmtr::log "Hyper-V Vendor ID set to : $HV_VENDOR_ID"
+
 
 
 # Define VM using updated XML
-sudo virsh define "$TMP_XML" &>> "$LOG_FILE"
+sudo virsh define "$TMP_XML" >> "$LOG_FILE" 2>&1
 rm -f "$TMP_XML"
 fmtr::info "VM '$VM_NAME' defined with $VCPU vCPUs."
 fmtr::info "THIS COULD BE WRONG IF YOU HAVE EFFICIENCY CORES, IF THAT'S THE CASE, GG!"
@@ -135,9 +141,7 @@ sudo virt-xml "$VM_NAME" --edit --qemu-commandline="
     -smbios type=4,sock_pfx='$socket_designation',manufacturer='$cpu_manufacturer',version='$cpu_version',max-speed='$max_speed',current-speed='$current_speed'
     -smbios type=17,loc_pfx='Controller0-ChannelA-DIMMO',bank='BANK 0',manufacturer='${mem_manufacturer:-Samsung}',serial='Unknown',asset='${asset_tag:-Not Specified}',part='${part_number:-Not Specified}',speed='${speed:-4800}'
     -smbios type=17,loc_pfx='Controller1-ChannelA-DIMMO',bank='BANK 0',manufacturer='${mem_manufacturer:-Samsung}',serial='Unknown',asset='${asset_tag:-Not Specified}',part='${part_number:-Not Specified}',speed='${speed:-4800}'
-" &>> "$LOG_FILE"
-
-
+" >> "$LOG_FILE" 2>&1
 
 
 
@@ -149,7 +153,7 @@ sudo virt-xml "$VM_NAME" --edit --qemu-commandline="
 MAC_ADDRESS=$(printf '02%s\n' "$(hexdump -vn5 -e '5/1 ":%02x"' /dev/urandom)")
 
 # Apply the MAC address to the default network interface using virt-xml
-sudo virt-xml "$VM_NAME" --edit --network network=default,mac="$MAC_ADDRESS" &>> "$LOG_FILE"
+sudo virt-xml "$VM_NAME" --edit --network network=default,mac="$MAC_ADDRESS" >> "$LOG_FILE" 2>&1
 
 fmtr::info "MAC address set to $MAC_ADDRESS for VM '$VM_NAME'."
 

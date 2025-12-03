@@ -184,7 +184,7 @@ install_req_pkgs() {
   # Prompt for installation
   fmtr::warn "Missing required $component packages: ${MISSING_PKGS[*]}"
   if prmt::yes_or_no "$(fmtr::ask "Install required missing $component packages? ")"; then
-    $INSTALL_CMD "${MISSING_PKGS[@]}" &>> "$LOG_FILE" || {
+    $INSTALL_CMD "${MISSING_PKGS[@]}" >> "$LOG_FILE" 2>&1 || {
       fmtr::error "Failed to install required $component packages"
       exit 1
     }
@@ -198,6 +198,22 @@ install_req_pkgs() {
 # =============================================================================
 # DEBUGGER FUNCTIONS
 # =============================================================================
+
+# Check for required commands
+check_requirements() {
+  local missing=()
+  for cmd in "$@"; do
+    if ! command -v "$cmd" &> /dev/null; then
+      missing+=("$cmd")
+    fi
+  done
+
+  if [[ ${#missing[@]} -gt 0 ]]; then
+    fmtr::error "Missing required commands: ${missing[*]}"
+    fmtr::info "Please install them and try again."
+    exit 1
+  fi
+}
 
 # Fatal error handler
 dbg::fail() {
