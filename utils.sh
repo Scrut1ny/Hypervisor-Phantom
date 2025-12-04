@@ -183,7 +183,7 @@ install_req_pkgs() {
 
   # Prompt for installation
   fmtr::warn "Missing required $component packages: ${MISSING_PKGS[*]}"
-  if prmt::yes_or_no "$(fmtr::ask "Install required missing $component packages? ")"; then
+  if prmt::yes_or_no "$(fmtr::ask "Install required missing $component packages?")"; then
     $INSTALL_CMD "${MISSING_PKGS[@]}" &>> "$LOG_FILE" || {
       fmtr::error "Failed to install required $component packages"
       exit 1
