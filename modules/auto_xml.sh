@@ -53,8 +53,8 @@ fmtr::info "Using template: $TEMPLATE_FILE"
 ##################################################
 ### CPU Topology
 
-CORES=$(LC_ALL=C lscpu --json | jq -r '[.lscpu[] | select(.field=="Core(s) per socket:") | .data] | join(" ")')
-THREADS=$(LC_ALL=C lscpu --json | jq -r '[.lscpu[] | select(.field=="Thread(s) per core:") | .data] | join(" ")')
+CORES=$(LC_ALL=C lscpu | sed -n 's/^Core(s) per socket:[[:space:]]*//p')
+THREADS=$(LC_ALL=C lscpu | sed -n 's/^Thread(s) per core:[[:space:]]*//p')
 
 
 
