@@ -296,7 +296,7 @@ systemd-boot_boot_entry_maker() {
   local TIMESTAMP=$(date +"%Y-%m-%d_%H-%M-%S")
   local ROOT_DEVICE=$(findmnt -no SOURCE /)
   local ROOTFSTYPE=$(findmnt -no FSTYPE /)
-  local PARTUUID=$("$ROOT_ESC" blkid -s PARTUUID -o value "$ROOT_DEVICE")
+  local PARTUUID=$($ROOT_ESC blkid -s PARTUUID -o value "$ROOT_DEVICE")
 
   if [[ -z "$PARTUUID" ]]; then
     fmtr::error "Unable to determine PARTUUID for root device ($ROOT_DEVICE)."
@@ -325,8 +325,8 @@ EOF
 
   for ENTRY_DIR in "${SDBOOT_CONF_LOCATIONS[@]}"; do
     if [[ -d "$ENTRY_DIR" ]]; then
-      "$ROOT_ESC" echo "$BOOT_ENTRY_CONTENT" | tee "$ENTRY_DIR/$ENTRY_NAME.conf" &>> "$LOG_FILE"
-      "$ROOT_ESC" echo "$FALLBACK_BOOT_ENTRY_CONTENT" | tee "$ENTRY_DIR/$ENTRY_NAME-fallback.conf" &>> "$LOG_FILE"
+      $ROOT_ESC echo "$BOOT_ENTRY_CONTENT" | tee "$ENTRY_DIR/$ENTRY_NAME.conf" &>> "$LOG_FILE"
+      $ROOT_ESC echo "$FALLBACK_BOOT_ENTRY_CONTENT" | tee "$ENTRY_DIR/$ENTRY_NAME-fallback.conf" &>> "$LOG_FILE"
       if [[ $? -eq 0 ]]; then
         fmtr::info "Boot entries written to: $ENTRY_DIR/$ENTRY_NAME.conf and $ENTRY_DIR/$ENTRY_NAME-fallback.conf"
         return 0
