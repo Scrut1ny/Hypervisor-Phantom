@@ -124,7 +124,7 @@ configure_ivshmem_shmem() {
 # Alias lg for Looking Glass shared memory setup
 alias lg='if [ ! -e /dev/shm/looking-glass ]; then \
   touch /dev/shm/looking-glass; \
-  sudo chown $USER:kvm /dev/shm/looking-glass; \
+  "$ROOT_ESC" chown $USER:kvm /dev/shm/looking-glass; \
   chmod 660 /dev/shm/looking-glass; \
   /usr/local/bin/looking-glass-client -S -K -1; \
 else \
@@ -152,13 +152,13 @@ configure_ivshmem_kvmfr() {
   local MEMORY_SIZE_MB="32"
 
   # Temporary
-  modprobe kvmfr static_size_mb=$MEMORY_SIZE_MB
+  "$ROOT_ESC" modprobe kvmfr static_size_mb=$MEMORY_SIZE_MB
 
   # Permanent
-  echo "options kvmfr static_size_mb=$MEMORY_SIZE_MB" | tee /etc/modprobe.d/kvmfr.conf
+  "$ROOT_ESC" echo "options kvmfr static_size_mb=$MEMORY_SIZE_MB" | tee /etc/modprobe.d/kvmfr.conf
 
   # Automatic (w/systemd)
-  echo -e "# KVMFR Looking Glass module\nkvmfr" | tee /etc/modules-load.d/kvmfr.conf
+  "$ROOT_ESC" echo -e "# KVMFR Looking Glass module\nkvmfr" | tee /etc/modules-load.d/kvmfr.conf
 
   # Permissions
   chown $(whoami):kvm /dev/kvmfr0

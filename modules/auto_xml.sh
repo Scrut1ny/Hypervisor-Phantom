@@ -87,7 +87,7 @@ fmtr::log "Number of threads set to : $THREADS"
 
 
 # Define VM using updated XML
-sudo virsh define "$TMP_XML" &>> "$LOG_FILE"
+"$ROOT_ESC" virsh define "$TMP_XML" &>> "$LOG_FILE"
 rm -f "$TMP_XML"
 fmtr::info "VM '$VM_NAME' defined with $VCPU vCPUs."
 fmtr::info "THIS COULD BE WRONG IF YOU HAVE EFFICIENCY CORES, IF THAT'S THE CASE, GG!"
@@ -100,7 +100,7 @@ fmtr::info "THIS COULD BE WRONG IF YOU HAVE EFFICIENCY CORES, IF THAT'S THE CASE
 ### SMBIOS DATA
 
 # CPU Info
-processor_output=$(sudo dmidecode -t 4)
+processor_output=$("$ROOT_ESC" dmidecode -t 4)
 cpu_manufacturer=${cpu_manufacturer:-$(echo "$processor_output" | grep 'Manufacturer:' | awk -F': +' '{print $2}')}
 
 # Libvirt XML doesn't allow commas in strings unless they're escaped with another comma.
@@ -115,7 +115,7 @@ max_speed=${max_speed:-$(echo "$processor_output" | grep 'Max Speed:' | awk -F':
 current_speed=${current_speed:-$(echo "$processor_output" | grep 'Current Speed:' | awk -F': +' '{print $2}' | awk '{print $1}')}
 
 # Memory Info
-memory_output=$(sudo dmidecode -t 17)
+memory_output=$("$ROOT_ESC" dmidecode -t 17)
 locator=${locator:-$(echo "$memory_output" | grep -m1 'Locator:' | awk -F': +' '{print $2}')}
 bank_locator=${bank_locator:-$(echo "$memory_output" | grep -m1 'Bank Locator:' | awk -F': +' '{print $2}')}
 mem_manufacturer=${mem_manufacturer:-$(echo "$memory_output" | grep -m1 'Manufacturer:' | awk -F': +' '{print $2}')}
@@ -127,7 +127,7 @@ speed=${speed:-$(echo "$memory_output" | grep -m1 'Speed:' | awk -F': +' '{print
 uuid=${uuid:-$(uuidgen -r)}
 
 # Inject SMBIOS into VM
-sudo virt-xml "$VM_NAME" --edit --qemu-commandline="
+"$ROOT_ESC" virt-xml "$VM_NAME" --edit --qemu-commandline="
     -smbios type=0,uefi='true'
     -smbios type=1,serial='To be filled by O.E.M.',uuid='$uuid'
     -smbios type=2,serial='To be filled by O.E.M.'
@@ -138,9 +138,6 @@ sudo virt-xml "$VM_NAME" --edit --qemu-commandline="
 " &>> "$LOG_FILE"
 
 
-
-
-
 ##################################################
 ##################################################
 ### MAC address randomization
@@ -149,7 +146,7 @@ sudo virt-xml "$VM_NAME" --edit --qemu-commandline="
 MAC_ADDRESS=$(printf '02%s\n' "$(hexdump -vn5 -e '5/1 ":%02x"' /dev/urandom)")
 
 # Apply the MAC address to the default network interface using virt-xml
-sudo virt-xml "$VM_NAME" --edit --network network=default,mac="$MAC_ADDRESS" &>> "$LOG_FILE"
+"$ROOT_ESC" virt-xml "$VM_NAME" --edit --network network=default,mac="$MAC_ADDRESS" &>> "$LOG_FILE"
 
 fmtr::info "MAC address set to $MAC_ADDRESS for VM '$VM_NAME'."
 
