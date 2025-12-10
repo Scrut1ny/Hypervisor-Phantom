@@ -137,7 +137,6 @@ $ROOT_ESC virt-xml "$VM_NAME" --edit --qemu-commandline="
     -smbios type=17,loc_pfx='Controller1-ChannelA-DIMMO',bank='BANK 0',manufacturer='${mem_manufacturer:-Samsung}',serial='Unknown',asset='${asset_tag:-Not Specified}',part='${part_number:-Not Specified}',speed='${speed:-4800}'
 " &>> "$LOG_FILE"
 
-
 ##################################################
 ##################################################
 ### MAC address randomization
@@ -145,8 +144,12 @@ $ROOT_ESC virt-xml "$VM_NAME" --edit --qemu-commandline="
 # Generate a fully random, locally administered, unicast MAC address.
 MAC_ADDRESS=$(printf '02%s\n' "$(hexdump -vn5 -e '5/1 ":%02x"' /dev/urandom)")
 
-# Apply the MAC address to the default network interface using virt-xml
-$ROOT_ESC virt-xml "$VM_NAME" --edit --network network=default,mac="$MAC_ADDRESS" &>> "$LOG_FILE"
+# Change the path to the compiled OVMF output/NVRAM + random MAC
+$ROOT_ESC virt-xml "$VM_NAME" \
+  --edit \
+  --xml ./os/nvram/@template="$(pwd)/src/output/firmware/OVMF_VARS.qcow2" \
+  --xml ./os/loader="$(pwd)/src/output/firmware/OVMF_CODE.qcow2" \
+  --xml ./devices/interface/mac/@address="$MAC_ADDRESS" &>> "$LOG_FILE"
 
 fmtr::info "MAC address set to $MAC_ADDRESS for VM '$VM_NAME'."
 
