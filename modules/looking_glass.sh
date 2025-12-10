@@ -161,7 +161,7 @@ configure_ivshmem_kvmfr() {
   $ROOT_ESC echo -e "# KVMFR Looking Glass module\nkvmfr" | tee /etc/modules-load.d/kvmfr.conf
 
   # Permissions
-  chown $(whoami):kvm /dev/kvmfr0
+  $ROOT_ESC chown $(whoami):kvm /dev/kvmfr0
 
 }
 
