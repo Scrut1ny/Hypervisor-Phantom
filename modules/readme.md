@@ -42,9 +42,9 @@ OVMF Build Args:
 ```
 build -a X64 -p OvmfPkg/OvmfPkgX64.dsc -b RELEASE -t GCC5 -n 0 -s \
   --define SECURE_BOOT_ENABLE=TRUE \
+  --define SMM_REQUIRE=TRUE \
   --define TPM1_ENABLE=TRUE \
   --define TPM2_ENABLE=TRUE \
-  --define SMM_REQUIRE=TRUE
 ```
 
 QEMU XML:
