@@ -159,7 +159,7 @@ install_req_pkgs() {
 
   # Parse manager configuration
   IFS='|' read -r PKG_MANAGER INSTALL_FLAGS CHECK_CMD <<< "$config"
-  INSTALL_CMD="sudo $PKG_MANAGER $INSTALL_FLAGS"
+  INSTALL_CMD="$ROOT_ESC $PKG_MANAGER $INSTALL_FLAGS"
 
   # Get required packages from caller's array
   local pkg_var="REQUIRED_PKGS_${DISTRO}"
