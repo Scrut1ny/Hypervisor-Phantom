@@ -22,46 +22,6 @@ REQUIRED_PKGS_Fedora=(
   @virtualization swtpm
 )
 
-configure_firewall_arch() {
-  fmtr::log "Configuring firewall for Arch..."
-
-  if pacman -Qs "iptables-nft" &>> "$LOG_FILE"; then
-    if grep -q '^firewall_backend *= *"iptables"' /etc/libvirt/network.conf; then
-      fmtr::info "firewall_backend already set to iptables (compatibility layer)"
-    else
-      sed -i '/firewall_backend \=/s/^#//g' '/etc/libvirt/network.conf'
-      sed -i '/etc/libvirt/network.conf' -e 's/\(firewall_backend \= *\).*/\1"iptables"/'
-      fmtr::info "Set firewall_backend to iptables (compatibility layer)"
-    fi
-    systemctl enable --now nftables.service &>> "$LOG_FILE"
-    fmtr::info "nftables service enabled"
-
-  elif pacman -Qs "iptables" &>> "$LOG_FILE"; then
-    if pacman -Qs ebtables &> /dev/null; then
-      fmtr::info "ebtables already installed"
-    else
-      fmtr::log "Installing ebtables from AUR..."
-      git clone https://aur.archlinux.org/ebtables.git &>> "$LOG_FILE"
-      cd ebtables || exit
-      makepkg -sirc --noconfirm &>> "$LOG_FILE"
-      cd ..
-      rm -rf ebtables
-      fmtr::info "ebtables installed"
-    fi
-    systemctl enable --now iptables.service &>> "$LOG_FILE"
-    fmtr::info "iptables service enabled"
-
-  elif pacman -Qs "nftables" &>> "$LOG_FILE"; then
-    fmtr::warn "Nftables without iptables compatibility isn't ideal for libvirt"
-    echo "See: https://bbs.archlinux.org/viewtopic.php?id=284664"
-    systemctl enable --now nftables.service &>> "$LOG_FILE"
-    fmtr::info "nftables service enabled"
-
-  else
-    fmtr::error "Unsupported firewall implementation. Manual configuration may be required."
-  fi
-}
-
 configure_system_installation() {
   local libvirtd_conf='/etc/libvirt/libvirtd.conf'
   local qemu_conf='/etc/libvirt/qemu.conf'
@@ -99,7 +59,7 @@ configure_system_installation() {
   set_qemu_conf "$qemu_conf" "group" "$current_user"
 
   # Groups: input, kvm, libvirt
-  for grp in input kvm libvirt; do
+  for grp in input input kvm libvirt; do
     if id -nG "$current_user" | grep -qw "$grp"; then
       fmtr::info "User $current_user already in $grp group"
     else
@@ -128,14 +88,6 @@ configure_system_installation() {
 
 main() {
   install_req_pkgs "virt"
-
-  if [[ "$DISTRO" == "arch" ]]; then
-    fmtr::log "Running Arch-specific firewall configuration..."
-    configure_firewall_arch
-  else
-    fmtr::info "No firewall configuration needed for $DISTRO"
-  fi
-
   configure_system_installation
   fmtr::warn "Logout or reboot for all group and service changes to take effect."
 }
