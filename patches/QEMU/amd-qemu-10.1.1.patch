@@ -425,6 +425,25 @@ index 18f482ca7f..6679592624 100644
      k->device_id = QXL_DEVICE_ID_STABLE;
      set_bit(DEVICE_CATEGORY_DISPLAY, dc->categories);
      device_class_set_legacy_reset(dc, qxl_reset_handler);
+diff --git a/hw/i2c/smbus_ich9.c b/hw/i2c/smbus_ich9.c
+index 956c9b59bb..c91c1c4a32 100644
+--- a/hw/i2c/smbus_ich9.c
++++ b/hw/i2c/smbus_ich9.c
+@@ -124,12 +124,12 @@ static void ich9_smb_class_init(ObjectClass *klass, const void *data)
+     PCIDeviceClass *k = PCI_DEVICE_CLASS(klass);
+     AcpiDevAmlIfClass *adevc = ACPI_DEV_AML_IF_CLASS(klass);
+ 
+-    k->vendor_id = PCI_VENDOR_ID_INTEL;
++    k->vendor_id = PCI_VENDOR_ID_AMD;
+     k->device_id = PCI_DEVICE_ID_INTEL_ICH9_6;
+     k->revision = ICH9_A2_SMB_REVISION;
+     k->class_id = PCI_CLASS_SERIAL_SMBUS;
+     dc->vmsd = &vmstate_ich9_smbus;
+-    dc->desc = "ICH9 SMBUS Bridge";
++    dc->desc = "FCH SMBus Controller";
+     k->realize = ich9_smbus_realize;
+     k->config_write = ich9_smbus_write_config;
+     /*
 diff --git a/hw/i386/acpi-build.c b/hw/i386/acpi-build.c
 index 423c4959fe..0c846579cf 100644
 --- a/hw/i386/acpi-build.c
@@ -801,6 +820,21 @@ index b14983ec54..3d824d3e21 100644
              break;
          }
      }
+diff --git a/hw/ide/ich.c b/hw/ide/ich.c
+index 4cade0d121..5383a95d83 100644
+--- a/hw/ide/ich.c
++++ b/hw/ide/ich.c
+@@ -182,8 +182,8 @@ static void ich_ahci_class_init(ObjectClass *klass, const void *data)
+ 
+     k->realize = pci_ich9_ahci_realize;
+     k->exit = pci_ich9_uninit;
+-    k->vendor_id = PCI_VENDOR_ID_INTEL;
+-    k->device_id = PCI_DEVICE_ID_INTEL_82801IR;
++    k->vendor_id = PCI_VENDOR_ID_AMD;
++    k->device_id = PCI_DEVICE_ID_AMD_SATA;
+     k->revision = 0x02;
+     k->class_id = PCI_CLASS_STORAGE_SATA;
+     dc->vmsd = &vmstate_ich9_ahci;
 diff --git a/hw/input/adb-kbd.c b/hw/input/adb-kbd.c
 index 507557deec..7de1e5faaf 100644
 --- a/hw/input/adb-kbd.c
@@ -951,7 +985,7 @@ index d986c3c16e..2e9dd7b94e 100644
              .version = const_le16(0x0001),
          },
 diff --git a/hw/isa/lpc_ich9.c b/hw/isa/lpc_ich9.c
-index 304dffac32..45d2d400a3 100644
+index 304dffac32..7bae9035b7 100644
 --- a/hw/isa/lpc_ich9.c
 +++ b/hw/isa/lpc_ich9.c
 @@ -858,7 +858,7 @@ static void build_ich9_isa_aml(AcpiDevAmlIf *adev, Aml *scope)
@@ -963,6 +997,17 @@ index 304dffac32..45d2d400a3 100644
      aml_append(field, aml_named_field("PRQA", 8));
      aml_append(field, aml_named_field("PRQB", 8));
      aml_append(field, aml_named_field("PRQC", 8));
+@@ -888,8 +888,8 @@ static void ich9_lpc_class_init(ObjectClass *klass, const void *data)
+     dc->vmsd = &vmstate_ich9_lpc;
+     device_class_set_props(dc, ich9_lpc_properties);
+     k->config_write = ich9_lpc_config_write;
+-    dc->desc = "ICH9 LPC bridge";
+-    k->vendor_id = PCI_VENDOR_ID_INTEL;
++    dc->desc = "FCH LPC Bridge";
++    k->vendor_id = PCI_VENDOR_ID_AMD;
+     k->device_id = PCI_DEVICE_ID_INTEL_ICH9_8;
+     k->revision = ICH9_A2_LPC_REVISION;
+     k->class_id = PCI_CLASS_BRIDGE_ISA;
 diff --git a/hw/loongarch/virt.c b/hw/loongarch/virt.c
 index b15ada2078..f5e8cb3c5b 100644
 --- a/hw/loongarch/virt.c
@@ -2205,16 +2250,23 @@ index 6b7d3ac8a3..599c70e7e0 100644
  #define PCI_DEVICE_ID_REDHAT_NVME        0x0010
  #define PCI_DEVICE_ID_REDHAT_PVPANIC     0x0011
 diff --git a/include/hw/pci/pci_ids.h b/include/hw/pci/pci_ids.h
-index 33e2898be9..3f90f6661c 100644
+index 33e2898be9..fb7a0a0069 100644
 --- a/include/hw/pci/pci_ids.h
 +++ b/include/hw/pci/pci_ids.h
-@@ -237,6 +237,9 @@
+@@ -178,6 +178,7 @@
+ #define PCI_VENDOR_ID_AMD                0x1022
+ #define PCI_DEVICE_ID_AMD_LANCE          0x2000
+ #define PCI_DEVICE_ID_AMD_SCSI           0x2020
++#define PCI_DEVICE_ID_AMD_SATA           0x43f6
+ 
+ #define PCI_VENDOR_ID_HP                 0x103c
+ 
+@@ -237,6 +238,8 @@
  #define PCI_VENDOR_ID_BAIDU              0x1d22
  #define PCI_DEVICE_ID_KUNLUN_VF          0x3685
  
 +/* https://www.pcilookup.com/ */
 +
-+#define PCI_VENDOR_ID_AMD                0x1022
  #define PCI_VENDOR_ID_INTEL              0x8086
  #define PCI_DEVICE_ID_INTEL_82378        0x0484
  #define PCI_DEVICE_ID_INTEL_82441        0x1237
