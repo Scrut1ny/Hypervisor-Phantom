@@ -20,18 +20,14 @@ declare -A SOFTDEPS=(
 # Bootloader Detection
 ################################################################################
 detect_bootloader() {
-    if [[ -f /etc/default/grub ]]; then
-        BOOTLOADER_TYPE="grub"
-    else
+    [[ -f /etc/default/grub ]] && BOOTLOADER_TYPE=grub || {
         for dir in "${SDBOOT_CONF_LOCATIONS[@]}"; do
-            if [[ -d $dir ]]; then
-                BOOTLOADER_TYPE="systemd-boot"
-                SYSTEMD_BOOT_ENTRY_DIR=$dir
-                break
-            fi
+            [[ -d $dir ]] || continue
+            BOOTLOADER_TYPE=systemd-boot SYSTEMD_BOOT_ENTRY_DIR=$dir
+            break
         done
-        [[ -z $SYSTEMD_BOOT_ENTRY_DIR ]] && { fmtr::error "No supported bootloader detected (GRUB or systemd-boot). Exiting."; exit 1; }
-    fi
+        [[ $SYSTEMD_BOOT_ENTRY_DIR ]] || { fmtr::error "No supported bootloader detected (GRUB or systemd-boot). Exiting."; exit 1; }
+    }
     export BOOTLOADER_TYPE SYSTEMD_BOOT_ENTRY_DIR
 }
 
@@ -40,37 +36,39 @@ detect_bootloader() {
 ################################################################################
 revert_vfio() {
     if [[ -f $VFIO_CONF_PATH ]]; then
-        $ROOT_ESC rm -v "$VFIO_CONF_PATH" &>> "$LOG_FILE"
+        $ROOT_ESC rm -v "$VFIO_CONF_PATH" &>>"$LOG_FILE"
         fmtr::log "Removed VFIO Config: $VFIO_CONF_PATH"
     else
         fmtr::log "$VFIO_CONF_PATH doesn't exist; nothing to remove."
     fi
 
-    if [[ $BOOTLOADER_TYPE == "grub" ]]; then
+    if [[ $BOOTLOADER_TYPE == grub ]]; then
         $ROOT_ESC sed -E -i "/^GRUB_CMDLINE_LINUX_DEFAULT=/ {
-            s/$VFIO_KERNEL_OPTS_REGEX//g;
-            s/[[:space:]]+/ /g;
-            s/\"[[:space:]]+/\"/;
-            s/[[:space:]]+\"/\"/;
-        }" /etc/default/grub
+        s/$VFIO_KERNEL_OPTS_REGEX//g;
+        s/[[:space:]]+/ /g;
+        s/\"[[:space:]]+/\"/;
+        s/[[:space:]]+\"/\"/;
+    }" /etc/default/grub
+    fmtr::log "Removed VFIO kernel opts from GRUB config."
 
-        fmtr::log "Removed VFIO kernel opts from GRUB config."
-
-    elif [[ $BOOTLOADER_TYPE == "systemd-boot" && -n $SYSTEMD_BOOT_ENTRY_DIR ]]; then
+    elif [[ $BOOTLOADER_TYPE == systemd-boot && $SYSTEMD_BOOT_ENTRY_DIR ]]; then
         local config_file
-        config_file=$(find "$SYSTEMD_BOOT_ENTRY_DIR" -maxdepth 1 -name '*.conf' ! -name '*-fallback.conf' -print -quit)
+        config_file=$(
+            find "$SYSTEMD_BOOT_ENTRY_DIR" -maxdepth 1 \
+                -name '*.conf' ! -name '*-fallback.conf' \
+                -print -quit
+        )
 
-        [[ -z $config_file ]] && {
+        if [[ -z $config_file ]]; then
             fmtr::warn "No configuration file found in $SYSTEMD_BOOT_ENTRY_DIR"
             return
-        }
+        fi
 
         sed -E -i "/^options / {
             s/$VFIO_KERNEL_OPTS_REGEX//g;
             s/[[:space:]]+/ /g;
             s/[[:space:]]+$//;
         }" "$config_file"
-
         fmtr::log "Removed VFIO kernel opts from: $config_file"
     fi
 }
@@ -79,83 +77,53 @@ revert_vfio() {
 # Configure VFIO
 ################################################################################
 configure_vfio() {
-    local -a gpus
-    local sel pci_bdf group pci_bus_dev bad_group=0 pci_vendor
-    local -a bad_functions=() local_hwids=()
+    local dev bdf desc sel group bus bad=0 pci_vendor soft vendor_id device_id
+    local -a gpus=() badf=() ids=()
 
-    # Detect all GPUs - optimized with single pass
-    mapfile -t gpus < <(
-        for dev in /sys/bus/pci/devices/*; do
-            [[ -r "$dev/class" ]] || continue
-            local class=$(<"$dev/class")
-            [[ $class == 0x03* ]] || continue
+    for dev in /sys/bus/pci/devices/*; do
+        [[ -r $dev/class ]] || continue
+        [[ $(<"$dev/class") == 0x03* ]] || continue
+        bdf=${dev##*/}
+        desc=$(lspci -s "$bdf" 2>/dev/null) || continue
+        desc=${desc##*[}; desc=${desc%%]*}
+        gpus+=("$bdf|$desc")
+    done
 
-            local bdf=${dev##*/}
-            local pci_desc
-            pci_desc=$(lspci -s "$bdf" 2>/dev/null) || continue
-            pci_desc=${pci_desc##*[}
-            pci_desc=${pci_desc%%]*}
-            printf '%s %s\n' "$dev" "$pci_desc"
-        done
-    )
+    ((${#gpus[@]})) || { fmtr::error "No GPUs detected!"; exit 1; }
+    ((${#gpus[@]}==1)) && fmtr::warn "Only one GPU detected! Passing it through will leave the host without display output."
 
-    (( ${#gpus[@]} )) || { fmtr::error "No GPUs detected!"; exit 1; }
-    (( ${#gpus[@]} == 1 )) && fmtr::warn "Only one GPU detected! Passing it through will leave the host without display output."
-
-    # Prompt user to select GPU
     while :; do
-        for i in "${!gpus[@]}"; do
-            printf '  %d) %s\n' "$((i+1))" "${gpus[i]#* }"
-        done
+        for dev in "${!gpus[@]}"; do printf '  %d) %s\n' "$((dev+1))" "${gpus[dev]#*|}"; done
         read -rp "$(fmtr::ask 'Select device number: ')" sel
-        if [[ $sel =~ ^[0-9]+$ ]] && (( sel >= 1 && sel <= ${#gpus[@]} )); then
-            break
-        fi
+        [[ $sel =~ ^[0-9]+$ ]] && ((sel>=1 && sel<=${#gpus[@]})) && break
         fmtr::error "Invalid selection. Please choose a valid number."
     done
-    sel=$((sel - 1))
 
-    # Extract PCI BDF, IOMMU group, and gather devices
-    pci_bdf="${gpus[sel]%% *}"; pci_bdf="${pci_bdf##*/}"
-    group=$(basename "$(readlink -f "/sys/bus/pci/devices/$pci_bdf/iommu_group")")
-    pci_bus_dev="${pci_bdf%.*}"
+    bdf=${gpus[sel-1]%%|*}
+    group=$(basename "$(readlink -f /sys/bus/pci/devices/"$bdf"/iommu_group)")
+    bus=${bdf%.*}
 
-    # Gather all devices in the IOMMU group
-    for dev in /sys/kernel/iommu_groups/$group/devices/*; do
-        local func=${dev##*/}
-        local ven_id dev_id
-        ven_id=$(<"$dev/vendor")
-        dev_id=$(<"$dev/device")
-        local_hwids+=("${ven_id:2}:${dev_id:2}")
-
-        [[ "${func%.*}" != "$pci_bus_dev" ]] && {
-            bad_group=1
-            bad_functions+=("$func")
-        }
+    for dev in /sys/kernel/iommu_groups/"$group"/devices/*; do
+        bdf=${dev##*/}
+        read -r vendor_id <"$dev/vendor"; read -r device_id <"$dev/device"
+        ids+=("${vendor_id:2}:${device_id:2}")
+        [[ ${bdf%.*} == "$bus" ]] || { bad=1; badf+=("$bdf"); }
     done
 
-    # Validate group isolation
-    if (( bad_group )); then
-        fmtr::error "Bad IOMMU grouping - group #$group contains:\n$(printf '  [%s]\n' "${bad_functions[@]}")"
+    ((bad)) && {
+        fmtr::error "Bad IOMMU grouping - group #$group contains:\n$(printf '  [%s]\n' "${badf[@]}")"
         fmtr::warn "VFIO PT requires full group isolation. Fix with ACS override, firmware update, or proper hardware support."
         return 1
-    fi
+    }
 
     fmtr::log "Modifying VFIO config: $VFIO_CONF_PATH"
+    read -r pci_vendor <"/sys/bus/pci/devices/$bdf/vendor" || return 1
+    hwids=$(IFS=,; echo "${ids[*]}")
 
-    # Get vendor ID and build hwids
-    [[ -f /sys/bus/pci/devices/$pci_bdf/vendor ]] || return 1
-    read -r pci_vendor < "/sys/bus/pci/devices/$pci_bdf/vendor"
-    hwids=$(IFS=,; echo "${local_hwids[*]}")
-
-    # Generate VFIO configuration
     {
         printf 'options vfio-pci ids=%s\n' "$hwids"
-        local softdep_list=${SOFTDEPS[$pci_vendor]}
-        [[ -n $softdep_list ]] && for dep in $softdep_list; do
-            printf 'softdep %s pre: vfio-pci\n' "$dep"
-        done
-    } | $ROOT_ESC tee "$VFIO_CONF_PATH" >> "$LOG_FILE"
+        for soft in ${SOFTDEPS[$pci_vendor]:-}; do printf 'softdep %s pre: vfio-pci\n' "$soft"; done
+    } | $ROOT_ESC tee "$VFIO_CONF_PATH" >>"$LOG_FILE"
 
     export VFIO_CONF_CHANGED=1
 }
@@ -228,14 +196,10 @@ rebuild_bootloader() {
     fmtr::log "Updating bootloader configuration for GRUB."
 
     local cmd prefix
-    for prefix in "" "2"; do
+    for prefix in "" 2; do
         cmd="grub${prefix}-mkconfig"
-        if command -v "$cmd" &>> "$LOG_FILE"; then
-            $ROOT_ESC "$cmd" -o /boot/grub${prefix}/grub.cfg &>> "$LOG_FILE" && {
-                fmtr::log "Bootloader configuration updated."
-                return 0
-            }
-        fi
+        command -v "$cmd" &>>"$LOG_FILE" || continue
+        $ROOT_ESC "$cmd" -o "/boot/grub${prefix}/grub.cfg" &>>"$LOG_FILE" && { fmtr::log "Bootloader configuration updated."; return; }
     done
 
     fmtr::error "No known GRUB configuration command found on this system."
