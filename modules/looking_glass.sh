@@ -124,7 +124,7 @@ configure_ivshmem_shmem() {
 # Alias lg for Looking Glass shared memory setup
 alias lg='if [ ! -e /dev/shm/looking-glass ]; then \
   touch /dev/shm/looking-glass; \
-  $ROOT_ESC chown $USER:kvm /dev/shm/looking-glass; \
+  sudo chown $USER:kvm /dev/shm/looking-glass; \
   chmod 660 /dev/shm/looking-glass; \
   /usr/local/bin/looking-glass-client -S -K -1; \
 else \
@@ -155,10 +155,10 @@ configure_ivshmem_kvmfr() {
   $ROOT_ESC modprobe kvmfr static_size_mb=$MEMORY_SIZE_MB
 
   # Permanent
-  $ROOT_ESC echo "options kvmfr static_size_mb=$MEMORY_SIZE_MB" | tee /etc/modprobe.d/kvmfr.conf
+  echo "options kvmfr static_size_mb=$MEMORY_SIZE_MB" | $ROOT_ESC tee /etc/modprobe.d/kvmfr.conf
 
   # Automatic (w/systemd)
-  $ROOT_ESC echo -e "# KVMFR Looking Glass module\nkvmfr" | tee /etc/modules-load.d/kvmfr.conf
+  echo -e "# KVMFR Looking Glass module\nkvmfr" | $ROOT_ESC tee /etc/modules-load.d/kvmfr.conf
 
   # Permissions
   $ROOT_ESC chown $(whoami):kvm /dev/kvmfr0
@@ -170,7 +170,7 @@ main() {
   install_req_pkgs "LG"
   install_looking_glass
   configure_ivshmem_shmem
-
+  #configure_ivshmem_kvmfr -> this function is implemented but not called?
 }
 
 main
