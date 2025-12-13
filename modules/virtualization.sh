@@ -33,7 +33,7 @@ configure_system_installation() {
     local file="$1"
     local key="$2"
     local value="$3"
-    if grep -q "^${key}" "$file"; then
+    if $ROOT_ESC grep -q "^${key}" "$file"; then
       fmtr::info "$file: $key already set"
     else
       $ROOT_ESC sed -i "/${key}/s/^#//g" "$file" || echo "${key} ${value}" | tee -a "$file" > /dev/null
@@ -44,7 +44,7 @@ configure_system_installation() {
   # Helper to set qemu.conf user/group
   set_qemu_conf() {
     local conf="$1" key="$2" val="$3"
-    if grep -q "^${key} = \"${val}\"" "$conf"; then
+    if $ROOT_ESC grep -q "^${key} = \"${val}\"" "$conf"; then
       fmtr::info "$conf: $key already set to $val"
     else
       $ROOT_ESC sed -i "s/#${key} = \".*\"/${key} = \"${val}\"/" "$conf" || echo "${key} = \"${val}\"" | tee -a "$conf" > /dev/null
