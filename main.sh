@@ -147,11 +147,6 @@ main_menu() {
 }
 
 main() {
-  if [[ $EUID -ne 0 ]]; then
-    echo -e "\n  [❌] Script requires root/sudo privileges.\n       Please run: sudo $0"
-    exit 1
-  fi
-
   if ! source "./utils.sh"; then
     echo "Failed to load utilities module!"
     exit 1

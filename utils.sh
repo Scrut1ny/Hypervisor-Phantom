@@ -159,7 +159,7 @@ install_req_pkgs() {
 
   # Parse manager configuration
   IFS='|' read -r PKG_MANAGER INSTALL_FLAGS CHECK_CMD <<< "$config"
-  INSTALL_CMD="sudo $PKG_MANAGER $INSTALL_FLAGS"
+  INSTALL_CMD="$ROOT_ESC $PKG_MANAGER $INSTALL_FLAGS"
 
   # Get required packages from caller's array
   local pkg_var="REQUIRED_PKGS_${DISTRO}"
@@ -203,4 +203,24 @@ install_req_pkgs() {
 dbg::fail() {
   fmtr::fatal "$1"
   exit 1
+}
+
+
+# =============================================================================
+# COMPATABILITY FUNCTIONS
+# =============================================================================
+
+compat::get_escalation_cmd() {
+    for cmd in sudo doas pkexec; do
+        if command -v "$cmd" >/dev/null 2>&1; then
+            echo "$cmd"
+            return 0
+        fi
+    done
+    return 1
+}
+
+ROOT_ESC=$(compat::get_escalation_cmd) || {
+    echo "No supported privilege escalation tool found." >&2
+    exit 1
 }

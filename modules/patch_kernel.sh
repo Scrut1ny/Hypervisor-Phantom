@@ -142,11 +142,11 @@ modify_customization_cfg() {
         8) selected="piledriver" ;;
         9) selected="steamroller" ;;
         10) selected="excavator" ;;
-        11) selected="zen" ;;
-        12) selected="zen2" ;;
-        13) selected="zen3" ;;
-        14) selected="zen4" ;;
-        15) selected="zen5" ;;
+        11) selected="znver1" ;;
+        12) selected="znver2" ;;
+        13) selected="znver3" ;;
+        14) selected="znver4" ;;
+        15) selected="znver5" ;;
         16) selected="native_amd" ;;
         *)
           clear; fmtr::error "Invalid option, please try again."
@@ -266,19 +266,8 @@ patch_kernel() {
 
 arch_distro() {
   clear
-  local build_user="${SUDO_USER:-${DOAS_USER}}"
-  [[ -z "$build_user" ]] && { fmtr::error "Cannot determine original user (SUDO_USER not set)."; exit 1; }
-
-  chown -R "$build_user:$build_user" .
-
-  if command -v sudo >/dev/null; then
-    sudo -u "$build_user" HOME="$(getent passwd "$build_user" | cut -d: -f6)" makepkg -C -si --noconfirm
-  elif command -v doas >/dev/null; then
-    doas -u "$build_user" env HOME="$(getent passwd "$build_user" | cut -d: -f6)" makepkg -C -si --noconfirm
-  else
-    su "$build_user" -c "makepkg -C -si --noconfirm"
-  fi
-
+  makepkg -C -si --noconfirm
+  
   if prmt::yes_or_no "$(fmtr::ask 'Would you like to add a systemd-boot entry for this kernel?')"; then
     systemd-boot_boot_entry_maker
   else
@@ -307,7 +296,7 @@ systemd-boot_boot_entry_maker() {
   local TIMESTAMP=$(date +"%Y-%m-%d_%H-%M-%S")
   local ROOT_DEVICE=$(findmnt -no SOURCE /)
   local ROOTFSTYPE=$(findmnt -no FSTYPE /)
-  local PARTUUID=$(blkid -s PARTUUID -o value "$ROOT_DEVICE")
+  local PARTUUID=$($ROOT_ESC blkid -s PARTUUID -o value "$ROOT_DEVICE")
 
   if [[ -z "$PARTUUID" ]]; then
     fmtr::error "Unable to determine PARTUUID for root device ($ROOT_DEVICE)."
@@ -336,8 +325,8 @@ EOF
 
   for ENTRY_DIR in "${SDBOOT_CONF_LOCATIONS[@]}"; do
     if [[ -d "$ENTRY_DIR" ]]; then
-      echo "$BOOT_ENTRY_CONTENT" | tee "$ENTRY_DIR/$ENTRY_NAME.conf" &>> "$LOG_FILE"
-      echo "$FALLBACK_BOOT_ENTRY_CONTENT" | tee "$ENTRY_DIR/$ENTRY_NAME-fallback.conf" &>> "$LOG_FILE"
+      $ROOT_ESC echo "$BOOT_ENTRY_CONTENT" | tee "$ENTRY_DIR/$ENTRY_NAME.conf" &>> "$LOG_FILE"
+      $ROOT_ESC echo "$FALLBACK_BOOT_ENTRY_CONTENT" | tee "$ENTRY_DIR/$ENTRY_NAME-fallback.conf" &>> "$LOG_FILE"
       if [[ $? -eq 0 ]]; then
         fmtr::info "Boot entries written to: $ENTRY_DIR/$ENTRY_NAME.conf and $ENTRY_DIR/$ENTRY_NAME-fallback.conf"
         return 0
