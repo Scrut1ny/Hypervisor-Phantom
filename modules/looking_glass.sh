@@ -170,7 +170,7 @@ main() {
   install_req_pkgs "LG"
   install_looking_glass
   configure_ivshmem_shmem
-  #configure_ivshmem_kvmfr -> this function is implemented but not called?
+  
 }
 
 main
