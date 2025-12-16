@@ -69,10 +69,9 @@ patch_ovmf() {
   git apply < "$PATCH_DIR/$OVMF_PATCH" &>>"$LOG_FILE" || { fmtr::error "Failed to apply patch '$OVMF_PATCH'!"; return 1; }
   fmtr::info "Patch '$OVMF_PATCH' applied successfully."
 
-  fmtr::log "Choose BGRT BMP boot logo image option for OVMF:"
-  fmtr::format_text '\n  ' "[1]" " Apply host's (default)" "$TEXT_BRIGHT_YELLOW"
-  fmtr::format_text '  ' "[2]" " Apply custom (provide path)" "$TEXT_BRIGHT_YELLOW"
-
+  fmtr::info "Choose BGRT BMP boot logo image option for OVMF:"
+  printf '\n  %b[%d]%b %s\n' "$TEXT_BRIGHT_YELLOW" 1 "$RESET" "Apply host's (default)"
+  printf '  %b[%d]%b %s\n' "$TEXT_BRIGHT_YELLOW" 2 "$RESET" "Apply custom (provide path)"
   validate_bmp() {
     local -a h
     readarray -t h < <(od -An -v -j0 -N54 -t u1 -w1 "$1")
