@@ -84,12 +84,10 @@ fmtr::box_text() {
   printf '\n  ╔%s╗\n  ║ %s ║\n  ╚%s╝\n' "$border" "$text" "$border"
 }
 
-# Line-style ask (good for printing/logging as a message)
 fmtr::ask() {
   __log::write stdout "$(printf '\n  %b[?]%b %s' "$TEXT_BLACK$BACK_BRIGHT_GREEN" "$RESET" "$1")"
 }
 
-# Inline ask (good for read -rp prompts; no leading newline)
 fmtr::ask_inline() {
   printf '  %b[?]%b %s' "$TEXT_BLACK$BACK_BRIGHT_GREEN" "$RESET" "$1"
 }
