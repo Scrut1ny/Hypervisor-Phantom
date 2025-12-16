@@ -121,9 +121,9 @@ main_menu() {
     fmtr::box_text " >> Hypervisor Phantom << " && print_system_info
 
     for (( i=1; i < ${#options[@]}; i++ )); do
-      fmtr::format_text '  ' "[${i}]" " ${options[${i}]}" "$TEXT_BRIGHT_YELLOW"
+      printf '  %b[%d]%b %s\n' "$TEXT_BRIGHT_YELLOW" "$i" "$RESET" "${options[i]}"
     done
-    fmtr::format_text '\n  ' "[0]" " ${options[0]}\n" "$TEXT_BRIGHT_RED"
+    printf '\n  %b[%d]%b %s\n\n' "$TEXT_BRIGHT_RED" 0 "$RESET" "${options[0]}"
 
     local choice="$(prmt::quick_prompt '  Enter your choice [0-7]: ')" && clear
     case $choice in
