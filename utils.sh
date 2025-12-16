@@ -162,22 +162,14 @@ install_req_pkgs() {
 
 dbg::fail() { fmtr::fatal "$1"; exit 1; }
 
-
 # =============================================================================
-# COMPATABILITY FUNCTIONS
+# COMPATABILITY
 # =============================================================================
 
 compat::get_escalation_cmd() {
-    for cmd in sudo doas pkexec; do
-        if command -v "$cmd" >/dev/null 2>&1; then
-            echo "$cmd"
-            return 0
-        fi
-    done
-    return 1
+  for cmd in sudo doas pkexec; do
+    command -v "$cmd" &>/dev/null && { ROOT_ESC="$cmd"; break; }
+  done
+  [ -n "$ROOT_ESC" ] || { echo "No supported privilege escalation tool found." >&2; exit 1; }
 }
-
-ROOT_ESC=$(compat::get_escalation_cmd) || {
-    echo "No supported privilege escalation tool found." >&2
-    exit 1
-}
+compat::get_escalation_cmd
