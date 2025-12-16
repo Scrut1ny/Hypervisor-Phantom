@@ -166,7 +166,7 @@ dbg::fail() { fmtr::fatal "$1"; exit 1; }
 # COMPATABILITY
 # =============================================================================
 
-compat::get_escalation_cmd() {
+compat::get_escalation_cmd() { # sets $ROOT_ESC to the first of sudo, doas, pkexec. can be called anywhere using $ROOT_ESC.
   for cmd in sudo doas pkexec; do
     command -v "$cmd" &>/dev/null && { ROOT_ESC="$cmd"; break; }
   done

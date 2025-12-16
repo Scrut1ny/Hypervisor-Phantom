@@ -59,7 +59,7 @@ configure_system_installation() {
   set_qemu_conf "$qemu_conf" "group" "$current_user"
 
   # Groups: input, kvm, libvirt
-  for grp in input input kvm libvirt; do
+  for grp in input kvm libvirt; do
     if id -nG "$current_user" | grep -qw "$grp"; then
       fmtr::info "User $current_user already in $grp group"
     else
