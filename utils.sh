@@ -102,8 +102,8 @@ prmt::yes_or_no() {
     read -rp "$prompt [y/n]: " ans
     printf '%s\n' "$ans" >>"$LOG_FILE"
     case ${ans,,} in
-      y*) printf '\n'; return 0 ;;
-      n*) printf '\n'; return 1 ;;
+      y*) return 0 ;;
+      n*) return 1 ;;
       *)  printf '\n  [!] Please answer y/n\n' ;;
     esac
   done
