@@ -2228,7 +2228,7 @@ index 6b7d3ac8a3..599c70e7e0 100644
 -#define PCI_DEVICE_ID_REDHAT_BRIDGE      0x0001
 -#define PCI_DEVICE_ID_REDHAT_SERIAL      0x0002
 +#define PCI_VENDOR_ID_REDHAT             0x1022 // "Red Hat, Inc." | AMD Vendor ID Replacement from 0x1b36
-+#define PCI_DEVICE_ID_REDHAT_BRIDGE      0x1480 // "QEMU PCI-PCI bridge" | AMD Device ID Replacement from 0x0001 | hw/pci-bridge/pci_bridge_dev.c
++#define PCI_DEVICE_ID_REDHAT_BRIDGE      0x57a3 // "QEMU PCI-PCI bridge" | AMD Device ID Replacement from 0x0001 | hw/pci-bridge/pci_bridge_dev.c
 +#define PCI_DEVICE_ID_REDHAT_SERIAL      0x0002 // TODO: find device_id | AMD Device ID Replacement from 0x???? | hw/char/serial-pci.c
  #define PCI_DEVICE_ID_REDHAT_SERIAL2     0x0003
  #define PCI_DEVICE_ID_REDHAT_SERIAL4     0x0004
@@ -2244,8 +2244,8 @@ index 6b7d3ac8a3..599c70e7e0 100644
 -#define PCI_DEVICE_ID_REDHAT_XHCI        0x000d
 -#define PCI_DEVICE_ID_REDHAT_PCIE_BRIDGE 0x000e
 +#define PCI_DEVICE_ID_REDHAT_PCIE_RP     0x1483 // "QEMU PCIe Root Port" | AMD Device ID Replacement from 0x000c | hw/pci-bridge/gen_pcie_root_port.c
-+#define PCI_DEVICE_ID_REDHAT_XHCI        0x43d5 // "QEMU XHCI Host Controller" | AMD Device ID Replacement from 0x000d | hw/usb/hcd-xhci-pci.c
-+#define PCI_DEVICE_ID_REDHAT_PCIE_BRIDGE 0x1483 // "Red Hat, Device ID: 000E" | AMD Device ID Replacement from 0x000e | hw/pci-bridge/pcie_pci_bridge.c
++#define PCI_DEVICE_ID_REDHAT_XHCI        0x149c // "QEMU XHCI Host Controller" | AMD Device ID Replacement from 0x000d | hw/usb/hcd-xhci-pci.c
++#define PCI_DEVICE_ID_REDHAT_PCIE_BRIDGE 0x57ad // "Red Hat, Device ID: 000E" | AMD Device ID Replacement from 0x000e | hw/pci-bridge/pcie_pci_bridge.c
  #define PCI_DEVICE_ID_REDHAT_MDPY        0x000f
  #define PCI_DEVICE_ID_REDHAT_NVME        0x0010
  #define PCI_DEVICE_ID_REDHAT_PVPANIC     0x0011
