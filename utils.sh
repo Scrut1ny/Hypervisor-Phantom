@@ -15,7 +15,7 @@ log::init() {
 log::init
 
 # =============================================================================
-# ANSI ESCAPE CODES - Text Styles, Colors, Backgrounds (FULL SET)
+# ANSI ESCAPE CODES - Text Styles, Colors, Backgrounds
 # =============================================================================
 
 # Styles
@@ -89,7 +89,7 @@ fmtr::ask() {
 }
 
 fmtr::ask_inline() {
-  printf '  %b[?]%b %s' "$TEXT_BLACK$BACK_BRIGHT_GREEN" "$RESET" "$1"
+  printf '\n  %b[?]%b %s' "$TEXT_BLACK$BACK_BRIGHT_GREEN" "$RESET" "$1"
 }
 
 # =============================================================================
@@ -147,7 +147,7 @@ install_req_pkgs() {
   (( ${#missing[@]} )) || { fmtr::log "All required $component packages already installed."; return 0; }
 
   fmtr::warn "Missing required $component packages: ${missing[*]}"
-  if prmt::yes_or_no $'\n'"$(fmtr::ask_inline "Install required missing $component packages?")"; then
+  if prmt::yes_or_no "$(fmtr::ask_inline "Install required missing $component packages?")"; then
     sudo "$mgr" $install_flags "${missing[@]}" &>>"$LOG_FILE" || { fmtr::error "Failed to install required $component packages"; exit 1; }
     fmtr::log "Installed: ${missing[*]}"
   else
