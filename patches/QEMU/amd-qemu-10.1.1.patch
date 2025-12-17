@@ -104,7 +104,7 @@ diff --git a/hw/acpi/pcihp.c b/hw/acpi/pcihp.c
 index 4922bbc778..54cd714363 100644
 --- a/hw/acpi/pcihp.c
 +++ b/hw/acpi/pcihp.c
-@@ -701,6 +701,82 @@ void build_append_pcihp_resources(Aml *scope /* \\_SB.PCI0 */,
+@@ -701,6 +701,83 @@ void build_append_pcihp_resources(Aml *scope /* \\_SB.PCI0 */,
      aml_append(scope, dev);
  }
  
@@ -119,8 +119,9 @@ index 4922bbc778..54cd714363 100644
 +
 +    switch (slot) {
 +        case 0:
-+            // Host Bridge is almost always Function 0
-+            sprintf(name, "MCHC"); 
++            // Host Bridge is almost always Slot 0, Function 0 (and also bus 0 but we cant access bus number in this context)
++            if (func == 0) sprintf(name, "MCHC"); 
++            else sprintf(name, "H%X", func);
 +            break;
 +            
 +        case 2:
