@@ -17,14 +17,14 @@ This tool provides automated setups for linux virtualization related stuff.
 <details>
 <summary>Expand for details...</summary>
 
-#### 1. Clone, CD, and set executable permissions:
+#### 1. Clone, CD:
 ```
-git clone --single-branch --depth=1 https://github.com/Scrut1ny/Hypervisor-Phantom && cd Hypervisor-Phantom/ && chmod -R +x *
+git clone --single-branch --depth=1 https://github.com/Scrut1ny/Hypervisor-Phantom && cd Hypervisor-Phantom/
 ```
 
 #### 2. Run the script:
 ```
-sudo ./main.sh
+./main.sh
 ```
 
 </details>

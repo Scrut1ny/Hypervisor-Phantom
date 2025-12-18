@@ -91,7 +91,7 @@ install_looking_glass() {
   sed -i "s/0x1110/$NEW_DEVICE_ID/" "../../module/kvmfr.c"
 
   {
-    cmake ../ && make install -j"$(nproc)"
+    cmake ../ && $ROOT_ESC make install -j"$(nproc)"
   } &>> "$LOG_FILE"
 
   fmtr::info "Cleaning up..."
@@ -102,20 +102,20 @@ install_looking_glass() {
 configure_ivshmem_shmem() {
 
     local conf_file="/etc/tmpfiles.d/10-looking-glass.conf"
-    local username=${SUDO_USER:-$(whoami)}
+    local username=$(whoami)
 
     if [ ! -f "$conf_file" ]; then
       fmtr::info "Creating '10-looking-glass.conf'..."
-      echo "f /dev/shm/looking-glass 0660 ${username} kvm -" | tee "$conf_file" &>> "$LOG_FILE"
+      echo "f /dev/shm/looking-glass 0660 ${username} kvm -" | $ROOT_ESC tee "$conf_file" &>> "$LOG_FILE"
     else
       fmtr::log "'10-looking-glass.conf' already exists; skipping creation."
     fi
 
     if [ ! -e /dev/shm/looking-glass ]; then
       fmtr::info "Creating '/dev/shm/looking-glass' and setting permissions..."
-      touch /dev/shm/looking-glass
-      chown "${username}:kvm" /dev/shm/looking-glass
-      chmod 660 /dev/shm/looking-glass
+      $ROOT_ESC touch /dev/shm/looking-glass
+      $ROOT_ESC chown "${username}:kvm" /dev/shm/looking-glass
+      $ROOT_ESC chmod 660 /dev/shm/looking-glass
     else
       fmtr::log "'/dev/shm/looking-glass' already exists; skipping creation."
     fi
@@ -152,16 +152,16 @@ configure_ivshmem_kvmfr() {
   local MEMORY_SIZE_MB="32"
 
   # Temporary
-  modprobe kvmfr static_size_mb=$MEMORY_SIZE_MB
+  $ROOT_ESC modprobe kvmfr static_size_mb=$MEMORY_SIZE_MB
 
   # Permanent
-  echo "options kvmfr static_size_mb=$MEMORY_SIZE_MB" | tee /etc/modprobe.d/kvmfr.conf
+  echo "options kvmfr static_size_mb=$MEMORY_SIZE_MB" | $ROOT_ESC tee /etc/modprobe.d/kvmfr.conf
 
   # Automatic (w/systemd)
-  echo -e "# KVMFR Looking Glass module\nkvmfr" | tee /etc/modules-load.d/kvmfr.conf
+  echo -e "# KVMFR Looking Glass module\nkvmfr" | $ROOT_ESC tee /etc/modules-load.d/kvmfr.conf
 
   # Permissions
-  chown $(whoami):kvm /dev/kvmfr0
+  $ROOT_ESC chown $(whoami):kvm /dev/kvmfr0
 
 }
 
@@ -170,7 +170,7 @@ main() {
   install_req_pkgs "LG"
   install_looking_glass
   configure_ivshmem_shmem
-
+  
 }
 
 main

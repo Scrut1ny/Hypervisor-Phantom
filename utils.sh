@@ -148,7 +148,7 @@ install_req_pkgs() {
 
   fmtr::warn "Missing required $component packages: ${missing[*]}"
   if prmt::yes_or_no "$(fmtr::ask_inline "Install required missing $component packages?")"; then
-    sudo "$mgr" $install_flags "${missing[@]}" &>>"$LOG_FILE" || { fmtr::error "Failed to install required $component packages"; exit 1; }
+    $ROOT_ESC "$mgr" $install_flags "${missing[@]}" &>>"$LOG_FILE" || { fmtr::error "Failed to install required $component packages"; exit 1; }
     fmtr::log "Installed: ${missing[*]}"
   else
     fmtr::log "Exiting due to required missing $component packages."
@@ -161,3 +161,15 @@ install_req_pkgs() {
 # =============================================================================
 
 dbg::fail() { fmtr::fatal "$1"; exit 1; }
+
+# =============================================================================
+# COMPATABILITY
+# =============================================================================
+
+compat::get_escalation_cmd() { # sets $ROOT_ESC to the first of sudo, doas, pkexec. can be called anywhere using $ROOT_ESC.
+  for cmd in sudo doas pkexec; do
+    command -v "$cmd" &>/dev/null && { ROOT_ESC="$cmd"; break; }
+  done
+  [ -n "$ROOT_ESC" ] || { echo "No supported privilege escalation tool found." >&2; exit 1; }
+}
+compat::get_escalation_cmd

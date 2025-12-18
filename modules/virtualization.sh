@@ -33,10 +33,10 @@ configure_system_installation() {
     local file="$1"
     local key="$2"
     local value="$3"
-    if grep -q "^${key}" "$file"; then
+    if $ROOT_ESC grep -q "^${key}" "$file"; then
       fmtr::info "$file: $key already set"
     else
-      sed -i "/${key}/s/^#//g" "$file" || echo "${key} ${value}" | tee -a "$file" > /dev/null
+      $ROOT_ESC sed -i "/${key}/s/^#//g" "$file" || echo "${key} ${value}" | tee -a "$file" > /dev/null
       fmtr::info "$file: Enabled $key"
     fi
   }
@@ -44,10 +44,10 @@ configure_system_installation() {
   # Helper to set qemu.conf user/group
   set_qemu_conf() {
     local conf="$1" key="$2" val="$3"
-    if grep -q "^${key} = \"${val}\"" "$conf"; then
+    if $ROOT_ESC grep -q "^${key} = \"${val}\"" "$conf"; then
       fmtr::info "$conf: $key already set to $val"
     else
-      sed -i "s/#${key} = \".*\"/${key} = \"${val}\"/" "$conf" || echo "${key} = \"${val}\"" | tee -a "$conf" > /dev/null
+      $ROOT_ESC sed -i "s/#${key} = \".*\"/${key} = \"${val}\"/" "$conf" || echo "${key} = \"${val}\"" | tee -a "$conf" > /dev/null
       fmtr::info "$conf: Set $key = $val"
     fi
   }
@@ -59,18 +59,18 @@ configure_system_installation() {
   set_qemu_conf "$qemu_conf" "group" "$current_user"
 
   # Groups: input, kvm, libvirt
-  for grp in input input kvm libvirt; do
+  for grp in input kvm libvirt; do
     if id -nG "$current_user" | grep -qw "$grp"; then
       fmtr::info "User $current_user already in $grp group"
     else
-      usermod -aG "$grp" "$current_user"
+      $ROOT_ESC usermod -aG "$grp" "$current_user"
       fmtr::info "Added $current_user to $grp group"
     fi
   done
 
   # Enable libvirtd.socket if not enabled
   if ! systemctl is-enabled libvirtd.socket &> /dev/null; then
-    systemctl enable --now libvirtd.socket &>> "$LOG_FILE"
+    $ROOT_ESC systemctl enable --now libvirtd.socket &>> "$LOG_FILE"
     fmtr::info "Enabled and started libvirtd.socket"
   else
     fmtr::info "libvirtd.socket already enabled"
@@ -78,8 +78,8 @@ configure_system_installation() {
 
   # Ensure default network is running
   if ! virsh net-info default &> /dev/null; then
-    virsh net-autostart default &>> "$LOG_FILE"
-    virsh net-start default &>> "$LOG_FILE"
+    $ROOT_ESC virsh net-autostart default &>> "$LOG_FILE"
+    $ROOT_ESC virsh net-start default &>> "$LOG_FILE"
     fmtr::info "Started and enabled default libvirt network"
   else
     fmtr::info "Default libvirt network already exists and is active"

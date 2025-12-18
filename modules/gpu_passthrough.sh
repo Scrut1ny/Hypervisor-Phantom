@@ -36,14 +36,14 @@ detect_bootloader() {
 ################################################################################
 revert_vfio() {
     if [[ -f $VFIO_CONF_PATH ]]; then
-        rm -v "$VFIO_CONF_PATH" &>>"$LOG_FILE"
+        $ROOT_ESC rm -v "$VFIO_CONF_PATH" &>>"$LOG_FILE"
         fmtr::log "Removed VFIO Config: $VFIO_CONF_PATH"
     else
         fmtr::log "$VFIO_CONF_PATH doesn't exist; nothing to remove."
     fi
 
     if [[ $BOOTLOADER_TYPE == grub ]]; then
-        sed -E -i "/^GRUB_CMDLINE_LINUX_DEFAULT=/ {
+        $ROOT_ESC sed -E -i "/^GRUB_CMDLINE_LINUX_DEFAULT=/ {
         s/$VFIO_KERNEL_OPTS_REGEX//g;
         s/[[:space:]]+/ /g;
         s/\"[[:space:]]+/\"/;
@@ -123,7 +123,7 @@ configure_vfio() {
     {
         printf 'options vfio-pci ids=%s\n' "$hwids"
         for soft in ${SOFTDEPS[$pci_vendor]:-}; do printf 'softdep %s pre: vfio-pci\n' "$soft"; done
-    } | tee "$VFIO_CONF_PATH" >>"$LOG_FILE"
+    } | $ROOT_ESC tee "$VFIO_CONF_PATH" >>"$LOG_FILE"
 
     export VFIO_CONF_CHANGED=1
 }
@@ -142,7 +142,7 @@ configure_bootloader() {
         fmtr::log "Configuring GRUB"
 
         if ! grep -Eq "^GRUB_CMDLINE_LINUX_DEFAULT=.*${kernel_opts[1]}" /etc/default/grub; then
-            sed -E -i "/^GRUB_CMDLINE_LINUX_DEFAULT=/ {
+            $ROOT_ESC sed -E -i "/^GRUB_CMDLINE_LINUX_DEFAULT=/ {
                 s/^GRUB_CMDLINE_LINUX_DEFAULT=//;
                 s/^\"//; s/\"$//;
                 s/$VFIO_KERNEL_OPTS_REGEX//g;
@@ -174,14 +174,14 @@ configure_bootloader() {
 
         fmtr::log "Modifying systemd-boot config: $config_file"
 
-        sed -E -i "/^options / {
+        $ROOT_ESC sed -E -i "/^options / {
             s/$VFIO_KERNEL_OPTS_REGEX//g;
             s/[[:space:]]+/ /g;
             s/[[:space:]]+$//;
         }" "$config_file"
 
         if ! grep -q -E "^options .*${kernel_opts[1]}" "$config_file"; then
-            sed -E -i -e "/^options / s/$/ ${kernel_opts_str}/" "$config_file"
+            $ROOT_ESC sed -E -i -e "/^options / s/$/ ${kernel_opts_str}/" "$config_file"
             fmtr::log "Appended VFIO kernel opts to systemd-boot config."
         else
             fmtr::log "VFIO kernel opts already present in systemd-boot config. Skipping append."
@@ -199,7 +199,7 @@ rebuild_bootloader() {
     for prefix in "" 2; do
         cmd="grub${prefix}-mkconfig"
         command -v "$cmd" &>>"$LOG_FILE" || continue
-        "$cmd" -o "/boot/grub${prefix}/grub.cfg" &>>"$LOG_FILE" && { fmtr::log "Bootloader configuration updated."; return; }
+        $ROOT_ESC "$cmd" -o "/boot/grub${prefix}/grub.cfg" &>>"$LOG_FILE" && { fmtr::log "Bootloader configuration updated."; return; }
     done
 
     fmtr::error "No known GRUB configuration command found on this system."

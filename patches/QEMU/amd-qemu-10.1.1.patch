@@ -1,23 +1,110 @@
-diff --git a/hw/i386/acpi-build.c b/hw/i386/acpi-build.c
-index 423c495..b82fe93 100644
---- a/hw/i386/acpi-build.c
-+++ b/hw/i386/acpi-build.c
-@@ -161,8 +161,8 @@ static void init_common_fadt_data(MachineState *ms, Object *o,
-                         (1 << ACPI_FADT_F_FORCE_APIC_CLUSTER_MODEL) : 0),
-         .int_model = 1 /* Multiple APIC */,
-         .rtc_century = RTC_CENTURY,
--        .plvl2_lat = 0xfff /* C2 state not supported */,
--        .plvl3_lat = 0xfff /* C3 state not supported */,
-+        .plvl2_lat = 0x0065 /* C2 state not supported */,
-+        .plvl3_lat = 0x03e9 /* C3 state not supported */,
-         .smi_cmd = smm_enabled ? ACPI_PORT_SMI_CMD : 0,
-         .sci_int = object_property_get_uint(o, ACPI_PM_PROP_SCI_INT, NULL),
-         .acpi_enable_cmd =
+diff --git a/block/vhdx.c b/block/vhdx.c
+index b2a4b813a0..dffe9f8cd8 100644
+--- a/block/vhdx.c
++++ b/block/vhdx.c
+@@ -2020,7 +2020,7 @@ vhdx_co_create(BlockdevCreateOptions *opts, Error **errp)
+ 
+     /* The creator field is optional, but may be useful for
+      * debugging / diagnostics */
+-    creator = g_utf8_to_utf16("QEMU v" QEMU_VERSION, -1, NULL,
++    creator = g_utf8_to_utf16("Microsoft v" QEMU_VERSION, -1, NULL,
+                               &creator_items, NULL);
+     signature = cpu_to_le64(VHDX_FILE_SIGNATURE);
+     ret = blk_co_pwrite(blk, VHDX_FILE_ID_OFFSET, sizeof(signature), &signature,
+diff --git a/block/vvfat.c b/block/vvfat.c
+index 814796d918..a5843836bb 100644
+--- a/block/vvfat.c
++++ b/block/vvfat.c
+@@ -1176,7 +1176,7 @@ static int vvfat_open(BlockDriverState *bs, QDict *options, int flags,
+         }
+         memcpy(s->volume_label, label, label_length);
+     } else {
+-        memcpy(s->volume_label, "QEMU VVFAT", 10);
++        memcpy(s->volume_label, "ASUS VVFAT", 10);
+     }
+ 
+     if (floppy) {
+diff --git a/chardev/msmouse.c b/chardev/msmouse.c
+index 1a55755d39..49b979be96 100644
+--- a/chardev/msmouse.c
++++ b/chardev/msmouse.c
+@@ -172,7 +172,7 @@ static int msmouse_chr_write(struct Chardev *s, const uint8_t *buf, int len)
+ }
+ 
+ static const QemuInputHandler msmouse_handler = {
+-    .name  = "QEMU Microsoft Mouse",
++    .name  = "Microsoft Mouse",
+     .mask  = INPUT_EVENT_MASK_BTN | INPUT_EVENT_MASK_REL,
+     .event = msmouse_input_event,
+     .sync  = msmouse_input_sync,
+diff --git a/chardev/wctablet.c b/chardev/wctablet.c
+index 0dc6ef08f5..de3d126ad2 100644
+--- a/chardev/wctablet.c
++++ b/chardev/wctablet.c
+@@ -179,7 +179,7 @@ static void wctablet_input_sync(DeviceState *dev)
+ }
+ 
+ static const QemuInputHandler wctablet_handler = {
+-    .name  = "QEMU Wacom Pen Tablet",
++    .name  = "Wacom Pen Tablet",
+     .mask  = INPUT_EVENT_MASK_BTN | INPUT_EVENT_MASK_ABS,
+     .event = wctablet_input_event,
+     .sync  = wctablet_input_sync,
+diff --git a/contrib/vhost-user-gpu/vhost-user-gpu.c b/contrib/vhost-user-gpu/vhost-user-gpu.c
+index bb41758e34..dbd27773c2 100644
+--- a/contrib/vhost-user-gpu/vhost-user-gpu.c
++++ b/contrib/vhost-user-gpu/vhost-user-gpu.c
+@@ -1254,7 +1254,7 @@ main(int argc, char *argv[])
+     QTAILQ_INIT(&g.reslist);
+     QTAILQ_INIT(&g.fenceq);
+ 
+-    context = g_option_context_new("QEMU vhost-user-gpu");
++    context = g_option_context_new("vhost-user-gpu");
+     g_option_context_add_main_entries(context, entries, NULL);
+     if (!g_option_context_parse(context, &argc, &argv, &error)) {
+         g_printerr("Option parsing failed: %s\n", error->message);
+diff --git a/hw/acpi/aml-build.c b/hw/acpi/aml-build.c
+index 1e685f982f..a4099be824 100644
+--- a/hw/acpi/aml-build.c
++++ b/hw/acpi/aml-build.c
+@@ -1722,11 +1722,11 @@ void acpi_table_begin(AcpiTable *desc, GArray *array)
+     build_append_int_noprefix(array, 0, 4); /* Length */
+     build_append_int_noprefix(array, desc->rev, 1); /* Revision */
+     build_append_int_noprefix(array, 0, 1); /* Checksum */
+-    build_append_padded_str(array, desc->oem_id, 6, '\0'); /* OEMID */
++    build_append_padded_str(array, ACPI_BUILD_APPNAME6, 6, '\0'); /* OEMID */
+     /* OEM Table ID */
+-    build_append_padded_str(array, desc->oem_table_id, 8, '\0');
++    build_append_padded_str(array, ACPI_BUILD_APPNAME8, 8, '\0');
+     build_append_int_noprefix(array, 1, 4); /* OEM Revision */
+-    g_array_append_vals(array, ACPI_BUILD_APPNAME8, 4); /* Creator ID */
++    g_array_append_vals(array, "ACPI", 4); /* Creator ID */
+     build_append_int_noprefix(array, 1, 4); /* Creator Revision */
+ }
+ 
+@@ -2263,7 +2263,7 @@ void build_fadt(GArray *tbl, BIOSLinker *linker, const AcpiFadtData *f,
+     /* ACPI1.0: INT_MODEL, ACPI2.0+: Reserved */
+     build_append_int_noprefix(tbl, f->int_model /* Multiple APIC */, 1);
+     /* Preferred_PM_Profile */
+-    build_append_int_noprefix(tbl, 0 /* Unspecified */, 1);
++    build_append_int_noprefix(tbl, 1 /* Desktop */, 1);
+     build_append_int_noprefix(tbl, f->sci_int, 2); /* SCI_INT */
+     build_append_int_noprefix(tbl, f->smi_cmd, 4); /* SMI_CMD */
+     build_append_int_noprefix(tbl, f->acpi_enable_cmd, 1); /* ACPI_ENABLE */
+@@ -2360,7 +2360,7 @@ void build_fadt(GArray *tbl, BIOSLinker *linker, const AcpiFadtData *f,
+     }
+ 
+     /* Hypervisor Vendor Identity */
+-    build_append_padded_str(tbl, "QEMU", 8, '\0');
++    build_append_padded_str(tbl, "", 8, '\0');
+ 
+     /* TODO: extra fields need to be added to support revisions above rev6 */
+     assert(f->rev == 6);
 diff --git a/hw/acpi/pcihp.c b/hw/acpi/pcihp.c
 index 4922bbc778..54cd714363 100644
 --- a/hw/acpi/pcihp.c
 +++ b/hw/acpi/pcihp.c
-@@ -701,6 +701,82 @@ void build_append_pcihp_resources(Aml *scope /* \\_SB.PCI0 */,
+@@ -701,6 +701,83 @@ void build_append_pcihp_resources(Aml *scope /* \\_SB.PCI0 */,
      aml_append(scope, dev);
  }
  
@@ -32,8 +119,9 @@ index 4922bbc778..54cd714363 100644
 +
 +    switch (slot) {
 +        case 0:
-+            // Host Bridge is almost always Function 0
-+            sprintf(name, "MCHC"); 
++            // Host Bridge is almost always Slot 0, Function 0 (and also bus 0 but we cant access bus number in this context)
++            if (func == 0) sprintf(name, "MCHC"); 
++            else sprintf(name, "H%X", func);
 +            break;
 +            
 +        case 2:
@@ -168,123 +256,8 @@ index 4922bbc778..54cd714363 100644
          aml_append(dev, aml_name_decl("_ADR", aml_int(adr)));
  
          call_dev_aml_func(DEVICE(bus->devices[devfn]), dev);
-diff --git a/hw/isa/lpc_ich9.c b/hw/isa/lpc_ich9.c
-index c9cb8f7779..c1c7bdc36d 100644
---- a/hw/isa/lpc_ich9.c
-+++ b/hw/isa/lpc_ich9.c
-@@ -863,7 +863,7 @@ static void build_ich9_isa_aml(AcpiDevAmlIf *adev, Aml *scope)
-     aml_append(scope, aml_operation_region("PIRQ", AML_PCI_CONFIG,
-                                            aml_int(0x60), 0x0C));
-     /* Fields declarion has to happen *after* operation region */
--    field = aml_field("PCI0.SF8.PIRQ", AML_BYTE_ACC, AML_NOLOCK, AML_PRESERVE);
-+    field = aml_field("PCI0.LPCB.PIRQ", AML_BYTE_ACC, AML_NOLOCK, AML_PRESERVE);
-     aml_append(field, aml_named_field("PRQA", 8));
-     aml_append(field, aml_named_field("PRQB", 8));
-     aml_append(field, aml_named_field("PRQC", 8));
-diff --git a/block/vhdx.c b/block/vhdx.c
-index b2a4b81..dffe9f8 100644
---- a/block/vhdx.c
-+++ b/block/vhdx.c
-@@ -2020,7 +2020,7 @@ vhdx_co_create(BlockdevCreateOptions *opts, Error **errp)
- 
-     /* The creator field is optional, but may be useful for
-      * debugging / diagnostics */
--    creator = g_utf8_to_utf16("QEMU v" QEMU_VERSION, -1, NULL,
-+    creator = g_utf8_to_utf16("Microsoft v" QEMU_VERSION, -1, NULL,
-                               &creator_items, NULL);
-     signature = cpu_to_le64(VHDX_FILE_SIGNATURE);
-     ret = blk_co_pwrite(blk, VHDX_FILE_ID_OFFSET, sizeof(signature), &signature,
-diff --git a/block/vvfat.c b/block/vvfat.c
-index 814796d..a584383 100644
---- a/block/vvfat.c
-+++ b/block/vvfat.c
-@@ -1176,7 +1176,7 @@ static int vvfat_open(BlockDriverState *bs, QDict *options, int flags,
-         }
-         memcpy(s->volume_label, label, label_length);
-     } else {
--        memcpy(s->volume_label, "QEMU VVFAT", 10);
-+        memcpy(s->volume_label, "ASUS VVFAT", 10);
-     }
- 
-     if (floppy) {
-diff --git a/chardev/msmouse.c b/chardev/msmouse.c
-index 1a55755..49b979b 100644
---- a/chardev/msmouse.c
-+++ b/chardev/msmouse.c
-@@ -172,7 +172,7 @@ static int msmouse_chr_write(struct Chardev *s, const uint8_t *buf, int len)
- }
- 
- static const QemuInputHandler msmouse_handler = {
--    .name  = "QEMU Microsoft Mouse",
-+    .name  = "Microsoft Mouse",
-     .mask  = INPUT_EVENT_MASK_BTN | INPUT_EVENT_MASK_REL,
-     .event = msmouse_input_event,
-     .sync  = msmouse_input_sync,
-diff --git a/chardev/wctablet.c b/chardev/wctablet.c
-index 0dc6ef0..de3d126 100644
---- a/chardev/wctablet.c
-+++ b/chardev/wctablet.c
-@@ -179,7 +179,7 @@ static void wctablet_input_sync(DeviceState *dev)
- }
- 
- static const QemuInputHandler wctablet_handler = {
--    .name  = "QEMU Wacom Pen Tablet",
-+    .name  = "Wacom Pen Tablet",
-     .mask  = INPUT_EVENT_MASK_BTN | INPUT_EVENT_MASK_ABS,
-     .event = wctablet_input_event,
-     .sync  = wctablet_input_sync,
-diff --git a/contrib/vhost-user-gpu/vhost-user-gpu.c b/contrib/vhost-user-gpu/vhost-user-gpu.c
-index bb41758..dbd2777 100644
---- a/contrib/vhost-user-gpu/vhost-user-gpu.c
-+++ b/contrib/vhost-user-gpu/vhost-user-gpu.c
-@@ -1254,7 +1254,7 @@ main(int argc, char *argv[])
-     QTAILQ_INIT(&g.reslist);
-     QTAILQ_INIT(&g.fenceq);
- 
--    context = g_option_context_new("QEMU vhost-user-gpu");
-+    context = g_option_context_new("vhost-user-gpu");
-     g_option_context_add_main_entries(context, entries, NULL);
-     if (!g_option_context_parse(context, &argc, &argv, &error)) {
-         g_printerr("Option parsing failed: %s\n", error->message);
-diff --git a/hw/acpi/aml-build.c b/hw/acpi/aml-build.c
-index 1e685f9..a4099be 100644
---- a/hw/acpi/aml-build.c
-+++ b/hw/acpi/aml-build.c
-@@ -1722,11 +1722,11 @@ void acpi_table_begin(AcpiTable *desc, GArray *array)
-     build_append_int_noprefix(array, 0, 4); /* Length */
-     build_append_int_noprefix(array, desc->rev, 1); /* Revision */
-     build_append_int_noprefix(array, 0, 1); /* Checksum */
--    build_append_padded_str(array, desc->oem_id, 6, '\0'); /* OEMID */
-+    build_append_padded_str(array, ACPI_BUILD_APPNAME6, 6, '\0'); /* OEMID */
-     /* OEM Table ID */
--    build_append_padded_str(array, desc->oem_table_id, 8, '\0');
-+    build_append_padded_str(array, ACPI_BUILD_APPNAME8, 8, '\0');
-     build_append_int_noprefix(array, 1, 4); /* OEM Revision */
--    g_array_append_vals(array, ACPI_BUILD_APPNAME8, 4); /* Creator ID */
-+    g_array_append_vals(array, "ACPI", 4); /* Creator ID */
-     build_append_int_noprefix(array, 1, 4); /* Creator Revision */
- }
- 
-@@ -2263,7 +2263,7 @@ void build_fadt(GArray *tbl, BIOSLinker *linker, const AcpiFadtData *f,
-     /* ACPI1.0: INT_MODEL, ACPI2.0+: Reserved */
-     build_append_int_noprefix(tbl, f->int_model /* Multiple APIC */, 1);
-     /* Preferred_PM_Profile */
--    build_append_int_noprefix(tbl, 0 /* Unspecified */, 1);
-+    build_append_int_noprefix(tbl, 1 /* Desktop */, 1);
-     build_append_int_noprefix(tbl, f->sci_int, 2); /* SCI_INT */
-     build_append_int_noprefix(tbl, f->smi_cmd, 4); /* SMI_CMD */
-     build_append_int_noprefix(tbl, f->acpi_enable_cmd, 1); /* ACPI_ENABLE */
-@@ -2360,7 +2360,7 @@ void build_fadt(GArray *tbl, BIOSLinker *linker, const AcpiFadtData *f,
-     }
- 
-     /* Hypervisor Vendor Identity */
--    build_append_padded_str(tbl, "QEMU", 8, '\0');
-+    build_append_padded_str(tbl, "", 8, '\0');
- 
-     /* TODO: extra fields need to be added to support revisions above rev6 */
-     assert(f->rev == 6);
 diff --git a/hw/arm/sbsa-ref.c b/hw/arm/sbsa-ref.c
-index 15c1ff4..8bc1873 100644
+index 15c1ff4b14..8bc1873f0a 100644
 --- a/hw/arm/sbsa-ref.c
 +++ b/hw/arm/sbsa-ref.c
 @@ -896,7 +896,7 @@ static void sbsa_ref_class_init(ObjectClass *oc, const void *data)
@@ -297,7 +270,7 @@ index 15c1ff4..8bc1873 100644
      mc->valid_cpu_types = valid_cpu_types;
      mc->max_cpus = 512;
 diff --git a/hw/arm/virt.c b/hw/arm/virt.c
-index ef6be36..0932690 100644
+index ef6be3660f..09326900b2 100644
 --- a/hw/arm/virt.c
 +++ b/hw/arm/virt.c
 @@ -116,7 +116,7 @@ static void arm_virt_compat_set(MachineClass *mc)
@@ -327,7 +300,7 @@ index ef6be36..0932690 100644
      /* build the array of physical mem area from base_memmap */
      mem_array.address = vms->memmap[VIRT_MEM].base;
 diff --git a/hw/audio/hda-codec.c b/hw/audio/hda-codec.c
-index 66edad2..56fb02d 100644
+index 66edad280f..56fb02dd89 100644
 --- a/hw/audio/hda-codec.c
 +++ b/hw/audio/hda-codec.c
 @@ -118,7 +118,7 @@ static void hda_codec_parse_fmt(uint32_t format, struct audsettings *as)
@@ -340,7 +313,7 @@ index 66edad2..56fb02d 100644
                                0x1fc /* 16 -> 96 kHz */)
  #define QEMU_HDA_AMP_NONE    (0)
 diff --git a/hw/audio/intel-hda.c b/hw/audio/intel-hda.c
-index b256c8c..b926a4d 100644
+index b256c8ccea..b926a4d968 100644
 --- a/hw/audio/intel-hda.c
 +++ b/hw/audio/intel-hda.c
 @@ -1239,7 +1239,7 @@ static void intel_hda_class_init_ich6(ObjectClass *klass, const void *data)
@@ -364,7 +337,7 @@ index b256c8c..b926a4d 100644
      dc->desc = "Intel HD Audio Controller (ich9)";
  }
 diff --git a/hw/char/escc.c b/hw/char/escc.c
-index afe4ca4..fa4f4a0 100644
+index afe4ca483e..fa4f4a00ce 100644
 --- a/hw/char/escc.c
 +++ b/hw/char/escc.c
 @@ -1037,7 +1037,7 @@ static void sunmouse_sync(DeviceState *dev)
@@ -377,7 +350,7 @@ index afe4ca4..fa4f4a0 100644
      .event = sunmouse_handle_event,
      .sync  = sunmouse_sync,
 diff --git a/hw/core/qdev.c b/hw/core/qdev.c
-index f600226..286843e 100644
+index f600226176..286843e045 100644
 --- a/hw/core/qdev.c
 +++ b/hw/core/qdev.c
 @@ -745,7 +745,7 @@ static void device_class_init(ObjectClass *class, const void *data)
@@ -390,7 +363,7 @@ index f600226..286843e 100644
      vc->get_id = device_vmstate_if_get_id;
      rc->get_state = device_get_reset_state;
 diff --git a/hw/display/edid-generate.c b/hw/display/edid-generate.c
-index 2cb8196..630a33b 100644
+index 2cb819675e..630a33b703 100644
 --- a/hw/display/edid-generate.c
 +++ b/hw/display/edid-generate.c
 @@ -388,22 +388,22 @@ void qemu_edid_generate(uint8_t *edid, size_t size,
@@ -441,7 +414,7 @@ index 2cb8196..630a33b 100644
      /* edid version */
      edid[18] = 1;
 diff --git a/hw/display/qxl.c b/hw/display/qxl.c
-index 18f482c..6679592 100644
+index 18f482ca7f..6679592624 100644
 --- a/hw/display/qxl.c
 +++ b/hw/display/qxl.c
 @@ -2503,7 +2503,7 @@ static void qxl_pci_class_init(ObjectClass *klass, const void *data)
@@ -453,10 +426,40 @@ index 18f482c..6679592 100644
      k->device_id = QXL_DEVICE_ID_STABLE;
      set_bit(DEVICE_CATEGORY_DISPLAY, dc->categories);
      device_class_set_legacy_reset(dc, qxl_reset_handler);
+diff --git a/hw/i2c/smbus_ich9.c b/hw/i2c/smbus_ich9.c
+index 956c9b59bb..c91c1c4a32 100644
+--- a/hw/i2c/smbus_ich9.c
++++ b/hw/i2c/smbus_ich9.c
+@@ -124,12 +124,12 @@ static void ich9_smb_class_init(ObjectClass *klass, const void *data)
+     PCIDeviceClass *k = PCI_DEVICE_CLASS(klass);
+     AcpiDevAmlIfClass *adevc = ACPI_DEV_AML_IF_CLASS(klass);
+ 
+-    k->vendor_id = PCI_VENDOR_ID_INTEL;
++    k->vendor_id = PCI_VENDOR_ID_AMD;
+     k->device_id = PCI_DEVICE_ID_INTEL_ICH9_6;
+     k->revision = ICH9_A2_SMB_REVISION;
+     k->class_id = PCI_CLASS_SERIAL_SMBUS;
+     dc->vmsd = &vmstate_ich9_smbus;
+-    dc->desc = "ICH9 SMBUS Bridge";
++    dc->desc = "FCH SMBus Controller";
+     k->realize = ich9_smbus_realize;
+     k->config_write = ich9_smbus_write_config;
+     /*
 diff --git a/hw/i386/acpi-build.c b/hw/i386/acpi-build.c
-index 423c495..ffb0a06 100644
+index 423c4959fe..0c846579cf 100644
 --- a/hw/i386/acpi-build.c
 +++ b/hw/i386/acpi-build.c
+@@ -161,8 +161,8 @@ static void init_common_fadt_data(MachineState *ms, Object *o,
+                         (1 << ACPI_FADT_F_FORCE_APIC_CLUSTER_MODEL) : 0),
+         .int_model = 1 /* Multiple APIC */,
+         .rtc_century = RTC_CENTURY,
+-        .plvl2_lat = 0xfff /* C2 state not supported */,
+-        .plvl3_lat = 0xfff /* C3 state not supported */,
++        .plvl2_lat = 0x0065 /* C2 state not supported */,
++        .plvl3_lat = 0x03e9 /* C3 state not supported */,
+         .smi_cmd = smm_enabled ? ACPI_PORT_SMI_CMD : 0,
+         .sci_int = object_property_get_uint(o, ACPI_PM_PROP_SCI_INT, NULL),
+         .acpi_enable_cmd =
 @@ -881,6 +881,68 @@ build_dsdt(GArray *table_data, BIOSLinker *linker,
      build_dbg_aml(dsdt);
      if (i440fx) {
@@ -634,7 +637,7 @@ index 423c495..ffb0a06 100644
      /* Add tables supplied by user (if any) */
      for (u = acpi_table_first(); u; u = acpi_table_next(u)) {
 diff --git a/hw/i386/acpi-microvm.c b/hw/i386/acpi-microvm.c
-index bc65717..f4b1bea 100644
+index bc6571778c..f4b1bea7db 100644
 --- a/hw/i386/acpi-microvm.c
 +++ b/hw/i386/acpi-microvm.c
 @@ -118,7 +118,7 @@ build_dsdt_microvm(GArray *table_data, BIOSLinker *linker,
@@ -647,7 +650,7 @@ index bc65717..f4b1bea 100644
      build_ged_aml(sb_scope, GED_DEVICE, x86ms->acpi_dev,
                    GED_MMIO_IRQ, AML_SYSTEM_MEMORY, GED_MMIO_BASE);
 diff --git a/hw/i386/fw_cfg.c b/hw/i386/fw_cfg.c
-index 5c0bcd5..ac47187 100644
+index 5c0bcd5f8a..ac471871b5 100644
 --- a/hw/i386/fw_cfg.c
 +++ b/hw/i386/fw_cfg.c
 @@ -75,7 +75,7 @@ void fw_cfg_build_smbios(PCMachineState *pcms, FWCfgState *fw_cfg,
@@ -674,7 +677,7 @@ index 5c0bcd5..ac47187 100644
  #endif
 +#endif
 diff --git a/hw/i386/multiboot.c b/hw/i386/multiboot.c
-index 6e6b96b..f7de243 100644
+index 6e6b96bc34..f7de243396 100644
 --- a/hw/i386/multiboot.c
 +++ b/hw/i386/multiboot.c
 @@ -103,7 +103,7 @@ typedef struct {
@@ -687,7 +690,7 @@ index 6e6b96b..f7de243 100644
  static uint32_t mb_add_cmdline(MultibootState *s, const char *cmdline)
  {
 diff --git a/hw/i386/pc.c b/hw/i386/pc.c
-index 2f58e73..3f08ffe 100644
+index 2f58e73d33..3f08ffe605 100644
 --- a/hw/i386/pc.c
 +++ b/hw/i386/pc.c
 @@ -77,9 +77,9 @@
@@ -713,7 +716,7 @@ index 2f58e73..3f08ffe 100644
      pcmc->has_reserved_memory = true;
      pcmc->enforce_amd_1tb_hole = true;
 diff --git a/hw/i386/pc_piix.c b/hw/i386/pc_piix.c
-index c033242..4ac1fe3 100644
+index c03324281b..4ac1fe3760 100644
 --- a/hw/i386/pc_piix.c
 +++ b/hw/i386/pc_piix.c
 @@ -483,12 +483,12 @@ static void pc_i440fx_machine_options(MachineClass *m)
@@ -744,7 +747,7 @@ index c033242..4ac1fe3 100644
      compat_props_add(m->compat_props, hw_compat_9_0, hw_compat_9_0_len);
      compat_props_add(m->compat_props, pc_compat_9_0, pc_compat_9_0_len);
 diff --git a/hw/i386/pc_q35.c b/hw/i386/pc_q35.c
-index b309b2b..572ded4 100644
+index b309b2b378..572ded43d7 100644
 --- a/hw/i386/pc_q35.c
 +++ b/hw/i386/pc_q35.c
 @@ -355,12 +355,12 @@ static void pc_q35_machine_options(MachineClass *m)
@@ -774,7 +777,7 @@ index b309b2b..572ded4 100644
      compat_props_add(m->compat_props, pc_compat_9_0, pc_compat_9_0_len);
      pcmc->isa_bios_alias = false;
 diff --git a/hw/ide/atapi.c b/hw/ide/atapi.c
-index a42b748..c10cf51 100644
+index a42b748521..c10cf51347 100644
 --- a/hw/ide/atapi.c
 +++ b/hw/ide/atapi.c
 @@ -798,8 +798,8 @@ static void cmd_inquiry(IDEState *s, uint8_t *buf)
@@ -789,7 +792,7 @@ index a42b748..c10cf51 100644
          idx = 36;
      }
 diff --git a/hw/ide/core.c b/hw/ide/core.c
-index b14983e..3d824d3 100644
+index b14983ec54..3d824d3e21 100644
 --- a/hw/ide/core.c
 +++ b/hw/ide/core.c
 @@ -2638,21 +2638,20 @@ int ide_init_drive(IDEState *s, IDEDevice *dev, IDEDriveKind kind, Error **errp)
@@ -818,8 +821,23 @@ index b14983e..3d824d3 100644
              break;
          }
      }
+diff --git a/hw/ide/ich.c b/hw/ide/ich.c
+index 4cade0d121..5383a95d83 100644
+--- a/hw/ide/ich.c
++++ b/hw/ide/ich.c
+@@ -182,8 +182,8 @@ static void ich_ahci_class_init(ObjectClass *klass, const void *data)
+ 
+     k->realize = pci_ich9_ahci_realize;
+     k->exit = pci_ich9_uninit;
+-    k->vendor_id = PCI_VENDOR_ID_INTEL;
+-    k->device_id = PCI_DEVICE_ID_INTEL_82801IR;
++    k->vendor_id = PCI_VENDOR_ID_AMD;
++    k->device_id = PCI_DEVICE_ID_AMD_SATA;
+     k->revision = 0x02;
+     k->class_id = PCI_CLASS_STORAGE_SATA;
+     dc->vmsd = &vmstate_ich9_ahci;
 diff --git a/hw/input/adb-kbd.c b/hw/input/adb-kbd.c
-index 507557d..7de1e5f 100644
+index 507557deec..7de1e5faaf 100644
 --- a/hw/input/adb-kbd.c
 +++ b/hw/input/adb-kbd.c
 @@ -356,7 +356,7 @@ static void adb_kbd_reset(DeviceState *dev)
@@ -832,7 +850,7 @@ index 507557d..7de1e5f 100644
      .event = adb_keyboard_event,
  };
 diff --git a/hw/input/adb-mouse.c b/hw/input/adb-mouse.c
-index 373ef3f..0e44371 100644
+index 373ef3f953..0e443716b9 100644
 --- a/hw/input/adb-mouse.c
 +++ b/hw/input/adb-mouse.c
 @@ -94,7 +94,7 @@ static void adb_mouse_handle_event(DeviceState *dev, QemuConsole *src,
@@ -845,7 +863,7 @@ index 373ef3f..0e44371 100644
      .event = adb_mouse_handle_event,
      /*
 diff --git a/hw/input/hid.c b/hw/input/hid.c
-index 76bedc1..7fc2f72 100644
+index 76bedc1844..7fc2f72819 100644
 --- a/hw/input/hid.c
 +++ b/hw/input/hid.c
 @@ -511,20 +511,20 @@ void hid_free(HIDState *hs)
@@ -873,7 +891,7 @@ index 76bedc1..7fc2f72 100644
      .event = hid_pointer_event,
      .sync  = hid_pointer_sync,
 diff --git a/hw/input/ps2.c b/hw/input/ps2.c
-index 7f7b1fc..7e38002 100644
+index 7f7b1fce2e..7e380024c9 100644
 --- a/hw/input/ps2.c
 +++ b/hw/input/ps2.c
 @@ -1232,7 +1232,7 @@ static const VMStateDescription vmstate_ps2_mouse = {
@@ -895,7 +913,7 @@ index 7f7b1fc..7e38002 100644
      .event = ps2_mouse_event,
      .sync  = ps2_mouse_sync,
 diff --git a/hw/input/virtio-input-hid.c b/hw/input/virtio-input-hid.c
-index d986c3c..2e9dd7b 100644
+index d986c3c16e..2e9dd7b94e 100644
 --- a/hw/input/virtio-input-hid.c
 +++ b/hw/input/virtio-input-hid.c
 @@ -16,10 +16,10 @@
@@ -967,8 +985,32 @@ index d986c3c..2e9dd7b 100644
              .product = const_le16(0x0003),
              .version = const_le16(0x0001),
          },
+diff --git a/hw/isa/lpc_ich9.c b/hw/isa/lpc_ich9.c
+index 304dffac32..7bae9035b7 100644
+--- a/hw/isa/lpc_ich9.c
++++ b/hw/isa/lpc_ich9.c
+@@ -858,7 +858,7 @@ static void build_ich9_isa_aml(AcpiDevAmlIf *adev, Aml *scope)
+     aml_append(scope, aml_operation_region("PIRQ", AML_PCI_CONFIG,
+                                            aml_int(0x60), 0x0C));
+     /* Fields declarion has to happen *after* operation region */
+-    field = aml_field("PCI0.SF8.PIRQ", AML_BYTE_ACC, AML_NOLOCK, AML_PRESERVE);
++    field = aml_field("PCI0.LPCB.PIRQ", AML_BYTE_ACC, AML_NOLOCK, AML_PRESERVE);
+     aml_append(field, aml_named_field("PRQA", 8));
+     aml_append(field, aml_named_field("PRQB", 8));
+     aml_append(field, aml_named_field("PRQC", 8));
+@@ -888,8 +888,8 @@ static void ich9_lpc_class_init(ObjectClass *klass, const void *data)
+     dc->vmsd = &vmstate_ich9_lpc;
+     device_class_set_props(dc, ich9_lpc_properties);
+     k->config_write = ich9_lpc_config_write;
+-    dc->desc = "ICH9 LPC bridge";
+-    k->vendor_id = PCI_VENDOR_ID_INTEL;
++    dc->desc = "FCH LPC Bridge";
++    k->vendor_id = PCI_VENDOR_ID_AMD;
+     k->device_id = PCI_DEVICE_ID_INTEL_ICH9_8;
+     k->revision = ICH9_A2_LPC_REVISION;
+     k->class_id = PCI_CLASS_BRIDGE_ISA;
 diff --git a/hw/loongarch/virt.c b/hw/loongarch/virt.c
-index b15ada2..f5e8cb3 100644
+index b15ada2078..f5e8cb3c5b 100644
 --- a/hw/loongarch/virt.c
 +++ b/hw/loongarch/virt.c
 @@ -130,17 +130,17 @@ static void virt_build_smbios(LoongArchVirtMachineState *lvms)
@@ -993,7 +1035,7 @@ index b15ada2..f5e8cb3 100644
      smbios_get_tables(ms, SMBIOS_ENTRY_POINT_TYPE_64,
                        NULL, 0,
 diff --git a/hw/m68k/virt.c b/hw/m68k/virt.c
-index 875fd00..bf4e763 100644
+index 875fd00ef8..bf4e76393d 100644
 --- a/hw/m68k/virt.c
 +++ b/hw/m68k/virt.c
 @@ -313,7 +313,7 @@ static void virt_init(MachineState *machine)
@@ -1015,7 +1057,7 @@ index 875fd00..bf4e763 100644
          if (latest) { \
              mc->alias = "virt"; \
 diff --git a/hw/misc/applesmc.c b/hw/misc/applesmc.c
-index a015d4a..30099e8 100644
+index a015d4a9b8..30099e866f 100644
 --- a/hw/misc/applesmc.c
 +++ b/hw/misc/applesmc.c
 @@ -85,8 +85,7 @@ enum {
@@ -1029,7 +1071,7 @@ index a015d4a..30099e8 100644
  struct AppleSMCData {
      uint8_t len;
 diff --git a/hw/misc/pvpanic-isa.c b/hw/misc/pvpanic-isa.c
-index f7b421c..881cf2b 100644
+index f7b421c713..881cf2b4c7 100644
 --- a/hw/misc/pvpanic-isa.c
 +++ b/hw/misc/pvpanic-isa.c
 @@ -69,7 +69,7 @@ static void build_pvpanic_isa_aml(AcpiDevAmlIf *adev, Aml *scope)
@@ -1042,7 +1084,7 @@ index f7b421c..881cf2b 100644
      crs = aml_resource_template();
      aml_append(crs,
 diff --git a/hw/nvme/ctrl.c b/hw/nvme/ctrl.c
-index f5ee6bf..c60742b 100644
+index f5ee6bf260..c60742b79e 100644
 --- a/hw/nvme/ctrl.c
 +++ b/hw/nvme/ctrl.c
 @@ -8795,7 +8795,7 @@ static void nvme_init_ctrl(NvmeCtrl *n, PCIDevice *pci_dev)
@@ -1055,7 +1097,7 @@ index f5ee6bf..c60742b 100644
      strpadcpy((char *)id->sn, sizeof(id->sn), n->params.serial, ' ');
  
 diff --git a/hw/nvram/fw_cfg-acpi.c b/hw/nvram/fw_cfg-acpi.c
-index 2e6ef89..bb5a6f4 100644
+index 2e6ef89b98..bb5a6f46b0 100644
 --- a/hw/nvram/fw_cfg-acpi.c
 +++ b/hw/nvram/fw_cfg-acpi.c
 @@ -11,7 +11,7 @@
@@ -1068,7 +1110,7 @@ index 2e6ef89..bb5a6f4 100644
      aml_append(dev, aml_name_decl("_STA", aml_int(0xB)));
      aml_append(dev, aml_name_decl("_CCA", aml_int(1)));
 diff --git a/hw/nvram/fw_cfg.c b/hw/nvram/fw_cfg.c
-index aa24050..3b903de 100644
+index aa24050493..3b903ded59 100644
 --- a/hw/nvram/fw_cfg.c
 +++ b/hw/nvram/fw_cfg.c
 @@ -56,7 +56,7 @@
@@ -1090,7 +1132,7 @@ index aa24050..3b903de 100644
      fw_cfg_add_i16(s, FW_CFG_NOGRAPHIC, (uint16_t)!machine->enable_graphics);
      fw_cfg_add_i16(s, FW_CFG_BOOT_MENU, (uint16_t)(machine->boot_config.has_menu && machine->boot_config.menu));
 diff --git a/hw/pci-host/gpex.c b/hw/pci-host/gpex.c
-index b806a22..3713551 100644
+index b806a2286f..371355134c 100644
 --- a/hw/pci-host/gpex.c
 +++ b/hw/pci-host/gpex.c
 @@ -243,7 +243,7 @@ static void gpex_root_class_init(ObjectClass *klass, const void *data)
@@ -1102,8 +1144,21 @@ index b806a22..3713551 100644
      dc->vmsd = &vmstate_gpex_root;
      k->vendor_id = PCI_VENDOR_ID_REDHAT;
      k->device_id = PCI_DEVICE_ID_REDHAT_PCIE_HOST;
+diff --git a/hw/pci-host/q35.c b/hw/pci-host/q35.c
+index 1951ae440c..b8c313ecbc 100644
+--- a/hw/pci-host/q35.c
++++ b/hw/pci-host/q35.c
+@@ -679,7 +679,7 @@ static void mch_class_init(ObjectClass *klass, const void *data)
+     set_bit(DEVICE_CATEGORY_BRIDGE, dc->categories);
+     dc->desc = "Host bridge";
+     dc->vmsd = &vmstate_mch;
+-    k->vendor_id = PCI_VENDOR_ID_INTEL;
++    k->vendor_id = PCI_VENDOR_ID_AMD;
+     /*
+      * The 'q35' machine type implements an Intel Series 3 chipset,
+      * of which there are several variants. The key difference between
 diff --git a/hw/ppc/e500plat.c b/hw/ppc/e500plat.c
-index 4f1d659..b54e0d9 100644
+index 4f1d659e72..b54e0d9d98 100644
 --- a/hw/ppc/e500plat.c
 +++ b/hw/ppc/e500plat.c
 @@ -22,7 +22,7 @@
@@ -1116,7 +1171,7 @@ index 4f1d659..b54e0d9 100644
  
      qemu_fdt_setprop(fdt, "/", "model", model, sizeof(model));
 diff --git a/hw/ppc/pnv.c b/hw/ppc/pnv.c
-index 9c74f46..5ae60b1 100644
+index 9c74f46091..5ae60b14a5 100644
 --- a/hw/ppc/pnv.c
 +++ b/hw/ppc/pnv.c
 @@ -653,7 +653,7 @@ static void *pnv_dt_create(MachineState *machine)
@@ -1129,7 +1184,7 @@ index 9c74f46..5ae60b1 100644
      /* Root node */
      _FDT((fdt_setprop_cell(fdt, 0, "#address-cells", 0x2)));
 diff --git a/hw/scsi/mptconfig.c b/hw/scsi/mptconfig.c
-index 19d01f3..00ee3f8 100644
+index 19d01f39fa..00ee3f80e5 100644
 --- a/hw/scsi/mptconfig.c
 +++ b/hw/scsi/mptconfig.c
 @@ -189,12 +189,12 @@ static
@@ -1151,7 +1206,7 @@ index 19d01f3..00ee3f8 100644
  
  static
 diff --git a/hw/scsi/scsi-bus.c b/hw/scsi/scsi-bus.c
-index 9b12ee7..c0ef2fb 100644
+index 9b12ee7f1c..c0ef2fb343 100644
 --- a/hw/scsi/scsi-bus.c
 +++ b/hw/scsi/scsi-bus.c
 @@ -698,8 +698,8 @@ static bool scsi_target_emulate_inquiry(SCSITargetReq *r)
@@ -1166,7 +1221,7 @@ index 9b12ee7..c0ef2fb 100644
      }
      return true;
 diff --git a/hw/scsi/scsi-disk.c b/hw/scsi/scsi-disk.c
-index b4782c6..4dae33b 100644
+index b4782c6248..4dae33bd79 100644
 --- a/hw/scsi/scsi-disk.c
 +++ b/hw/scsi/scsi-disk.c
 @@ -2544,7 +2544,7 @@ static void scsi_realize(SCSIDevice *dev, Error **errp)
@@ -1197,7 +1252,7 @@ index b4782c6..4dae33b 100644
      scsi_realize(&s->qdev, errp);
  }
 diff --git a/hw/scsi/spapr_vscsi.c b/hw/scsi/spapr_vscsi.c
-index 20f70fb..3fcd992 100644
+index 20f70fb272..3fcd992e30 100644
 --- a/hw/scsi/spapr_vscsi.c
 +++ b/hw/scsi/spapr_vscsi.c
 @@ -713,8 +713,8 @@ static void vscsi_inquiry_no_target(VSCSIState *s, vscsi_req *req)
@@ -1221,7 +1276,7 @@ index 20f70fb..3fcd992 100644
      info.mad_version = cpu_to_be32(1);
      info.os_type = cpu_to_be32(2);
 diff --git a/hw/smbios/smbios.c b/hw/smbios/smbios.c
-index 1ac063c..9a3bbd9 100644
+index 1ac063cfb4..9a3bbd9480 100644
 --- a/hw/smbios/smbios.c
 +++ b/hw/smbios/smbios.c
 @@ -69,7 +69,8 @@ static struct {
@@ -1615,7 +1670,7 @@ index 1ac063c..9a3bbd9 100644
  
      for (i = 0; i < mem_array_size; i++) {
 diff --git a/hw/ufs/lu.c b/hw/ufs/lu.c
-index 2d8ffd7..e0d2a92 100644
+index 2d8ffd72c5..e0d2a92cc1 100644
 --- a/hw/ufs/lu.c
 +++ b/hw/ufs/lu.c
 @@ -184,8 +184,8 @@ static int ufs_emulate_wlun_inquiry(UfsRequest *req, uint8_t *outbuf,
@@ -1630,7 +1685,7 @@ index 2d8ffd7..e0d2a92 100644
  
      return SCSI_INQUIRY_LEN;
 diff --git a/hw/usb/canokey.c b/hw/usb/canokey.c
-index cbefbb5..1998dd0 100644
+index cbefbb5daf..1998dd084c 100644
 --- a/hw/usb/canokey.c
 +++ b/hw/usb/canokey.c
 @@ -35,8 +35,8 @@ enum {
@@ -1645,7 +1700,7 @@ index cbefbb5..1998dd0 100644
  
  static const USBDescDevice desc_device_canokey = {
 diff --git a/hw/usb/dev-audio.c b/hw/usb/dev-audio.c
-index 26af709..3c281ad 100644
+index 26af709f31..3c281ad8a4 100644
 --- a/hw/usb/dev-audio.c
 +++ b/hw/usb/dev-audio.c
 @@ -73,9 +73,9 @@ enum usb_audio_strings {
@@ -1662,7 +1717,7 @@ index 26af709..3c281ad 100644
      [STRING_USBAUDIO_CONTROL]   = "Audio Device",
      [STRING_INPUT_TERMINAL]     = "Audio Output Pipe",
 diff --git a/hw/usb/dev-hid.c b/hw/usb/dev-hid.c
-index 96623aa..4dbf89f 100644
+index 96623aa322..4dbf89f533 100644
 --- a/hw/usb/dev-hid.c
 +++ b/hw/usb/dev-hid.c
 @@ -63,17 +63,17 @@ enum {
@@ -1773,7 +1828,7 @@ index 96623aa..4dbf89f 100644
      device_class_set_props(dc, usb_keyboard_properties);
      set_bit(DEVICE_CATEGORY_INPUT, dc->categories);
 diff --git a/hw/usb/dev-hub.c b/hw/usb/dev-hub.c
-index a19350d..33aad4f 100644
+index a19350d9c4..33aad4f248 100644
 --- a/hw/usb/dev-hub.c
 +++ b/hw/usb/dev-hub.c
 @@ -104,9 +104,9 @@ enum {
@@ -1799,7 +1854,7 @@ index a19350d..33aad4f 100644
      uc->find_device    = usb_hub_find_device;
      uc->handle_reset   = usb_hub_handle_reset;
 diff --git a/hw/usb/dev-mtp.c b/hw/usb/dev-mtp.c
-index ce45c9c..e2b1ad7 100644
+index ce45c9cd06..e2b1ad785a 100644
 --- a/hw/usb/dev-mtp.c
 +++ b/hw/usb/dev-mtp.c
 @@ -247,8 +247,8 @@ OBJECT_DECLARE_SIMPLE_TYPE(MTPState, USB_MTP)
@@ -1832,7 +1887,7 @@ index ce45c9c..e2b1ad7 100644
      uc->cancel_packet  = usb_mtp_cancel_packet;
      uc->handle_attach  = usb_desc_attach;
 diff --git a/hw/usb/dev-network.c b/hw/usb/dev-network.c
-index 1df2454..e399a10 100644
+index 1df2454181..e399a10107 100644
 --- a/hw/usb/dev-network.c
 +++ b/hw/usb/dev-network.c
 @@ -99,16 +99,16 @@ enum usbstring_idx {
@@ -1881,7 +1936,7 @@ index 1df2454..e399a10 100644
      uc->handle_reset   = usb_net_handle_reset;
      uc->handle_control = usb_net_handle_control;
 diff --git a/hw/usb/dev-serial.c b/hw/usb/dev-serial.c
-index 1c116d8..358c745 100644
+index 1c116d8b0f..358c7452a2 100644
 --- a/hw/usb/dev-serial.c
 +++ b/hw/usb/dev-serial.c
 @@ -119,10 +119,10 @@ enum {
@@ -1918,7 +1973,7 @@ index 1c116d8..358c745 100644
      device_class_set_props(dc, braille_properties);
  }
 diff --git a/hw/usb/dev-smartcard-reader.c b/hw/usb/dev-smartcard-reader.c
-index 6ce7154..b02d281 100644
+index 6ce7154fee..b02d281cf8 100644
 --- a/hw/usb/dev-smartcard-reader.c
 +++ b/hw/usb/dev-smartcard-reader.c
 @@ -80,8 +80,8 @@ OBJECT_DECLARE_SIMPLE_TYPE(USBCCIDState, USB_CCID_DEV)
@@ -1955,7 +2010,7 @@ index 6ce7154..b02d281 100644
      uc->handle_reset   = ccid_handle_reset;
      uc->handle_control = ccid_handle_control;
 diff --git a/hw/usb/dev-storage.c b/hw/usb/dev-storage.c
-index b13fe34..7680bee 100644
+index b13fe345c4..7680beed35 100644
 --- a/hw/usb/dev-storage.c
 +++ b/hw/usb/dev-storage.c
 @@ -47,9 +47,9 @@ enum {
@@ -1981,7 +2036,7 @@ index b13fe34..7680bee 100644
      uc->cancel_packet  = usb_msd_cancel_io;
      uc->handle_attach  = usb_desc_attach;
 diff --git a/hw/usb/dev-uas.c b/hw/usb/dev-uas.c
-index 21cc283..d14a078 100644
+index 21cc2835c6..d14a078d8b 100644
 --- a/hw/usb/dev-uas.c
 +++ b/hw/usb/dev-uas.c
 @@ -171,9 +171,9 @@ enum {
@@ -1997,7 +2052,7 @@ index 21cc283..d14a078 100644
      [STR_CONFIG_SUPER] = "Super speed config (usb 3.0)",
  };
 diff --git a/hw/usb/dev-wacom.c b/hw/usb/dev-wacom.c
-index f4b71a2..ff724dd 100644
+index f4b71a2147..ff724ddca5 100644
 --- a/hw/usb/dev-wacom.c
 +++ b/hw/usb/dev-wacom.c
 @@ -64,9 +64,9 @@ enum {
@@ -2049,7 +2104,7 @@ index f4b71a2..ff724dd 100644
  }
  
 diff --git a/hw/usb/u2f-emulated.c b/hw/usb/u2f-emulated.c
-index ace5ece..8cb276a 100644
+index ace5eceadd..8cb276ac79 100644
 --- a/hw/usb/u2f-emulated.c
 +++ b/hw/usb/u2f-emulated.c
 @@ -385,7 +385,7 @@ static void u2f_emulated_class_init(ObjectClass *klass, const void *data)
@@ -2062,7 +2117,7 @@ index ace5ece..8cb276a 100644
  }
  
 diff --git a/hw/usb/u2f-passthru.c b/hw/usb/u2f-passthru.c
-index fa8d9cd..cd4d451 100644
+index fa8d9cdda8..cd4d4517e7 100644
 --- a/hw/usb/u2f-passthru.c
 +++ b/hw/usb/u2f-passthru.c
 @@ -528,7 +528,7 @@ static void u2f_passthru_class_init(ObjectClass *klass, const void *data)
@@ -2075,7 +2130,7 @@ index fa8d9cd..cd4d451 100644
      device_class_set_props(dc, u2f_passthru_properties);
      set_bit(DEVICE_CATEGORY_MISC, dc->categories);
 diff --git a/hw/usb/u2f.c b/hw/usb/u2f.c
-index b051a99..a6c48cd 100644
+index b051a999d3..a6c48cdac9 100644
 --- a/hw/usb/u2f.c
 +++ b/hw/usb/u2f.c
 @@ -46,9 +46,9 @@ enum {
@@ -2109,7 +2164,7 @@ index b051a99..a6c48cd 100644
  }
  
 diff --git a/hw/vfio/ap.c b/hw/vfio/ap.c
-index 7719f24..d0306c5 100644
+index 7719f24579..d0306c5e1a 100644
 --- a/hw/vfio/ap.c
 +++ b/hw/vfio/ap.c
 @@ -341,7 +341,7 @@ static void vfio_ap_class_init(ObjectClass *klass, const void *data)
@@ -2122,7 +2177,7 @@ index 7719f24..d0306c5 100644
      dc->bus_type = TYPE_AP_BUS;
  
 diff --git a/include/hw/acpi/aml-build.h b/include/hw/acpi/aml-build.h
-index c18f681..e3656c1 100644
+index c18f681342..e3656c173a 100644
 --- a/include/hw/acpi/aml-build.h
 +++ b/include/hw/acpi/aml-build.h
 @@ -4,8 +4,8 @@
@@ -2137,7 +2192,7 @@ index c18f681..e3656c1 100644
  #define ACPI_BUILD_TABLE_FILE "etc/acpi/tables"
  #define ACPI_BUILD_RSDP_FILE "etc/acpi/rsdp"
 diff --git a/include/hw/pci/pci.h b/include/hw/pci/pci.h
-index 6b7d3ac..599c70e 100644
+index 6b7d3ac8a3..599c70e7e0 100644
 --- a/include/hw/pci/pci.h
 +++ b/include/hw/pci/pci.h
 @@ -57,7 +57,7 @@ extern bool pci_available;
@@ -2174,7 +2229,7 @@ index 6b7d3ac..599c70e 100644
 -#define PCI_DEVICE_ID_REDHAT_BRIDGE      0x0001
 -#define PCI_DEVICE_ID_REDHAT_SERIAL      0x0002
 +#define PCI_VENDOR_ID_REDHAT             0x1022 // "Red Hat, Inc." | AMD Vendor ID Replacement from 0x1b36
-+#define PCI_DEVICE_ID_REDHAT_BRIDGE      0x1480 // "QEMU PCI-PCI bridge" | AMD Device ID Replacement from 0x0001 | hw/pci-bridge/pci_bridge_dev.c
++#define PCI_DEVICE_ID_REDHAT_BRIDGE      0x57a3 // "QEMU PCI-PCI bridge" | AMD Device ID Replacement from 0x0001 | hw/pci-bridge/pci_bridge_dev.c
 +#define PCI_DEVICE_ID_REDHAT_SERIAL      0x0002 // TODO: find device_id | AMD Device ID Replacement from 0x???? | hw/char/serial-pci.c
  #define PCI_DEVICE_ID_REDHAT_SERIAL2     0x0003
  #define PCI_DEVICE_ID_REDHAT_SERIAL4     0x0004
@@ -2190,16 +2245,24 @@ index 6b7d3ac..599c70e 100644
 -#define PCI_DEVICE_ID_REDHAT_XHCI        0x000d
 -#define PCI_DEVICE_ID_REDHAT_PCIE_BRIDGE 0x000e
 +#define PCI_DEVICE_ID_REDHAT_PCIE_RP     0x1483 // "QEMU PCIe Root Port" | AMD Device ID Replacement from 0x000c | hw/pci-bridge/gen_pcie_root_port.c
-+#define PCI_DEVICE_ID_REDHAT_XHCI        0x43d5 // "QEMU XHCI Host Controller" | AMD Device ID Replacement from 0x000d | hw/usb/hcd-xhci-pci.c
-+#define PCI_DEVICE_ID_REDHAT_PCIE_BRIDGE 0x1483 // "Red Hat, Device ID: 000E" | AMD Device ID Replacement from 0x000e | hw/pci-bridge/pcie_pci_bridge.c
++#define PCI_DEVICE_ID_REDHAT_XHCI        0x149c // "QEMU XHCI Host Controller" | AMD Device ID Replacement from 0x000d | hw/usb/hcd-xhci-pci.c
++#define PCI_DEVICE_ID_REDHAT_PCIE_BRIDGE 0x57ad // "Red Hat, Device ID: 000E" | AMD Device ID Replacement from 0x000e | hw/pci-bridge/pcie_pci_bridge.c
  #define PCI_DEVICE_ID_REDHAT_MDPY        0x000f
  #define PCI_DEVICE_ID_REDHAT_NVME        0x0010
  #define PCI_DEVICE_ID_REDHAT_PVPANIC     0x0011
 diff --git a/include/hw/pci/pci_ids.h b/include/hw/pci/pci_ids.h
-index 33e2898..0a4e198 100644
+index 33e2898be9..fb7a0a0069 100644
 --- a/include/hw/pci/pci_ids.h
 +++ b/include/hw/pci/pci_ids.h
-@@ -237,6 +237,8 @@
+@@ -178,6 +178,7 @@
+ #define PCI_VENDOR_ID_AMD                0x1022
+ #define PCI_DEVICE_ID_AMD_LANCE          0x2000
+ #define PCI_DEVICE_ID_AMD_SCSI           0x2020
++#define PCI_DEVICE_ID_AMD_SATA           0x43f6
+ 
+ #define PCI_VENDOR_ID_HP                 0x103c
+ 
+@@ -237,6 +238,8 @@
  #define PCI_VENDOR_ID_BAIDU              0x1d22
  #define PCI_DEVICE_ID_KUNLUN_VF          0x3685
  
@@ -2208,7 +2271,7 @@ index 33e2898..0a4e198 100644
  #define PCI_VENDOR_ID_INTEL              0x8086
  #define PCI_DEVICE_ID_INTEL_82378        0x0484
  #define PCI_DEVICE_ID_INTEL_82441        0x1237
-@@ -246,8 +248,8 @@
+@@ -246,8 +249,8 @@
  #define PCI_DEVICE_ID_INTEL_ESB_9        0x25ab
  #define PCI_DEVICE_ID_INTEL_NVME         0x5845
  #define PCI_DEVICE_ID_INTEL_82371SB_0    0x7000
@@ -2219,7 +2282,7 @@ index 33e2898..0a4e198 100644
  #define PCI_DEVICE_ID_INTEL_82371AB_0    0x7110
  #define PCI_DEVICE_ID_INTEL_82371AB      0x7111
  #define PCI_DEVICE_ID_INTEL_82371AB_2    0x7112
-@@ -259,9 +261,9 @@
+@@ -259,9 +262,9 @@
  #define PCI_DEVICE_ID_INTEL_ICH9_3       0x2913
  #define PCI_DEVICE_ID_INTEL_ICH9_4       0x2914
  #define PCI_DEVICE_ID_INTEL_ICH9_5       0x2919
@@ -2231,7 +2294,7 @@ index 33e2898..0a4e198 100644
  
  #define PCI_DEVICE_ID_INTEL_82801I_UHCI1 0x2934
  #define PCI_DEVICE_ID_INTEL_82801I_UHCI2 0x2935
-@@ -273,7 +275,7 @@
+@@ -273,7 +276,7 @@
  #define PCI_DEVICE_ID_INTEL_82801I_EHCI2 0x293c
  #define PCI_DEVICE_ID_INTEL_82599_SFP_VF 0x10ed
  
@@ -2241,7 +2304,7 @@ index 33e2898..0a4e198 100644
  #define PCI_VENDOR_ID_XEN                0x5853
  #define PCI_DEVICE_ID_XEN_PLATFORM       0x0001
 diff --git a/include/standard-headers/linux/qemu_fw_cfg.h b/include/standard-headers/linux/qemu_fw_cfg.h
-index cb93f66..fe34590 100644
+index cb93f6678d..fe34590061 100644
 --- a/include/standard-headers/linux/qemu_fw_cfg.h
 +++ b/include/standard-headers/linux/qemu_fw_cfg.h
 @@ -4,7 +4,7 @@
@@ -2263,7 +2326,7 @@ index cb93f66..fe34590 100644
  /* Control as first field allows for different structures selected by this
   * field, which might be useful in the future
 diff --git a/migration/rdma.c b/migration/rdma.c
-index 2d839fc..960871d 100644
+index 2d839fce6c..960871df9d 100644
 --- a/migration/rdma.c
 +++ b/migration/rdma.c
 @@ -220,7 +220,7 @@ static const char *control_desc(unsigned int rdma_control)
@@ -2276,7 +2339,7 @@ index 2d839fc..960871d 100644
          [RDMA_CONTROL_RAM_BLOCKS_RESULT] = "RAM BLOCKS RESULT",
          [RDMA_CONTROL_COMPRESS] = "COMPRESS",
 diff --git a/pc-bios/optionrom/optionrom.h b/pc-bios/optionrom/optionrom.h
-index 7bcdf0e..02dd06e 100644
+index 7bcdf0eeb2..02dd06eb3e 100644
 --- a/pc-bios/optionrom/optionrom.h
 +++ b/pc-bios/optionrom/optionrom.h
 @@ -43,7 +43,7 @@
@@ -2289,7 +2352,7 @@ index 7bcdf0e..02dd06e 100644
  #define BIOS_CFG_DMA_ADDR_HIGH  0x514
  #define BIOS_CFG_DMA_ADDR_LOW   0x518
 diff --git a/pc-bios/s390-ccw/virtio-scsi.h b/pc-bios/s390-ccw/virtio-scsi.h
-index c5612e1..048cb93 100644
+index c5612e16a2..048cb93d3d 100644
 --- a/pc-bios/s390-ccw/virtio-scsi.h
 +++ b/pc-bios/s390-ccw/virtio-scsi.h
 @@ -25,7 +25,7 @@
@@ -2302,7 +2365,7 @@ index c5612e1..048cb93 100644
  enum virtio_scsi_vq_id {
      VR_CONTROL  = 0,
 diff --git a/qapi/ui.json b/qapi/ui.json
-index 1b2f4a4..37f40fd 100644
+index 1b2f4a4769..37f40fdeae 100644
 --- a/qapi/ui.json
 +++ b/qapi/ui.json
 @@ -831,13 +831,13 @@
@@ -2322,7 +2385,7 @@ index 1b2f4a4..37f40fd 100644
  #                 "current":true,
  #                 "absolute":true
 diff --git a/target/i386/cpu.c b/target/i386/cpu.c
-index 6d85149..b4a8d3e 100644
+index 6d85149e6e..b4a8d3e921 100644
 --- a/target/i386/cpu.c
 +++ b/target/i386/cpu.c
 @@ -3309,7 +3309,7 @@ static const X86CPUDefinition builtin_x86_defs[] = {
@@ -2380,7 +2443,7 @@ index 6d85149..b4a8d3e 100644
      }
      len = strlen(cpu->hyperv_vendor);
 diff --git a/target/i386/kvm/kvm.c b/target/i386/kvm/kvm.c
-index 5621200..f4eb228 100644
+index 5621200be0..f4eb228fd7 100644
 --- a/target/i386/kvm/kvm.c
 +++ b/target/i386/kvm/kvm.c
 @@ -1634,7 +1634,7 @@ static int hyperv_fill_cpuids(CPUState *cs,
@@ -2420,7 +2483,7 @@ index 5621200..f4eb228 100644
          c->function = KVM_CPUID_SIGNATURE | kvm_base;
          c->eax = KVM_CPUID_FEATURES | kvm_base;
 diff --git a/target/s390x/cpu_models.c b/target/s390x/cpu_models.c
-index 954a7a9..3f1fe01 100644
+index 954a7a99a9..3f1fe01593 100644
 --- a/target/s390x/cpu_models.c
 +++ b/target/s390x/cpu_models.c
 @@ -954,7 +954,7 @@ static void s390_qemu_cpu_model_class_init(ObjectClass *oc, const void *data)
@@ -2433,7 +2496,7 @@ index 954a7a9..3f1fe01 100644
  }
  
 diff --git a/target/s390x/tcg/misc_helper.c b/target/s390x/tcg/misc_helper.c
-index f7101be..ab4148c 100644
+index f7101be574..ab4148cbdd 100644
 --- a/target/s390x/tcg/misc_helper.c
 +++ b/target/s390x/tcg/misc_helper.c
 @@ -331,18 +331,18 @@ uint32_t HELPER(stsi)(CPUS390XState *env, uint64_t a0, uint64_t r0, uint64_t r1)
