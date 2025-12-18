@@ -8,7 +8,6 @@ readonly VFIO_CONF_PATH="/etc/modprobe.d/vfio.conf"
 readonly VFIO_KERNEL_OPTS_REGEX='(intel_iommu=[^ ]*|iommu=[^ ]*|vfio-pci.ids=[^ ]*|kvm.ignore_msrs=[^ ]*)'
 readonly -a SDBOOT_CONF_LOCATIONS=(/boot/loader/entries /boot/efi/loader/entries /efi/loader/entries)
 
-# Global variables (need to persist across functions)
 hwids=""
 declare -A SOFTDEPS=(
     ["0x10de"]="nouveau nvidia nvidia_drm drm drm_kms_helper"
@@ -64,7 +63,7 @@ revert_vfio() {
             return
         fi
 
-        sed -E -i "/^options / {
+        $ROOT_ESC sed -E -i "/^options / {
             s/$VFIO_KERNEL_OPTS_REGEX//g;
             s/[[:space:]]+/ /g;
             s/[[:space:]]+$//;
@@ -77,7 +76,7 @@ revert_vfio() {
 # Configure VFIO
 ################################################################################
 configure_vfio() {
-    local dev bdf desc sel group bus bad=0 pci_vendor soft vendor_id device_id
+    local dev bdf desc sel group bus bad=0 pci_vendor soft vendor_id device_id link target_bdf
     local -a gpus=() badf=() ids=()
 
     for dev in /sys/bus/pci/devices/*; do
@@ -93,31 +92,37 @@ configure_vfio() {
     ((${#gpus[@]}==1)) && fmtr::warn "Only one GPU detected! Passing it through will leave the host without display output."
 
     while :; do
-        for dev in "${!gpus[@]}"; do printf '\n  %d) %s\n' "$((dev+1))" "${gpus[dev]#*|}"; done
+        for dev in "${!gpus[@]}"; do
+            printf '\n  %d) %s\n' "$((dev+1))" "${gpus[dev]#*|}"
+        done
         read -rp "$(fmtr::ask 'Select device number: ')" sel
-        [[ $sel =~ ^[0-9]+$ ]] && ((sel>=1 && sel<=${#gpus[@]})) && break
+        (( sel>=1 && sel<=${#gpus[@]} )) 2>/dev/null && break
         fmtr::error "Invalid selection. Please choose a valid number."
     done
 
-    bdf=${gpus[sel-1]%%|*}
-    group=$(basename "$(readlink -f /sys/bus/pci/devices/"$bdf"/iommu_group)")
-    bus=${bdf%.*}
+    target_bdf=${gpus[sel-1]%%|*}
+    bus=${target_bdf%.*}
 
-    for dev in /sys/kernel/iommu_groups/"$group"/devices/*; do
+    link=$(readlink "/sys/bus/pci/devices/$target_bdf/iommu_group") || { fmtr::error "No IOMMU group for $target_bdf"; return 1; }
+    group=${link##*/}
+
+    for dev in /sys/kernel/iommu_groups/$group/devices/*; do
         bdf=${dev##*/}
-        read -r vendor_id <"$dev/vendor"; read -r device_id <"$dev/device"
+        read -r vendor_id <"$dev/vendor"
+        read -r device_id <"$dev/device"
         ids+=("${vendor_id:2}:${device_id:2}")
-        [[ ${bdf%.*} == "$bus" ]] || { bad=1; badf+=("$bdf"); }
+        [[ $bdf == "$bus".* ]] || { bad=1; badf+=("$bdf"); }
     done
 
-    ((bad)) && {
-        fmtr::error "Bad IOMMU grouping - group #$group contains:\n$(printf '  [%s]\n' "${badf[@]}")"
+    if ((bad)); then
+        fmtr::error "Bad IOMMU grouping - group #$group contains:
+$(printf '  [%s]\n' "${badf[@]}")"
         fmtr::warn "VFIO PT requires full group isolation. Fix with ACS override, firmware update, or proper hardware support."
         return 1
-    }
+    fi
 
     fmtr::log "Modifying VFIO config: $VFIO_CONF_PATH"
-    read -r pci_vendor <"/sys/bus/pci/devices/$bdf/vendor" || return 1
+    read -r pci_vendor <"/sys/bus/pci/devices/$target_bdf/vendor" || return 1
     hwids=$(IFS=,; echo "${ids[*]}")
 
     {
