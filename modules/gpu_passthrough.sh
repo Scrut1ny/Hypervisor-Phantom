@@ -93,7 +93,7 @@ configure_vfio() {
     ((${#gpus[@]}==1)) && fmtr::warn "Only one GPU detected! Passing it through will leave the host without display output."
 
     while :; do
-        for dev in "${!gpus[@]}"; do printf '  %d) %s\n' "$((dev+1))" "${gpus[dev]#*|}"; done
+        for dev in "${!gpus[@]}"; do printf '\n  %d) %s\n' "$((dev+1))" "${gpus[dev]#*|}"; done
         read -rp "$(fmtr::ask 'Select device number: ')" sel
         [[ $sel =~ ^[0-9]+$ ]] && ((sel>=1 && sel<=${#gpus[@]})) && break
         fmtr::error "Invalid selection. Please choose a valid number."
