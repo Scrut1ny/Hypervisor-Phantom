@@ -163,13 +163,21 @@ install_req_pkgs() {
 dbg::fail() { fmtr::fatal "$1"; exit 1; }
 
 # =============================================================================
-# COMPATABILITY
+# COMPATIBILITY
 # =============================================================================
 
-compat::get_escalation_cmd() { # sets $ROOT_ESC to the first of sudo, doas, pkexec. can be called anywhere using $ROOT_ESC.
+# Sets $ROOT_ESC to the first available privilege escalation tool (sudo, doas, pkexec).
+compat::get_escalation_cmd() {
+  local cmd
   for cmd in sudo doas pkexec; do
-    command -v "$cmd" &>/dev/null && { ROOT_ESC="$cmd"; break; }
+    if command -v -- "$cmd" &>/dev/null; then
+      ROOT_ESC=$cmd
+      export ROOT_ESC
+      return 0
+    fi
   done
-  [ -n "$ROOT_ESC" ] || { echo "No supported privilege escalation tool found." >&2; exit 1; }
+
+  fmtr::error "No supported privilege escalation tool found (sudo/doas/pkexec)."
+  exit 1
 }
 compat::get_escalation_cmd
