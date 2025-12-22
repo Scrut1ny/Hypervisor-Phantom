@@ -76,7 +76,7 @@ revert_vfio() {
 # Configure VFIO
 ################################################################################
 configure_vfio() {
-    local dev bdf desc sel group bus bad=0 pci_vendor soft vendor_id device_id link target_bdf
+    local dev bdf desc sel target_bdf device_addr iommu_path iommu_group vendor_id device_id bad=0 pci_vendor soft
     local -a gpus=() badf=() ids=()
 
     for dev in /sys/bus/pci/devices/*; do
@@ -101,21 +101,20 @@ configure_vfio() {
     done
 
     target_bdf=${gpus[sel-1]%%|*}
-    bus=${target_bdf%.*}
+    device_addr=${target_bdf%.*}
+    iommu_path=$(readlink "/sys/bus/pci/devices/$target_bdf/iommu_group") || { fmtr::error "No IOMMU group for $target_bdf"; return 1; }
+    iommu_group=${iommu_path##*/}
 
-    link=$(readlink "/sys/bus/pci/devices/$target_bdf/iommu_group") || { fmtr::error "No IOMMU group for $target_bdf"; return 1; }
-    group=${link##*/}
-
-    for dev in /sys/kernel/iommu_groups/$group/devices/*; do
+    for dev in "/sys/kernel/iommu_groups/$iommu_group/devices/"*; do
         bdf=${dev##*/}
         read -r vendor_id <"$dev/vendor"
         read -r device_id <"$dev/device"
         ids+=("${vendor_id:2}:${device_id:2}")
-        [[ $bdf == "$bus".* ]] || { bad=1; badf+=("$bdf"); }
+        [[ $bdf == "$device_addr".* ]] || { bad=1; badf+=("$bdf"); }
     done
 
     if ((bad)); then
-        fmtr::error "Bad IOMMU grouping - group #$group contains:
+        fmtr::error "Bad IOMMU grouping - group #$iommu_group contains:
 $(printf '  [%s]\n' "${badf[@]}")"
         fmtr::warn "VFIO PT requires full group isolation. Fix with ACS override, firmware update, or proper hardware support."
         return 1
