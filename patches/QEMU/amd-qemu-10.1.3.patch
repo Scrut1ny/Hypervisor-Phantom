@@ -2000,7 +2000,7 @@ index 1b2f4a4..37f40fd 100644
  #                 "current":true,
  #                 "absolute":true
 diff --git a/target/i386/cpu.c b/target/i386/cpu.c
-index 25bbbf7..0081a9a 100644
+index 25bbbf7..b3f6e21 100644
 --- a/target/i386/cpu.c
 +++ b/target/i386/cpu.c
 @@ -922,7 +922,7 @@ void x86_cpu_vendor_words2str(char *dst, uint32_t vendor1,
@@ -2066,16 +2066,16 @@ index 25bbbf7..0081a9a 100644
                                  &error_abort);
      }
  }
-@@ -7724,7 +7724,7 @@ static void x86_cpu_load_model(X86CPU *cpu, const X86CPUModel *model)
+@@ -7724,8 +7724,6 @@ static void x86_cpu_load_model(X86CPU *cpu, const X86CPUModel *model)
      /* legacy-cache defaults to 'off' if CPU model provides cache info */
      cpu->legacy_cache = !x86_cpu_get_versioned_cache_info(cpu, model);
  
 -    env->features[FEAT_1_ECX] |= CPUID_EXT_HYPERVISOR;
-+    // env->features[FEAT_1_ECX] |= CPUID_EXT_HYPERVISOR;
- 
+-
      /* sysenter isn't supported in compatibility mode on AMD,
       * syscall isn't supported in compatibility mode on Intel.
-@@ -8299,18 +8299,16 @@ void cpu_x86_cpuid(CPUX86State *env, uint32_t index, uint32_t count,
+      * Normally we advertise the actual CPU vendor, but you can
+@@ -8299,18 +8297,10 @@ void cpu_x86_cpuid(CPUX86State *env, uint32_t index, uint32_t count,
           * CPUID code in kvm_arch_init_vcpu() ignores stuff
           * set here, but we restrict to TCG none the less.
           */
@@ -2095,16 +2095,10 @@ index 25bbbf7..0081a9a 100644
 +        *ebx = 0;
 +        *ecx = 0;
 +        *edx = 0;
-+        break;
-+    case 0x40000001:
-+        *eax = 0;
-+        *ebx = 0;
-+        *ecx = 0;
-+        *edx = 0;
          break;
      case 0x40000001:
          *eax = 0;
-@@ -8767,10 +8765,11 @@ static void x86_cpu_reset_hold(Object *obj, ResetType type)
+@@ -8767,10 +8757,11 @@ static void x86_cpu_reset_hold(Object *obj, ResetType type)
  void x86_cpu_after_reset(X86CPU *cpu)
  {
  #ifndef CONFIG_USER_ONLY
@@ -2117,7 +2111,7 @@ index 25bbbf7..0081a9a 100644
      if (cpu->apic_state) {
          device_cold_reset(cpu->apic_state);
      }
-@@ -9075,10 +9074,12 @@ void x86_cpu_expand_features(X86CPU *cpu, Error **errp)
+@@ -9075,9 +9066,11 @@ void x86_cpu_expand_features(X86CPU *cpu, Error **errp)
          env->cpuid_xlevel2 = env->cpuid_min_xlevel2;
      }
  
@@ -2125,12 +2119,11 @@ index 25bbbf7..0081a9a 100644
      if (kvm_enabled() && !kvm_hyperv_expand_features(cpu, errp)) {
          return;
      }
- }
 +#endif
+ }
  
  /*
-  * Finishes initialization of CPUID data, filters CPU feature
-@@ -9171,7 +9172,7 @@ static void x86_cpu_hyperv_realize(X86CPU *cpu)
+@@ -9171,7 +9164,7 @@ static void x86_cpu_hyperv_realize(X86CPU *cpu)
  
      /* Hyper-V vendor id */
      if (!cpu->hyperv_vendor) {
@@ -2139,12 +2132,11 @@ index 25bbbf7..0081a9a 100644
                                  &error_abort);
      }
      len = strlen(cpu->hyperv_vendor);
-@@ -9273,7 +9274,7 @@ static void x86_cpu_realizefn(DeviceState *dev, Error **errp)
+@@ -9273,7 +9266,6 @@ static void x86_cpu_realizefn(DeviceState *dev, Error **errp)
       * Process Hyper-V enlightenments.
       * Note: this currently has to happen before the expansion of CPU features.
       */
 -    x86_cpu_hyperv_realize(cpu);
-+    // x86_cpu_hyperv_realize(cpu);
  
      x86_cpu_expand_features(cpu, &local_err);
      if (local_err) {
