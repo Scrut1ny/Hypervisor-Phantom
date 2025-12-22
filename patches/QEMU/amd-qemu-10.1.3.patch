@@ -2141,15 +2141,14 @@ index 25bbbf7..b3f6e21 100644
      x86_cpu_expand_features(cpu, &local_err);
      if (local_err) {
 diff --git a/target/i386/hvf/x86_cpuid.c b/target/i386/hvf/x86_cpuid.c
-index 0798a0c..0b52d3f 100644
+index 0798a0c..d965113 100644
 --- a/target/i386/hvf/x86_cpuid.c
 +++ b/target/i386/hvf/x86_cpuid.c
-@@ -80,7 +80,7 @@ uint32_t hvf_get_supported_cpuid(uint32_t func, uint32_t idx,
+@@ -80,7 +80,6 @@ uint32_t hvf_get_supported_cpuid(uint32_t func, uint32_t idx,
               CPUID_EXT_POPCNT | CPUID_EXT_AES | CPUID_EXT_X2APIC |
               (supported_xcr0 ? CPUID_EXT_XSAVE : 0) |
               CPUID_EXT_AVX | CPUID_EXT_F16C | CPUID_EXT_RDRAND;
 -        ecx |= CPUID_EXT_HYPERVISOR;
-+        // ecx |= CPUID_EXT_HYPERVISOR;
          break;
      case 6:
          eax = CPUID_6_EAX_ARAT;
