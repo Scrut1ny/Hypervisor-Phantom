@@ -23,21 +23,20 @@ REQUIRED_PKGS_Fedora=(
 )
 
 configure_system_installation() {
-  # Sets "unix_sock_group" and "unix_sock_rw_perms"
+  local target_user="${SUDO_USER:-$USER}"
+  local user_groups=" $(id -nG "$target_user") "
+
   $ROOT_ESC sed -Ei \
     -e 's/^[[:space:]]*#?[[:space:]]*(unix_sock_group)[[:space:]]+.*/\1 "libvirt"/' \
     -e 's/^[[:space:]]*#?[[:space:]]*(unix_sock_rw_perms)[[:space:]]+.*/\1 "0770"/' \
     /etc/libvirt/libvirtd.conf
 
-  # Sets "user" and "group"
   $ROOT_ESC sed -Ei \
-    -e 's/^[[:space:]]*#?[[:space:]]*(user)[[:space:]]*=.*/\1 = "null"/' \
-    -e 's/^[[:space:]]*#?[[:space:]]*(group)[[:space:]]*=.*/\1 = "null"/' \
+    -e "s/^[[:space:]]*#?[[:space:]]*(user)[[:space:]]*=.*/\1 = \"${target_user}\"/" \
+    -e "s/^[[:space:]]*#?[[:space:]]*(group)[[:space:]]*=.*/\1 = \"${target_user}\"/" \
     /etc/libvirt/qemu.conf
 
   # Groups: input, kvm, and libvirt
-  local target_user="${SUDO_USER:-$USER}"
-  local user_groups=" $(id -nG "$target_user") "
   for grp in input kvm libvirt; do
     if [[ "$user_groups" == *" $grp "* ]]; then
       fmtr::info "User $target_user already in $grp group"
