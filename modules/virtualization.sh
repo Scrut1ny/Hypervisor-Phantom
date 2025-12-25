@@ -26,16 +26,6 @@ configure_system_installation() {
   local target_user="${SUDO_USER:-$USER}"
   local user_groups=" $(id -nG "$target_user") "
 
-  $ROOT_ESC sed -Ei \
-    -e 's/^[[:space:]]*#?[[:space:]]*(unix_sock_group)[[:space:]]+.*/\1 "libvirt"/' \
-    -e 's/^[[:space:]]*#?[[:space:]]*(unix_sock_rw_perms)[[:space:]]+.*/\1 "0770"/' \
-    /etc/libvirt/libvirtd.conf
-
-  $ROOT_ESC sed -Ei \
-    -e "s/^[[:space:]]*#?[[:space:]]*(user)[[:space:]]*=.*/\1 = \"${target_user}\"/" \
-    -e "s/^[[:space:]]*#?[[:space:]]*(group)[[:space:]]*=.*/\1 = \"${target_user}\"/" \
-    /etc/libvirt/qemu.conf
-
   # Groups: input, kvm, and libvirt
   for grp in input kvm libvirt; do
     if [[ "$user_groups" == *" $grp "* ]]; then
@@ -46,7 +36,7 @@ configure_system_installation() {
     fi
   done
 
-  # Ensure libvirtd.socket is enabled and running (idempotent)
+  # Ensure libvirtd.socket is enabled and running
   $ROOT_ESC systemctl enable --now libvirtd.socket &>> "$LOG_FILE" \
     && fmtr::info "Ensured libvirtd.socket is enabled and started" \
     || fmtr::warn "Failed to enable/start libvirtd.socket (see $LOG_FILE)"
