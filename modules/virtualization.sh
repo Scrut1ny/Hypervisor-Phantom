@@ -23,47 +23,20 @@ REQUIRED_PKGS_Fedora=(
 )
 
 configure_system_installation() {
-  local libvirtd_conf='/etc/libvirt/libvirtd.conf'
-  local qemu_conf='/etc/libvirt/qemu.conf'
+  # Sets "unix_sock_group" and "unix_sock_rw_perms"
+  $ROOT_ESC sed -Ei \
+    -e 's/^[[:space:]]*#?[[:space:]]*(unix_sock_group)[[:space:]]+.*/\1 "libvirt"/' \
+    -e 's/^[[:space:]]*#?[[:space:]]*(unix_sock_rw_perms)[[:space:]]+.*/\1 "0770"/' \
+    /etc/libvirt/libvirtd.conf
+
+  # Sets "user" and "group"
+  $ROOT_ESC sed -Ei \
+    -e 's/^[[:space:]]*#?[[:space:]]*(user)[[:space:]]*=.*/\1 = "null"/' \
+    -e 's/^[[:space:]]*#?[[:space:]]*(group)[[:space:]]*=.*/\1 = "null"/' \
+    /etc/libvirt/qemu.conf
+
+  # Groups: input, kvm, and libvirt
   local target_user="${SUDO_USER:-$USER}"
-
-  # Set "key value" in libvirtd.conf (uncomment/replace if present; append if missing)
-  set_kv_conf() {
-    local file="$1" key="$2" value="$3"
-
-    if $ROOT_ESC grep -Eq "^[[:space:]]*#?[[:space:]]*${key}[[:space:]]+" "$file"; then
-      $ROOT_ESC sed -Ei \
-        "s|^[[:space:]]*#?[[:space:]]*(${key})[[:space:]]+.*|\1 ${value}|" \
-        "$file"
-      fmtr::info "$file: Set $key $value"
-    else
-      printf '%s %s\n' "$key" "$value" | $ROOT_ESC tee -a "$file" > /dev/null
-      fmtr::info "$file: Added $key $value"
-    fi
-  }
-
-  # Set key = "value" in qemu.conf (uncomment/replace if present; append if missing)
-  set_qemu_kv() {
-    local file="$1" key="$2" value="$3"
-
-    if $ROOT_ESC grep -Eq "^[[:space:]]*#?[[:space:]]*${key}[[:space:]]*=" "$file"; then
-      $ROOT_ESC sed -Ei \
-        "s|^[[:space:]]*#?[[:space:]]*(${key})[[:space:]]*=.*|\1 = \"${value}\"|" \
-        "$file"
-      fmtr::info "$file: Set $key = \"$value\""
-    else
-      printf '%s = "%s"\n' "$key" "$value" | $ROOT_ESC tee -a "$file" > /dev/null
-      fmtr::info "$file: Added $key = \"$value\""
-    fi
-  }
-
-  # Ensure configs (explicit values)
-  set_kv_conf "$libvirtd_conf" "unix_sock_group"    "\"libvirt\""
-  set_kv_conf "$libvirtd_conf" "unix_sock_rw_perms" "\"0770\""
-  set_qemu_kv "$qemu_conf" "user"  "$target_user"
-  set_qemu_kv "$qemu_conf" "group" "$target_user"
-
-  # Groups: input, kvm, libvirt (no grep; avoid repeated `id` calls)
   local user_groups=" $(id -nG "$target_user") "
   for grp in input kvm libvirt; do
     if [[ "$user_groups" == *" $grp "* ]]; then
