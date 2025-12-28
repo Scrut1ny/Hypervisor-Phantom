@@ -5,14 +5,13 @@
 source "./utils.sh"
 
 readonly VFIO_CONF_PATH="/etc/modprobe.d/vfio.conf"
-readonly VFIO_KERNEL_OPTS_REGEX='(intel_iommu=[^ ]*|iommu=[^ ]*|vfio-pci.ids=[^ ]*|kvm.ignore_msrs=[^ ]*)'
+readonly VFIO_KERNEL_OPTS_REGEX='(intel_iommu=[^ ]*|iommu=[^ ]*|kvm.ignore_msrs=[^ ]*)'
 readonly -a SDBOOT_CONF_LOCATIONS=(/boot/loader/entries /boot/efi/loader/entries /efi/loader/entries)
 
-hwids=""
 declare -A SOFTDEPS=(
-    ["0x10de"]="nouveau nvidia nvidia_drm drm drm_kms_helper"
-    ["0x1002"]="amdgpu radeon drm drm_kms_helper"
-    ["0x8086"]="i915 drm drm_kms_helper"
+    ["0x10de"]="nouveau nvidia nvidia_drm"
+    ["0x1002"]="amdgpu radeon"
+    ["0x8086"]="i915"
 )
 
 ################################################################################
@@ -54,8 +53,7 @@ revert_vfio() {
         local config_file
         config_file=$(
             find "$SYSTEMD_BOOT_ENTRY_DIR" -maxdepth 1 \
-                -name '*.conf' ! -name '*-fallback.conf' \
-                -print -quit
+                -name '*.conf' ! -name '*-fallback.conf' -print -quit
         )
 
         if [[ -z $config_file ]]; then
@@ -76,7 +74,7 @@ revert_vfio() {
 # Configure VFIO
 ################################################################################
 configure_vfio() {
-    local dev bdf desc sel target_bdf device_addr iommu_path iommu_group vendor_id device_id bad=0 pci_vendor soft
+    local dev bdf desc sel target_bdf device_addr iommu_path iommu_group vendor_id device_id bad=0 pci_vendor hwids="" soft
     local -a gpus=() badf=() ids=()
 
     for dev in /sys/bus/pci/devices/*; do
@@ -129,7 +127,8 @@ $(printf '  [%s]\n' "${badf[@]}")"
         for soft in ${SOFTDEPS[$pci_vendor]:-}; do printf 'softdep %s pre: vfio-pci\n' "$soft"; done
     } | $ROOT_ESC tee "$VFIO_CONF_PATH" >>"$LOG_FILE"
 
-    export VFIO_CONF_CHANGED=1
+    # sudo sed -i 's/^MODULES=()$/MODULES=(vfio vfio_iommu_type1 vfio_pci)/' /etc/mkinitcpio.conf
+    # sudo mkinitcpio -P
 }
 
 ################################################################################
@@ -137,7 +136,7 @@ $(printf '  [%s]\n' "${badf[@]}")"
 ################################################################################
 configure_bootloader() {
     local -a kernel_opts
-    kernel_opts=( "iommu=pt" "vfio-pci.ids=${hwids}" "kvm.ignore_msrs=1" )
+    kernel_opts=( "iommu=pt" "kvm.ignore_msrs=1" )
     [[ "$VENDOR_ID" == *GenuineIntel* ]] && kernel_opts=( "intel_iommu=on" "${kernel_opts[@]}" )
 
     local kernel_opts_str="${kernel_opts[*]}"
