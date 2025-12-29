@@ -90,7 +90,7 @@ main_menu() {
       1) fmtr::box_text "${options[1]}"; ./modules/virtualization.sh ;;
       2) fmtr::box_text "${options[2]}"; ./modules/patch_qemu.sh ;;
       3) fmtr::box_text "${options[3]}"; ./modules/patch_ovmf.sh ;;
-      4) fmtr::box_text "${options[4]}"; ./modules/gpu_passthrough.sh ;;
+      4) fmtr::box_text "${options[4]}"; ./modules/vfio.sh ;;
       5) fmtr::box_text "${options[5]}"; ./modules/patch_kernel.sh ;;
       6) fmtr::box_text "${options[6]}"; ./modules/looking_glass.sh ;;
       7) fmtr::box_text "${options[7]}"; ./modules/auto_xml.sh ;;
