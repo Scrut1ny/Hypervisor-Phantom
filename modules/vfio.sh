@@ -123,7 +123,7 @@ $(printf '  [%s]\n' "${badf[@]}")"
     hwids=$(IFS=,; echo "${ids[*]}")
 
     {
-        printf 'options vfio-pci ids=%s\n' "$hwids"
+        printf 'options vfio-pci ids=%s disable_vga=1\n' "$hwids"
         for soft in ${SOFTDEPS[$pci_vendor]:-}; do printf 'softdep %s pre: vfio-pci\n' "$soft"; done
     } | $ROOT_ESC tee "$VFIO_CONF_PATH" >>"$LOG_FILE"
 
