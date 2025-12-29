@@ -144,11 +144,11 @@ compile_and_inject_ovmf() {
     --define TPM2_ENABLE=TRUE \
     --define SMM_REQUIRE=TRUE &>>"$LOG_FILE" || { fmtr::fatal "Failed to build OVMF"; return 1; }
 
-  OUT_DIR="$SRC_DIR/output/firmware"
-  mkdir -p "$OUT_DIR"
+  OUT_DIR="/opt/Hypervisor-Phantom/firmware"
+  $ROOT_ESC mkdir -p "$OUT_DIR"
 
   for f in CODE VARS; do
-    qemu-img convert -f raw -O qcow2 "Build/OvmfX64/RELEASE_GCC5/FV/OVMF_${f}.fd" "$OUT_DIR/OVMF_${f}.qcow2" || return 1
+    $ROOT_ESC qemu-img convert -f raw -O qcow2 "Build/OvmfX64/RELEASE_GCC5/FV/OVMF_${f}.fd" "$OUT_DIR/OVMF_${f}.qcow2" || return 1
   done
 
   TEMP_DIR="$(mktemp -d)" || return 1
@@ -229,7 +229,7 @@ compile_and_inject_ovmf() {
     printf '    ]\n}\n'
   } > "$efivars_json"
 
-  virt-fw-vars --input "$OUT_DIR/OVMF_VARS.qcow2" --output "$OUT_DIR/OVMF_VARS.qcow2" \
+  $ROOT_ESC virt-fw-vars --input "$OUT_DIR/OVMF_VARS.qcow2" --output "$OUT_DIR/OVMF_VARS.qcow2" \
     --secure-boot \
     --set-pk "$UUID" "$TEMP_DIR/ms_pk_oem.der" \
     --add-kek "$UUID" "$TEMP_DIR/ms_kek_2011.der" \
