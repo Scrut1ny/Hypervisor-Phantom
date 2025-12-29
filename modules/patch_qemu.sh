@@ -14,7 +14,7 @@ readonly SRC_DIR="$(pwd)/src"
 readonly EMU_DIR="/opt/Hypervisor-Phantom/emulator"
 readonly FWR_DIR="/opt/Hypervisor-Phantom/firmware"
 
-readonly QEMU_VERSION="10.1.3"
+readonly QEMU_VERSION="10.2.0"
 readonly QEMU_DIR="qemu-${QEMU_VERSION}"
 readonly QEMU_ARCHIVE="${QEMU_DIR}.tar.xz"
 readonly QEMU_URL="https://download.qemu.org/${QEMU_ARCHIVE}"
