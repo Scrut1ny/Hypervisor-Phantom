@@ -101,7 +101,7 @@ index 2d5826a..8761e96 100644
      /* TODO: extra fields need to be added to support revisions above rev6 */
      assert(f->rev == 6);
 diff --git a/hw/acpi/pcihp.c b/hw/acpi/pcihp.c
-index 4922bbc..75d12a0 100644
+index 4922bbc..2b86b9d 100644
 --- a/hw/acpi/pcihp.c
 +++ b/hw/acpi/pcihp.c
 @@ -701,6 +701,83 @@ void build_append_pcihp_resources(Aml *scope /* \\_SB.PCI0 */,
@@ -188,20 +188,19 @@ index 4922bbc..75d12a0 100644
  bool build_append_notification_callback(Aml *parent_scope, const PCIBus *bus)
  {
      Aml *method;
-@@ -710,7 +787,11 @@ bool build_append_notification_callback(Aml *parent_scope, const PCIBus *bus)
+@@ -710,7 +787,10 @@ bool build_append_notification_callback(Aml *parent_scope, const PCIBus *bus)
      GQueue *pcnt_bus_list = g_queue_new();
  
      QLIST_FOREACH(sec, &bus->child, sibling) {
 -        Aml *br_scope = aml_scope("S%.02X", sec->parent_dev->devfn);
 +        char mimic_name[5];
 +        get_mimic_pci_name(mimic_name, sec->parent_dev->devfn);
-+
 +        Aml *br_scope = aml_scope("%s", mimic_name);
 +
          if (pci_bus_is_root(sec)) {
              continue;
          }
-@@ -749,7 +830,9 @@ bool build_append_notification_callback(Aml *parent_scope, const PCIBus *bus)
+@@ -749,7 +829,9 @@ bool build_append_notification_callback(Aml *parent_scope, const PCIBus *bus)
  
      /* Notify about child bus events in any case */
      while ((sec = g_queue_pop_head(pcnt_bus_list))) {
@@ -212,20 +211,19 @@ index 4922bbc..75d12a0 100644
      }
  
      aml_append(parent_scope, method);
-@@ -805,8 +888,11 @@ static void build_append_pcihp_notify_entry(Aml *method, int slot)
+@@ -805,8 +887,10 @@ static void build_append_pcihp_notify_entry(Aml *method, int slot)
      Aml *if_ctx;
      int32_t devfn = PCI_DEVFN(slot, 0);
  
 +    char mimic_name[5];
 +    get_mimic_pci_name(mimic_name, devfn);
-+
      if_ctx = aml_if(aml_and(aml_arg(0), aml_int(0x1U << slot), NULL));
 -    aml_append(if_ctx, aml_notify(aml_name("S%.02X", devfn), aml_arg(1)));
 +    aml_append(if_ctx, aml_notify(aml_name("%s", mimic_name), aml_arg(1)));
      aml_append(method, if_ctx);
  }
  
-@@ -869,10 +955,13 @@ void build_append_pcihp_slots(Aml *parent_scope, PCIBus *bus)
+@@ -869,10 +953,13 @@ void build_append_pcihp_slots(Aml *parent_scope, PCIBus *bus)
              continue;
          }
  
@@ -241,7 +239,7 @@ index 4922bbc..75d12a0 100644
              aml_append(dev, aml_name_decl("_ADR", aml_int(adr)));
          }
  
-@@ -914,7 +1003,11 @@ void build_append_pci_bus_devices(Aml *parent_scope, PCIBus *bus)
+@@ -914,7 +1001,11 @@ void build_append_pci_bus_devices(Aml *parent_scope, PCIBus *bus)
          }
  
          /* start to compose PCI device descriptor */
