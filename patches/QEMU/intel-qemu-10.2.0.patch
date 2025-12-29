@@ -257,7 +257,7 @@ index 2205500..f4d68d1 100644
      mc->valid_cpu_types = valid_cpu_types;
      mc->max_cpus = 512;
 diff --git a/hw/arm/virt.c b/hw/arm/virt.c
-index 25fb2ba..a9e1ec8 100644
+index 25fb2ba..b4fe7d9 100644
 --- a/hw/arm/virt.c
 +++ b/hw/arm/virt.c
 @@ -118,7 +118,7 @@ static void arm_virt_compat_set(MachineClass *mc)
@@ -265,7 +265,7 @@ index 25fb2ba..a9e1ec8 100644
          arm_virt_compat_set(mc); \
          MACHINE_VER_SYM(options, virt, __VA_ARGS__)(mc); \
 -        mc->desc = "QEMU " MACHINE_VER_STR(__VA_ARGS__) " ARM Virtual Machine"; \
-+        mc->desc = "AMD  " MACHINE_VER_STR(__VA_ARGS__) " ARM Virtual Machine"; \
++        mc->desc = "Intel" MACHINE_VER_STR(__VA_ARGS__) " ARM Machine"; \
          MACHINE_VER_DEPRECATION(__VA_ARGS__); \
          if (latest) { \
              mc->alias = "virt"; \
@@ -274,11 +274,11 @@ index 25fb2ba..a9e1ec8 100644
      size_t smbios_tables_len, smbios_anchor_len;
      struct smbios_phys_mem_area mem_array;
 -    const char *product = "QEMU Virtual Machine";
-+    const char *product = "AMD Machine";
++    const char *product = "Intel Machine";
  
      if (kvm_enabled()) {
 -        product = "KVM Virtual Machine";
-+        product = "AMD Machine";
++        product = "Intel Machine";
      }
  
 -    smbios_set_defaults("QEMU", product, mc->name);
@@ -414,16 +414,10 @@ index 18f482c..6679592 100644
      set_bit(DEVICE_CATEGORY_DISPLAY, dc->categories);
      device_class_set_legacy_reset(dc, qxl_reset_handler);
 diff --git a/hw/i2c/smbus_ich9.c b/hw/i2c/smbus_ich9.c
-index 956c9b5..c91c1c4 100644
+index 956c9b5..71a4267 100644
 --- a/hw/i2c/smbus_ich9.c
 +++ b/hw/i2c/smbus_ich9.c
-@@ -124,12 +124,12 @@ static void ich9_smb_class_init(ObjectClass *klass, const void *data)
-     PCIDeviceClass *k = PCI_DEVICE_CLASS(klass);
-     AcpiDevAmlIfClass *adevc = ACPI_DEV_AML_IF_CLASS(klass);
- 
--    k->vendor_id = PCI_VENDOR_ID_INTEL;
-+    k->vendor_id = PCI_VENDOR_ID_AMD;
-     k->device_id = PCI_DEVICE_ID_INTEL_ICH9_6;
+@@ -129,7 +129,7 @@ static void ich9_smb_class_init(ObjectClass *klass, const void *data)
      k->revision = ICH9_A2_SMB_REVISION;
      k->class_id = PCI_CLASS_SERIAL_SMBUS;
      dc->vmsd = &vmstate_ich9_smbus;
@@ -703,7 +697,7 @@ index f8b919c..f9f7e6c 100644
      pcmc->has_reserved_memory = true;
      pcmc->enforce_amd_1tb_hole = true;
 diff --git a/hw/i386/pc_piix.c b/hw/i386/pc_piix.c
-index 7b3611e..47e4989 100644
+index 7b3611e..8df48f6 100644
 --- a/hw/i386/pc_piix.c
 +++ b/hw/i386/pc_piix.c
 @@ -417,12 +417,12 @@ static void pc_i440fx_machine_options(MachineClass *m)
@@ -713,7 +707,7 @@ index 7b3611e..47e4989 100644
 -    m->family = "pc_piix";
 -    m->desc = "Standard PC (i440FX + PIIX, 1996)";
 +    m->family = "pc_x570";
-+    m->desc = "AMD Ryzen 7 7700X 8-Core Processor";
++    m->desc = "12th Gen Intel(R) Core(TM) i7-12700H";
      m->default_machine_opts = "firmware=bios-256k.bin";
 -    m->default_display = "std";
 -    m->default_nic = "e1000";
@@ -734,7 +728,7 @@ index 7b3611e..47e4989 100644
      compat_props_add(m->compat_props, hw_compat_9_0, hw_compat_9_0_len);
      compat_props_add(m->compat_props, pc_compat_9_0, pc_compat_9_0_len);
 diff --git a/hw/i386/pc_q35.c b/hw/i386/pc_q35.c
-index 6015e63..e263d43 100644
+index 6015e63..33c9d20 100644
 --- a/hw/i386/pc_q35.c
 +++ b/hw/i386/pc_q35.c
 @@ -355,12 +355,12 @@ static void pc_q35_machine_options(MachineClass *m)
@@ -744,7 +738,7 @@ index 6015e63..e263d43 100644
 -    m->family = "pc_q35";
 -    m->desc = "Standard PC (Q35 + ICH9, 2009)";
 +    m->family = "pc_x570";
-+    m->desc = "AMD Ryzen 7 7700X 8-Core Processor";
++    m->desc = "12th Gen Intel(R) Core(TM) i7-12700H";
      m->units_per_default_bus = 1;
      m->default_machine_opts = "firmware=bios-256k.bin";
 -    m->default_display = "std";
@@ -799,21 +793,6 @@ index 8c380ab..edd4294 100644
              break;
          }
      }
-diff --git a/hw/ide/ich.c b/hw/ide/ich.c
-index b00987f..438ec55 100644
---- a/hw/ide/ich.c
-+++ b/hw/ide/ich.c
-@@ -183,8 +183,8 @@ static void ich_ahci_class_init(ObjectClass *klass, const void *data)
- 
-     k->realize = pci_ich9_ahci_realize;
-     k->exit = pci_ich9_uninit;
--    k->vendor_id = PCI_VENDOR_ID_INTEL;
--    k->device_id = PCI_DEVICE_ID_INTEL_82801IR;
-+    k->vendor_id = PCI_VENDOR_ID_AMD;
-+    k->device_id = PCI_DEVICE_ID_AMD_SATA;
-     k->revision = 0x02;
-     k->class_id = PCI_CLASS_STORAGE_SATA;
-     dc->vmsd = &vmstate_ich9_ahci;
 diff --git a/hw/input/adb-kbd.c b/hw/input/adb-kbd.c
 index 507557d..7de1e5f 100644
 --- a/hw/input/adb-kbd.c
@@ -964,7 +943,7 @@ index d986c3c..2e9dd7b 100644
              .version = const_le16(0x0001),
          },
 diff --git a/hw/isa/lpc_ich9.c b/hw/isa/lpc_ich9.c
-index c9cb8f7..bf99152 100644
+index c9cb8f7..c1c7bdc 100644
 --- a/hw/isa/lpc_ich9.c
 +++ b/hw/isa/lpc_ich9.c
 @@ -863,7 +863,7 @@ static void build_ich9_isa_aml(AcpiDevAmlIf *adev, Aml *scope)
@@ -976,19 +955,8 @@ index c9cb8f7..bf99152 100644
      aml_append(field, aml_named_field("PRQA", 8));
      aml_append(field, aml_named_field("PRQB", 8));
      aml_append(field, aml_named_field("PRQC", 8));
-@@ -893,8 +893,8 @@ static void ich9_lpc_class_init(ObjectClass *klass, const void *data)
-     dc->vmsd = &vmstate_ich9_lpc;
-     device_class_set_props(dc, ich9_lpc_properties);
-     k->config_write = ich9_lpc_config_write;
--    dc->desc = "ICH9 LPC bridge";
--    k->vendor_id = PCI_VENDOR_ID_INTEL;
-+    dc->desc = "FCH LPC Bridge";
-+    k->vendor_id = PCI_VENDOR_ID_AMD;
-     k->device_id = PCI_DEVICE_ID_INTEL_ICH9_8;
-     k->revision = ICH9_A2_LPC_REVISION;
-     k->class_id = PCI_CLASS_BRIDGE_ISA;
 diff --git a/hw/loongarch/virt.c b/hw/loongarch/virt.c
-index 49434ad..0aed738 100644
+index 49434ad..648da72 100644
 --- a/hw/loongarch/virt.c
 +++ b/hw/loongarch/virt.c
 @@ -155,17 +155,17 @@ static void virt_build_smbios(LoongArchVirtMachineState *lvms)
@@ -996,7 +964,7 @@ index 49434ad..0aed738 100644
      uint8_t *smbios_tables, *smbios_anchor;
      size_t smbios_tables_len, smbios_anchor_len;
 -    const char *product = "QEMU Virtual Machine";
-+    const char *product = "AMD Machine";
++    const char *product = "Intel Machine";
  
      if (!lvms->fw_cfg) {
          return;
@@ -1004,7 +972,7 @@ index 49434ad..0aed738 100644
  
      if (kvm_enabled()) {
 -        product = "KVM Virtual Machine";
-+        product = "AMD Machine";
++        product = "Intel Machine";
      }
  
 -    smbios_set_defaults("QEMU", product, mc->name);
@@ -1013,7 +981,7 @@ index 49434ad..0aed738 100644
      smbios_get_tables(ms, SMBIOS_ENTRY_POINT_TYPE_64,
                        NULL, 0,
 diff --git a/hw/m68k/virt.c b/hw/m68k/virt.c
-index 3f65d91..23f2215 100644
+index 3f65d91..ae5daba 100644
 --- a/hw/m68k/virt.c
 +++ b/hw/m68k/virt.c
 @@ -313,7 +313,7 @@ static void virt_init(MachineState *machine)
@@ -1021,7 +989,7 @@ index 3f65d91..23f2215 100644
  {
      MachineClass *mc = MACHINE_CLASS(oc);
 -    mc->desc = "QEMU M68K Virtual Machine";
-+    mc->desc = "M68K Machine";
++    mc->desc = "Intel M68K Machine";
      mc->init = virt_init;
      mc->default_cpu_type = M68K_CPU_TYPE_NAME("m68040");
      mc->max_cpus = 1;
@@ -1030,7 +998,7 @@ index 3f65d91..23f2215 100644
          MachineClass *mc = MACHINE_CLASS(oc); \
          MACHINE_VER_SYM(options, virt, __VA_ARGS__)(mc); \
 -        mc->desc = "QEMU " MACHINE_VER_STR(__VA_ARGS__) " M68K Virtual Machine"; \
-+        mc->desc = "AMD  " MACHINE_VER_STR(__VA_ARGS__) " M68K Machine"; \
++        mc->desc = "Intel" MACHINE_VER_STR(__VA_ARGS__) " M68K Machine"; \
          MACHINE_VER_DEPRECATION(__VA_ARGS__); \
          if (latest) { \
              mc->alias = "virt"; \
@@ -1122,19 +1090,6 @@ index b806a22..3713551 100644
      dc->vmsd = &vmstate_gpex_root;
      k->vendor_id = PCI_VENDOR_ID_REDHAT;
      k->device_id = PCI_DEVICE_ID_REDHAT_PCIE_HOST;
-diff --git a/hw/pci-host/q35.c b/hw/pci-host/q35.c
-index a708758..50896e0 100644
---- a/hw/pci-host/q35.c
-+++ b/hw/pci-host/q35.c
-@@ -679,7 +679,7 @@ static void mch_class_init(ObjectClass *klass, const void *data)
-     set_bit(DEVICE_CATEGORY_BRIDGE, dc->categories);
-     dc->desc = "Host bridge";
-     dc->vmsd = &vmstate_mch;
--    k->vendor_id = PCI_VENDOR_ID_INTEL;
-+    k->vendor_id = PCI_VENDOR_ID_AMD;
-     /*
-      * The 'q35' machine type implements an Intel Series 3 chipset,
-      * of which there are several variants. The key difference between
 diff --git a/hw/ppc/e500plat.c b/hw/ppc/e500plat.c
 index 4f1d659..b54e0d9 100644
 --- a/hw/ppc/e500plat.c
@@ -1301,7 +1256,7 @@ index 8dd9d26..e790a9b 100644
      [STRING_USBAUDIO_CONTROL]   = "Audio Device",
      [STRING_INPUT_TERMINAL]     = "Audio Output Pipe",
 diff --git a/hw/usb/dev-hid.c b/hw/usb/dev-hid.c
-index 96623aa..4dbf89f 100644
+index 96623aa..f10c420 100644
 --- a/hw/usb/dev-hid.c
 +++ b/hw/usb/dev-hid.c
 @@ -63,17 +63,17 @@ enum {
@@ -1335,7 +1290,7 @@ index 96623aa..4dbf89f 100644
  static const USBDesc desc_mouse = {
      .id = {
 -        .idVendor          = 0x0627,
-+        .idVendor          = 0x1022,
++        .idVendor          = 0x8086,
          .idProduct         = 0x0001,
          .bcdDevice         = 0,
          .iManufacturer     = STR_MANUFACTURER,
@@ -1344,7 +1299,7 @@ index 96623aa..4dbf89f 100644
  static const USBDesc desc_mouse2 = {
      .id = {
 -        .idVendor          = 0x0627,
-+        .idVendor          = 0x1022,
++        .idVendor          = 0x8086,
          .idProduct         = 0x0001,
          .bcdDevice         = 0,
          .iManufacturer     = STR_MANUFACTURER,
@@ -1353,7 +1308,7 @@ index 96623aa..4dbf89f 100644
  static const USBDesc desc_tablet = {
      .id = {
 -        .idVendor          = 0x0627,
-+        .idVendor          = 0x1022,
++        .idVendor          = 0x8086,
          .idProduct         = 0x0001,
          .bcdDevice         = 0,
          .iManufacturer     = STR_MANUFACTURER,
@@ -1362,7 +1317,7 @@ index 96623aa..4dbf89f 100644
  static const USBDesc desc_tablet2 = {
      .id = {
 -        .idVendor          = 0x0627,
-+        .idVendor          = 0x1022,
++        .idVendor          = 0x8086,
          .idProduct         = 0x0001,
          .bcdDevice         = 0,
          .iManufacturer     = STR_MANUFACTURER,
@@ -1371,7 +1326,7 @@ index 96623aa..4dbf89f 100644
  static const USBDesc desc_keyboard = {
      .id = {
 -        .idVendor          = 0x0627,
-+        .idVendor          = 0x1022,
++        .idVendor          = 0x8086,
          .idProduct         = 0x0001,
          .bcdDevice         = 0,
          .iManufacturer     = STR_MANUFACTURER,
@@ -1380,7 +1335,7 @@ index 96623aa..4dbf89f 100644
  static const USBDesc desc_keyboard2 = {
      .id = {
 -        .idVendor          = 0x0627,
-+        .idVendor          = 0x1022,
++        .idVendor          = 0x8086,
          .idProduct         = 0x0001,
          .bcdDevice         = 0,
          .iManufacturer     = STR_MANUFACTURER,
@@ -1761,7 +1716,7 @@ index 3368ac8..bcc5c28 100644
      dc->bus_type = TYPE_AP_BUS;
  
 diff --git a/include/hw/acpi/aml-build.h b/include/hw/acpi/aml-build.h
-index f38e129..e346f2d 100644
+index f38e129..b4055f5 100644
 --- a/include/hw/acpi/aml-build.h
 +++ b/include/hw/acpi/aml-build.h
 @@ -4,8 +4,8 @@
@@ -1770,44 +1725,38 @@ index f38e129..e346f2d 100644
  
 -#define ACPI_BUILD_APPNAME6 "BOCHS "
 -#define ACPI_BUILD_APPNAME8 "BXPC    "
-+#define ACPI_BUILD_APPNAME6 "ALASKA"
-+#define ACPI_BUILD_APPNAME8 "A M I   "
++#define ACPI_BUILD_APPNAME6 "INTEL "
++#define ACPI_BUILD_APPNAME8 "U Rvp   "
  
  #define ACPI_BUILD_TABLE_FILE "etc/acpi/tables"
  #define ACPI_BUILD_RSDP_FILE "etc/acpi/rsdp"
 diff --git a/include/hw/pci/pci.h b/include/hw/pci/pci.h
-index b72e484..a15ff52 100644
+index b72e484..d3ee93c 100644
 --- a/include/hw/pci/pci.h
 +++ b/include/hw/pci/pci.h
-@@ -57,12 +57,12 @@ extern bool pci_available;
+@@ -57,7 +57,7 @@ extern bool pci_available;
  #define PCI_DEVICE_ID_MARVELL_GT6412X    0x4620
  
  /* QEMU/Bochs VGA (0x1234) */
 -#define PCI_VENDOR_ID_QEMU               0x1234
-+#define PCI_VENDOR_ID_QEMU               0x1022 // "???" | AMD Vendor ID Replacement from 0x1234
++#define PCI_VENDOR_ID_QEMU               0x8086 // "???" | Intel Device ID Replacement from 0x1234
  #define PCI_DEVICE_ID_QEMU_VGA           0x1111
  #define PCI_DEVICE_ID_QEMU_IPMI          0x1112
  
- /* VMWare (0x15ad) */
--#define PCI_VENDOR_ID_VMWARE             0x15ad
-+#define PCI_VENDOR_ID_VMWARE             0x1022 // AMD Vendor ID Replacement from 0x15ad
- #define PCI_DEVICE_ID_VMWARE_SVGA2       0x0405
- #define PCI_DEVICE_ID_VMWARE_SVGA        0x0710
- #define PCI_DEVICE_ID_VMWARE_NET         0x0720
 @@ -74,12 +74,12 @@ extern bool pci_available;
  /* Intel (0x8086) */
  #define PCI_DEVICE_ID_INTEL_82551IT      0x1209
  #define PCI_DEVICE_ID_INTEL_82557        0x1229
 -#define PCI_DEVICE_ID_INTEL_82801IR      0x2922
-+#define PCI_DEVICE_ID_INTEL_82801IR      0x790e // Intel 82801IR ICH9 - LPC Bridge [A2] | AMD Device ID Replacement from 0x2922 | hw/ide/ich.c
++#define PCI_DEVICE_ID_INTEL_82801IR      0x463D // Intel 82801IR ICH9 - LPC Bridge [A2] | Intel Device ID Replacement from 0x2922 | hw/ide/ich.c
  
  /* Red Hat / Qumranet (for QEMU) -- see pci-ids.txt */
 -#define PCI_VENDOR_ID_REDHAT_QUMRANET    0x1af4
 -#define PCI_SUBVENDOR_ID_REDHAT_QUMRANET 0x1af4
 -#define PCI_SUBDEVICE_ID_QEMU            0x1100
-+#define PCI_VENDOR_ID_REDHAT_QUMRANET    0x1022 // AMD Vendor ID Replacement from 0x1af4
-+#define PCI_SUBVENDOR_ID_REDHAT_QUMRANET 0x1022 // AMD Subvendor ID Replacement from 0x1af4
-+#define PCI_SUBDEVICE_ID_QEMU            0x1022 // AMD Subdevice ID Replacement from 0x1100
++#define PCI_VENDOR_ID_REDHAT_QUMRANET    0x8086 // Intel Device ID Replacement from 0x1af4
++#define PCI_SUBVENDOR_ID_REDHAT_QUMRANET 0x8086 // Intel Device ID Replacement from 0x1af4
++#define PCI_SUBDEVICE_ID_QEMU            0x8086 // Intel Device ID Replacement from 0x1100
  
  /* legacy virtio-pci devices */
  #define PCI_DEVICE_ID_VIRTIO_NET         0x1000
@@ -1818,41 +1767,33 @@ index b72e484..a15ff52 100644
 -#define PCI_VENDOR_ID_REDHAT             0x1b36
 -#define PCI_DEVICE_ID_REDHAT_BRIDGE      0x0001
 -#define PCI_DEVICE_ID_REDHAT_SERIAL      0x0002
-+#define PCI_VENDOR_ID_REDHAT             0x1022 // "Red Hat, Inc." | AMD Vendor ID Replacement from 0x1b36
-+#define PCI_DEVICE_ID_REDHAT_BRIDGE      0x57a3 // "QEMU PCI-PCI bridge" | AMD Device ID Replacement from 0x0001 | hw/pci-bridge/pci_bridge_dev.c
-+#define PCI_DEVICE_ID_REDHAT_SERIAL      0x0002 // TODO: find device_id | AMD Device ID Replacement from 0x???? | hw/char/serial-pci.c
++#define PCI_VENDOR_ID_REDHAT             0x8086 // "Red Hat, Inc." | Intel Vendor ID Replacement from 0x1b36
++#define PCI_DEVICE_ID_REDHAT_BRIDGE      0x4641 // "QEMU PCI-PCI bridge" | Intel Device ID Replacement from 0x0001 | hw/pci-bridge/pci_bridge_dev.c
++#define PCI_DEVICE_ID_REDHAT_SERIAL      0x0002 // TODO: find device_id | Intel Device ID Replacement from 0x???? | hw/char/serial-pci.c
  #define PCI_DEVICE_ID_REDHAT_SERIAL2     0x0003
  #define PCI_DEVICE_ID_REDHAT_SERIAL4     0x0004
  #define PCI_DEVICE_ID_REDHAT_TEST        0x0005
  #define PCI_DEVICE_ID_REDHAT_ROCKER      0x0006
  #define PCI_DEVICE_ID_REDHAT_SDHCI       0x0007
 -#define PCI_DEVICE_ID_REDHAT_PCIE_HOST   0x0008
-+#define PCI_DEVICE_ID_REDHAT_PCIE_HOST   0x1482 // "QEMU PCIe Host bridge" | AMD Device ID Replacement from 0x0008 | hw/pci-host/gpex.c
++#define PCI_DEVICE_ID_REDHAT_PCIE_HOST   0x4641 // "QEMU PCIe Host bridge" | Intel Device ID Replacement from 0x0008 | hw/pci-host/gpex.c
  #define PCI_DEVICE_ID_REDHAT_PXB         0x0009
  #define PCI_DEVICE_ID_REDHAT_BRIDGE_SEAT 0x000a
  #define PCI_DEVICE_ID_REDHAT_PXB_PCIE    0x000b
 -#define PCI_DEVICE_ID_REDHAT_PCIE_RP     0x000c
 -#define PCI_DEVICE_ID_REDHAT_XHCI        0x000d
 -#define PCI_DEVICE_ID_REDHAT_PCIE_BRIDGE 0x000e
-+#define PCI_DEVICE_ID_REDHAT_PCIE_RP     0x1483 // "QEMU PCIe Root Port" | AMD Device ID Replacement from 0x000c | hw/pci-bridge/gen_pcie_root_port.c
-+#define PCI_DEVICE_ID_REDHAT_XHCI        0x149c // "QEMU XHCI Host Controller" | AMD Device ID Replacement from 0x000d | hw/usb/hcd-xhci-pci.c
-+#define PCI_DEVICE_ID_REDHAT_PCIE_BRIDGE 0x57ad // "Red Hat, Device ID: 000E" | AMD Device ID Replacement from 0x000e | hw/pci-bridge/pcie_pci_bridge.c
++#define PCI_DEVICE_ID_REDHAT_PCIE_RP     0x51b0 // "QEMU PCIe Root Port" | Intel Device ID Replacement from 0x000c | hw/pci-bridge/gen_pcie_root_port.c
++#define PCI_DEVICE_ID_REDHAT_XHCI        0x51ed // "QEMU XHCI Host Controller" | Intel Device ID Replacement from 0x000d | hw/usb/hcd-xhci-pci.c
++#define PCI_DEVICE_ID_REDHAT_PCIE_BRIDGE 0x51b0 // "Red Hat, Device ID: 000E" | Intel Device ID Replacement from 0x000e | hw/pci-bridge/pcie_pci_bridge.c
  #define PCI_DEVICE_ID_REDHAT_MDPY        0x000f
  #define PCI_DEVICE_ID_REDHAT_NVME        0x0010
  #define PCI_DEVICE_ID_REDHAT_PVPANIC     0x0011
 diff --git a/include/hw/pci/pci_ids.h b/include/hw/pci/pci_ids.h
-index 16034aa..573a22f 100644
+index 16034aa..9e0f8c2 100644
 --- a/include/hw/pci/pci_ids.h
 +++ b/include/hw/pci/pci_ids.h
-@@ -178,6 +178,7 @@
- #define PCI_VENDOR_ID_AMD                0x1022
- #define PCI_DEVICE_ID_AMD_LANCE          0x2000
- #define PCI_DEVICE_ID_AMD_SCSI           0x2020
-+#define PCI_DEVICE_ID_AMD_SATA           0x7900 // FCH SATA Controller [IDE mode] | hw/ide/ich.c
- 
- #define PCI_VENDOR_ID_HP                 0x103c
- 
-@@ -237,6 +238,8 @@
+@@ -237,6 +237,8 @@
  #define PCI_VENDOR_ID_BAIDU              0x1d22
  #define PCI_DEVICE_ID_KUNLUN_VF          0x3685
  
@@ -1861,47 +1802,47 @@ index 16034aa..573a22f 100644
  #define PCI_VENDOR_ID_INTEL              0x8086
  #define PCI_DEVICE_ID_INTEL_82378        0x0484
  #define PCI_DEVICE_ID_INTEL_82441        0x1237
-@@ -246,8 +249,8 @@
+@@ -246,8 +248,8 @@
  #define PCI_DEVICE_ID_INTEL_ESB_9        0x25ab
  #define PCI_DEVICE_ID_INTEL_NVME         0x5845
  #define PCI_DEVICE_ID_INTEL_82371SB_0    0x7000
 -#define PCI_DEVICE_ID_INTEL_82371SB_1    0x7010
 -#define PCI_DEVICE_ID_INTEL_82371SB_2    0x7020
-+#define PCI_DEVICE_ID_INTEL_82371SB_1    0x7010 // TODO: | Intel 82371SB_1 - ??? | AMD Vendor ID Replacement from 0x???? | hw/ide/piix.c
-+#define PCI_DEVICE_ID_INTEL_82371SB_2    0x7020 // TODO: | Intel 82371SB_2 - ??? | AMD Vendor ID Replacement from 0x???? | hw/usb/hcd-uhci.c
++#define PCI_DEVICE_ID_INTEL_82371SB_1    0x7010 // TODO: | Intel 82371SB_1 - ??? | Intel Vendor ID Replacement from 0x???? | hw/ide/piix.c
++#define PCI_DEVICE_ID_INTEL_82371SB_2    0x7020 // TODO: | Intel 82371SB_2 - ??? | Intel Vendor ID Replacement from 0x???? | hw/usb/hcd-uhci.c
  #define PCI_DEVICE_ID_INTEL_82371AB_0    0x7110
  #define PCI_DEVICE_ID_INTEL_82371AB      0x7111
  #define PCI_DEVICE_ID_INTEL_82371AB_2    0x7112
-@@ -259,9 +262,9 @@
+@@ -259,9 +261,9 @@
  #define PCI_DEVICE_ID_INTEL_ICH9_3       0x2913
  #define PCI_DEVICE_ID_INTEL_ICH9_4       0x2914
  #define PCI_DEVICE_ID_INTEL_ICH9_5       0x2919
 -#define PCI_DEVICE_ID_INTEL_ICH9_6       0x2930
-+#define PCI_DEVICE_ID_INTEL_ICH9_6       0x790b // Intel 82801IB ICH9 - SMBus Controller [A2] | AMD Vendor ID Replacement from 0x2930 | hw/i2c/smbus_ich9.c
++#define PCI_DEVICE_ID_INTEL_ICH9_6       0x51a3 // Intel 82801IB ICH9 - SMBus Controller [A2] | Intel Vendor ID Replacement from 0x2930 | hw/i2c/smbus_ich9.c
  #define PCI_DEVICE_ID_INTEL_ICH9_7       0x2916
 -#define PCI_DEVICE_ID_INTEL_ICH9_8       0x2918
-+#define PCI_DEVICE_ID_INTEL_ICH9_8       0x790e // Intel 82801IR ICH9 - LPC Bridge [A2] | AMD Vendor ID Replacement from 0x2918 | hw/isa/lpc_ich9.c
++#define PCI_DEVICE_ID_INTEL_ICH9_8       0x5182 // Intel 82801IR ICH9 - LPC Bridge [A2] | Intel Vendor ID Replacement from 0x2918 | hw/isa/lpc_ich9.c
  
  #define PCI_DEVICE_ID_INTEL_82801I_UHCI1 0x2934
  #define PCI_DEVICE_ID_INTEL_82801I_UHCI2 0x2935
-@@ -273,9 +276,9 @@
+@@ -273,9 +275,9 @@
  #define PCI_DEVICE_ID_INTEL_82801I_EHCI2 0x293c
  #define PCI_DEVICE_ID_INTEL_82599_SFP_VF 0x10ed
  
 -#define PCI_DEVICE_ID_INTEL_P35_MCH      0x29c0
-+#define PCI_DEVICE_ID_INTEL_P35_MCH      0x1480 // Intel G33/P35/Q35/Q33 Chipset - Memory Controller Hub [A0] | AMD Vendor ID Replacement from 0x29c0 | hw/pci-host/q35.c
++#define PCI_DEVICE_ID_INTEL_P35_MCH      0x4641 // Intel G33/P35/Q35/Q33 Chipset - Memory Controller Hub [A0] | Intel Vendor ID Replacement from 0x29c0 | hw/pci-host/q35.c
  
 -#define PCI_VENDOR_ID_XEN                0x5853
-+#define PCI_VENDOR_ID_XEN                0x1022 // AMD Vendor ID Replacement from 0x5853
++#define PCI_VENDOR_ID_XEN                0x8086 // Intel Device ID Replacement from 0x5853
  #define PCI_DEVICE_ID_XEN_PLATFORM       0x0001
  
  #define PCI_VENDOR_ID_NEC                0x1033
-@@ -284,7 +287,7 @@
+@@ -284,7 +286,7 @@
  #define PCI_VENDOR_ID_TEWS               0x1498
  #define PCI_DEVICE_ID_TEWS_TPCI200       0x30C8
  
 -#define PCI_VENDOR_ID_VMWARE             0x15ad
-+#define PCI_VENDOR_ID_VMWARE             0x1022 // AMD Vendor ID Replacement from 0x15ad
++#define PCI_VENDOR_ID_VMWARE             0x8086 // Intel Device ID Replacement from 0x15ad
  #define PCI_DEVICE_ID_VMWARE_PVRDMA      0x0820
  
  #define PCI_VENDOR_ID_SYNOPSYS           0x16C3
@@ -2306,7 +2247,7 @@ index 954a7a9..3f1fe01 100644
  }
  
 diff --git a/target/s390x/tcg/misc_helper.c b/target/s390x/tcg/misc_helper.c
-index 215b5b9..b14aa7e 100644
+index 215b5b9..c1fa437 100644
 --- a/target/s390x/tcg/misc_helper.c
 +++ b/target/s390x/tcg/misc_helper.c
 @@ -335,18 +335,18 @@ uint32_t HELPER(stsi)(CPUS390XState *env, uint64_t a0, uint64_t r0, uint64_t r1)
@@ -2314,7 +2255,7 @@ index 215b5b9..b14aa7e 100644
              char type[5] = {};
  
 -            ebcdic_put(sysib.sysib_111.manuf, "QEMU            ", 16);
-+            ebcdic_put(sysib.sysib_111.manuf, "AMD             ", 16);
++            ebcdic_put(sysib.sysib_111.manuf, "Intel           ", 16);
              /* same as machine type number in STORE CPU ID, but in EBCDIC */
              snprintf(type, ARRAY_SIZE(type), "%X", cpu->model->def->type);
              ebcdic_put(sysib.sysib_111.type, type, 4);
@@ -2322,15 +2263,15 @@ index 215b5b9..b14aa7e 100644
 -            ebcdic_put(sysib.sysib_111.model, "QEMU            ", 16);
 -            ebcdic_put(sysib.sysib_111.sequence, "QEMU            ", 16);
 -            ebcdic_put(sysib.sysib_111.plant, "QEMU", 4);
-+            ebcdic_put(sysib.sysib_111.model, "AMD             ", 16);
-+            ebcdic_put(sysib.sysib_111.sequence, "AMD             ", 16);
-+            ebcdic_put(sysib.sysib_111.plant, "AMD ", 4);
++            ebcdic_put(sysib.sysib_111.model, "Intel           ", 16);
++            ebcdic_put(sysib.sysib_111.sequence, "Intel           ", 16);
++            ebcdic_put(sysib.sysib_111.plant, "INTL", 4);
          } else if ((sel1 == 2) && (sel2 == 1)) {
              /* Basic Machine CPU */
 -            ebcdic_put(sysib.sysib_121.sequence, "QEMUQEMUQEMUQEMU", 16);
 -            ebcdic_put(sysib.sysib_121.plant, "QEMU", 4);
-+            ebcdic_put(sysib.sysib_121.sequence, "AMDAMDAMDAMDAMDA", 16);
-+            ebcdic_put(sysib.sysib_121.plant, "AMD ", 4);
++            ebcdic_put(sysib.sysib_121.sequence, "INTELINTELINTELI", 16);
++            ebcdic_put(sysib.sysib_121.plant, "INTL", 4);
              sysib.sysib_121.cpu_addr = cpu_to_be16(env->core_id);
          } else if ((sel1 == 2) && (sel2 == 2)) {
              /* Basic Machine CPUs */
@@ -2340,8 +2281,8 @@ index 215b5b9..b14aa7e 100644
              /* LPAR CPU */
 -            ebcdic_put(sysib.sysib_221.sequence, "QEMUQEMUQEMUQEMU", 16);
 -            ebcdic_put(sysib.sysib_221.plant, "QEMU", 4);
-+            ebcdic_put(sysib.sysib_221.sequence, "AMDAMDAMDAMDAMDA", 16);
-+            ebcdic_put(sysib.sysib_221.plant, "AMD ", 4);
++            ebcdic_put(sysib.sysib_221.sequence, "INTELINTELINTELI", 16);
++            ebcdic_put(sysib.sysib_221.plant, "INTL", 4);
              sysib.sysib_221.cpu_addr = cpu_to_be16(env->core_id);
          } else if ((sel1 == 2) && (sel2 == 2)) {
              /* LPAR CPUs */
@@ -2350,7 +2291,7 @@ index 215b5b9..b14aa7e 100644
              sysib.sysib_222.conf_cpus = cpu_to_be16(conf_cpus);
              sysib.sysib_222.reserved_cpus = cpu_to_be16(reserved_cpus);
 -            ebcdic_put(sysib.sysib_222.name, "QEMU    ", 8);
-+            ebcdic_put(sysib.sysib_222.name, "AMD     ", 8);
++            ebcdic_put(sysib.sysib_222.name, "Intel   ", 8);
              sysib.sysib_222.caf = cpu_to_be32(1000);
              sysib.sysib_222.dedicated_cpus = cpu_to_be16(conf_cpus);
          } else {
@@ -2359,7 +2300,7 @@ index 215b5b9..b14aa7e 100644
              sysib.sysib_322.vm[0].caf = cpu_to_be32(1000);
              /* Linux kernel uses this to distinguish us from z/VM */
 -            ebcdic_put(sysib.sysib_322.vm[0].cpi, "KVM/Linux       ", 16);
-+            ebcdic_put(sysib.sysib_322.vm[0].cpi, "AMD             ", 16);
++            ebcdic_put(sysib.sysib_322.vm[0].cpi, "IntelIntel      ", 16);
              sysib.sysib_322.vm[0].ext_name_encoding = 2; /* UTF-8 */
  
              /* If our VM has a name, use the real name */
