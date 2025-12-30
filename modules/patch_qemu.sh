@@ -247,32 +247,29 @@ spoof_models() {
 
 
 spoof_acpi() {
+  # Fixed ACPI Description Table (FADT) - https://uefi.org/sites/default/files/resources/ACPI_Spec_6.6.pdf#subsection.5.2.9
+  # Preferred PM Profile System Types   - https://uefi.org/sites/default/files/resources/ACPI_Spec_6.6.pdf#subsubsection.5.2.9.1
+
   local t=/sys/firmware/acpi/tables/FACP
 
   local h=include/hw/acpi/aml-build.h
   local c=hw/acpi/aml-build.c
 
-  # https://uefi.org/sites/default/files/resources/ACPI_Spec_6.6.pdf#subsection.5.2.9
+  local OEMID OEM_TABLE_ID Preferred_PM_Profile ssdt out
 
-  local OEMID OEM_TABLE_ID chassis_type ssdt out
-
-  OEMID="$(LC_ALL=C $ROOT_ESC dd if="$t" bs=1 skip=10 count=6 status=none | tr '\0' ' ')"
-  OEM_TABLE_ID="$(LC_ALL=C $ROOT_ESC dd if="$t" bs=1 skip=16 count=8 status=none | tr '\0' ' ')"
+  OEMID="$(LC_ALL=C $ROOT_ESC dd if=$t bs=1 skip=10 count=6 status=none | tr '\0' ' ')"
+  OEM_TABLE_ID="$(LC_ALL=C $ROOT_ESC dd if=$t bs=1 skip=16 count=8 status=none | tr '\0' ' ')"
+  Preferred_PM_Profile=$(LC_ALL=C $ROOT_ESC dd if=$t bs=1 skip=45 count=1 status=none | od -An -tu1)
 
   sed -i \
     -e 's/^\(#define ACPI_BUILD_APPNAME6 "\)[^"]*\("\)/\1'"$OEMID"'\2/' \
     -e 's/^\(#define ACPI_BUILD_APPNAME8 "\)[^"]*\("\)/\1'"$OEM_TABLE_ID"'\2/' \
     "$h"
 
+  sed -i 's/\(build_append_int_noprefix(tbl, \)0\( \/\* Unspecified \*\/, 1);\)/\1'"$Preferred_PM_Profile"'\2/' "$c"
 
-  # https://uefi.org/sites/default/files/resources/ACPI_Spec_6.6.pdf#subsubsection.5.2.9.1
-  # https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_3.9.0.pdf#%5B%7B%22num%22%3A266%2C%22gen%22%3A0%7D%2C%7B%22name%22%3A%22XYZ%22%7D%2C70%2C302%2C0%5D
-
-  chassis_type="$(< /sys/class/dmi/id/chassis_type)"
-  sed -i 's/\(build_append_int_noprefix(tbl, \)0\( \/\* Unspecified \*\/, 1);\)/\1'"$chassis_type"'\2/' "$c"
-
-  if [[ $chassis_type =~ ^(9|10)$ ]]; then
-    fmtr::warn "Host Chassis Type equals '$chassis_type' (Mobile)"
+  if [[ $Preferred_PM_Profile -eq 2 ]]; then
+    fmtr::warn "The FADT: Preferred_PM_Profile equals '$Preferred_PM_Profile' (Mobile)"
 
     ssdt="$($ROOT_ESC find /sys/firmware/acpi/tables/ -type f ! -name DSDT -exec grep -il battery {} + | head -n1)"
     if [[ -z $ssdt ]]; then
