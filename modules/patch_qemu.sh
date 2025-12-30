@@ -82,7 +82,7 @@ REQUIRED_PKGS_Fedora=(
 )
 
 acquire_qemu_source() {
-  $ROOT_ESC mkdir -p "$OUT_DIR/{emulator,firmware}"
+  $ROOT_ESC mkdir -p "$OUT_DIR"/{emulator,firmware}
   mkdir -p "$SRC_DIR" && cd "$SRC_DIR"
 
   if [ -d "$QEMU_DIR" ]; then
