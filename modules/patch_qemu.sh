@@ -11,8 +11,7 @@ declare -r CPU_VENDOR=$(case "$VENDOR_ID" in
 esac)
 
 readonly SRC_DIR="$(pwd)/src"
-readonly EMU_DIR="/opt/Hypervisor-Phantom/emulator"
-readonly FWR_DIR="/opt/Hypervisor-Phantom/firmware"
+readonly OUT_DIR="/opt/Hypervisor-Phantom"
 
 readonly QEMU_VERSION="10.2.0"
 readonly QEMU_DIR="qemu-${QEMU_VERSION}"
@@ -83,7 +82,7 @@ REQUIRED_PKGS_Fedora=(
 )
 
 acquire_qemu_source() {
-  $ROOT_ESC mkdir -p "$EMU_DIR"
+  $ROOT_ESC mkdir -p "$OUT_DIR/{emulator,firmware}"
   mkdir -p "$SRC_DIR" && cd "$SRC_DIR"
 
   if [ -d "$QEMU_DIR" ]; then
@@ -275,7 +274,7 @@ spoof_acpi() {
       return 0
     fi
 
-    out="$FWR_DIR/$(basename "$ssdt")-battery.aml"
+    out="$OUT_DIR/firmware/$(basename "$ssdt")-battery.aml"
     $ROOT_ESC cp -- "$ssdt" "$out"
 
     $ROOT_ESC chmod 0644 -- "$out"
@@ -335,7 +334,7 @@ compile_qemu() {
   fmtr::log "Configuring build environment"
 
   ./configure --target-list=x86_64-softmmu \
-              --prefix="$EMU_DIR" \
+              --prefix="$OUT_DIR/emulator" \
               --enable-libusb \
               --enable-usb-redir \
               --enable-spice \
@@ -354,7 +353,7 @@ compile_qemu() {
     return 1
   fi
 
-  fmtr::log "Installing QEMU to '$EMU_DIR'"
+  fmtr::log "Installing QEMU to '$OUT_DIR/emulator'"
   $ROOT_ESC make install &>> "$LOG_FILE"
   if [[ $? -ne 0 ]]; then
     fmtr::error "Install failed. Check $LOG_FILE"
