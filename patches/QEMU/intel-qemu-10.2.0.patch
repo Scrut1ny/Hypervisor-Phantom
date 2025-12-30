@@ -697,7 +697,7 @@ index f8b919c..f9f7e6c 100644
      pcmc->has_reserved_memory = true;
      pcmc->enforce_amd_1tb_hole = true;
 diff --git a/hw/i386/pc_piix.c b/hw/i386/pc_piix.c
-index 7b3611e..8df48f6 100644
+index 7b3611e..5331452 100644
 --- a/hw/i386/pc_piix.c
 +++ b/hw/i386/pc_piix.c
 @@ -417,12 +417,12 @@ static void pc_i440fx_machine_options(MachineClass *m)
@@ -718,15 +718,6 @@ index 7b3611e..8df48f6 100644
      m->no_parallel = !module_object_class_by_name(TYPE_ISA_PARALLEL);
      machine_class_allow_dynamic_sysbus_dev(m, TYPE_RAMFB_DEVICE);
      machine_class_allow_dynamic_sysbus_dev(m, TYPE_VMBUS_BRIDGE);
-@@ -487,7 +487,7 @@ static void pc_i440fx_machine_9_0_options(MachineClass *m)
-     PCMachineClass *pcmc = PC_MACHINE_CLASS(m);
- 
-     pc_i440fx_machine_9_1_options(m);
--    m->smbios_memory_device_size = 16 * GiB;
-+    m->smbios_memory_device_size = 8 * GiB; // Default is 16GB per stick; Change to more common 8 GB per stick instead.
- 
-     compat_props_add(m->compat_props, hw_compat_9_0, hw_compat_9_0_len);
-     compat_props_add(m->compat_props, pc_compat_9_0, pc_compat_9_0_len);
 diff --git a/hw/i386/pc_q35.c b/hw/i386/pc_q35.c
 index 6015e63..33c9d20 100644
 --- a/hw/i386/pc_q35.c
