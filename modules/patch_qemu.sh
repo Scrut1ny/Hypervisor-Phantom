@@ -252,6 +252,8 @@ spoof_acpi() {
   local h=include/hw/acpi/aml-build.h
   local c=hw/acpi/aml-build.c
 
+  # https://uefi.org/sites/default/files/resources/ACPI_Spec_6.6.pdf#subsection.5.2.9
+
   local OEMID OEM_TABLE_ID chassis_type ssdt out
 
   OEMID="$(LC_ALL=C $ROOT_ESC dd if="$t" bs=1 skip=10 count=6 status=none | tr '\0' ' ')"
@@ -262,10 +264,14 @@ spoof_acpi() {
     -e 's/^\(#define ACPI_BUILD_APPNAME8 "\)[^"]*\("\)/\1'"$OEM_TABLE_ID"'\2/' \
     "$h"
 
+
+  # https://uefi.org/sites/default/files/resources/ACPI_Spec_6.6.pdf#subsubsection.5.2.9.1
+  # https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_3.9.0.pdf#%5B%7B%22num%22%3A266%2C%22gen%22%3A0%7D%2C%7B%22name%22%3A%22XYZ%22%7D%2C70%2C302%2C0%5D
+
   chassis_type="$(< /sys/class/dmi/id/chassis_type)"
   sed -i 's/\(build_append_int_noprefix(tbl, \)0\( \/\* Unspecified \*\/, 1);\)/\1'"$chassis_type"'\2/' "$c"
 
-  if [[ $chassis_type -eq 2 ]]; then
+  if [[ $chassis_type =~ ^(9|10)$ ]]; then
     fmtr::warn "Host Chassis Type equals '$chassis_type' (Mobile)"
 
     ssdt="$($ROOT_ESC find /sys/firmware/acpi/tables/ -type f ! -name DSDT -exec grep -il battery {} + | head -n1)"
