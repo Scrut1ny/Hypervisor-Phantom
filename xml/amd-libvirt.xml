@@ -102,6 +102,7 @@
     <topology sockets="1" dies="1" cores="8" threads="2"/>
     <!-- Optimize performance -->
     <cache mode="passthrough"/>
+    <maxphysaddr mode="passthrough"/>
     <feature policy="require" name="svm"/>
     <feature policy="require" name="topoext"/>
     <feature policy="require" name="invtsc"/>
@@ -367,6 +368,7 @@
     </qemu:device>
   </qemu:override>
 </domain>
+
 
 
 
