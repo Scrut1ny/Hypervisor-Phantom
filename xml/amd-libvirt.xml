@@ -203,7 +203,7 @@
     <> https://libvirt.org/formatdomain.html#network-interfaces
     -->
     <interface type="network">
-      <mac address="XX:XX:XX:XX:XX:XX"/> <!-- Set fully randomized MAC address every instance -->
+      <mac address="XX:XX:XX:XX:XX:XX"/> <!-- Randomize MAC address! -->
       <source network="default"/> <!-- DO NOT USE "VirtIO" -->
     </interface>
 
@@ -212,7 +212,7 @@
 
 
     <!--
-    https://libvirt.org/formatdomain.html#tpm-device
+    <> https://libvirt.org/formatdomain.html#tpm-device
 
     TPM emulation requires the 'swtpm' package to function properly.
     -->
@@ -369,6 +369,7 @@
     </qemu:device>
   </qemu:override>
 </domain>
+
 
 
 
