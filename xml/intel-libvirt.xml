@@ -106,9 +106,9 @@
     <feature policy="require" name="invtsc"/>
     <feature policy="disable" name="vmx-vnmi"/> <!-- NVIDIA (Code 43) error solution -->
     <!-- Remove giveaways for HV -->
-    <feature policy="disable" name="hypervisor"/> <!-- 1. Makes Windows report "Virtualization: Enabled" instead of "Virtual machine: Yes" in Task Manager.
-                                                       2. Also makes Windows report L1-3 caches (right under "Virtualization: Enabled")
-                                                       3. When emulating Windows 11, set "options kvm ignore_msrs=1" in "/etc/modprobe.d/kvm.conf" -->
+    <feature policy="disable" name="hypervisor"/> <!-- Makes Task Manager in Windows report:
+                                                         - "Virtualization: Enabled" instead of "Virtual machine: Yes"
+                                                         - L1, L2, and L3 caches (Under "Virtualization: Enabled") -->
     <feature policy="disable" name="ssbd"/>
     <feature policy="disable" name="virt-ssbd"/>
     <feature policy="disable" name="rdtscp"/> <!-- Remove RDTSCP if RDTSC kernel patch is utilized -->
@@ -376,6 +376,7 @@
     </qemu:device>
   </qemu:override>
 </domain>
+
 
 
 
