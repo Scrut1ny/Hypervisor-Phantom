@@ -168,7 +168,7 @@
 
   <devices>
     <!-- Points to patched QEMU emulator binary (modify path if needed!) -->
-    <emulator>/usr/local/bin/qemu-system-x86_64</emulator>
+    <emulator>/opt/Hypervisor-Phantom/emulator/bin/qemu-system-x86_64</emulator>
 
 
 
@@ -376,6 +376,7 @@
     </qemu:device>
   </qemu:override>
 </domain>
+
 
 
 
