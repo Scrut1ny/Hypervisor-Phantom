@@ -201,7 +201,7 @@
     <> https://libvirt.org/formatdomain.html#network-interfaces
     -->
     <interface type="network">
-      <mac address="XX:XX:XX:XX:XX:XX"/> <!-- Set fully randomized MAC address every instance -->
+      <mac address="XX:XX:XX:XX:XX:XX"/> <!-- Randomize MAC address! -->
       <source network="default"/> <!-- DO NOT USE "VirtIO" -->
     </interface>
 
@@ -210,21 +210,12 @@
 
 
     <!--
-    https://libvirt.org/formatdomain.html#tpm-device
+    <> https://libvirt.org/formatdomain.html#tpm-device
 
-    Software TPM requires the swtpm (and swtpm-tools on some distros) to work.
-
-    Arch     - https://archlinux.org/packages/extra/x86_64/swtpm/
-    Debian   - https://packages.debian.org/sid/swtpm
-    openSUSE - https://software.opensuse.org/package/swtpm
-    Fedora   - https://packages.fedoraproject.org/pkgs/swtpm/swtpm/
-
-    Note: If you're trying to bypass Valorant/League of Legends Vanguard Anti-Cheat, you must enable TPM
-    as these games require it to run properly. Vanguard specifically checks for the presence of a TPM
-    module to prevent cheating and secure the game environment.
+    TPM emulation requires the 'swtpm' package to function properly.
     -->
-    <tpm model="tpm-tis">
-      <backend type='emulator' version='2.0'/>
+    <tpm model="tpm-crb">
+      <backend type="emulator" version="2.0"/>
     </tpm>
 
 
@@ -376,6 +367,7 @@
     </qemu:device>
   </qemu:override>
 </domain>
+
 
 
 
