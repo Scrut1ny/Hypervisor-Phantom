@@ -64,7 +64,7 @@ index bb41758..dbd2777 100644
      if (!g_option_context_parse(context, &argc, &argv, &error)) {
          g_printerr("Option parsing failed: %s\n", error->message);
 diff --git a/hw/acpi/aml-build.c b/hw/acpi/aml-build.c
-index 2d5826a..c4d0edd 100644
+index 2d5826a..7cd88c2 100644
 --- a/hw/acpi/aml-build.c
 +++ b/hw/acpi/aml-build.c
 @@ -1722,11 +1722,11 @@ void acpi_table_begin(AcpiTable *desc, GArray *array)
@@ -82,6 +82,15 @@ index 2d5826a..c4d0edd 100644
      build_append_int_noprefix(array, 1, 4); /* Creator Revision */
  }
  
+@@ -2263,7 +2263,7 @@ void build_fadt(GArray *tbl, BIOSLinker *linker, const AcpiFadtData *f,
+     /* ACPI1.0: INT_MODEL, ACPI2.0+: Reserved */
+     build_append_int_noprefix(tbl, f->int_model /* Multiple APIC */, 1);
+     /* Preferred_PM_Profile */
+-    build_append_int_noprefix(tbl, 0 /* Unspecified */, 1);
++    build_append_int_noprefix(tbl, 1 /* Desktop */, 1);
+     build_append_int_noprefix(tbl, f->sci_int, 2); /* SCI_INT */
+     build_append_int_noprefix(tbl, f->smi_cmd, 4); /* SMI_CMD */
+     build_append_int_noprefix(tbl, f->acpi_enable_cmd, 1); /* ACPI_ENABLE */
 @@ -2360,7 +2360,7 @@ void build_fadt(GArray *tbl, BIOSLinker *linker, const AcpiFadtData *f,
      }
  

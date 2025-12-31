@@ -64,7 +64,7 @@ index bb41758..dbd2777 100644
      if (!g_option_context_parse(context, &argc, &argv, &error)) {
          g_printerr("Option parsing failed: %s\n", error->message);
 diff --git a/hw/acpi/aml-build.c b/hw/acpi/aml-build.c
-index 2d5826a..c4d0edd 100644
+index 2d5826a..7cd88c2 100644
 --- a/hw/acpi/aml-build.c
 +++ b/hw/acpi/aml-build.c
 @@ -1722,11 +1722,11 @@ void acpi_table_begin(AcpiTable *desc, GArray *array)
@@ -82,6 +82,15 @@ index 2d5826a..c4d0edd 100644
      build_append_int_noprefix(array, 1, 4); /* Creator Revision */
  }
  
+@@ -2263,7 +2263,7 @@ void build_fadt(GArray *tbl, BIOSLinker *linker, const AcpiFadtData *f,
+     /* ACPI1.0: INT_MODEL, ACPI2.0+: Reserved */
+     build_append_int_noprefix(tbl, f->int_model /* Multiple APIC */, 1);
+     /* Preferred_PM_Profile */
+-    build_append_int_noprefix(tbl, 0 /* Unspecified */, 1);
++    build_append_int_noprefix(tbl, 1 /* Desktop */, 1);
+     build_append_int_noprefix(tbl, f->sci_int, 2); /* SCI_INT */
+     build_append_int_noprefix(tbl, f->smi_cmd, 4); /* SMI_CMD */
+     build_append_int_noprefix(tbl, f->acpi_enable_cmd, 1); /* ACPI_ENABLE */
 @@ -2360,7 +2360,7 @@ void build_fadt(GArray *tbl, BIOSLinker *linker, const AcpiFadtData *f,
      }
  
@@ -1722,7 +1731,7 @@ index f38e129..b4055f5 100644
  #define ACPI_BUILD_TABLE_FILE "etc/acpi/tables"
  #define ACPI_BUILD_RSDP_FILE "etc/acpi/rsdp"
 diff --git a/include/hw/pci/pci.h b/include/hw/pci/pci.h
-index b72e484..d3ee93c 100644
+index b72e484..514b6ac 100644
 --- a/include/hw/pci/pci.h
 +++ b/include/hw/pci/pci.h
 @@ -57,7 +57,7 @@ extern bool pci_available;
@@ -1745,9 +1754,9 @@ index b72e484..d3ee93c 100644
 -#define PCI_VENDOR_ID_REDHAT_QUMRANET    0x1af4
 -#define PCI_SUBVENDOR_ID_REDHAT_QUMRANET 0x1af4
 -#define PCI_SUBDEVICE_ID_QEMU            0x1100
-+#define PCI_VENDOR_ID_REDHAT_QUMRANET    0x8086 // Intel Device ID Replacement from 0x1af4
-+#define PCI_SUBVENDOR_ID_REDHAT_QUMRANET 0x8086 // Intel Device ID Replacement from 0x1af4
-+#define PCI_SUBDEVICE_ID_QEMU            0x8086 // Intel Device ID Replacement from 0x1100
++#define PCI_VENDOR_ID_REDHAT_QUMRANET    0x8086 // Intel Vendor ID Replacement from 0x1af4
++#define PCI_SUBVENDOR_ID_REDHAT_QUMRANET 0x8086 // Intel Subvendor ID Replacement from 0x1af4
++#define PCI_SUBDEVICE_ID_QEMU            0x8086 // Intel Subdevice ID Replacement from 0x1100
  
  /* legacy virtio-pci devices */
  #define PCI_DEVICE_ID_VIRTIO_NET         0x1000
@@ -1781,7 +1790,7 @@ index b72e484..d3ee93c 100644
  #define PCI_DEVICE_ID_REDHAT_NVME        0x0010
  #define PCI_DEVICE_ID_REDHAT_PVPANIC     0x0011
 diff --git a/include/hw/pci/pci_ids.h b/include/hw/pci/pci_ids.h
-index 16034aa..9e0f8c2 100644
+index 16034aa..5b8ab39 100644
 --- a/include/hw/pci/pci_ids.h
 +++ b/include/hw/pci/pci_ids.h
 @@ -237,6 +237,8 @@
@@ -1824,7 +1833,7 @@ index 16034aa..9e0f8c2 100644
 +#define PCI_DEVICE_ID_INTEL_P35_MCH      0x4641 // Intel G33/P35/Q35/Q33 Chipset - Memory Controller Hub [A0] | Intel Vendor ID Replacement from 0x29c0 | hw/pci-host/q35.c
  
 -#define PCI_VENDOR_ID_XEN                0x5853
-+#define PCI_VENDOR_ID_XEN                0x8086 // Intel Device ID Replacement from 0x5853
++#define PCI_VENDOR_ID_XEN                0x8086 // Intel Vendor ID Replacement from 0x5853
  #define PCI_DEVICE_ID_XEN_PLATFORM       0x0001
  
  #define PCI_VENDOR_ID_NEC                0x1033
@@ -1833,7 +1842,7 @@ index 16034aa..9e0f8c2 100644
  #define PCI_DEVICE_ID_TEWS_TPCI200       0x30C8
  
 -#define PCI_VENDOR_ID_VMWARE             0x15ad
-+#define PCI_VENDOR_ID_VMWARE             0x8086 // Intel Device ID Replacement from 0x15ad
++#define PCI_VENDOR_ID_VMWARE             0x8086 // Intel Vendor ID Replacement from 0x15ad
  #define PCI_DEVICE_ID_VMWARE_PVRDMA      0x0820
  
  #define PCI_VENDOR_ID_SYNOPSYS           0x16C3
