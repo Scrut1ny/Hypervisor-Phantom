@@ -18,7 +18,7 @@
 -->
 
 <domain xmlns:qemu="http://libvirt.org/schemas/domain/qemu/1.0" type="kvm"> <!-- Don't forget XMLNS! -->
-  <uuid>XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX</uuid>
+  <uuid>XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX</uuid> <!-- FYI: This is NOT the guest system's UUID in SMBIOS! -->
 
   <memory unit="G">16</memory>  <!-- Utilize realistic memory amounts, such as 8, 16, 32, and 64. -->
   <currentMemory unit="G">16</currentMemory>
@@ -378,3 +378,4 @@
     </qemu:device>
   </qemu:override>
 </domain>
+
