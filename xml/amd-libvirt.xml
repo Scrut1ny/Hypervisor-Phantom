@@ -20,8 +20,9 @@
 <domain xmlns:qemu="http://libvirt.org/schemas/domain/qemu/1.0" type="kvm"> <!-- Don't forget XMLNS! -->
   <uuid>XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX</uuid>
 
-  <memory unit="G">16</memory>  <!-- keep RAM amount at realistic values: 64, 32, 16, 12, and 8 GiB are all common -->
+  <memory unit="G">16</memory>  <!-- Utilize realistic memory amounts, such as 8, 16, 32, and 64. -->
   <currentMemory unit="G">16</currentMemory>
+
 
 
 
@@ -32,12 +33,13 @@
   
   -->
   <os>
-    <type arch="x86_64" machine="pc-q35-10.1">hvm</type>
+    <type arch="x86_64" machine="pc-q35-10.2">hvm</type>
     <loader readonly="yes" secure="yes" type="pflash" format="qcow2">/opt/Hypervisor-Phantom/firmware/OVMF_CODE.qcow2</loader>
     <nvram template="/opt/Hypervisor-Phantom/firmware/OVMF_VARS.qcow2" format="qcow2"></nvram>
     <bootmenu enable="yes"/>
-    <smbios mode="host"/> <!-- Remove this if you use a host SMBIOS dump -->
+    <smbios mode="host"/> <!-- Remove if 'smbios.bin' is being passed through -->
   </os>
+
 
 
 
@@ -84,6 +86,9 @@
   </features>
 
 
+
+
+
   <!--
   <> https://libvirt.org/formatdomain.html#cpu-model-and-topology
 
@@ -115,6 +120,8 @@
 
 
 
+
+
   <!--
   <> https://libvirt.org/formatdomain.html#time-keeping
 
@@ -131,6 +138,7 @@
     <timer name="kvmclock" present="no"/>
     <timer name="hypervclock" present="no"/>
   </clock>
+
 
 
 
@@ -190,6 +198,7 @@
 
 
 
+ 
     <!--
     <> https://libvirt.org/formatdomain.html#network-interfaces
     -->
@@ -246,7 +255,7 @@
 
 
 
-    
+
     <!--
     <> https://libvirt.org/formatdomain.html#video-devices
 
@@ -266,7 +275,7 @@
 
 
 
-    
+
     <!--
     <> https://libvirt.org/formatdomain.html#shared-memory-device
     <> https://looking-glass.io/docs/B7/install/#ivshmem
@@ -285,6 +294,7 @@
       <size unit="M">32</size>
     </shmem>
   </devices>
+
 
 
 
@@ -368,14 +378,3 @@
     </qemu:device>
   </qemu:override>
 </domain>
-
-
-
-
-
-
-
-
-
-
-
