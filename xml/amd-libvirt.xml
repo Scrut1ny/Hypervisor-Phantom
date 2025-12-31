@@ -292,7 +292,7 @@
 
   <!--
   <> https://www.qemu.org/docs/master/system/qemu-manpage.html#hxtool-4
-  <> https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_3.2.0.pdf
+  <> https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_3.9.0.pdf
 
  
   -->
@@ -369,6 +369,7 @@
     </qemu:device>
   </qemu:override>
 </domain>
+
 
 
 
