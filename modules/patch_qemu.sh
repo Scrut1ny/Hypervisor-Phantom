@@ -248,12 +248,9 @@ spoof_models() {
 
 spoof_acpi() {
   # Fixed ACPI Description Table (FADT) - https://uefi.org/sites/default/files/resources/ACPI_Spec_6.6.pdf#subsection.5.2.9
-  # Preferred PM Profile System Types   - https://uefi.org/sites/default/files/resources/ACPI_Spec_6.6.pdf#subsubsection.5.2.9.1
+  # Preferred PM Profile System Types - https://uefi.org/sites/default/files/resources/ACPI_Spec_6.6.pdf#subsubsection.5.2.9.1
 
   local t=/sys/firmware/acpi/tables/FACP
-
-  local h=include/hw/acpi/aml-build.h
-  local c=hw/acpi/aml-build.c
 
   local OEMID OEM_TABLE_ID Preferred_PM_Profile ssdt out
 
@@ -262,14 +259,14 @@ spoof_acpi() {
   Preferred_PM_Profile=$(LC_ALL=C $ROOT_ESC dd if=$t bs=1 skip=45 count=1 status=none | od -An -tu1)
 
   sed -i \
-    -e 's/^\(#define ACPI_BUILD_APPNAME6 "\)[^"]*\("\)/\1'"$OEMID"'\2/' \
-    -e 's/^\(#define ACPI_BUILD_APPNAME8 "\)[^"]*\("\)/\1'"$OEM_TABLE_ID"'\2/' \
-    "$h"
-
-  sed -i 's/\(build_append_int_noprefix(tbl, \)0\( \/\* Unspecified \*\/, 1);\)/\1'"$Preferred_PM_Profile"'\2/' "$c"
+    -e "s/\(#define ACPI_BUILD_APPNAME6 \)\"[^\"]*\"/\1\"$OEMID\"/" \
+    -e "s/\(#define ACPI_BUILD_APPNAME8 \)\"[^\"]*\"/\1\"$OEM_TABLE_ID\"/" \
+    include/hw/acpi/aml-build.h
 
   if [[ $Preferred_PM_Profile -eq 2 ]]; then
-    fmtr::warn "The FADT: Preferred_PM_Profile equals '$Preferred_PM_Profile' (Mobile)"
+    fmtr::warn "Host FADT: Preferred_PM_Profile equals '2' (Mobile)"
+
+    sed -i 's/1 \/\* Desktop \*\/, 1/2 \/\* Mobile \*\/, 1/' hw/acpi/aml-build.c
 
     ssdt="$($ROOT_ESC find /sys/firmware/acpi/tables/ -type f ! -name DSDT -exec grep -il battery {} + | head -n1)"
     if [[ -z $ssdt ]]; then
