@@ -47,6 +47,11 @@ git clone --single-branch --depth=1 https://github.com/Scrut1ny/Hypervisor-Phant
 - Windows 10/11 w/Secure Boot BSOD after 5-30 mins from boot
   - Increase pagefile size inside Windows
 
+- Windows 11, set below line in `/etc/modprobe.d/kvm.conf`
+```
+options kvm ignore_msrs=1
+```
+
 - Dumping host's SMBIOS for QEMU passthrough
   - First try:
   ```
