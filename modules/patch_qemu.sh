@@ -13,17 +13,15 @@ esac)
 readonly SRC_DIR="$(pwd)/src"
 readonly OUT_DIR="/opt/Hypervisor-Phantom"
 
-readonly QEMU_VERSION="10.2.0"
-readonly QEMU_DIR="qemu-${QEMU_VERSION}"
-readonly QEMU_ARCHIVE="${QEMU_DIR}.tar.xz"
-readonly QEMU_URL="https://download.qemu.org/${QEMU_ARCHIVE}"
-readonly PATCH_DIR="../../patches/QEMU"
-readonly QEMU_PATCH="${CPU_VENDOR}-${QEMU_DIR}.patch"
+readonly QEMU_TAG="v10.2.0"
+readonly QEMU_URL="https://gitlab.com/qemu-project/qemu.git"
+
+readonly QEMU_PATCH="$(pwd)/patches/QEMU/${CPU_VENDOR}-${QEMU_TAG}.patch"
 
 REQUIRED_PKGS_Arch=(
   # Basic Build Dependencie(s)
   acpica base-devel dmidecode glib2 ninja python-packaging
-  python-sphinx python-sphinx_rtd_theme gnupg patch curl libevdev
+  python-sphinx python-sphinx_rtd_theme gnupg libevdev
 
   # Spice Dependencie(s)
   spice gtk3
@@ -39,7 +37,7 @@ REQUIRED_PKGS_Debian=(
   # Basic Build Dependencie(s)
   acpica-tools build-essential libfdt-dev libglib2.0-dev
   libpixman-1-dev ninja-build python3-venv zlib1g-dev gnupg
-  python3-sphinx python3-sphinx-rtd-theme patch curl
+  python3-sphinx python3-sphinx-rtd-theme
 
   # Spice Dependencie(s)
   libspice-server-dev
@@ -54,7 +52,7 @@ REQUIRED_PKGS_Debian=(
 REQUIRED_PKGS_openSUSE=(
   # Basic Build Dependencie(s)
   acpica bzip2 gcc-c++ gpg2 glib2-devel make qemu
-  libpixman-1-0-devel patch python3-Sphinx ninja curl
+  libpixman-1-0-devel python3-Sphinx ninja
 
   # Spice Dependencie(s)
   spice-server
@@ -69,7 +67,7 @@ REQUIRED_PKGS_openSUSE=(
 REQUIRED_PKGS_Fedora=(
   # Basic Build Dependencie(s)
   acpica-tools bzip2 glib2-devel libfdt-devel ninja-build
-  pixman-devel python3 zlib-ng-devel gnupg2 patch curl
+  pixman-devel python3 zlib-ng-devel gnupg2
 
   # Spice Dependencie(s)
   spice-server-devel
@@ -81,53 +79,49 @@ REQUIRED_PKGS_Fedora=(
   usbredir-devel
 )
 
+################################################################################
+# Acquire QEMU source
+################################################################################
 acquire_qemu_source() {
-  $ROOT_ESC mkdir -p "$OUT_DIR"/{emulator,firmware}
-  mkdir -p "$SRC_DIR" && cd "$SRC_DIR"
+  mkdir -p "$SRC_DIR" && cd "$SRC_DIR" || { fmtr::fatal "Failed to enter source dir: $SRC_DIR"; exit 1; }
 
-  if [ -d "$QEMU_DIR" ]; then
-    fmtr::warn "Directory $QEMU_DIR already exists."
-    if ! prmt::yes_or_no "$(fmtr::ask 'Purge the QEMU directory?')"; then
-      fmtr::info "Keeping existing directory. Skipping re-download."
-      cd "$QEMU_DIR" || { fmtr::fatal "Failed to change to QEMU directory: $QEMU_DIR"; exit 1; }
-      return
+  clone_repo() {
+    fmtr::info "Cloning '$QEMU_TAG' '$QEMU_URL' repository..."
+    git clone --depth=1 --branch "$QEMU_TAG" "$QEMU_URL" "$QEMU_TAG" &>>"$LOG_FILE" \
+      || { fmtr::fatal "Failed to clone repository!"; exit 1; }
+    cd "$QEMU_TAG" || { fmtr::fatal "Missing '$QEMU_TAG' directory!"; exit 1; }
+    patch_qemu
+  }
+
+  if [ -d "$QEMU_TAG" ]; then
+    fmtr::warn "Repository directory '$QEMU_TAG' found."
+    if prmt::yes_or_no "$(fmtr::ask "Purge '$QEMU_TAG' directory?")"; then
+      rm -rf "$QEMU_TAG" || { fmtr::fatal "Failed to purge '$QEMU_TAG' directory!"; exit 1; }
+      fmtr::info "Directory purged successfully."
+      if prmt::yes_or_no "$(fmtr::ask "Clone '$QEMU_URL' repository again?")"; then
+        clone_repo
+      else
+        fmtr::info "Skipping..."
+      fi
+    else
+      fmtr::info "Skipping..."
+      cd "$QEMU_TAG" || { fmtr::fatal "Missing '$QEMU_TAG' directory!"; exit 1; }
     fi
-    rm -rf "$QEMU_DIR/" "$QEMU_ARCHIVE" || { fmtr::fatal "Failed to remove existing directory: $QEMU_DIR"; exit 1; }
-    fmtr::info "Directory purged."
+  else
+    clone_repo
   fi
-
-  fmtr::info "Downloading QEMU source archive..."
-  curl -sSO "$QEMU_URL" || { fmtr::fatal "Failed to download QEMU source archive."; exit 1; }
-
-  fmtr::info "Extracting QEMU source archive..."
-  tar xJf "$QEMU_ARCHIVE" || { fmtr::fatal "Failed to extract QEMU archive."; exit 1; }
-
-  cd "$QEMU_DIR" || { fmtr::fatal "Failed to change to QEMU directory: $QEMU_DIR"; exit 1; }
-  fmtr::info "QEMU source successfully acquired and extracted."
-  patch_qemu
 }
 
 patch_qemu() {
-  if [ ! -f "${PATCH_DIR}/${QEMU_PATCH}" ]; then
-    fmtr::error "Patch file \"${PATCH_DIR}/${QEMU_PATCH}\" not found!"
-    fmtr::fatal "Cannot proceed without the patch file. Exiting."
-    exit 1
-  fi
+  [ -f "$QEMU_PATCH" ] || { fmtr::error "Missing '$QEMU_PATCH' patch file!"; return 1; }
+  git apply < "$QEMU_PATCH" &>>"$LOG_FILE" || { fmtr::error "Failed to apply '$QEMU_PATCH'!"; return 1; }
+  fmtr::log "Applied '${CPU_VENDOR}-${QEMU_TAG}.patch' successfully."
 
-  fmtr::info "Applying patches to QEMU..."
-
-  patch -fsp1 < "${PATCH_DIR}/${QEMU_PATCH}" &>> "$LOG_FILE" || {
-    fmtr::error "Failed to apply patch ${QEMU_PATCH}!"
-    fmtr::fatal "Patch application failed. Please check the log for errors."
-    exit 1
-  }
-
-  fmtr::log "Spoofing all unique hardcoded QEMU identifiers..."
-
+  fmtr::info "Applying dynamic modifications to QEMU..."
   spoof_serials
   spoof_models
-  spoof_smbios
   spoof_acpi
+  spoof_smbios
 }
 
 
@@ -302,15 +296,15 @@ spoof_acpi() {
 spoof_smbios() {
   local chipset_file
 
-  case "$QEMU_VERSION" in
-    "8.2.6")
+  case "$QEMU_TAG" in
+    "v8.2.6")
       chipset_file="hw/i386/pc_q35.c"
       ;;
-    9.*|10.*.*)
+    v9.*|v10.*.*)
       chipset_file="hw/i386/fw_cfg.c"
       ;;
     *)
-      fmtr::warn "Unsupported QEMU version: $QEMU_VERSION"
+      fmtr::warn "Unsupported QEMU version: $QEMU_TAG"
       ;;
   esac
 
@@ -336,7 +330,9 @@ spoof_smbios() {
 
 
 compile_qemu() {
-  fmtr::log "Configuring build environment"
+  fmtr::info "Configuring QEMU..."
+
+  $ROOT_ESC mkdir -p "$OUT_DIR"/{emulator,firmware}
 
   ./configure --target-list=x86_64-softmmu \
               --prefix="$OUT_DIR/emulator" \
@@ -347,25 +343,23 @@ compile_qemu() {
               --disable-werror &>> "$LOG_FILE"
 
   if [[ $? -ne 0 ]]; then
-    fmtr::error "Configure failed. Check $LOG_FILE"
+    fmtr::error "Configuration failed; Check $LOG_FILE"
     return 1
   fi
 
-  fmtr::log "Building QEMU"
+  fmtr::info "Compiling QEMU..."
   make -j"$(nproc)" &>> "$LOG_FILE"
   if [[ $? -ne 0 ]]; then
-    fmtr::error "Build failed. Check $LOG_FILE"
+    fmtr::error "Compilation failed; Check $LOG_FILE"
     return 1
   fi
 
-  fmtr::log "Installing QEMU to '$OUT_DIR/emulator'"
   $ROOT_ESC make install &>> "$LOG_FILE"
   if [[ $? -ne 0 ]]; then
-    fmtr::error "Install failed. Check $LOG_FILE"
+    fmtr::error "Install failed; Check $LOG_FILE"
     return 1
   fi
-
-  fmtr::info "Compilation finished!"
+  fmtr::log "Installed QEMU at '$OUT_DIR/emulator'"
 }
 
 
@@ -380,7 +374,7 @@ compile_qemu() {
 
 cleanup() {
   fmtr::info "Cleaning up..."
-  rm -rf "$SRC_DIR"/{"$QEMU_ARCHIVE","$QEMU_DIR"}
+  rm -rf "$SRC_DIR/$QEMU_TAG"
   rmdir --ignore-fail-on-non-empty "$SRC_DIR" 2>/dev/null || true
 }
 
@@ -397,8 +391,8 @@ cleanup() {
 main() {
   install_req_pkgs "QEMU"
   acquire_qemu_source
-  prmt::yes_or_no "$(fmtr::ask 'Build & install QEMU?')" && compile_qemu
-  ! prmt::yes_or_no "$(fmtr::ask 'Keep QEMU source to make repatching quicker')" && cleanup
+  prmt::yes_or_no "$(fmtr::ask "Build & install QEMU?")" && compile_qemu
+  ! prmt::yes_or_no "$(fmtr::ask "Keep repository directory?")" && cleanup
 }
 
 main
