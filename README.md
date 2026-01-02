@@ -264,7 +264,8 @@ options kvm ignore_msrs=1
 ## Bypass Kits
 
 #### Expensive Bypass Kit (Recommended):
-- 1x2 HDMI Splitter <> [ViewHD](https://www.amazon.com/dp/B004F9LVXC) - `~$22.00`
+- 1x2 HDMI Splitter <> [U9 / ViewHD](https://www.amazon.com/dp/B086JKRSW1) - `~$18.00`
+  - [U9 / ViewHD](https://www.amazon.com/dp/B004F9LVXC) - `~$22.00`
 - EDID Emulator <> [4K-EWB - HDMI 2.1 4K EDID Emulator](https://www.amazon.com/dp/B0DB7YDFD6) - `~$25.00`
 - USB HDMI Capture Card <> [Elgato HD60 X](https://www.amazon.com/dp/B09V1KJ3J4) - `~$160.00`
 
@@ -283,7 +284,7 @@ options kvm ignore_msrs=1
     - [AXHDCAP 4K HDMI Video Capture Card](https://www.amazon.com/dp/B0C2MDTY8P) - `~$9.98`
 - 1x2 HDMI Splitter(s)
     - [U9 / ViewHD](https://u9ltd.myshopify.com/collections/splitter)
-        - [VHD-1X2MN3D](https://www.amazon.com/dp/B004F9LVXC) - 
+        - [VHD-1X2MN3D](https://www.amazon.com/dp/B004F9LVXC) - `~$22.00`
         - [VHD-1X2MN3D](https://www.amazon.com/dp/B086JKRSW1) - `~$18.00`
     - HBAVLINK
         - [HB-SP102B](https://www.amazon.com/dp/B08T62MKH1)
