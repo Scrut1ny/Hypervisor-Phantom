@@ -11,10 +11,12 @@ declare -r CPU_VENDOR=$(case "$VENDOR_ID" in
 esac)
 
 readonly SRC_DIR="$(pwd)/src"
-readonly EDK2_URL="https://github.com/tianocore/edk2.git"
+readonly OUT_DIR="/opt/Hypervisor-Phantom/firmware"
+
 readonly EDK2_TAG="edk2-stable202511"
-readonly PATCH_DIR="$(pwd)/patches/EDK2"
-readonly OVMF_PATCH="${CPU_VENDOR}-${EDK2_TAG}.patch"
+readonly EDK2_URL="https://github.com/tianocore/edk2.git"
+
+readonly OVMF_PATCH="$(pwd)/patches/EDK2/${CPU_VENDOR}-${EDK2_TAG}.patch"
 
 REQUIRED_PKGS_Arch=(base-devel acpica git nasm python patch virt-firmware wget)
 REQUIRED_PKGS_Debian=(build-essential uuid-dev acpica-tools git nasm python-is-python3 patch python3-virt-firmware wget)
@@ -27,34 +29,33 @@ REQUIRED_PKGS_Fedora=(gcc gcc-c++ make acpica-tools git nasm python3 libuuid-dev
 acquire_edk2_source() {
   mkdir -p "$SRC_DIR" && cd "$SRC_DIR" || { fmtr::fatal "Failed to enter source dir: $SRC_DIR"; exit 1; }
 
-  clone_init() {
-    fmtr::info "Cloning EDK2 repository..."
-    git clone --single-branch --depth=1 --branch "$EDK2_TAG" "$EDK2_URL" "$EDK2_TAG" &>>"$LOG_FILE" \
-      || { fmtr::fatal "Failed to clone repository."; exit 1; }
-    cd "$EDK2_TAG" || { fmtr::fatal "Failed to enter EDK2 directory: $EDK2_TAG"; exit 1; }
-    fmtr::info "Initializing submodules... (be patient)"
+  clone_repo() {
+    fmtr::info "Cloning '$EDK2_URL' repository..."
+    git clone --depth=1 --branch "$EDK2_TAG" "$EDK2_URL" "$EDK2_TAG" &>>"$LOG_FILE" \
+      || { fmtr::fatal "Failed to clone repository!"; exit 1; }
+    cd "$EDK2_TAG" || { fmtr::fatal "Missing '$EDK2_TAG' directory!"; exit 1; }
+    fmtr::info "Initializing repository submodules... (be patient!)"
     git submodule update --init &>>"$LOG_FILE" \
-      || { fmtr::fatal "Failed to initialize submodules."; exit 1; }
-    fmtr::info "EDK2 source successfully acquired and submodules initialized."
+      || { fmtr::fatal "Failed to initialize all repository submodules!"; exit 1; }
     patch_ovmf
   }
 
   if [ -d "$EDK2_TAG" ]; then
-    fmtr::warn "EDK2 source directory '$EDK2_TAG' detected."
-    if prmt::yes_or_no "$(fmtr::ask 'Purge EDK2 source directory?')"; then
-      rm -rf "$EDK2_TAG" || { fmtr::fatal "Failed to remove existing directory: $EDK2_TAG"; exit 1; }
+    fmtr::warn "Repository directory '$EDK2_TAG' found."
+    if prmt::yes_or_no "$(fmtr::ask "Purge '$EDK2_TAG' directory?")"; then
+      rm -rf "$EDK2_TAG" || { fmtr::fatal "Failed to purge '$EDK2_TAG' directory!"; exit 1; }
       fmtr::info "Directory purged successfully."
-      if prmt::yes_or_no "$(fmtr::ask 'Clone the EDK2 repository?')"; then
-        clone_init
+      if prmt::yes_or_no "$(fmtr::ask "Clone '$EDK2_URL' repository again?")"; then
+        clone_repo
       else
-        fmtr::info "Skipping clone; nothing to patch since source was purged."
+        fmtr::info "Skipping..."
       fi
     else
-      fmtr::info "Kept existing directory; skipping deletion."
-      cd "$EDK2_TAG" || { fmtr::fatal "Failed to enter EDK2 directory: $EDK2_TAG"; exit 1; }
+      fmtr::info "Skipping..."
+      cd "$EDK2_TAG" || { fmtr::fatal "Missing '$EDK2_TAG' directory!"; exit 1; }
     fi
   else
-    clone_init
+    clone_repo
   fi
 }
 
@@ -62,12 +63,10 @@ acquire_edk2_source() {
 # Patch OVMF
 ################################################################################
 patch_ovmf() {
-  [ -d "$PATCH_DIR" ] || fmtr::fatal "Patch directory $PATCH_DIR not found!"
-  [ -f "$PATCH_DIR/$OVMF_PATCH" ] || { fmtr::error "Patch file $PATCH_DIR/$OVMF_PATCH not found!"; return 1; }
+  [ -f "$OVMF_PATCH" ] || { fmtr::error "Missing '$OVMF_PATCH' patch file!"; return 1; }
 
-  fmtr::log "Patching OVMF with '$OVMF_PATCH'..."
-  git apply < "$PATCH_DIR/$OVMF_PATCH" &>>"$LOG_FILE" || { fmtr::error "Failed to apply patch '$OVMF_PATCH'!"; return 1; }
-  fmtr::info "Patch '$OVMF_PATCH' applied successfully."
+  git apply < "$OVMF_PATCH" &>>"$LOG_FILE" || { fmtr::error "Failed to apply '$OVMF_PATCH'!"; return 1; }
+  fmtr::log "Applied '${CPU_VENDOR}-${EDK2_TAG}.patch' successfully."
 
   fmtr::info "Choose BGRT BMP boot logo image option for OVMF:"
   printf '\n  %b[%d]%b %s\n' "$TEXT_BRIGHT_YELLOW" 1 "$RESET" "Apply host's (default)"
@@ -95,7 +94,7 @@ patch_ovmf() {
       1)
         if [ -f /sys/firmware/acpi/bgrt/image ]; then
           cp /sys/firmware/acpi/bgrt/image MdeModulePkg/Logo/Logo.bmp \
-            && fmtr::info "Image replaced successfully." \
+            && fmtr::log "Image replaced successfully." \
             || fmtr::error "Image not found or failed to copy."
         else
           fmtr::error "Host BMP image not found."
@@ -113,8 +112,8 @@ patch_ovmf() {
           if validate_bmp "$custom_bmp"; then
             fmtr::info "VALID: ${width}×${height} (≤65535×65535), ${bit_depth}-bit (1/4/8/24-bit), ${compression} (0 compression)"
             cp "$custom_bmp" MdeModulePkg/Logo/Logo.bmp \
-              && fmtr::info "Custom BMP copied successfully." \
-              || fmtr::error "Failed to copy custom BMP."
+              && fmtr::log "Custom BMP image copied successfully." \
+              || fmtr::error "Failed to copy custom BMP image."
             break 2
           fi
         done
@@ -130,7 +129,9 @@ patch_ovmf() {
 # Compile OVMF and inject Secure Boot certs into template VARS
 ################################################################################
 compile_and_inject_ovmf() {
-  local WORKSPACE EDK_TOOLS_PATH CONF_PATH OUT_DIR TEMP_DIR URL UUID
+  local WORKSPACE EDK_TOOLS_PATH CONF_PATH TEMP_DIR URL UUID
+
+  fmtr::info "Configuring build environment..."
 
   export WORKSPACE="$(pwd)"
   export EDK_TOOLS_PATH="$WORKSPACE/BaseTools"
@@ -144,7 +145,6 @@ compile_and_inject_ovmf() {
     --define TPM2_ENABLE=TRUE \
     --define SMM_REQUIRE=TRUE &>>"$LOG_FILE" || { fmtr::fatal "Failed to build OVMF"; return 1; }
 
-  OUT_DIR="/opt/Hypervisor-Phantom/firmware"
   $ROOT_ESC mkdir -p "$OUT_DIR"
 
   for f in CODE VARS; do
@@ -258,8 +258,8 @@ cleanup() {
 main() {
   install_req_pkgs "EDK2"
   acquire_edk2_source
-  compile_and_inject_ovmf
-  ! prmt::yes_or_no "$(fmtr::ask 'Keep EDK2 source for faster re-patching?')" && cleanup
+  prmt::yes_or_no "$(fmtr::ask "Build & install OVMF?")" && compile_and_inject_ovmf
+  ! prmt::yes_or_no "$(fmtr::ask "Keep repository directory?")" && cleanup
 }
 
-main "$@"
+main
