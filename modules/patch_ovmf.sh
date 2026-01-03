@@ -77,6 +77,12 @@ patch_ovmf() {
     -e 's|DateStr = L"02/02/2022";|DateStr = L"'"$BIOS_RELEASE_DATE"'";|' \
     OvmfPkg/SmbiosPlatformDxe/SmbiosPlatformDxe.c
 
+  sed -i \
+    -e 's|EFI Development Kit II / OVMF|'"$BIOS_VENDOR"'|' \
+    -e 's|"0\.0\.0\\0"|"'"$BIOS_VERSION"'\\0"|' \
+    -e 's|"02/06/2015\\0"|"'"$BIOS_RELEASE_DATE"'\\0"|' \
+    OvmfPkg/Bhyve/SmbiosPlatformDxe/SmbiosPlatformDxe.c
+
   fmtr::info "Choose BGRT BMP boot logo image option for OVMF:"
   printf '\n  %b[%d]%b %s\n' "$TEXT_BRIGHT_YELLOW" 1 "$RESET" "Apply host's (default)"
   printf '  %b[%d]%b %s\n' "$TEXT_BRIGHT_YELLOW" 2 "$RESET" "Apply custom (provide path)"
