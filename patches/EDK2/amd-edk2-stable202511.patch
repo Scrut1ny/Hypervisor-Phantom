@@ -1,5 +1,5 @@
 diff --git a/MdeModulePkg/MdeModulePkg.dec b/MdeModulePkg/MdeModulePkg.dec
-index 0775aa9..5aaa8f1 100644
+index 0775aa9..10197a5 100644
 --- a/MdeModulePkg/MdeModulePkg.dec
 +++ b/MdeModulePkg/MdeModulePkg.dec
 @@ -1897,7 +1897,7 @@
@@ -7,7 +7,7 @@ index 0775aa9..5aaa8f1 100644
    ## Null-terminated Unicode string of the firmware vendor name that is the default name filled into the EFI System Table.
    # @Prompt Firmware vendor.
 -  gEfiMdeModulePkgTokenSpaceGuid.PcdFirmwareVendor|L"EDK II"|VOID*|0x00010050
-+  gEfiMdeModulePkgTokenSpaceGuid.PcdFirmwareVendor|L"American Megatrends"|VOID*|0x00010050
++  gEfiMdeModulePkgTokenSpaceGuid.PcdFirmwareVendor|L"American Megatrends International, LLC."|VOID*|0x00010050
  
    ## Firmware revision that is the default revision filled into the EFI System Table.
    # @Prompt Firmware revision.
@@ -25,12 +25,12 @@ index 0775aa9..5aaa8f1 100644
    #  This PCD is ignored for definition block.
    # @Prompt Default OEM Table ID for ACPI table creation.
 -  gEfiMdeModulePkgTokenSpaceGuid.PcdAcpiDefaultOemTableId|0x20202020324B4445|UINT64|0x30001035
-+  gEfiMdeModulePkgTokenSpaceGuid.PcdAcpiDefaultOemTableId|0x2049204D2041|UINT64|0x30001035
++  gEfiMdeModulePkgTokenSpaceGuid.PcdAcpiDefaultOemTableId|0x20202049204D2041|UINT64|0x30001035
  
    ## Default OEM Revision for ACPI table creation.
    #  According to ACPI specification, for LoadTable() opcode, the OS can also
 diff --git a/OvmfPkg/Bhyve/AcpiTables/Dsdt.asl b/OvmfPkg/Bhyve/AcpiTables/Dsdt.asl
-index 17e2cf6..1d5925d 100644
+index 17e2cf6..5b0eb80 100644
 --- a/OvmfPkg/Bhyve/AcpiTables/Dsdt.asl
 +++ b/OvmfPkg/Bhyve/AcpiTables/Dsdt.asl
 @@ -22,7 +22,7 @@
@@ -38,7 +38,7 @@ index 17e2cf6..1d5925d 100644
   *     Compiler Version 0x20150204 (538247684)
   */
 -DefinitionBlock ("DSDT.aml", "DSDT", 2, "BHYVE", "BVDSDT", 0x00000001)
-+DefinitionBlock ("DSDT.aml", "DSDT", 2, "ALASKA", "A M I ", 0x00000001)
++DefinitionBlock ("DSDT.aml", "DSDT", 2, "ALASKA", "A M I   ", 0x00000001)
  {
      Name (_S5, Package (0x02)
      {
@@ -151,7 +151,7 @@ index ea7a364..62c82e0 100644
  
    VbeInfo->ProductNameAddress = (UINT32)SegmentC << 12 | (UINT16)((UINTN)Ptr-SegmentC);
 diff --git a/OvmfPkg/Bhyve/BhyveX64.dsc b/OvmfPkg/Bhyve/BhyveX64.dsc
-index 131f16f..c0fa8ee 100644
+index 131f16f..569a790 100644
 --- a/OvmfPkg/Bhyve/BhyveX64.dsc
 +++ b/OvmfPkg/Bhyve/BhyveX64.dsc
 @@ -519,7 +519,7 @@
@@ -159,12 +159,12 @@ index 131f16f..c0fa8ee 100644
    gEfiMdeModulePkgTokenSpaceGuid.PcdConInConnectOnDemand|FALSE
  
 -  gEfiMdeModulePkgTokenSpaceGuid.PcdFirmwareVendor|L"BHYVE"
-+  gEfiMdeModulePkgTokenSpaceGuid.PcdFirmwareVendor|L"ALASKA"
++  gEfiMdeModulePkgTokenSpaceGuid.PcdFirmwareVendor|L"American Megatrends International, LLC."
    gUefiOvmfPkgTokenSpaceGuid.PcdDebugIoPort|0x2F8
  
  ################################################################################
 diff --git a/OvmfPkg/Bhyve/SmbiosPlatformDxe/SmbiosPlatformDxe.c b/OvmfPkg/Bhyve/SmbiosPlatformDxe/SmbiosPlatformDxe.c
-index ba21393..3957eac 100644
+index ba21393..eacf8c6 100644
 --- a/OvmfPkg/Bhyve/SmbiosPlatformDxe/SmbiosPlatformDxe.c
 +++ b/OvmfPkg/Bhyve/SmbiosPlatformDxe/SmbiosPlatformDxe.c
 @@ -12,9 +12,9 @@
@@ -174,12 +174,31 @@ index ba21393..3957eac 100644
 -  "EFI Development Kit II / OVMF\0"     /* Vendor */ \
 -  "0.0.0\0"                             /* BiosVersion */ \
 -  "02/06/2015\0"                        /* BiosReleaseDate */
-+  "American Megatrends Inc.\0"     /* Vendor */ \
-+  "1.C0\0"                         /* BiosVersion */ \
-+  "02/06/2024\0"                   /* BiosReleaseDate */
++  "EFI Development Kit II / OVMF\0"     /* Vendor */ \        // Modified externally via 'patch_ovmf.sh'
++  "0.0.0\0"                             /* BiosVersion */ \   // Modified externally via 'patch_ovmf.sh'
++  "02/06/2015\0"                        /* BiosReleaseDate */ // Modified externally via 'patch_ovmf.sh'
  //
  // Type definition and contents of the default Type 0 SMBIOS table.
  //
+@@ -45,9 +45,15 @@ STATIC CONST OVMF_TYPE0  mOvmfDefaultType0 = {
+     },
+     {      // BIOSCharacteristicsExtensionBytes[2]
+       0,   // BiosReserved
+-      0x1C // SystemReserved = VirtualMachineSupported |
+-           //                  UefiSpecificationSupported |
+-           //                  TargetContentDistributionEnabled
++      0x0D // SystemReserved = Hexadecimal > Binary: 0D = 00001101
++           // Bit 0: BIOS Boot Specification supported - 1 (Yes)
++           // Bit 1: Function key-initiated Network Service boot supported - 0 (No)
++           // Bit 2: Enable Targeted Content Distribution - 1 (Yes)
++           // Bit 3: UEFI Specification is supported - 1 (Yes)
++           // Bit 4: SMBIOS table describes a virtual machine - 0 (No)
++           // Bit 5: Manufacturing mode is supported. - 0 (No)
++           // Bit 6: Manufacturing mode is enabled. - 0 (No)
++           // Bit 7: Reserved for future assignment by this specification. - 0 (No)
+     },
+     0,     // UINT8                     SystemBiosMajorRelease
+     0,     // UINT8                     SystemBiosMinorRelease
 diff --git a/OvmfPkg/Include/IndustryStandard/Q35MchIch9.h b/OvmfPkg/Include/IndustryStandard/Q35MchIch9.h
 index db828d3..6fddd3e 100644
 --- a/OvmfPkg/Include/IndustryStandard/Q35MchIch9.h
@@ -262,7 +281,7 @@ index 6feca83..a8d3313 100644
      QEMU_VIDEO_VMWARE_SVGA,
      L"QEMU VMWare SVGA"
 diff --git a/OvmfPkg/SmbiosPlatformDxe/SmbiosPlatformDxe.c b/OvmfPkg/SmbiosPlatformDxe/SmbiosPlatformDxe.c
-index e929da6..026d3e9 100644
+index e929da6..56d68aa 100644
 --- a/OvmfPkg/SmbiosPlatformDxe/SmbiosPlatformDxe.c
 +++ b/OvmfPkg/SmbiosPlatformDxe/SmbiosPlatformDxe.c
 @@ -38,9 +38,15 @@ STATIC CONST SMBIOS_TABLE_TYPE0  mOvmfDefaultType0 = {
@@ -272,18 +291,58 @@ index e929da6..026d3e9 100644
 -    0x1C // SystemReserved = VirtualMachineSupported |
 -    //                  UefiSpecificationSupported |
 -    //                  TargetContentDistributionEnabled
-+    0x0D // SystemReserved = Hex2Binary = 0b00001101
-+    //                       Bit0 = BIOS Boot Specification supported - 1 (Yes)
-+    //                       Bit1 = Function key-initiated Network Service boot supported - 0 (No)
-+    //                       Bit2 = Enable Targeted Content Distribution - 1 (Yes)
-+    //                       Bit3 = UEFI Specification is supported - 1 (Yes)
-+    //                       Bit4 = SMBIOS table describes a virtual machine - 0 (No)
-+    //                       Bit5 = Manufacturing mode is supported. - 0 (No)
-+    //                       Bit6 = Manufacturing mode is enabled. - 0 (No)
-+    //                       Bit7 = Reserved for future assignment by this specification. - 0 (No)
++    0x0D // SystemReserved = Hexadecimal > Binary: 0D = 00001101
++         // Bit 0: BIOS Boot Specification supported - 1 (Yes)
++         // Bit 1: Function key-initiated Network Service boot supported - 0 (No)
++         // Bit 2: Enable Targeted Content Distribution - 1 (Yes)
++         // Bit 3: UEFI Specification is supported - 1 (Yes)
++         // Bit 4: SMBIOS table describes a virtual machine - 0 (No)
++         // Bit 5: Manufacturing mode is supported. - 0 (No)
++         // Bit 6: Manufacturing mode is enabled. - 0 (No)
++         // Bit 7: Reserved for future assignment by this specification. - 0 (No)
    },
    0,     // UINT8                     SystemBiosMajorRelease
    0,     // UINT8                     SystemBiosMinorRelease
+@@ -146,21 +152,21 @@ InstallAllStructures (
+     VendStr = (CHAR16 *)FixedPcdGetPtr (PcdFirmwareVendor);
+     VendLen = StrLen (VendStr);
+     if (VendLen < 3) {
+-      VendStr = L"unknown";
++      VendStr = L"unknown"; // Modified externally via 'patch_ovmf.sh'
+       VendLen = StrLen (VendStr);
+     }
+ 
+     VersStr = (CHAR16 *)FixedPcdGetPtr (PcdFirmwareVersionString);
+     VersLen = StrLen (VersStr);
+     if (VersLen < 3) {
+-      VersStr = L"unknown";
++      VersStr = L"unknown"; // Modified externally via 'patch_ovmf.sh'
+       VersLen = StrLen (VersStr);
+     }
+ 
+     DateStr = (CHAR16 *)FixedPcdGetPtr (PcdFirmwareReleaseDateString);
+     DateLen = StrLen (DateStr);
+     if (DateLen < 3) {
+-      DateStr = L"02/02/2022";
++      DateStr = L"02/02/2022"; // Modified externally via 'patch_ovmf.sh'
+       DateLen = StrLen (DateStr);
+     }
+ 
+diff --git a/SecurityPkg/Library/AuthVariableLib/AuthServiceInternal.h b/SecurityPkg/Library/AuthVariableLib/AuthServiceInternal.h
+index f7bf771..134705d 100644
+--- a/SecurityPkg/Library/AuthVariableLib/AuthServiceInternal.h
++++ b/SecurityPkg/Library/AuthVariableLib/AuthServiceInternal.h
+@@ -73,8 +73,8 @@ typedef enum {
+ /// | AUTH_CERT_DB_DATA          | <-- Last CERT
+ /// +----------------------------+
+ ///
+-#define EFI_CERT_DB_NAME           L"certdb"
+-#define EFI_CERT_DB_VOLATILE_NAME  L"certdbv"
++#define EFI_CERT_DB_NAME           L"dbcert"
++#define EFI_CERT_DB_VOLATILE_NAME  L"dbvcert"
+ 
+ #pragma pack(1)
+ typedef struct {
 diff --git a/ShellPkg/ShellPkg.dec b/ShellPkg/ShellPkg.dec
 index 45954fc..08c4315 100644
 --- a/ShellPkg/ShellPkg.dec
@@ -319,18 +378,3 @@ index 3d64ac9..9c3f01a 100644
  VectorNum:
      push    rax
  %ifdef NO_ABSOLUTE_RELOCS_IN_TEXT
-diff --git a/SecurityPkg/Library/AuthVariableLib/AuthServiceInternal.h b/SecurityPkg/Library/AuthVariableLib/AuthServiceInternal.h
-index f7bf771..a6d2a1d 100644
---- a/SecurityPkg/Library/AuthVariableLib/AuthServiceInternal.h
-+++ b/SecurityPkg/Library/AuthVariableLib/AuthServiceInternal.h
-@@ -73,8 +73,8 @@ typedef enum {
- /// | AUTH_CERT_DB_DATA          | <-- Last CERT
- /// +----------------------------+
- ///
--#define EFI_CERT_DB_NAME           L"certdb"
--#define EFI_CERT_DB_VOLATILE_NAME  L"certdbv"
-+#define EFI_CERT_DB_NAME           L"dbcert"
-+#define EFI_CERT_DB_VOLATILE_NAME  L"dbvcert"
- 
- #pragma pack(1)
- typedef struct {
