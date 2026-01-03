@@ -117,7 +117,7 @@ patch_qemu() {
   git apply < "$QEMU_PATCH" &>>"$LOG_FILE" || { fmtr::error "Failed to apply '$QEMU_PATCH'!"; return 1; }
   fmtr::log "Applied '${CPU_VENDOR}-${QEMU_TAG}.patch' successfully."
 
-  fmtr::info "Applying dynamic modifications to QEMU..."
+  fmtr::info "Applying dynamic modifications..."
   spoof_serials
   spoof_models
   spoof_acpi
