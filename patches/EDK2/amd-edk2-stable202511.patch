@@ -239,7 +239,7 @@ index 2fe6ab3..2d697df 100644
          );
        DEBUG ((DEBUG_INFO, "%a: %s = %s\n", __func__, VariableName, Translated));
 diff --git a/OvmfPkg/QemuVideoDxe/Driver.c b/OvmfPkg/QemuVideoDxe/Driver.c
-index 6feca83..a8d3313 100644
+index 6feca83..7d14db8 100644
 --- a/OvmfPkg/QemuVideoDxe/Driver.c
 +++ b/OvmfPkg/QemuVideoDxe/Driver.c
 @@ -41,31 +41,31 @@ QEMU_VIDEO_CARD  gQemuVideoCardList[] = {
@@ -247,21 +247,21 @@ index 6feca83..a8d3313 100644
    },{
      PCI_CLASS_DISPLAY_VGA,
 -    0x1234,
-+    0x1022, //0x1234,
++    0x1022, // 0x1234,
      0x1111,
      QEMU_VIDEO_BOCHS_MMIO,
      L"QEMU Standard VGA"
    },{
      PCI_CLASS_DISPLAY_OTHER,
 -    0x1234,
-+    0x1022, //0x1234,
++    0x1022, // 0x1234,
      0x1111,
      QEMU_VIDEO_BOCHS_MMIO,
      L"QEMU Standard VGA (secondary)"
    },{
      PCI_CLASS_DISPLAY_VGA,
 -    0x1b36,
-+    0x1022, //0x1b36,
++    0x1022, // 0x1b36,
      0x0100,
      QEMU_VIDEO_BOCHS,
      L"QEMU QXL VGA"
@@ -269,14 +269,14 @@ index 6feca83..a8d3313 100644
      PCI_CLASS_DISPLAY_VGA,
 -    0x1af4,
 -    0x1050,
-+    0x1022, //0x1af4,
-+    0x1022, //0x1050, - TODO: Replace with correct AMD version
++    0x1022, // 0x1af4,
++    0x1022, // 0x1050, - TODO: Replace with correct AMD version
      QEMU_VIDEO_BOCHS_MMIO,
      L"QEMU VirtIO VGA"
    },{
      PCI_CLASS_DISPLAY_VGA,
 -    0x15ad,
-+    0x1022, //0x15ad,
++    0x1022, // 0x15ad,
      0x0405,
      QEMU_VIDEO_VMWARE_SVGA,
      L"QEMU VMWare SVGA"
