@@ -64,9 +64,18 @@ acquire_edk2_source() {
 ################################################################################
 patch_ovmf() {
   [ -f "$OVMF_PATCH" ] || { fmtr::error "Missing '$OVMF_PATCH' patch file!"; return 1; }
-
   git apply < "$OVMF_PATCH" &>>"$LOG_FILE" || { fmtr::error "Failed to apply '$OVMF_PATCH'!"; return 1; }
   fmtr::log "Applied '${CPU_VENDOR}-${EDK2_TAG}.patch' successfully."
+
+  BIOS_VENDOR="$($ROOT_ESC dmidecode --string bios-vendor)"
+  BIOS_VERSION="$($ROOT_ESC dmidecode --string bios-version)"
+  BIOS_RELEASE_DATE="$($ROOT_ESC dmidecode --string bios-release-date)"
+
+  sed -i \
+    -e 's|VendStr = L"unknown";|VendStr = L"'"$BIOS_VENDOR"'";|' \
+    -e 's|VersStr = L"unknown";|VersStr = L"'"$BIOS_VERSION"'";|' \
+    -e 's|DateStr = L"02/02/2022";|DateStr = L"'"$BIOS_RELEASE_DATE"'";|' \
+    OvmfPkg/SmbiosPlatformDxe/SmbiosPlatformDxe.c
 
   fmtr::info "Choose BGRT BMP boot logo image option for OVMF:"
   printf '\n  %b[%d]%b %s\n' "$TEXT_BRIGHT_YELLOW" 1 "$RESET" "Apply host's (default)"
