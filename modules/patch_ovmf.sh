@@ -67,6 +67,8 @@ patch_ovmf() {
   git apply < "$OVMF_PATCH" &>>"$LOG_FILE" || { fmtr::error "Failed to apply '$OVMF_PATCH'!"; return 1; }
   fmtr::log "Applied '${CPU_VENDOR}-${EDK2_TAG}.patch' successfully."
 
+  fmtr::info "Applying dynamic modifications..."
+
   BIOS_VENDOR="$($ROOT_ESC dmidecode --string bios-vendor)"
   BIOS_VERSION="$($ROOT_ESC dmidecode --string bios-version)"
   BIOS_RELEASE_DATE="$($ROOT_ESC dmidecode --string bios-release-date)"
