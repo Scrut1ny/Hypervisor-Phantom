@@ -76,13 +76,12 @@
       <xmm_input state="off"/>
     </hyperv>
     <kvm>
-      <hidden state="on"/> <!-- Hide the KVM hypervisor from standard MSR based discovery (CPUID Bitset) -->
+      <hidden state="on"/> <!-- CONCEALMENT: Hide the KVM hypervisor from standard MSR based discovery (CPUID Bitset) -->
     </kvm>
-    <pmu state="off"/>
-    <vmport state="off"/> <!-- Disables the VMware I/O port backdoor (VMPort, 0x5658) in the guest | FYI: ACE AC looks for this -->
+    <pmu state="off"/> <!-- CONCEALMENT: Disables the Performance Monitoring Unit (PMU) -->
+    <vmport state="off"/> <!-- CONCEALMENT: Disables the VMware I/O port backdoor (VMPort, 0x5658) in the guest | FYI: ACE AC looks for this -->
     <smm state="on"/>
-    <ioapic driver="kvm"/>
-    <msrs unknown="fault"/> <!-- Injects a #GP(0) into the guest on RDMSR/WRMSR to an unhandled/unknown MSR -->
+    <msrs unknown="fault"/> <!-- CONCEALMENT: Injects a #GP(0) into the guest on RDMSR/WRMSR to an unhandled/unknown MSR -->
   </features>
 
 
@@ -338,3 +337,4 @@
     </qemu:device>
   </qemu:override>
 </domain>
+
