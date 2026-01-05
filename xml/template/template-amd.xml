@@ -1,16 +1,16 @@
 <domain xmlns:qemu="http://libvirt.org/schemas/domain/qemu/1.0" type="kvm">
-    <name>@VM_NAME@</name>
-    <memory unit="G">16</memory>  <!-- keep RAM amount at realistic values: 64, 32, 16, 12, and 8 GiB are all common -->
-    <currentMemory unit="G">16</currentMemory>
-    <vcpu placement="static">@TOTAL_NUMBER_OF_CORES@</vcpu>
+  <name>@VM_NAME@</name>
+  <memory unit="G">16</memory>  <!-- Utilize realistic memory amounts, such as 8, 16, 32, and 64. -->
+  <currentMemory unit="G">16</currentMemory>
+  <vcpu placement="static">@TOTAL_NUMBER_OF_CORES@</vcpu>
 
-    <os>
-        <type arch="x86_64" machine="pc-q35-10.0">hvm</type>
-        <loader readonly="yes" secure="yes" type="pflash" format="qcow2">/{PATH TO}/Hypervisor-Phantom/src/output/firmware/OVMF_CODE.qcow2</loader>
-        <nvram template="/{PATH TO}/Hypervisor-Phantom/src/output/firmware/OVMF_VARS.qcow2" format="qcow2"></nvram>
-        <bootmenu enable="yes"/>
-        <smbios mode="host"/> <!-- Remove this if you use a host SMBIOS dump -->
-    </os>
+  <os>
+    <type arch="x86_64" machine="pc-q35-10.2">hvm</type>
+    <loader readonly="yes" secure="yes" type="pflash" format="qcow2">/opt/Hypervisor-Phantom/firmware/OVMF_CODE.qcow2</loader>
+    <nvram template="/opt/Hypervisor-Phantom/firmware/OVMF_VARS.qcow2" format="qcow2"></nvram>
+    <bootmenu enable="yes"/>
+    <smbios mode="host"/> <!-- Remove if 'smbios.bin' is being passed through -->
+  </os>
 
     <features>
         <acpi/>
@@ -48,28 +48,28 @@
 
     <cpu mode="host-passthrough" check="none" migratable="on">
         <topology sockets="1" dies="1" clusters="1" cores="@NUMBER_OF_CORES@" threads="@NUMBER_OF_THREADS@"/>
-        <cache mode="passthrough"/>
-        <feature policy="require" name="svm"/>
-        <feature policy="require" name="topoext"/>
-        <feature policy="require" name="invtsc"/>
-        <feature policy="disable" name="vmx-vnmi"/> <!-- NVIDIA (Code 43) error solution -->
-        <!-- Remove giveaways for HV -->
-        <feature policy="disable" name="hypervisor"/> <!-- 1. Makes Windows report "Virtualization: Enabled" instead of "Virtual machine: Yes" in Task Manager.
-                                                           2. Also makes Windows report L1-3 caches (right under "Virtualization: Enabled")
-                                                           3. When emulating Windows 11, set "options kvm ignore_msrs=1" in "/etc/modprobe.d/kvm.conf" -->
-        <feature policy="disable" name="ssbd"/>
-        <feature policy="disable" name="amd-ssbd"/>
-        <feature policy="disable" name="virt-ssbd"/>
-        <feature policy="disable" name="rdtscp"/> <!-- Remove RDTSCP if RDTSC kernel patch is utilized -->
-        <feature policy="disable" name="rdpid"/>
-    </cpu>
+    <cache mode="passthrough"/>
+    <maxphysaddr mode="passthrough"/>
+   
+    <!-- Performance Features -->
+    <feature policy="require" name="svm"/>
+    <feature policy="require" name="topoext"/>
+    <feature policy="require" name="invtsc"/>
+   
+    <!-- Hypervisor Detection -->
+    <feature policy="disable" name="hypervisor"/> <!-- Prevents detection of running under a hypervisor -->
+   
+    <!-- Speculative Execution Mitigations -->
+    <feature policy="disable" name="ssbd"/>       <!-- Disables Speculative Store Bypass Disable flag -->
+    <feature policy="disable" name="amd-ssbd"/>   <!-- Disables AMD's Speculative Store Bypass Disable flag -->
+    <feature policy="disable" name="virt-ssbd"/>  <!-- Disables virtualized speculative store bypass mitigation -->
+   
+    <!-- Timing Features -->
+    <feature policy="disable" name="rdtscp"/>     <!-- Disables the RDTSCP instruction (Use if using patched kernel) -->
+  </cpu>
     
     <clock offset="localtime">
         <timer name="tsc" present="yes" tickpolicy="discard" mode="native"/>
-        <!-- HPET must exist for Vanguard to start (isn't even used by game) -->
-        <timer name="hpet" present="yes"/>
-        <timer name="rtc" present="no"/>
-        <timer name="pit" present="no"/>
         <!-- obviously only present in VMs -->
         <timer name="kvmclock" present="no"/>
         <timer name="hypervclock" present="no"/>
@@ -81,7 +81,7 @@
     </pm>
     
     <devices>
-        <emulator>/usr/local/bin/qemu-system-x86_64</emulator>
+        <emulator>/opt/Hypervisor-Phantom/emulator/bin/qemu-system-x86_64</emulator>
         <input type="mouse" bus="ps2"/>
         <input type="keyboard" bus="ps2"/>
         <tpm model="tpm-tis">
