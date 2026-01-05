@@ -79,7 +79,7 @@
       <hidden state="on"/> <!-- Hide the KVM hypervisor from standard MSR based discovery (CPUID Bitset) -->
     </kvm>
     <pmu state="off"/>
-    <vmport state="off"/> <!-- Disables the emulation of VMware IO port, for vmmouse etc. ACE AC "virtual machine prompt" will appear if not disabled -->
+    <vmport state="off"/> <!-- Disables the VMware I/O port backdoor (VMPort, 0x5658) in the guest | FYI: ACE AC looks for this -->
     <smm state="on"/>
     <ioapic driver="kvm"/>
     <msrs unknown="fault"/> <!-- Injects a #GP(0) into the guest on RDMSR/WRMSR to an unhandled/unknown MSR -->
@@ -360,6 +360,7 @@
     </qemu:device>
   </qemu:override>
 </domain>
+
 
 
 
