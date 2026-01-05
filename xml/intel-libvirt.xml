@@ -169,18 +169,13 @@
     <!--
     <> https://libvirt.org/formatdomain.html#hard-drives-floppy-disks-cdroms
 
-    If you have a spare NVMe/SSD, use it so you can have better performance than VirtIO + stay hidden.
+    If you have a spare physical NVMe SSD, use that instead by doing PCI passthrough via libvirt.
     -->
     <disk type="file" device="disk"> <!-- Use block devices (partitons) for better performance -->
       <driver name="qemu" type="raw" cache="none" io="native" discard="unmap"/> <!-- use io="threads" in block mode -->
       <source file="/var/lib/libvirt/images/win10.img"/>
-      <target dev="sdd" bus="nvme"/>
-                                     <!-- Switch to '<source dev="/dev/sdb"/>' for using a host SATA drive. -->
-     
-      <serial>CAC0_25CA_57AB_841F.</serial> <!-- Serial Number Formats by Manufacture:
-      Samsung: "XXXX_XXXX_XXXX_XXXX." - Characters: A-F 0-9
-      Sandisk: "XXXX_XXXX_XXXX_XXXX_XXXX_XXXX_XXXX_XXXX." - Characters: A-F 0-9 -->
-     
+      <target dev="sdd" bus="nvme"/> <!-- Switch to '<source dev="/dev/sdb"/>' for using a host SATA drive. -->
+      <serial>????????????????????</serial> <!-- Serial number -->
       <boot order="1"/>
       <address type="drive" controller="0" bus="0" target="0" unit="0"/>
     </disk>
@@ -359,6 +354,7 @@
     </qemu:device>
   </qemu:override>
 </domain>
+
 
 
 
