@@ -31,7 +31,7 @@ git clone --single-branch --depth=1 https://github.com/Scrut1ny/Hypervisor-Phant
 
 ### 3. Update Repository
 ```
-git fetch -all && git reset --hard origin/main
+git fetch --all && git reset --hard origin/main
 ```
 
 </details>
