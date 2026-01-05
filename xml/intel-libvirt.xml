@@ -115,9 +115,6 @@
     <feature policy="disable" name="ssbd"/>       <!-- Disables Speculative Store Bypass Disable flag -->
     <feature policy="disable" name="virt-ssbd"/>  <!-- Disables virtualized speculative store bypass mitigation -->
   
-    <!-- CPU Identifier Hiding -->
-    <feature policy="disable" name="rdpid"/>      <!-- Hides the CPU's processor ID to avoid detection -->
-  
     <!-- Timing Features -->
     <feature policy="disable" name="rdtscp"/>     <!-- Disables the RDTSCP instruction (Use if using patched kernel) -->
   </cpu>
@@ -368,6 +365,7 @@
     </qemu:device>
   </qemu:override>
 </domain>
+
 
 
 
