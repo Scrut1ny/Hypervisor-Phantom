@@ -100,17 +100,17 @@
     <maxphysaddr mode="passthrough"/>
    
     <!-- Performance Features -->
-    <feature policy="require" name="svm"/>
-    <feature policy="require" name="topoext"/>
-    <feature policy="require" name="invtsc"/>
+    <feature policy="require" name="svm"/>        <!-- OPTIMIZATION: Requires AMD SVM (hardware virtualization) to be exposed to the guest (needed for nested virtualization) -->
+    <feature policy="require" name="topoext"/>    <!-- OPTIMIZATION: Requires AMD topology extensions (more accurate core/thread/cache topology reporting to the guest) -->
+    <feature policy="require" name="invtsc"/>     <!-- OPTIMIZATION: Requires invariant TSC (stable time-stamp counter rate across P-states/C-states) for more consistent guest timekeeping -->
    
     <!-- Hypervisor Detection -->
-    <feature policy="disable" name="hypervisor"/> <!-- Prevents detection of running under a hypervisor -->
+    <feature policy="disable" name="hypervisor"/> <!-- CONCEALMENT: Prevents detection of running under a hypervisor -->
    
     <!-- Speculative Execution Mitigations -->
-    <feature policy="disable" name="ssbd"/>       <!-- Disables Speculative Store Bypass Disable flag -->
-    <feature policy="disable" name="amd-ssbd"/>   <!-- Disables AMD's Speculative Store Bypass Disable flag -->
-    <feature policy="disable" name="virt-ssbd"/>  <!-- Disables virtualized speculative store bypass mitigation -->
+    <feature policy="disable" name="ssbd"/>       <!-- CONCEALMENT: Disables Speculative Store Bypass Disable flag -->
+    <feature policy="disable" name="amd-ssbd"/>   <!-- CONCEALMENT: Disables AMD's Speculative Store Bypass Disable flag -->
+    <feature policy="disable" name="virt-ssbd"/>  <!-- CONCEALMENT: Disables virtualized speculative store bypass mitigation -->
    
     <!-- Timing Features -->
     <feature policy="disable" name="rdtscp"/>     <!-- Disables the RDTSCP instruction (Use if using patched kernel) -->
@@ -337,4 +337,5 @@
     </qemu:device>
   </qemu:override>
 </domain>
+
 
