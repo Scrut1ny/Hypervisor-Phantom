@@ -107,7 +107,6 @@
     <feature policy="require" name="svm"/>
     <feature policy="require" name="topoext"/>
     <feature policy="require" name="invtsc"/>
-    <feature policy="disable" name="vnmi"/>   <!-- NVIDIA (Code 43) error solution -->
    
     <!-- Hypervisor Detection -->
     <feature policy="disable" name="hypervisor"/> <!-- Prevents detection of running under a hypervisor -->
@@ -370,6 +369,7 @@
     </qemu:device>
   </qemu:override>
 </domain>
+
 
 
 
