@@ -107,7 +107,7 @@
     <feature policy="require" name="svm"/>
     <feature policy="require" name="topoext"/>
     <feature policy="require" name="invtsc"/>
-    <feature policy="disable" name="vmx-vnmi"/>   <!-- NVIDIA (Code 43) error solution -->
+    <feature policy="disable" name="vnmi"/>   <!-- NVIDIA (Code 43) error solution -->
    
     <!-- Hypervisor Detection -->
     <feature policy="disable" name="hypervisor"/> <!-- Prevents detection of running under a hypervisor -->
@@ -116,9 +116,6 @@
     <feature policy="disable" name="ssbd"/>       <!-- Disables Speculative Store Bypass Disable flag -->
     <feature policy="disable" name="amd-ssbd"/>   <!-- Disables AMD's Speculative Store Bypass Disable flag -->
     <feature policy="disable" name="virt-ssbd"/>  <!-- Disables virtualized speculative store bypass mitigation -->
-
-    <!-- CPU Identifier Hiding -->
-    <feature policy="disable" name="rdpid"/>      <!-- Hides the CPU's processor ID to avoid detection -->
    
     <!-- Timing Features -->
     <feature policy="disable" name="rdtscp"/>     <!-- Disables the RDTSCP instruction (Use if using patched kernel) -->
@@ -373,6 +370,7 @@
     </qemu:device>
   </qemu:override>
 </domain>
+
 
 
 
