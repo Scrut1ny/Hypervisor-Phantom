@@ -141,22 +141,12 @@
   <!--
   <> https://libvirt.org/formatdomain.html#power-management
 
-  Emulates power management features found on physical systems (Suspend-to-Memory and Suspend-to-Disk).
-
-  Suspend-to-Memory (suspend-to-mem): This feature simulates the ability for the
-  virtual machine to suspend (i.e., hibernate) to RAM, much like how a physical
-  machine can be put into a sleep state. When this option is enabled, the guest
-  operating system can perform a suspend-to-RAM operation, preserving the machine’s
-  state in memory and allowing for a quicker resume.
-
-  Suspend-to-Disk (suspend-to-disk): This feature simulates the ability for the VM
-  to hibernate to disk, similar to how a physical machine can enter hibernation
-  mode, saving the machine's current state (all running processes, memory contents)
-  to disk and shutting down. When resumed, the system restores to its exact previous state.
+  Guest power-management sleep states
+ 
   -->
   <pm>
-    <suspend-to-mem enabled="yes"/>
-    <suspend-to-disk enabled="yes"/>
+    <suspend-to-mem enabled="yes"/>  <!-- Enables S3 (suspend to RAM) -->
+    <suspend-to-disk enabled="yes"/> <!-- Enables S4 (hibernate / suspend to disk) -->
   </pm>
 
 
@@ -218,19 +208,7 @@
     <!--
     <> https://libvirt.org/formatdomain.html#memory-balloon-device
 
-    Disable memory ballooning to prevent detection of virtualized environment.
-    The memory balloon device is a giveaway of virtualization, as it allows the
-    hypervisor to dynamically adjust the guest's memory. Disabling it makes the
-    VM's memory allocation appear more similar to a bare-metal system.
-
-    -----
-   
-    The VirtIO memballoon device enables the host to dynamically reclaim memory
-    from your VM by growing the balloon inside the guest, reserving reclaimed
-    memory. Libvirt adds this device to guests by default.
-
-    However, this device causes major performance issues with VFIO passthrough
-    setups, and should be disabled.
+    Disables the virtio memory balloon device (no ballooning / dynamic RAM adjustment)
     -->
     <memballoon model="none"/>
 
@@ -360,6 +338,7 @@
     </qemu:device>
   </qemu:override>
 </domain>
+
 
 
 
