@@ -78,7 +78,6 @@ configure_vfio() {
     local -a gpus=() badf=() ids=()
 
     for dev in /sys/bus/pci/devices/*; do
-        [[ -r $dev/class ]] || continue
         [[ $(<"$dev/class") == 0x03* ]] || continue
         bdf=${dev##*/}
         desc=$(lspci -s "$bdf" 2>/dev/null) || continue
