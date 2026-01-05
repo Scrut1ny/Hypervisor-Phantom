@@ -286,59 +286,67 @@ other_distro() {
 }
 
 systemd-boot_boot_entry_maker() {
-  declare -a SDBOOT_CONF_LOCATIONS=(
+  local -a SDBOOT_CONF_LOCATIONS=(
     "/boot/loader/entries"
     "/boot/efi/loader/entries"
     "/efi/loader/entries"
   )
 
   local ENTRY_NAME="HvP-RDTSC"
-  local TIMESTAMP=$(date +"%Y-%m-%d_%H-%M-%S")
-  local ROOT_DEVICE=$(findmnt -no SOURCE /)
-  local ROOTFSTYPE=$(findmnt -no FSTYPE /)
-  local PARTUUID=$($ROOT_ESC blkid -s PARTUUID -o value "$ROOT_DEVICE")
+  local TIMESTAMP ROOT_DEVICE ROOTFSTYPE PARTUUID ENTRY_DIR
+  TIMESTAMP="$(date +"%Y-%m-%d_%H-%M-%S")"
+  ROOT_DEVICE="$(findmnt -no SOURCE /)"
+  ROOTFSTYPE="$(findmnt -no FSTYPE /)"
 
+  PARTUUID="$($ROOT_ESC blkid -s PARTUUID -o value "$ROOT_DEVICE")"
   if [[ -z "$PARTUUID" ]]; then
     fmtr::error "Unable to determine PARTUUID for root device ($ROOT_DEVICE)."
     return 1
   fi
 
-  local BOOT_ENTRY_CONTENT=$(cat <<EOF
+  for ENTRY_DIR in "${SDBOOT_CONF_LOCATIONS[@]}"; do
+    [[ -d "$ENTRY_DIR" ]] && break
+    ENTRY_DIR=""
+  done
+
+  if [[ -z "$ENTRY_DIR" ]]; then
+    fmtr::error "No valid systemd-boot entry directory found."
+    return 1
+  fi
+
+  local KERNEL_PATH="/vmlinuz-linux${KERNEL_MAJOR}${KERNEL_MINOR}-tkg-eevdf"
+  local INITRD_PATH="/initramfs-linux${KERNEL_MAJOR}${KERNEL_MINOR}-tkg-eevdf.img"
+  local INITRD_FALLBACK_PATH="/initramfs-linux${KERNEL_MAJOR}${KERNEL_MINOR}-tkg-eevdf-fallback.img"
+  local OPTIONS_LINE="options root=PARTUUID=${PARTUUID} rw rootfstype=${ROOTFSTYPE}"
+
+  if ! $ROOT_ESC tee "$ENTRY_DIR/$ENTRY_NAME.conf" >/dev/null 2>>"$LOG_FILE" <<EOF
 # Created by: Hypervisor-Phantom
 # Created on: $TIMESTAMP
 title   HvP (RDTSC Patch)
-linux   /vmlinuz-linux$KERNEL_MAJOR$KERNEL_MINOR-tkg-eevdf
-initrd  /initramfs-linux$KERNEL_MAJOR$KERNEL_MINOR-tkg-eevdf.img
-options root=PARTUUID=$PARTUUID rw rootfstype=$ROOTFSTYPE
+linux   $KERNEL_PATH
+initrd  $INITRD_PATH
+$OPTIONS_LINE
 EOF
-)
+  then
+    fmtr::error "Failed to write boot entry: $ENTRY_DIR/$ENTRY_NAME.conf"
+    return 1
+  fi
 
-  local FALLBACK_BOOT_ENTRY_CONTENT=$(cat <<EOF
+  if ! $ROOT_ESC tee "$ENTRY_DIR/$ENTRY_NAME-fallback.conf" >/dev/null 2>>"$LOG_FILE" <<EOF
 # Created by: Hypervisor-Phantom
 # Created on: $TIMESTAMP
 title   HvP (RDTSC Patch - Fallback)
-linux   /vmlinuz-linux$KERNEL_MAJOR$KERNEL_MINOR-tkg-eevdf
-initrd  /initramfs-linux$KERNEL_MAJOR$KERNEL_MINOR-tkg-eevdf-fallback.img
-options root=PARTUUID=$PARTUUID rw rootfstype=$ROOTFSTYPE
+linux   $KERNEL_PATH
+initrd  $INITRD_FALLBACK_PATH
+$OPTIONS_LINE
 EOF
-)
+  then
+    fmtr::error "Failed to write fallback boot entry: $ENTRY_DIR/$ENTRY_NAME-fallback.conf"
+    return 1
+  fi
 
-  for ENTRY_DIR in "${SDBOOT_CONF_LOCATIONS[@]}"; do
-    if [[ -d "$ENTRY_DIR" ]]; then
-      $ROOT_ESC echo "$BOOT_ENTRY_CONTENT" | tee "$ENTRY_DIR/$ENTRY_NAME.conf" &>> "$LOG_FILE"
-      $ROOT_ESC echo "$FALLBACK_BOOT_ENTRY_CONTENT" | tee "$ENTRY_DIR/$ENTRY_NAME-fallback.conf" &>> "$LOG_FILE"
-      if [[ $? -eq 0 ]]; then
-        fmtr::info "Boot entries written to: $ENTRY_DIR/$ENTRY_NAME.conf and $ENTRY_DIR/$ENTRY_NAME-fallback.conf"
-        return 0
-      else
-        fmtr::error "Failed to write boot entries to: $ENTRY_DIR/$ENTRY_NAME.conf and $ENTRY_DIR/$ENTRY_NAME-fallback.conf"
-        return 1
-      fi
-    fi
-  done
-
-  fmtr::error "No valid systemd-boot entry directory found."
-  return 1
+  fmtr::info "Boot entries written to: $ENTRY_DIR/$ENTRY_NAME.conf and $ENTRY_DIR/$ENTRY_NAME-fallback.conf"
+  return 0
 }
 
 check_disk_space
