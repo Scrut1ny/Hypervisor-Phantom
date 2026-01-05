@@ -1928,7 +1928,7 @@ index e3da776..62335e9 100644
  #                 "current":true,
  #                 "absolute":true
 diff --git a/target/i386/cpu.c b/target/i386/cpu.c
-index 6417775..9225b99 100644
+index 6417775..8069228 100644
 --- a/target/i386/cpu.c
 +++ b/target/i386/cpu.c
 @@ -922,7 +922,7 @@ void x86_cpu_vendor_words2str(char *dst, uint32_t vendor1,
@@ -2067,12 +2067,14 @@ index 6417775..9225b99 100644
  
      x86_cpu_expand_features(cpu, &local_err);
      if (local_err) {
-@@ -10020,8 +10013,8 @@ static const Property x86_cpu_properties[] = {
+@@ -10019,9 +10012,9 @@ static const Property x86_cpu_properties[] = {
+     DEFINE_PROP_BOOL("lmce", X86CPU, enable_lmce, false),
      DEFINE_PROP_BOOL("l3-cache", X86CPU, enable_l3_cache, true),
      DEFINE_PROP_BOOL("kvm-pv-enforce-cpuid", X86CPU, kvm_pv_enforce_cpuid,
-                      false),
+-                     false),
 -    DEFINE_PROP_BOOL("vmware-cpuid-freq", X86CPU, vmware_cpuid_freq, true),
 -    DEFINE_PROP_BOOL("tcg-cpuid", X86CPU, expose_tcg, true),
++                     true),
 +    DEFINE_PROP_BOOL("vmware-cpuid-freq", X86CPU, vmware_cpuid_freq, false),
 +    DEFINE_PROP_BOOL("tcg-cpuid", X86CPU, expose_tcg, false),
      DEFINE_PROP_BOOL("x-migrate-smi-count", X86CPU, migrate_smi_count,
@@ -2127,7 +2129,7 @@ index 9c25b55..1ae774b 100644
          x86_cpu_apply_props(cpu, kvm_default_props);
      }
 diff --git a/target/i386/kvm/kvm.c b/target/i386/kvm/kvm.c
-index 60c7981..14c57f0 100644
+index 60c7981..e054f53 100644
 --- a/target/i386/kvm/kvm.c
 +++ b/target/i386/kvm/kvm.c
 @@ -457,7 +457,7 @@ uint32_t kvm_arch_get_supported_cpuid(KVMState *s, uint32_t function,
@@ -2183,41 +2185,15 @@ index 60c7981..14c57f0 100644
          c = &cpuid_data.entries[cpuid_i++];
          c->function = KVM_CPUID_SIGNATURE | kvm_base;
          c->eax = KVM_CPUID_FEATURES | kvm_base;
-@@ -2262,7 +2263,9 @@ int kvm_arch_init_vcpu(CPUState *cs)
+@@ -2262,6 +2263,7 @@ int kvm_arch_init_vcpu(CPUState *cs)
          c->eax = env->features[FEAT_KVM];
          c->edx = env->features[FEAT_KVM_HINTS];
      }
 +#endif
  
-+#if 0
      if (cpu->kvm_pv_enforce_cpuid) {
          r = kvm_vcpu_enable_cap(cs, KVM_CAP_ENFORCE_PV_FEATURE_CPUID, 0, 1);
-         if (r < 0) {
-@@ -2272,6 +2275,7 @@ int kvm_arch_init_vcpu(CPUState *cs)
-             abort();
-         }
-     }
-+#endif
- 
-     cpuid_i = kvm_x86_build_cpuid(env, cpuid_data.entries, cpuid_i);
-     cpuid_data.cpuid.nent = cpuid_i;
-@@ -2344,6 +2348,7 @@ int kvm_arch_init_vcpu(CPUState *cs)
-         }
-     }
- 
-+#if 0
-     if (cpu->vmware_cpuid_freq
-         /* Guests depend on 0x40000000 to detect this feature, so only expose
-          * it if KVM exposes leaf 0x40000000. (Conflicts with Hyper-V) */
-@@ -2361,6 +2366,7 @@ int kvm_arch_init_vcpu(CPUState *cs)
-         c = cpuid_find_entry(&cpuid_data.cpuid, kvm_base, 0);
-         c->eax = MAX(c->eax, KVM_CPUID_SIGNATURE | 0x10);
-     }
-+#endif
- 
-     cpuid_data.cpuid.nent = cpuid_i;
- 
-@@ -2437,6 +2443,7 @@ void kvm_arch_reset_vcpu(X86CPU *cpu)
+@@ -2437,6 +2439,7 @@ void kvm_arch_reset_vcpu(X86CPU *cpu)
      sev_es_set_reset_vector(CPU(cpu));
  }
  
@@ -2225,7 +2201,7 @@ index 60c7981..14c57f0 100644
  void kvm_arch_after_reset_vcpu(X86CPU *cpu)
  {
      CPUX86State *env = &cpu->env;
-@@ -2454,6 +2461,7 @@ void kvm_arch_after_reset_vcpu(X86CPU *cpu)
+@@ -2454,6 +2457,7 @@ void kvm_arch_after_reset_vcpu(X86CPU *cpu)
          hyperv_x86_synic_reset(cpu);
      }
  }
