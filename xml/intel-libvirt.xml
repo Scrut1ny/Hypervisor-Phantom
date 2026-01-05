@@ -82,7 +82,7 @@
     <vmport state="off"/> <!-- Disables the emulation of VMware IO port, for vmmouse etc. ACE AC "virtual machine prompt" will appear if not disabled -->
     <smm state="on"/>
     <ioapic driver="kvm"/>
-    <msrs unknown="fault"/> <!-- Causes #GP fault (often guest BSOD/crash) when an unknown MSR is accessed (R/W) -->
+    <msrs unknown="fault"/> <!-- Injects a #GP(0) into the guest on RDMSR/WRMSR to an unhandled/unknown MSR -->
   </features>
 
 
@@ -354,6 +354,7 @@
     </qemu:device>
   </qemu:override>
 </domain>
+
 
 
 
