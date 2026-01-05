@@ -106,7 +106,6 @@
     <!-- Performance Features -->
     <feature policy="require" name="vmx"/>        <!-- Intel VT-x (hardware virtualization) support -->
     <feature policy="require" name="invtsc"/>     <!-- Invariant Time Stamp Counter (stable time sync in VMs) -->
-    <feature policy="disable" name="vmx-vnmi"/>   <!-- NVIDIA (Code 43) error solution -->
   
     <!-- Hypervisor Detection -->
     <feature policy="disable" name="hypervisor"/> <!-- Prevents detection of running under a hypervisor -->
@@ -365,6 +364,7 @@
     </qemu:device>
   </qemu:override>
 </domain>
+
 
 
 
