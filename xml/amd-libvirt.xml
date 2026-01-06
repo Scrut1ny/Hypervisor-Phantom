@@ -127,10 +127,9 @@
  
   -->
   <clock offset="localtime">
-    <timer name="tsc" present="yes" tickpolicy="discard" mode="native"/>
-    <!-- Only present in hypervisors -->
-    <timer name="kvmclock" present="no"/>
-    <timer name="hypervclock" present="no"/>
+    <timer name="tsc" present="yes" mode="native"/>
+    <timer name="kvmclock" present="no"/>    <!-- CONCEALMENT: Disable KVM paravirtual clock source -->
+    <timer name="hypervclock" present="no"/> <!-- CONCEALMENT: Disable Hyper-V paravirtual clock source -->
   </clock>
 
 
@@ -337,6 +336,7 @@
     </qemu:device>
   </qemu:override>
 </domain>
+
 
 
 
