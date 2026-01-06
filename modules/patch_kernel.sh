@@ -59,7 +59,7 @@ acquire_tkg_source() {
   fi
 
   fmtr::info "Cloning linux-tkg repository..."
-  git clone --single-branch --depth=1 "$TKG_URL" "$TKG_DIR" &>> "$LOG_FILE" || { fmtr::fatal "Failed to clone repository."; exit 1; }
+  git clone --depth=1 "$TKG_URL" "$TKG_DIR" &>> "$LOG_FILE" || { fmtr::fatal "Failed to clone repository."; exit 1; }
   cd "$TKG_DIR" || { fmtr::fatal "Failed to change to TKG directory after cloning: $TKG_DIR"; exit 1; }
   fmtr::info "TKG source successfully acquired."
 
