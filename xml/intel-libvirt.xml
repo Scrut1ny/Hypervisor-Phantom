@@ -94,7 +94,7 @@
 
  
   -->
-  <cpu mode="host-passthrough" check="none" migratable="on">
+  <cpu mode="host-passthrough" check="none" migratable="off">
     <topology sockets="1" dies="1" clusters="1" cores="8" threads="2"/>
     <cache mode="passthrough"/>
     <maxphysaddr mode="passthrough"/>
@@ -333,6 +333,7 @@
     </qemu:device>
   </qemu:override>
 </domain>
+
 
 
 
