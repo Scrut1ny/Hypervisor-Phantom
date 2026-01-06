@@ -102,7 +102,7 @@
     <feature policy="require" name="invtsc"/>     <!-- OPTIMIZATION: Requires invariant TSC (stable time-stamp counter rate across P-states/C-states) for more consistent guest timekeeping -->
   
     <!-- Hypervisor Detection -->
-    <feature policy="disable" name="hypervisor"/> <!-- CONCEALMENT: Prevents detection of running under a hypervisor -->
+    <feature policy="disable" name="hypervisor"/> <!-- CONCEALMENT: Disables CPUID.1:ECX[31] (Hypervisor Present) -->
    
     <!-- Speculative Execution Mitigations -->
     <feature policy="disable" name="ssbd"/>       <!-- CONCEALMENT: Disables Speculative Store Bypass Disable flag -->
@@ -330,6 +330,7 @@
     </qemu:device>
   </qemu:override>
 </domain>
+
 
 
 
