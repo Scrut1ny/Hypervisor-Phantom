@@ -139,8 +139,8 @@
  
   -->
   <pm>
-    <suspend-to-mem enabled="yes"/>  <!-- Enables S3 (suspend to RAM) -->
-    <suspend-to-disk enabled="yes"/> <!-- Enables S4 (hibernate / suspend to disk) -->
+    <suspend-to-mem enabled="yes"/>  <!-- Enables S3 ACPI sleep state (suspend-to-RAM) support in the guest -->
+    <suspend-to-disk enabled="yes"/> <!-- Enables S4 ACPI sleep state (suspend-to-disk/hibernate) support in the guest -->
   </pm>
 
 
@@ -331,6 +331,7 @@
     </qemu:device>
   </qemu:override>
 </domain>
+
 
 
 
