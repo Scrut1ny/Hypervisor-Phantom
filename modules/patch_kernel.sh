@@ -296,6 +296,7 @@ systemd-boot_boot_entry_maker() {
   local TIMESTAMP ROOT_DEVICE ROOTFSTYPE PARTUUID ENTRY_DIR
   TIMESTAMP="$(date +"%Y-%m-%d_%H-%M-%S")"
   ROOT_DEVICE="$(findmnt -no SOURCE /)"
+  ROOT_DEVICE="${ROOT_DEVICE%%\[*}" # Fix for 'btrfs' storage format
   ROOTFSTYPE="$(findmnt -no FSTYPE /)"
 
   PARTUUID="$($ROOT_ESC blkid -s PARTUUID -o value "$ROOT_DEVICE")"
