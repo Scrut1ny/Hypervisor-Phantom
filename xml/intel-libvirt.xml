@@ -141,8 +141,8 @@
  
   -->
   <pm>
-    <suspend-to-mem enabled="yes"/>  <!-- Enables S3 ACPI sleep state (suspend-to-RAM) support in the guest -->
-    <suspend-to-disk enabled="yes"/> <!-- Enables S4 ACPI sleep state (suspend-to-disk/hibernate) support in the guest -->
+    <suspend-to-mem enabled="yes"/>  <!-- CONCEALMENT: Enables S3 ACPI sleep state (suspend-to-RAM) support in the guest -->
+    <suspend-to-disk enabled="yes"/> <!-- CONCEALMENT: Enables S4 ACPI sleep state (suspend-to-disk/hibernate) support in the guest -->
   </pm>
 
 
@@ -150,8 +150,7 @@
 
 
   <devices>
-    <!-- Points to patched QEMU emulator binary (modify path if needed!) -->
-    <emulator>/opt/Hypervisor-Phantom/emulator/bin/qemu-system-x86_64</emulator>
+    <emulator>/opt/Hypervisor-Phantom/emulator/bin/qemu-system-x86_64</emulator> <!-- 'qemu-system-x86_64' binary location. -->
 
 
 
@@ -333,6 +332,7 @@
     </qemu:device>
   </qemu:override>
 </domain>
+
 
 
 
