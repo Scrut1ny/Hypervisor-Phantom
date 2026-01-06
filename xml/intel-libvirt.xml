@@ -27,10 +27,10 @@
 
 
 
-  <!-- Secure Boot Setup
-  
+  <!--
   <> https://libvirt.org/formatdomain.html#operating-system-booting
-  
+
+ 
   -->
   <os>
     <type arch="x86_64" machine="pc-q35-10.2">hvm</type>
@@ -46,7 +46,6 @@
 
   <!-- 
   <> https://libvirt.org/formatdomain.html#hypervisor-features
-
 
  
   -->
@@ -91,7 +90,6 @@
   <!--
   <> https://libvirt.org/formatdomain.html#cpu-model-and-topology
 
-
  
   -->
   <cpu mode="host-passthrough" check="none" migratable="off">
@@ -122,7 +120,6 @@
   <> https://libvirt.org/formatdomain.html#time-keeping
 
  
- 
   -->
   <clock offset="localtime">
     <timer name="tsc" present="yes" mode="native"/>
@@ -138,7 +135,6 @@
   <> https://libvirt.org/formatdomain.html#power-management
 
   Guest power-management sleep states
- 
   -->
   <pm>
     <suspend-to-mem enabled="yes"/>  <!-- CONCEALMENT: Enables S3 ACPI sleep state (suspend-to-RAM) support in the guest -->
@@ -176,6 +172,8 @@
 
     <!--
     <> https://libvirt.org/formatdomain.html#network-interfaces
+
+   
     -->
     <interface type="network">
       <mac address="XX:XX:XX:XX:XX:XX"/> <!-- Randomize MAC address! -->
@@ -332,6 +330,7 @@
     </qemu:device>
   </qemu:override>
 </domain>
+
 
 
 
