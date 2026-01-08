@@ -51,13 +51,12 @@ git fetch --all && git reset --hard origin/main
 - Windows 11 BSOD - USBXHCI.sys
   - Switch from USB3 to USB2 in VMM/XML
 
+---
+
 - Windows 10/11 w/Secure Boot BSOD after 5-30 mins from boot
   - Increase pagefile size inside Windows
 
-- Windows 11, set below line in `/etc/modprobe.d/kvm.conf`
-```
-options kvm ignore_msrs=1
-```
+---
 
 - Dumping host's SMBIOS for QEMU passthrough
   - First try:
@@ -68,6 +67,8 @@ options kvm ignore_msrs=1
   ```
   sudo cat /sys/firmware/dmi/tables/DMI > smbios.bin
   ```
+
+---
 
 - Fix Ryzen 7000/9000 iGPUs "No Signal/Black Screen/flickering" when attempting to display the DM
 - https://www.kernel.org/doc/html/latest/gpu/amdgpu/module-parameters.html
