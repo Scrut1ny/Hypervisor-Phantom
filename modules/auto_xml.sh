@@ -16,6 +16,29 @@ system_info() {
     # Random 20-char hex serial (A-F0-9)
     DRIVE_SERIAL="$(LC_ALL=C tr -dc 'A-F0-9' </dev/urandom | head -c 20)"
 
+    # Memory selection (MiB)
+    local mem_choice
+    while :; do
+        fmtr::log "Memory allocation:
+
+  1) 8  GiB (8192  MiB)
+  2) 16 GiB (16384 MiB)
+  3) 32 GiB (32768 MiB)
+  4) 64 GiB (65536 MiB)"
+
+        read -r -p "$(fmtr::ask_inline "Choose an option [1-4]: ")" mem_choice
+        printf '%s\n' "$mem_choice" >>"$LOG_FILE"
+
+        case "$mem_choice" in
+            1) HOST_MEMORY_MIB=8192 ;;
+            2) HOST_MEMORY_MIB=16384 ;;
+            3) HOST_MEMORY_MIB=32768 ;;
+            4) HOST_MEMORY_MIB=65536 ;;
+            *) fmtr::warn "Invalid option. Please choose 1, 2, 3, or 4."; continue ;;
+        esac
+        break
+    done
+
     # ISO Selection
     ISO_PATH=""
     while :; do
@@ -56,7 +79,7 @@ configure_xml() {
         ################################################################################
         # https://libvirt.org/formatdomain.html#memory-allocation
         #
-        --memory "16384"
+        --memory "${HOST_MEMORY_MIB}"
 
 
         ################################################################################
@@ -87,7 +110,7 @@ configure_xml() {
 
         --xml "./features/hyperv/@mode=custom"
         --xml "./features/hyperv/vendor_id/@state=on"
-        --xml "./features/hyperv/vendor_id/@value=${VENDOR_ID}" # Obtained via 'main.sh'
+        --xml "./features/hyperv/vendor_id/@value=${VENDOR_ID}" # CPU Vendor ID obtained via 'main.sh'
 
         --features "hyperv.frequencies.state=off"
         --features "hyperv.reenlightenment.state=off"
