@@ -16,6 +16,8 @@ system_info() {
     # Generate a fully random, locally administered unicast MAC address.
     MAC_ADDRESS=$(printf '02%s\n' "$(hexdump -vn5 -e '5/1 ":%02x"' /dev/urandom)")
 
+    # TODO: Add nmcli detection of default interface and use it to get mac address first 3 octets
+
     # Random 20-char hex serial (A-F0-9)
     DRIVE_SERIAL="$(LC_ALL=C tr -dc 'A-F0-9' </dev/urandom | head -c 20)"
 
@@ -69,6 +71,14 @@ system_info() {
         fmtr::info "Selected ISO #$ISO_CHOICE: $(basename -- "$ISO_PATH")"
         break
     done
+
+    # Windows ISO Version Detection
+    if grep -a -m1 -q '10\.0\.22' "$ISO_PATH"; then
+        WIN_VERSION="win11"
+    else
+        WIN_VERSION="win10"
+    fi
+    fmtr::info "Detected Windows ISO version: $WIN_VERSION"
 }
 
 configure_xml() {
@@ -84,7 +94,7 @@ configure_xml() {
         #
         --connect qemu:///system
         --name "${DOMAIN_NAME}"
-        --osinfo "win10"
+        --osinfo "${WIN_VERSION}"
 
 
         ################################################################################
