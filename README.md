@@ -151,7 +151,7 @@ amdgpu.sg_display=0
 | ProctorU: Guardian Browser | | [System Test](https://go.proctoru.com/testitout) | • [⬇ Download ⬇](https://production-archimedes-secure-browser-artifacts.s3.amazonaws.com/latest/windows/guardian-browser-x64.exe) <br> • [Meazure Learning Page](https://guardian.meazurelearning.com/) <br> • [ProctorU Page](https://go.proctoru.com/testitout) | ✅ |
 | Proctorio | ✅ | [System Test](https://getproctorio.com/) |  | ✅ |
 | Respondus (LockDown Browser) | ✅ | [System Test](https://autolaunch.respondus2.com/MONServer/ldb/preview_launch.do) | [⬇ Download ⬇](https://download.respondus.com/lockdown/download.php) | ✅ |
-| Safe Exam Browser | | [System Test](https://github.com/SafeExamBrowser/seb-win-refactoring) | [⬇ Download ⬇](https://github.com/SafeExamBrowser/seb-win-refactoring/releases/download/v3.9.0/SEB_3.9.0.787_x64_Setup.msi) | ✅ |
+| Safe Exam Browser | | [System Test](https://github.com/SafeExamBrowser/seb-win-refactoring) | [⬇ Download ⬇](https://github.com/SafeExamBrowser/seb-win-refactoring/releases/download/v3.10.1/SEB_3.10.1.864_x64_Setup.msi) | ✅ |
 
 ## Anti-Cheat Software
 
