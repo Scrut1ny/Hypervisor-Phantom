@@ -69,7 +69,7 @@ options kvm ignore_msrs=1
   sudo cat /sys/firmware/dmi/tables/DMI > smbios.bin
   ```
 
-- Fix Ryzen 7000/9000 iGPUs "No Signal/Black Screen/flickering"
+- Fix Ryzen 7000/9000 iGPUs "No Signal/Black Screen/flickering" when attempting to display the DM
 ```
 sudo sed -i '/^options / s/$/ amdgpu.sg_display=0/' /boot/loader/entries/*.conf
 ```
