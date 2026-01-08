@@ -5,6 +5,9 @@
 source "./utils.sh"
 
 system_info() {
+    # Domain Name
+    DOMAIN_NAME="Hypervisor-Phantom"
+
     # CPU Topology
     HOST_LOGICAL_CPUS=$(nproc --all 2>/dev/null || nproc 2>/dev/null)
     HOST_CORES_PER_SOCKET=$(LC_ALL=C lscpu | sed -n 's/^Core(s) per socket:[[:space:]]*//p')
@@ -30,32 +33,40 @@ system_info() {
         printf '%s\n' "$mem_choice" >>"$LOG_FILE"
 
         case "$mem_choice" in
-            1) HOST_MEMORY_MIB=8192 ;;
+            1) HOST_MEMORY_MIB=8192  ;;
             2) HOST_MEMORY_MIB=16384 ;;
             3) HOST_MEMORY_MIB=32768 ;;
             4) HOST_MEMORY_MIB=65536 ;;
             *) fmtr::warn "Invalid option. Please choose 1, 2, 3, or 4."; continue ;;
         esac
+
+        fmtr::info "Selected #$mem_choice (${HOST_MEMORY_MIB} MiB)"
         break
     done
 
-    # ISO Selection
+    # ISO Selection (from /var/lib/libvirt/images)
+    ISO_DIR="/var/lib/libvirt/images"
     ISO_PATH=""
+
+    mapfile -d '' -t ISO_FILES < <(find "$ISO_DIR" -maxdepth 1 -type f -iname '*.iso' -print0 | sort -z)
+
+    (( ${#ISO_FILES[@]} )) || { fmtr::fatal "No .iso files found in $ISO_DIR"; exit 1; }
+
     while :; do
-        read -r -p "$(fmtr::ask_inline "Enter absolute path to your Windows ISO (.iso): ")" ISO_PATH
-        printf '%s\n' "$ISO_PATH" >>"$LOG_FILE"
+        menu="Available ISOs ($ISO_DIR)\n"
+        for i in "${!ISO_FILES[@]}"; do
+            menu+="\n  $((i+1))) $(basename -- "${ISO_FILES[$i]}")"
+        done
+        fmtr::log "$menu"
 
-        [[ "$ISO_PATH" = /* ]] || { fmtr::warn "Path must be absolute (start with /)."; continue; }
-        [[ -f "$ISO_PATH" ]]   || { fmtr::warn "ISO not found: $ISO_PATH"; continue; }
+        read -r -p "$(fmtr::ask_inline "Choose an ISO [1-${#ISO_FILES[@]}]: ")" ISO_CHOICE
+        printf '%s\n' "$ISO_CHOICE" >>"$LOG_FILE"
 
-        shopt -s nocasematch
-        if [[ "$ISO_PATH" != *.iso ]]; then
-            shopt -u nocasematch
-            fmtr::warn "File must end with .iso"
-            continue
-        fi
-        shopt -u nocasematch
+        [[ "$ISO_CHOICE" =~ ^[0-9]+$ ]] || { fmtr::warn "Please enter a number."; continue; }
+        (( ISO_CHOICE >= 1 && ISO_CHOICE <= ${#ISO_FILES[@]} )) || { fmtr::warn "Choice out of range."; continue; }
 
+        ISO_PATH="${ISO_FILES[$((ISO_CHOICE-1))]}"
+        fmtr::info "Selected ISO #$ISO_CHOICE: $(basename -- "$ISO_PATH")"
         break
     done
 }
@@ -72,7 +83,7 @@ configure_xml() {
         # https://libvirt.org/formatdomain.html#element-and-attribute-overview
         #
         --connect qemu:///system
-        --name "Hypervisor-Phantom"
+        --name "${DOMAIN_NAME}"
         --osinfo "win10"
 
 
@@ -180,6 +191,8 @@ configure_xml() {
         --check "disk_size=off"
         --cdrom "$ISO_PATH"
 
+        # TODO: Add user choice of using virtual drive, virtual drive + passthrough, complete PCI passthrough.
+
 
         ################################################################################
         # https://libvirt.org/formatdomain.html#network-interfaces
@@ -224,16 +237,10 @@ configure_xml() {
         --input "none"
         --console "none"
         --channel "none"
-
-
-        ################################################################################
-        # Console behavior
-        #
-        --autoconsole graphical
-        --wait -1
     )
 
     $ROOT_ESC virt-install "${args[@]}"
+    virt-manager --connect qemu:///system --show-domain-console ${DOMAIN_NAME}
 } &>>"$LOG_FILE"
 
 system_info
