@@ -65,12 +65,13 @@ git fetch --all && git reset --hard origin/main
   ```
 
 - Fix Ryzen 7000/9000 iGPUs "No Signal/Black Screen/flickering" when attempting to display the DM
+Add the arg below to your kernel options config:
+```
+amdgpu.sg_display=0
+```
 - https://www.kernel.org/doc/html/latest/gpu/amdgpu/module-parameters.html
-```
-sudo sed -i '/^options / s/$/ amdgpu.sg_display=0/' /boot/loader/entries/*.conf
-```
-- sg_display (int)
-  - Disable S/G (scatter/gather) display (i.e., display from system memory). This option is only relevant on APUs. Set this option to 0 to disable S/G display if you experience flickering or other issues under memory pressure and report the issue.
+  - sg_display (int)
+    - Disable S/G (scatter/gather) display (i.e., display from system memory). This option is only relevant on APUs. Set this option to 0 to disable S/G display if you experience flickering or other issues under memory pressure and report the issue.
 
 </details>
 
