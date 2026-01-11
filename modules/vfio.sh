@@ -5,7 +5,7 @@
 source "./utils.sh"
 
 readonly VFIO_CONF_PATH="/etc/modprobe.d/vfio.conf"
-readonly VFIO_KERNEL_OPTS_REGEX='(intel_iommu=[^ ]*|iommu=[^ ]*|kvm.ignore_msrs=[^ ]*)'
+readonly VFIO_KERNEL_OPTS_REGEX='(intel_iommu=[^ ]*|iommu=[^ ]*)'
 readonly -a SDBOOT_CONF_LOCATIONS=(/boot/loader/entries /boot/efi/loader/entries /efi/loader/entries)
 
 declare -A SOFTDEPS=(
@@ -135,7 +135,7 @@ $(printf '  [%s]\n' "${badf[@]}")"
 ################################################################################
 configure_bootloader() {
     local -a kernel_opts
-    kernel_opts=( "iommu=pt" "kvm.ignore_msrs=1" )
+    kernel_opts=( "iommu=pt" )
     [[ "$VENDOR_ID" == *GenuineIntel* ]] && kernel_opts=( "intel_iommu=on" "${kernel_opts[@]}" )
 
     local kernel_opts_str="${kernel_opts[*]}"
