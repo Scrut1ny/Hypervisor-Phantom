@@ -249,7 +249,7 @@ configure_xml() {
         --channel "none"
     )
 
-    $ROOT_ESC virt-install "${args[@]}"
+    $ROOT_ESC virt-install "${args[@]}" && \
     virt-manager --connect qemu:///system --show-domain-console ${DOMAIN_NAME}
 } &>>"$LOG_FILE"
 
