@@ -147,7 +147,7 @@ amdgpu.sg_display=0
 | Pearson VUE |  | • [System Test](https://system-test.onvue.com/system_test?customer=pearson_vue) <br> • [System Test](https://vueop.startpractice.com/) |  | ✅ |
 | ExamSoft: Examplify |  |  | [⬇ Download ⬇](https://releases.examsoft.com/Examplify/Examplify_LATEST_win.exe) | ✅ |
 | Examity | ✅ | [System Test](https://on.v5.examity.com/systemcheck) | • [⬇ Firefox ⬇](https://addons.mozilla.org/en-US/firefox/addon/examity/) <br> • [⬇ Chrome ⬇](https://chromewebstore.google.com/detail/geapelpefnpekodnnlkcaadniodlgebj) | ✅ |
-| Safe Exam Browser |  | [System Test](https://demo.safeexambrowser.org/exams/) | [⬇ Download ⬇](https://github.com/SafeExamBrowser/seb-win-refactoring/releases/download/v3.10.1/SEB_3.10.1.864_x64_Setup.msi) | ✅ |
+| Safe Exam Browser |  | [System Test](https://demo.safeexambrowser.org/exams/) | [⬇ Download ⬇](https://github.com/SafeExamBrowser/seb-win-refactoring/releases) | ✅ |
 | ETS Online Test (CLEP) |  |  | [⬇ Download ⬇](https://www.ets.org/browserinstall) | ✅ |
 | Bluebook |  |  | [⬇ Download ⬇](https://bluebook.app.collegeboard.org/) | ✅ |
 | Inspera Exam Portal |  | [Demo Exam Instructions](https://www.ltu.se/en/student-web/your-studies/examination/digital-exam-inspera/instructions-for-pc-and-mac-when-downloading-the-inspera-exam-portal) | [⬇ Download ⬇](https://ltu.inspera.com/get-iep) | ✅ |
