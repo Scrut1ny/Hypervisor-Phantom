@@ -139,19 +139,19 @@ amdgpu.sg_display=0
 
 | 💻 Software | 🌐 Browser Extension | 🧪 System Test | ⬇️ Download | ✅ Bypassed |
 |:-----------:|:--------------------:|:--------------:|:-----------:|:------------:|
-| Bluebook |  |  | [⬇ Download ⬇](https://bluebook.app.collegeboard.org/) | ✅ |
-| ETS Online Test (CLEP) |  |  | [⬇ Download ⬇](https://www.ets.org/browserinstall) | ✅ |
+| Respondus (LockDown Browser) | ✅ | [System Test](https://autolaunch.respondus2.com/MONServer/ldb/preview_launch.do) | [⬇ Download ⬇](https://download.respondus.com/lockdown/download.php) | ✅ |
+| ProctorU | ✅ |  | • [⬇ Firefox ⬇](https://s3-us-west-2.amazonaws.com/proctoru-assets/extension/firefox-extension-latest.xpi) <br> • [⬇ Chrome ⬇](https://chrome.google.com/webstore/detail/proctoru/goobgennebinldhonaajgafidboenlkl) | ✅ |
+| ProctorU: Guardian Browser |  | [System Test](https://go.proctoru.com/testitout) | • [⬇ Download ⬇](https://production-archimedes-secure-browser-artifacts.s3.amazonaws.com/latest/windows/guardian-browser-x64.exe) <br> • [Meazure Learning Page](https://guardian.meazurelearning.com/) <br> • [ProctorU Page](https://go.proctoru.com/testitout) | ✅ |
+| Proctorio | ✅ | [System Test](https://getproctorio.com/) |  | ✅ |
+| Honorlock | ✅ |  | • [Honorlock](https://app.honorlock.com/install/extension) <br> • [⬇ Chrome ⬇](https://chromewebstore.google.com/detail/honorlock/hnbmpkmhjackfpkpcbapafmpepgmmddc) | ✅ |
+| Pearson VUE |  | • [System Test](https://system-test.onvue.com/system_test?customer=pearson_vue) <br> • [System Test](https://vueop.startpractice.com/) |  | ✅ |
 | ExamSoft: Examplify |  |  | [⬇ Download ⬇](https://releases.examsoft.com/Examplify/3.8.0/Examplify_3.8.0_win.exe) | ✅ |
 | Examity | ✅ | [System Test](https://on.v5.examity.com/systemcheck) | • [⬇ Firefox ⬇](https://addons.mozilla.org/en-US/firefox/addon/examity/) <br> • [⬇ Chrome ⬇](https://chromewebstore.google.com/detail/geapelpefnpekodnnlkcaadniodlgebj) | ✅ |
-| Honorlock | ✅ |  | • [Honorlock](https://app.honorlock.com/install/extension) <br> • [⬇ Chrome ⬇](https://chromewebstore.google.com/detail/honorlock/hnbmpkmhjackfpkpcbapafmpepgmmddc) | ✅ |
-| Inspera Exam Portal | | [Demo Exam Instructions](https://www.ltu.se/en/student-web/your-studies/examination/digital-exam-inspera/instructions-for-pc-and-mac-when-downloading-the-inspera-exam-portal) | [⬇ Download ⬇](https://ltu.inspera.com/get-iep) | ✅ |
-| Kryterion | | [System Test](https://www.kryterion.com/systemcheck/) | [⬇ Download ⬇](https://media.webassessor.com/respondus/windows/labedition/Respondus_LockDown_Browser_Lab_OEM.msi) | ✅ |
-| Pearson VUE | | • [System Test](https://system-test.onvue.com/system_test?customer=pearson_vue) <br> • [System Test](https://vueop.startpractice.com/) |  | ✅ |
-| ProctorU | ✅ |  | • [⬇ Firefox ⬇](https://s3-us-west-2.amazonaws.com/proctoru-assets/extension/firefox-extension-latest.xpi) <br> • [⬇ Chrome ⬇](https://chrome.google.com/webstore/detail/proctoru/goobgennebinldhonaajgafidboenlkl) | ✅ |
-| ProctorU: Guardian Browser | | [System Test](https://go.proctoru.com/testitout) | • [⬇ Download ⬇](https://production-archimedes-secure-browser-artifacts.s3.amazonaws.com/latest/windows/guardian-browser-x64.exe) <br> • [Meazure Learning Page](https://guardian.meazurelearning.com/) <br> • [ProctorU Page](https://go.proctoru.com/testitout) | ✅ |
-| Proctorio | ✅ | [System Test](https://getproctorio.com/) |  | ✅ |
-| Respondus (LockDown Browser) | ✅ | [System Test](https://autolaunch.respondus2.com/MONServer/ldb/preview_launch.do) | [⬇ Download ⬇](https://download.respondus.com/lockdown/download.php) | ✅ |
-| Safe Exam Browser | | [System Test](https://demo.safeexambrowser.org/exams/) | [⬇ Download ⬇](https://github.com/SafeExamBrowser/seb-win-refactoring/releases/download/v3.10.1/SEB_3.10.1.864_x64_Setup.msi) | ✅ |
+| Safe Exam Browser |  | [System Test](https://demo.safeexambrowser.org/exams/) | [⬇ Download ⬇](https://github.com/SafeExamBrowser/seb-win-refactoring/releases/download/v3.10.1/SEB_3.10.1.864_x64_Setup.msi) | ✅ |
+| ETS Online Test (CLEP) |  |  | [⬇ Download ⬇](https://www.ets.org/browserinstall) | ✅ |
+| Bluebook |  |  | [⬇ Download ⬇](https://bluebook.app.collegeboard.org/) | ✅ |
+| Inspera Exam Portal |  | [Demo Exam Instructions](https://www.ltu.se/en/student-web/your-studies/examination/digital-exam-inspera/instructions-for-pc-and-mac-when-downloading-the-inspera-exam-portal) | [⬇ Download ⬇](https://ltu.inspera.com/get-iep) | ✅ |
+| Kryterion |  | [System Test](https://www.kryterion.com/systemcheck/) | [⬇ Download ⬇](https://media.webassessor.com/respondus/windows/labedition/Respondus_LockDown_Browser_Lab_OEM.msi) | ✅ |
 
 ## Anti-Cheat Software
 
