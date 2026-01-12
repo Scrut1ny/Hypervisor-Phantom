@@ -125,9 +125,9 @@ amdgpu.sg_display=0
 
 ## 💾 Software
 <details>
-<summary>HV Analysis, AC Status, and Assessment Software</summary>
+<summary>Software Assessments</summary>
 
-## Hypervisor Detection Software
+## Hypervisor Analysis
 
 | ⭐ Rating | 💻 Software | 🧪 System Test | ✅ Bypassed |
 |:------:|:--------:|:-----------:|:--------:|
@@ -135,7 +135,7 @@ amdgpu.sg_display=0
 | 🥈 | Al-Khaser (Obsolete) | [Repository Link](https://github.com/LordNoteworthy/al-khaser) <br> [⬇ Download - x64 - v1.0.0 ⬇](https://github.com/ayoubfaouzi/al-khaser/releases/download/v1.0.0/al-khaser_x64.7z) <br> [⬇ Download - x32 - v1.0.0 ⬇](https://github.com/ayoubfaouzi/al-khaser/releases/download/v1.0.0/al-khaser_x86.7z) | ✅ |
 | 🥉 | Pafish (Obsolete) | [Repository Link](https://github.com/a0rtega/pafish) <br> [⬇ Download - x64 - v0.6 ⬇](https://github.com/a0rtega/pafish/releases/download/v0.6/pafish64.exe) <br> [⬇ Download - x32 - v0.6 ⬇](https://github.com/a0rtega/pafish/releases/download/v0.6/pafish.exe) | ✅ |
 
-## Exam Software
+## Exam/Test
 
 | 💻 Software | 🌐 Browser Extension | 🧪 System Test | ⬇️ Download | ✅ Bypassed |
 |:-----------:|:--------------------:|:--------------:|:-----------:|:------------:|
@@ -153,7 +153,7 @@ amdgpu.sg_display=0
 | Inspera Exam Portal |  | [Demo Exam Instructions](https://www.ltu.se/en/student-web/your-studies/examination/digital-exam-inspera/instructions-for-pc-and-mac-when-downloading-the-inspera-exam-portal) | [⬇ Download ⬇](https://ltu.inspera.com/get-iep) | ✅ |
 | Kryterion |  | [System Test](https://www.kryterion.com/systemcheck/) | [⬇ Download ⬇](https://media.webassessor.com/respondus/windows/labedition/Respondus_LockDown_Browser_Lab_OEM.msi) | ✅ |
 
-## Anti-Cheat Software
+## Anti-Cheats
 
 - [areweanticheatyet](https://areweanticheatyet.com/)
 
