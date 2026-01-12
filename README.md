@@ -145,7 +145,7 @@ amdgpu.sg_display=0
 | Proctorio | ✅ | [System Test](https://getproctorio.com/) |  | ✅ |
 | Honorlock | ✅ |  | • [Honorlock](https://app.honorlock.com/install/extension) <br> • [⬇ Chrome ⬇](https://chromewebstore.google.com/detail/honorlock/hnbmpkmhjackfpkpcbapafmpepgmmddc) | ✅ |
 | Pearson VUE |  | • [System Test](https://system-test.onvue.com/system_test?customer=pearson_vue) <br> • [System Test](https://vueop.startpractice.com/) |  | ✅ |
-| ExamSoft: Examplify |  |  | [⬇ Download ⬇](https://releases.examsoft.com/Examplify/3.8.0/Examplify_3.8.0_win.exe) | ✅ |
+| ExamSoft: Examplify |  |  | [⬇ Download ⬇](https://releases.examsoft.com/Examplify/Examplify_LATEST_win.exe) | ✅ |
 | Examity | ✅ | [System Test](https://on.v5.examity.com/systemcheck) | • [⬇ Firefox ⬇](https://addons.mozilla.org/en-US/firefox/addon/examity/) <br> • [⬇ Chrome ⬇](https://chromewebstore.google.com/detail/geapelpefnpekodnnlkcaadniodlgebj) | ✅ |
 | Safe Exam Browser |  | [System Test](https://demo.safeexambrowser.org/exams/) | [⬇ Download ⬇](https://github.com/SafeExamBrowser/seb-win-refactoring/releases/download/v3.10.1/SEB_3.10.1.864_x64_Setup.msi) | ✅ |
 | ETS Online Test (CLEP) |  |  | [⬇ Download ⬇](https://www.ets.org/browserinstall) | ✅ |
