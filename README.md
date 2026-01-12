@@ -157,18 +157,21 @@ amdgpu.sg_display=0
 
 - [areweanticheatyet](https://areweanticheatyet.com/)
 
-| 🛡️ Engine | 🎮 Used By | ✅ Bypassed |
-|:------:|:-------:|:--------:|
-| Anti-Cheat Expert (ACE) | Primarily Mobile Games | ✅ |
-| BattlEye (BE) | Desktop Games | ✅ (w/Windows Hyper-V + HVCI) |
-| Easy Anti-Cheat (EAC) | Desktop Games | ✅ |
-| Gepard Shield | PUBG: Battlegrounds | ✅ |
-| NACE (Netease Anticheat Expert) | Marvel Rivals | ✅ |
-| Hyperion | Roblox | ✅ |
-| Mhyprot | Genshin Impact | ❔ (HoYoKProtect.sys) <br> 🪟 [BSOD: ATTEMPTED_WRITE_TO_READONLY_MEMORY](https://github.com/Scrut1ny/Hypervisor-Phantom/issues/34) |
-| nProtect GameGuard (NP) | Desktop Games | ✅ |
-| RICOCHET | CoD Games | ✅ |
-| Vanguard | Valorant & LoL | ✅ (w/Windows Hyper-V + HVCI) |
+| 🎮 Game | 🛡️ Engine | ✅ Bypassed |
+|:------:|:--------:|:--------:|
+| Fortnite | Easy Anti-Cheat (EAC) | ✅ |
+| Call of Duty (Warzone / MW Series) | RICOCHET | ✅ |
+| Roblox | Hyperion | ✅ |
+| Valorant / League of Legends | Vanguard | ✅ ([Hyper-V](https://learn.microsoft.com/en-us/windows-server/virtualization/hyper-v/overview) + [HVCI](https://learn.microsoft.com/en-us/windows/security/hardware-security/enable-virtualization-based-protection-of-code-integrity)) |
+| PUBG: Battlegrounds | Gepard Shield | ✅ |
+| Tom Clancy's Rainbow Six® Siege | BattlEye (BE) + FairFight | ✅ |
+| Genshin Impact | Mhyprot | ❔ (HoYoKProtect.sys) <br> 🪟 [BSOD: ATTEMPTED_WRITE_TO_READONLY_MEMORY](https://github.com/Scrut1ny/Hypervisor-Phantom/issues/34) |
+| Battlefield™ 2042 | EA anticheat (EAAC) | ✅ |
+| Marvel Rivals | NACE (Netease Anticheat Expert) | ✅ |
+| Various Desktop Games | Easy Anti-Cheat (EAC) | ✅ |
+| Various Desktop Games | nProtect GameGuard (NP) | ✅ |
+| Various Desktop Games | BattlEye (BE) | ✅ ([Hyper-V](https://learn.microsoft.com/en-us/windows-server/virtualization/hyper-v/overview) + [HVCI](https://learn.microsoft.com/en-us/windows/security/hardware-security/enable-virtualization-based-protection-of-code-integrity)) |
+| Various Mobile Games | Anti-Cheat Expert (ACE) | ✅ |
 
 </details>
 
