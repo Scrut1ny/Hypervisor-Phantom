@@ -8,6 +8,12 @@ system_info() {
     # Domain Name
     DOMAIN_NAME="Hypervisor-Phantom"
 
+    declare -r CPU_VENDOR=$(case "$VENDOR_ID" in
+        *AuthenticAMD*) echo "svm" ;;
+        *GenuineIntel*) echo "vmx" ;;
+        *) fmtr::error "Unknown CPU Vendor ID."; exit 1 ;;
+    esac)
+
     # CPU Topology
     HOST_LOGICAL_CPUS=$(nproc --all 2>/dev/null || nproc 2>/dev/null)
     HOST_CORES_PER_SOCKET=$(LC_ALL=C lscpu | sed -n 's/^Core(s) per socket:[[:space:]]*//p')
@@ -82,7 +88,6 @@ system_info() {
 }
 
 configure_xml() {
-    # Check if domain already exists to prevent errors
     if $ROOT_ESC virsh dominfo "$DOMAIN_NAME" >/dev/null 2>&1; then
         fmtr::fatal "Domain '$DOMAIN_NAME' already exists. Please delete it before running this script."
         return 1
@@ -90,22 +95,37 @@ configure_xml() {
 
     local -a args=(
         ################################################################################
-        # https://libvirt.org/formatdomain.html#element-and-attribute-overview
         #
+        # Documentation:
+        #   - https://libvirt.org/formatdomain.html#element-and-attribute-overview
+        #
+
         --connect qemu:///system
         --name "${DOMAIN_NAME}"
         --osinfo "${WIN_VERSION}"
 
 
+
+
+
         ################################################################################
-        # https://libvirt.org/formatdomain.html#memory-allocation
         #
+        # Documentation:
+        #   - https://libvirt.org/formatdomain.html#memory-allocation
+        #
+
         --memory "${HOST_MEMORY_MIB}"
 
 
+
+
+
         ################################################################################
-        # https://libvirt.org/formatdomain.html#operating-system-booting
         #
+        # Documentation:
+        #   - https://libvirt.org/formatdomain.html#operating-system-booting
+        #
+
         --boot "menu=on"
         --xml "./os/loader/@readonly=yes"
         --xml "./os/loader/@secure=yes"
@@ -116,42 +136,54 @@ configure_xml() {
         --xml "./os/nvram/@format=qcow2"
 
 
+
+
+
         ################################################################################
-        # https://libvirt.org/formatdomain.html#hypervisor-features
         #
-        --features "hyperv.relaxed.state=off"
-        --features "hyperv.vapic.state=off"
-        --features "hyperv.spinlocks.state=off"
-        --features "hyperv.spinlocks.retries="
-        --features "hyperv.vpindex.state=off"
-        --features "hyperv.runtime.state=off"
-        --features "hyperv.synic.state=off"
-        --features "hyperv.stimer.state=off"
-        --features "hyperv.reset.state=off"
+        # Documentation:
+        #   - https://libvirt.org/formatdomain.html#hypervisor-features
+        #
+
+        --features "hyperv.relaxed.state=off"   #
+        --features "hyperv.vapic.state=off"     #
+        --features "hyperv.spinlocks.state=off" #
+        --features "hyperv.spinlocks.retries="  #
+        --features "hyperv.vpindex.state=off"   #
+        --features "hyperv.runtime.state=off"   #
+        --features "hyperv.synic.state=off"     #
+        --features "hyperv.stimer.state=off"    #
+        --features "hyperv.reset.state=off"     #
 
         --xml "./features/hyperv/@mode=custom"
         --xml "./features/hyperv/vendor_id/@state=on"
         --xml "./features/hyperv/vendor_id/@value=${VENDOR_ID}" # CPU Vendor ID obtained via 'main.sh'
 
-        --features "hyperv.frequencies.state=off"
-        --features "hyperv.reenlightenment.state=off"
-        --features "hyperv.tlbflush.state=off"
-        --features "hyperv.ipi.state=off"
-        --features "hyperv.evmcs.state=off"
-        --features "hyperv.avic.state=off"
-        --features "hyperv.emsr_bitmap.state=off"
-        --features "hyperv.xmm_input.state=off"
+        --features "hyperv.frequencies.state=off"     #
+        --features "hyperv.reenlightenment.state=off" #
+        --features "hyperv.tlbflush.state=off"        #
+        --features "hyperv.ipi.state=off"             #
+        --features "hyperv.evmcs.state=off"           #
+        --features "hyperv.avic.state=off"            #
+        --features "hyperv.emsr_bitmap.state=off"     #
+        --features "hyperv.xmm_input.state=off"       #
 
-        --features "kvm.hidden.state=on"
-        --features "pmu.state=off"
-        --features "vmport.state=off"
-        --features "smm.state=on"
-        --features "msrs.unknown=fault"
+        --features "kvm.hidden.state=on" # CONCEALMENT: Hide the KVM hypervisor from standard MSR based discovery (CPUID Bitset)
+        --features "pmu.state=off"       # CONCEALMENT: Disables the Performance Monitoring Unit (PMU)
+        --features "vmport.state=off"    # CONCEALMENT: Disables the VMware I/O port backdoor (VMPort, 0x5658) in the guest | FYI: ACE AC looks for this
+        --features "smm.state=on"        #
+        --features "msrs.unknown=fault"  # CONCEALMENT: Injects a #GP(0) into the guest on RDMSR/WRMSR to an unhandled/unknown MSR
+
+
+
 
 
         ################################################################################
-        # https://libvirt.org/formatdomain.html#cpu-model-and-topology
         #
+        # Documentation:
+        #   - https://libvirt.org/formatdomain.html#cpu-model-and-topology
+        #
+
         --cpu "host-passthrough,topology.sockets=1,topology.cores=${HOST_CORES_PER_SOCKET},topology.threads=${HOST_THREADS_PER_CORE}"
 
         --xml "./cpu/@check=none"
@@ -161,42 +193,68 @@ configure_xml() {
         --xml "./cpu/cache/@mode=passthrough"
         --xml "./cpu/maxphysaddr/@mode=passthrough"
 
-        --xml "./cpu/feature[@name='svm']/@policy=require"
-        --xml "./cpu/feature[@name='topoext']/@policy=require"
-        --xml "./cpu/feature[@name='invtsc']/@policy=require"
-        --xml "./cpu/feature[@name='hypervisor']/@policy=disable"
-        --xml "./cpu/feature[@name='ssbd']/@policy=disable"
-        --xml "./cpu/feature[@name='amd-ssbd']/@policy=disable"
-        --xml "./cpu/feature[@name='virt-ssbd']/@policy=disable"
+        # TODO: Make this change based on if user is on AMD or Intel
+
+        --xml "./cpu/feature[@name='${CPU_VENDOR}']/@policy=require" # OPTIMIZATION: Enables AMD SVM (CPUID.80000001:ECX[2])
+        --xml "./cpu/feature[@name='topoext']/@policy=require"       # OPTIMIZATION: Exposes extended topology (CPUID.80000001:ECX[22], CPUID.8000001E)
+        --xml "./cpu/feature[@name='invtsc']/@policy=require"        # OPTIMIZATION: Provides invariant TSC (CPUID.80000007:EDX[8])
+        --xml "./cpu/feature[@name='hypervisor']/@policy=disable"    # CONCEALMENT: Clears Hypervisor Present bit (CPUID.1:ECX[31])
+        --xml "./cpu/feature[@name='ssbd']/@policy=disable"          # CONCEALMENT: Clears Speculative Store Bypass Disable (CPUID.7.0:EDX[31])
+        --xml "./cpu/feature[@name='amd-ssbd']/@policy=disable"      # CONCEALMENT: Clears AMD SSBD flag (CPUID.80000008:EBX[25])
+        --xml "./cpu/feature[@name='virt-ssbd']/@policy=disable"     # CONCEALMENT: Clears virtual SSBD exposure (CPUID.7.0:EDX[31])
+
+
+
 
 
         ################################################################################
-        # https://libvirt.org/formatdomain.html#time-keeping
         #
+        # Documentation:
+        #   - https://libvirt.org/formatdomain.html#time-keeping
+        #
+
         --xml "./clock/@offset=localtime"
         --xml "./clock/timer[@name='tsc']/@present=yes"
         --xml "./clock/timer[@name='tsc']/@mode=native"
         --xml "./clock/timer[@name='hpet']/@present=yes"
-        --xml "./clock/timer[@name='kvmclock']/@present=no"
-        --xml "./clock/timer[@name='hypervclock']/@present=no"
+        --xml "./clock/timer[@name='kvmclock']/@present=no"    # CONCEALMENT: Disable KVM paravirtual clock source
+        --xml "./clock/timer[@name='hypervclock']/@present=no" # CONCEALMENT: Disable Hyper-V paravirtual clock source
 
 
-        ################################################################################
-        # https://libvirt.org/formatdomain.html#power-management
-        #
-        --xml "./pm/suspend-to-mem/@enabled=yes"
-        --xml "./pm/suspend-to-disk/@enabled=yes"
+
 
 
         ################################################################################
-        # https://libvirt.org/formatdomain.html#devices
         #
+        # Documentation:
+        #   - https://libvirt.org/formatdomain.html#power-management
+        #
+
+        --xml "./pm/suspend-to-mem/@enabled=yes"  # CONCEALMENT: Enables S3 ACPI sleep state (suspend-to-RAM) support in the guest
+        --xml "./pm/suspend-to-disk/@enabled=yes" # CONCEALMENT: Enables S4 ACPI sleep state (suspend-to-disk/hibernate) support in the guest
+
+
+
+
+
+        ################################################################################
+        #
+        # Documentation:
+        #   - https://libvirt.org/formatdomain.html#devices
+        #
+
         --xml "./devices/emulator=/opt/Hypervisor-Phantom/emulator/bin/qemu-system-x86_64"
 
 
+
+
+
         ################################################################################
-        # https://libvirt.org/formatdomain.html#hard-drives-floppy-disks-cdroms
         #
+        # Documentation:
+        #   - https://libvirt.org/formatdomain.html#hard-drives-floppy-disks-cdroms
+        #
+
         --disk "size=500,bus=nvme,serial=${DRIVE_SERIAL}"
         --check "disk_size=off"
         --cdrom "$ISO_PATH"
@@ -204,46 +262,95 @@ configure_xml() {
         # TODO: Add user choice of using virtual drive, virtual drive + passthrough, complete PCI passthrough.
 
 
+
+
+
         ################################################################################
-        # https://libvirt.org/formatdomain.html#network-interfaces
         #
+        # Documentation:
+        #   - https://libvirt.org/formatdomain.html#network-interfaces
+        #
+
         --network "default,mac=${MAC_ADDRESS}"
 
 
+
+
+
         ################################################################################
-        # https://libvirt.org/formatdomain.html#tpm-device
         #
+        # Documentation:
+        #   - https://libvirt.org/formatdomain.html#tpm-device
+        #
+
         --tpm "model=tpm-crb,backend.type=emulator,backend.version=2.0"
 
 
+
+
+
         ################################################################################
-        # https://libvirt.org/formatdomain.html#graphical-framebuffers
         #
+        # Documentation:
+        #   - https://libvirt.org/formatdomain.html#graphical-framebuffers
+        #
+
         --graphics "spice"
 
 
+
+
+
         ################################################################################
-        # https://libvirt.org/formatdomain.html#video-devices
         #
+        # Documentation:
+        #   - https://libvirt.org/formatdomain.html#video-devices
+        #
+
         --video "vga"
 
 
+
+
+
         ################################################################################
-        # https://libvirt.org/formatdomain.html#memory-balloon-device
         #
+        # Documentation:
+        #   - https://libvirt.org/formatdomain.html#memory-balloon-device
+        #
+        # The VirtIO memballoon device enables the host to dynamically reclaim memory from your VM by growing the
+        # balloon inside the guest, reserving reclaimed memory. Libvirt adds this device to guests by default.
+        #
+        # However, this device causes major performance issues with VFIO passthrough setups, and should be disabled.
+        #
+
         --memballoon "none"
 
 
+
+
+
         ################################################################################
-        # https://www.libvirt.org/kbase/qemu-passthrough-security.html
-        # https://www.qemu.org/docs/master/system/qemu-manpage.html#hxtool-4
         #
+        # Documentation:
+        #   - https://www.libvirt.org/kbase/qemu-passthrough-security.html
+        #   - https://www.qemu.org/docs/master/system/qemu-manpage.html#hxtool-4
+        #
+        #
+        #
+
         --qemu-commandline="-smbios file=/opt/Hypervisor-Phantom/firmware/smbios.bin"
 
 
+
+
+
         ################################################################################
-        # https://libvirt.org/formatdomain.html#consoles-serial-parallel-channel-devices
         #
+        # Documentation:
+        #   - https://libvirt.org/formatdomain.html#consoles-serial-parallel-channel-devices
+        #
+
         --input "none"
         --console "none"
         --channel "none"
