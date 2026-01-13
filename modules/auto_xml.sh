@@ -150,6 +150,28 @@ configure_xml() {
         #   - https://libvirt.org/formatdomain.html#hypervisor-features
         #
 
+        --features "hyperv.relaxed.state=off"   #
+        --features "hyperv.vapic.state=off"     #
+        --features "hyperv.spinlocks.state=off" #
+        --features "hyperv.spinlocks.retries="  #
+        --features "hyperv.vpindex.state=off"   #
+        --features "hyperv.runtime.state=off"   #
+        --features "hyperv.synic.state=off"     #
+        --features "hyperv.stimer.state=off"    #
+        --features "hyperv.reset.state=off"     #
+
+        --xml "./features/hyperv/@mode=custom"
+        --xml "./features/hyperv/vendor_id/@state=on"
+        --xml "./features/hyperv/vendor_id/@value=${VENDOR_ID}" # CPU Vendor ID obtained via 'main.sh'
+
+        --features "hyperv.frequencies.state=off"     #
+        --features "hyperv.reenlightenment.state=off" #
+        --features "hyperv.tlbflush.state=off"        #
+        --features "hyperv.ipi.state=off"             #
+        --features "hyperv.evmcs.state=off"           #
+        --features "hyperv.avic.state=off"            #
+        --features "hyperv.emsr_bitmap.state=off"     #
+
         --features "kvm.hidden.state=on" # CONCEALMENT: Hide the KVM hypervisor from standard MSR based discovery (CPUID Bitset)
         --features "pmu.state=off"       # CONCEALMENT: Disables the Performance Monitoring Unit (PMU)
         --features "vmport.state=off"    # CONCEALMENT: Disables the VMware I/O port backdoor (VMPort, 0x5658) in the guest | FYI: ACE AC looks for this
