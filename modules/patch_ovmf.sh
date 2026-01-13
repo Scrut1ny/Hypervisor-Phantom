@@ -109,12 +109,19 @@ patch_ovmf() {
     read -rp "$(fmtr::ask 'Enter choice [1-2]: ')" logo_choice && : "${logo_choice:=1}"
     case "$logo_choice" in
       1)
-        if [ -f /sys/firmware/acpi/bgrt/image ]; then
-          cp /sys/firmware/acpi/bgrt/image MdeModulePkg/Logo/Logo.bmp \
-            && fmtr::log "Image replaced successfully." \
-            || fmtr::error "Image not found or failed to copy."
+        BGRT_IMG="/sys/firmware/acpi/bgrt/image"
+        DEST="MdeModulePkg/Logo/Logo.bmp"
+
+        if [ -f "$BGRT_IMG" ]; then
+          magick "$BGRT_IMG" \
+            -alpha off \
+            -depth 8 \
+            -define bmp:format=bmp3 \
+            "$DEST" \
+            && fmtr::log "Logo re-encoded successfully." \
+            || fmtr::error "Image conversion failed."
         else
-          fmtr::error "Host BMP image not found."
+          fmtr::error "Host BGRT image not found."
         fi
         break
         ;;
