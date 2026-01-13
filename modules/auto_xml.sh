@@ -8,11 +8,14 @@ system_info() {
     # Domain Name
     DOMAIN_NAME="Hypervisor-Phantom"
 
-    declare -r CPU_VENDOR=$(case "$VENDOR_ID" in
-        *AuthenticAMD*) echo "svm" ;;
-        *GenuineIntel*) echo "vmx" ;;
-        *) fmtr::error "Unknown CPU Vendor ID."; exit 1 ;;
-    esac)
+    # Sets CPU Virtualization
+    if [[ "$VENDOR_ID" == *AuthenticAMD* ]]; then
+        CPU_VENDOR="svm"
+    elif [[ "$VENDOR_ID" == *GenuineIntel* ]]; then
+        CPU_VENDOR="vmx"
+    else
+        CPU_VENDOR="unknown"
+    fi
 
     # CPU Topology
     HOST_LOGICAL_CPUS=$(nproc --all 2>/dev/null || nproc 2>/dev/null)
@@ -113,6 +116,8 @@ configure_xml() {
         # Documentation:
         #   - https://libvirt.org/formatdomain.html#memory-allocation
         #
+        # Allocate realistic memory amounts, such as 8, 16, 32, and 64.
+        #
 
         --memory "${HOST_MEMORY_MIB}"
 
@@ -144,29 +149,6 @@ configure_xml() {
         # Documentation:
         #   - https://libvirt.org/formatdomain.html#hypervisor-features
         #
-
-        --features "hyperv.relaxed.state=off"   #
-        --features "hyperv.vapic.state=off"     #
-        --features "hyperv.spinlocks.state=off" #
-        --features "hyperv.spinlocks.retries="  #
-        --features "hyperv.vpindex.state=off"   #
-        --features "hyperv.runtime.state=off"   #
-        --features "hyperv.synic.state=off"     #
-        --features "hyperv.stimer.state=off"    #
-        --features "hyperv.reset.state=off"     #
-
-        --xml "./features/hyperv/@mode=custom"
-        --xml "./features/hyperv/vendor_id/@state=on"
-        --xml "./features/hyperv/vendor_id/@value=${VENDOR_ID}" # CPU Vendor ID obtained via 'main.sh'
-
-        --features "hyperv.frequencies.state=off"     #
-        --features "hyperv.reenlightenment.state=off" #
-        --features "hyperv.tlbflush.state=off"        #
-        --features "hyperv.ipi.state=off"             #
-        --features "hyperv.evmcs.state=off"           #
-        --features "hyperv.avic.state=off"            #
-        --features "hyperv.emsr_bitmap.state=off"     #
-        --features "hyperv.xmm_input.state=off"       #
 
         --features "kvm.hidden.state=on" # CONCEALMENT: Hide the KVM hypervisor from standard MSR based discovery (CPUID Bitset)
         --features "pmu.state=off"       # CONCEALMENT: Disables the Performance Monitoring Unit (PMU)
@@ -242,6 +224,8 @@ configure_xml() {
         # Documentation:
         #   - https://libvirt.org/formatdomain.html#devices
         #
+        # 'qemu-system-x86_64' binary path
+        #
 
         --xml "./devices/emulator=/opt/Hypervisor-Phantom/emulator/bin/qemu-system-x86_64"
 
@@ -254,6 +238,8 @@ configure_xml() {
         # Documentation:
         #   - https://libvirt.org/formatdomain.html#hard-drives-floppy-disks-cdroms
         #
+
+        # --disk type=block,device=disk,source=/dev/nvme0n1,driver.name=qemu,driver.type=raw,driver.cache=none,driver.io=native,target.dev=nvme0,target.bus=nvme,serial=1233659 \
 
         --disk "size=500,bus=nvme,serial=${DRIVE_SERIAL}"
         --check "disk_size=off"
@@ -282,6 +268,10 @@ configure_xml() {
         # Documentation:
         #   - https://libvirt.org/formatdomain.html#tpm-device
         #
+        # TPM emulation requires the 'swtpm' package to function properly.
+        #
+        # TODO: Add option for user to passthrough TPM or emulate it
+        #
 
         --tpm "model=tpm-crb,backend.type=emulator,backend.version=2.0"
 
@@ -294,6 +284,8 @@ configure_xml() {
         # Documentation:
         #   - https://libvirt.org/formatdomain.html#graphical-framebuffers
         #
+        # TODO: Set to 'none' once using external display method.
+        #
 
         --graphics "spice"
 
@@ -305,6 +297,8 @@ configure_xml() {
         #
         # Documentation:
         #   - https://libvirt.org/formatdomain.html#video-devices
+        #
+        # TODO: Set to 'none' once using external display method.
         #
 
         --video "vga"
@@ -355,6 +349,8 @@ configure_xml() {
         --console "none"
         --channel "none"
     )
+
+    # https://man.archlinux.org/man/virt-install.1
 
     $ROOT_ESC virt-install "${args[@]}" && \
     virt-manager --connect qemu:///system --show-domain-console ${DOMAIN_NAME}
