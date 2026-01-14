@@ -162,7 +162,7 @@ QEMU XML:
 <details>
 <summary>Expand for details...</summary>
 
-#### AMD Libvirt XML Reference:
+### AMD Libvirt XML Reference:
 
 <details>
 <summary>Expand for XML...</summary>
@@ -511,7 +511,7 @@ QEMU XML:
 </details>
 
 
-#### Intel Libvirt XML Reference:
+### Intel Libvirt XML Reference:
 
 <details>
 <summary>Expand for XML...</summary>
