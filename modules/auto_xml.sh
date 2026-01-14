@@ -91,6 +91,11 @@ configure_xml() {
         return 1
     fi
 
+    ################################################################################
+    #
+    # Hyper-V
+    #
+
     local HYPERV_ARGS=()
     local enable_hyperv=""
 
@@ -106,9 +111,76 @@ configure_xml() {
                 break
                 ;;
             [Nn]*)
-                HYPERV_ARGS=('--xml' "./features/hyperv/@mode=disabled")
+                HYPERV_ARGS=() # TODO: Add all enlightenments, but make sure all are disabled
                 HYPERV_CLOCK_STATUS="no"
                 fmtr::info "Hyper-V enlightenments will be explicitly disabled."
+                break
+                ;;
+            *)
+                fmtr::warn "Please answer y or n."
+                continue
+                ;;
+        esac
+    done
+
+    ################################################################################
+    #
+    # EVDEV
+    #
+
+    local EVDEV_ARGS=()
+    local enable_evdev=""
+
+    while :; do
+        read -r -p "$(fmtr::ask_inline "Enable evdev input device passthrough? [y/n]: ")" enable_evdev
+        printf '%s\n' "$enable_evdev" >>"$LOG_FILE"
+
+        case "$enable_evdev" in
+            [Yy]*)
+                # Prompt for grabToggle option
+                local grab_toggle=""
+                while :; do
+                    fmtr::log "Select grabToggle combination:
+
+  1) ctrl-ctrl    4) meta-meta
+  2) alt-alt      5) scrolllock
+  3) shift-shift  6) ctrl-scrolllock"
+
+                    read -r -p "$(fmtr::ask_inline "Choose an option [1-6]: ")" grab_toggle
+                    printf '%s\n' "$grab_toggle" >>"$LOG_FILE"
+
+                    case "$grab_toggle" in
+                        1) grab_toggle="ctrl-ctrl" ;;
+                        2) grab_toggle="alt-alt" ;;
+                        3) grab_toggle="shift-shift" ;;
+                        4) grab_toggle="meta-meta" ;;
+                        5) grab_toggle="scrolllock" ;;
+                        6) grab_toggle="ctrl-scrolllock" ;;
+                        *) fmtr::warn "Invalid option. Please choose 1-6."; continue ;;
+                    esac
+
+                    fmtr::info "Selected grabToggle: $grab_toggle"
+                    break
+                done
+
+                # Build evdev args for keyboards
+                for kbd in /dev/input/by-id/*-event-kbd; do
+                    [ -e "$kbd" ] || continue
+                    EVDEV_ARGS+=('--input' "type=evdev,source.dev=$kbd,source.grab=all,source.grabToggle=$grab_toggle,source.repeat=on")
+                done
+
+                # Build evdev args for pointers
+                for pointer in /dev/input/by-id/*-event-mouse; do
+                    [ -e "$pointer" ] || continue
+                    EVDEV_ARGS+=('--input' "type=evdev,source.dev=$pointer,source.grabToggle=$grab_toggle")
+                done
+
+                fmtr::info "Evdev passthrough enabled."
+                break
+                ;;
+            [Nn]*)
+                EVDEV_ARGS=()
+                fmtr::info "Evdev input passthrough disabled."
                 break
                 ;;
             *)
@@ -297,6 +369,7 @@ configure_xml() {
         --input "mouse,bus=usb"    # USB mouse instead of PS2
         --input "keyboard,bus=usb" # USB keyboard instead of PS2
 
+        "${EVDEV_ARGS[@]}"         # Evdev configuration
 
 
 
@@ -381,15 +454,14 @@ configure_xml() {
         #   - https://www.libvirt.org/kbase/qemu-passthrough-security.html
         #   - https://www.qemu.org/docs/master/system/qemu-manpage.html#hxtool-4
         #
-        #
-        #
 
         --qemu-commandline="-smbios file=/opt/Hypervisor-Phantom/firmware/smbios.bin"
 
 
 
+
+
         --autoconsole none
-        --quiet
     )
 
     # https://man.archlinux.org/man/virt-install.1
