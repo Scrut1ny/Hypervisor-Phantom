@@ -13,10 +13,14 @@ system_info() {
     HOST_CORES_PER_SOCKET=$(LC_ALL=C lscpu | sed -n 's/^Core(s) per socket:[[:space:]]*//p')
     HOST_THREADS_PER_CORE=$(LC_ALL=C lscpu | sed -n 's/^Thread(s) per core:[[:space:]]*//p')
 
-    # Generate a fully random, locally administered unicast MAC address.
-    MAC_ADDRESS=$(printf '02%s\n' "$(hexdump -vn5 -e '5/1 ":%02x"' /dev/urandom)")
-
-    # TODO: Add nmcli detection of default interface and use it to get mac address first 3 octets
+    # MAC Address (Uses host's OUI)
+    UPLINK_IFACE=$(nmcli -t device show | awk -F: '
+    /^GENERAL.DEVICE/ {dev=$2}
+    /^GENERAL.TYPE/   {type=$2}
+    /^IP4.GATEWAY/ && $2!="" && type!="wireguard" {print dev; exit}
+    ')
+    OUI=$(cat /sys/class/net/"$UPLINK_IFACE"/address | awk -F: '{print $1 ":" $2 ":" $3}')
+    RANDOM_MAC="$OUI:$(printf '%02x:%02x:%02x' $((RANDOM%256)) $((RANDOM%256)) $((RANDOM%256)))"
 
     # Random 20-char hex serial (A-F0-9)
     DRIVE_SERIAL="$(LC_ALL=C tr -dc 'A-F0-9' </dev/urandom | head -c 20)"
@@ -87,6 +91,33 @@ configure_xml() {
         return 1
     fi
 
+    local HYPERV_ARGS=()
+    local enable_hyperv=""
+
+    while :; do
+        read -r -p "$(fmtr::ask_inline "Enable Hyper-V enlightenments (passthrough mode)? [y/n]: ")" enable_hyperv
+        printf '%s\n' "$enable_hyperv" >>"$LOG_FILE"
+
+        case "$enable_hyperv" in
+            [Yy]*)
+                HYPERV_ARGS=('--xml' "./features/hyperv/@mode=passthrough")
+                HYPERV_CLOCK_STATUS="yes"
+                fmtr::info "Setting Hyper-V to passthrough mode."
+                break
+                ;;
+            [Nn]*)
+                HYPERV_ARGS=('--xml' "./features/hyperv/@mode=disabled")
+                HYPERV_CLOCK_STATUS="no"
+                fmtr::info "Hyper-V enlightenments will be explicitly disabled."
+                break
+                ;;
+            *)
+                fmtr::warn "Please answer y or n."
+                continue
+                ;;
+        esac
+    done
+
     local -a args=(
         ################################################################################
         #
@@ -141,33 +172,14 @@ configure_xml() {
         #   - https://libvirt.org/formatdomain.html#hypervisor-features
         #
 
-        --features "hyperv.relaxed.state=off"   #
-        --features "hyperv.vapic.state=off"     #
-        --features "hyperv.spinlocks.state=off" #
-        --features "hyperv.spinlocks.retries="  #
-        --features "hyperv.vpindex.state=off"   #
-        --features "hyperv.runtime.state=off"   #
-        --features "hyperv.synic.state=off"     #
-        --features "hyperv.stimer.state=off"    #
-        --features "hyperv.reset.state=off"     #
+        "${HYPERV_ARGS[@]}"
 
-        --xml "./features/hyperv/@mode=custom"
-        --xml "./features/hyperv/vendor_id/@state=on"
-        --xml "./features/hyperv/vendor_id/@value=$CPU_VENDOR_ID" # CPU Vendor ID obtained via 'main.sh'
-
-        --features "hyperv.frequencies.state=off"     #
-        --features "hyperv.reenlightenment.state=off" #
-        --features "hyperv.tlbflush.state=off"        #
-        --features "hyperv.ipi.state=off"             #
-        --features "hyperv.evmcs.state=off"           #
-        --features "hyperv.avic.state=off"            #
-        --features "hyperv.emsr_bitmap.state=off"     #
-
-        --features "kvm.hidden.state=on" # CONCEALMENT: Hide the KVM hypervisor from standard MSR based discovery (CPUID Bitset)
-        --features "pmu.state=off"       # CONCEALMENT: Disables the Performance Monitoring Unit (PMU)
-        --features "vmport.state=off"    # CONCEALMENT: Disables the VMware I/O port backdoor (VMPort, 0x5658) in the guest | FYI: ACE AC looks for this
-        --features "smm.state=on"        #
-        --features "msrs.unknown=fault"  # CONCEALMENT: Injects a #GP(0) into the guest on RDMSR/WRMSR to an unhandled/unknown MSR
+        --features "kvm.hidden.state=on"  # CONCEALMENT: Hide the KVM hypervisor from standard MSR based discovery (CPUID Bitset)
+        --features "pmu.state=off"        # CONCEALMENT: Disables the Performance Monitoring Unit (PMU)
+        --features "vmport.state=off"     # CONCEALMENT: Disables the VMware I/O port backdoor (VMPort, 0x5658) in the guest | FYI: ACE AC looks for this
+        --features "smm.state=on"         # Secure boot requires SMM feature enabled
+        --features "msrs.unknown=fault"   # CONCEALMENT: Injects a #GP(0) into the guest on RDMSR/WRMSR to an unhandled/unknown MSR
+        --xml "./features/ps2/@state=off" # CONCEALMENT: Disable PS/2 controller emulation
 
 
 
@@ -191,12 +203,12 @@ configure_xml() {
         # TODO: Make this change based on if user is on AMD or Intel
 
         --xml "./cpu/feature[@name='$CPU_VIRTUALIZATION']/@policy=require" # OPTIMIZATION: Enables AMD SVM (CPUID.80000001:ECX[2])
-        --xml "./cpu/feature[@name='topoext']/@policy=require"     # OPTIMIZATION: Exposes extended topology (CPUID.80000001:ECX[22], CPUID.8000001E)
-        --xml "./cpu/feature[@name='invtsc']/@policy=require"      # OPTIMIZATION: Provides invariant TSC (CPUID.80000007:EDX[8])
-        --xml "./cpu/feature[@name='hypervisor']/@policy=disable"  # CONCEALMENT: Clears Hypervisor Present bit (CPUID.1:ECX[31])
-        --xml "./cpu/feature[@name='ssbd']/@policy=disable"        # CONCEALMENT: Clears Speculative Store Bypass Disable (CPUID.7.0:EDX[31])
-        --xml "./cpu/feature[@name='amd-ssbd']/@policy=disable"    # CONCEALMENT: Clears AMD SSBD flag (CPUID.80000008:EBX[25])
-        --xml "./cpu/feature[@name='virt-ssbd']/@policy=disable"   # CONCEALMENT: Clears virtual SSBD exposure (CPUID.7.0:EDX[31])
+        --xml "./cpu/feature[@name='topoext']/@policy=require"             # OPTIMIZATION: Exposes extended topology (CPUID.80000001:ECX[22], CPUID.8000001E)
+        --xml "./cpu/feature[@name='invtsc']/@policy=require"              # OPTIMIZATION: Provides invariant TSC (CPUID.80000007:EDX[8])
+        --xml "./cpu/feature[@name='hypervisor']/@policy=disable"          # CONCEALMENT: Clears Hypervisor Present bit (CPUID.1:ECX[31])
+        --xml "./cpu/feature[@name='ssbd']/@policy=disable"                # CONCEALMENT: Clears Speculative Store Bypass Disable (CPUID.7.0:EDX[31])
+        --xml "./cpu/feature[@name='amd-ssbd']/@policy=disable"            # CONCEALMENT: Clears AMD SSBD flag (CPUID.80000008:EBX[25])
+        --xml "./cpu/feature[@name='virt-ssbd']/@policy=disable"           # CONCEALMENT: Clears virtual SSBD exposure (CPUID.7.0:EDX[31])
 
 
 
@@ -212,8 +224,8 @@ configure_xml() {
         --xml "./clock/timer[@name='tsc']/@present=yes"
         --xml "./clock/timer[@name='tsc']/@mode=native"
         --xml "./clock/timer[@name='hpet']/@present=yes"
-        --xml "./clock/timer[@name='kvmclock']/@present=no"    # CONCEALMENT: Disable KVM paravirtual clock source
-        --xml "./clock/timer[@name='hypervclock']/@present=no" # CONCEALMENT: Disable Hyper-V paravirtual clock source
+        --xml "./clock/timer[@name='kvmclock']/@present=no"                      # CONCEALMENT: Disable KVM paravirtual clock source
+        --xml "./clock/timer[@name='hypervclock']/@present=$HYPERV_CLOCK_STATUS" # CONCEALMENT: Disable Hyper-V paravirtual clock source
 
 
 
@@ -270,7 +282,20 @@ configure_xml() {
         #   - https://libvirt.org/formatdomain.html#network-interfaces
         #
 
-        --network "default,mac=$MAC_ADDRESS"
+        --network "default,mac=$RANDOM_MAC"
+
+
+
+
+
+        ################################################################################
+        #
+        # Documentation:
+        #   - https://libvirt.org/formatdomain.html#input-devices
+        #
+
+        --input "mouse,bus=usb"    # USB mouse instead of PS2
+        --input "keyboard,bus=usb" # USB keyboard instead of PS2
 
 
 
@@ -340,6 +365,19 @@ configure_xml() {
         ################################################################################
         #
         # Documentation:
+        #   - https://libvirt.org/formatdomain.html#consoles-serial-parallel-channel-devices
+        #
+
+        --console "none" # Removed because added by default
+        --channel "none" # Removed because added by default
+
+
+
+
+
+        ################################################################################
+        #
+        # Documentation:
         #   - https://www.libvirt.org/kbase/qemu-passthrough-security.html
         #   - https://www.qemu.org/docs/master/system/qemu-manpage.html#hxtool-4
         #
@@ -350,26 +388,16 @@ configure_xml() {
 
 
 
-
-
-        ################################################################################
-        #
-        # Documentation:
-        #   - https://libvirt.org/formatdomain.html#consoles-serial-parallel-channel-devices
-        #
-
-        --input "none"
-        --console "none"
-        --channel "none"
+        --autoconsole none
+        --quiet
     )
 
     # https://man.archlinux.org/man/virt-install.1
-
     # sudo virt-install --features help
 
-    $ROOT_ESC virt-install "${args[@]}" && \
-    virt-manager --connect qemu:///system --show-domain-console $DOMAIN_NAME
-} &>>"$LOG_FILE"
+    $ROOT_ESC virt-install "${args[@]}" &>> "$LOG_FILE" && \
+    virt-manager --connect qemu:///system --show-domain-console $DOMAIN_NAME &>> "$LOG_FILE"
+}
 
 system_info
 configure_xml
