@@ -79,7 +79,7 @@ main_menu() {
 
   while :; do
     clear
-    fmtr::box_text " >> Hypervisor Phantom << "
+    fmtr::box_text " >> Hypervisor Phantom << "; echo ""
 
     for ((i=1; i<${#options[@]}; i++)); do
       printf '  %b[%d]%b %s\n' "$TEXT_BRIGHT_YELLOW" "$i" "$RESET" "${options[i]}"
