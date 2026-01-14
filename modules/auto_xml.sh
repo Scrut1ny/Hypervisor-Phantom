@@ -14,7 +14,8 @@ system_info() {
     elif [[ "$VENDOR_ID" == *GenuineIntel* ]]; then
         CPU_VENDOR="vmx"
     else
-        CPU_VENDOR="unknown"
+        fmtr::fatal "Unsupported CPU vendor: $VENDOR_ID" >&2
+        exit 1
     fi
 
     # CPU Topology
@@ -51,7 +52,7 @@ system_info() {
             *) fmtr::warn "Invalid option. Please choose 1, 2, 3, or 4."; continue ;;
         esac
 
-        fmtr::info "Selected #$mem_choice (${HOST_MEMORY_MIB} MiB)"
+        fmtr::info "Selected #$mem_choice ($HOST_MEMORY_MIB MiB)"
         break
     done
 
@@ -104,8 +105,8 @@ configure_xml() {
         #
 
         --connect qemu:///system
-        --name "${DOMAIN_NAME}"
-        --osinfo "${WIN_VERSION}"
+        --name "$DOMAIN_NAME"
+        --osinfo "$WIN_VERSION"
 
 
 
@@ -119,7 +120,7 @@ configure_xml() {
         # Allocate realistic memory amounts, such as 8, 16, 32, and 64.
         #
 
-        --memory "${HOST_MEMORY_MIB}"
+        --memory "$HOST_MEMORY_MIB"
 
 
 
@@ -162,7 +163,7 @@ configure_xml() {
 
         --xml "./features/hyperv/@mode=custom"
         --xml "./features/hyperv/vendor_id/@state=on"
-        --xml "./features/hyperv/vendor_id/@value=${VENDOR_ID}" # CPU Vendor ID obtained via 'main.sh'
+        --xml "./features/hyperv/vendor_id/@value=$VENDOR_ID" # CPU Vendor ID obtained via 'main.sh'
 
         --features "hyperv.frequencies.state=off"     #
         --features "hyperv.reenlightenment.state=off" #
@@ -188,7 +189,7 @@ configure_xml() {
         #   - https://libvirt.org/formatdomain.html#cpu-model-and-topology
         #
 
-        --cpu "host-passthrough,topology.sockets=1,topology.cores=${HOST_CORES_PER_SOCKET},topology.threads=${HOST_THREADS_PER_CORE}"
+        --cpu "host-passthrough,topology.sockets=1,topology.cores=$HOST_CORES_PER_SOCKET,topology.threads=$HOST_THREADS_PER_CORE"
 
         --xml "./cpu/@check=none"
         --xml "./cpu/@migratable=off"
@@ -199,13 +200,13 @@ configure_xml() {
 
         # TODO: Make this change based on if user is on AMD or Intel
 
-        --xml "./cpu/feature[@name='${CPU_VENDOR}']/@policy=require" # OPTIMIZATION: Enables AMD SVM (CPUID.80000001:ECX[2])
-        --xml "./cpu/feature[@name='topoext']/@policy=require"       # OPTIMIZATION: Exposes extended topology (CPUID.80000001:ECX[22], CPUID.8000001E)
-        --xml "./cpu/feature[@name='invtsc']/@policy=require"        # OPTIMIZATION: Provides invariant TSC (CPUID.80000007:EDX[8])
-        --xml "./cpu/feature[@name='hypervisor']/@policy=disable"    # CONCEALMENT: Clears Hypervisor Present bit (CPUID.1:ECX[31])
-        --xml "./cpu/feature[@name='ssbd']/@policy=disable"          # CONCEALMENT: Clears Speculative Store Bypass Disable (CPUID.7.0:EDX[31])
-        --xml "./cpu/feature[@name='amd-ssbd']/@policy=disable"      # CONCEALMENT: Clears AMD SSBD flag (CPUID.80000008:EBX[25])
-        --xml "./cpu/feature[@name='virt-ssbd']/@policy=disable"     # CONCEALMENT: Clears virtual SSBD exposure (CPUID.7.0:EDX[31])
+        --xml "./cpu/feature[@name='$CPU_VENDOR']/@policy=require" # OPTIMIZATION: Enables AMD SVM (CPUID.80000001:ECX[2])
+        --xml "./cpu/feature[@name='topoext']/@policy=require"     # OPTIMIZATION: Exposes extended topology (CPUID.80000001:ECX[22], CPUID.8000001E)
+        --xml "./cpu/feature[@name='invtsc']/@policy=require"      # OPTIMIZATION: Provides invariant TSC (CPUID.80000007:EDX[8])
+        --xml "./cpu/feature[@name='hypervisor']/@policy=disable"  # CONCEALMENT: Clears Hypervisor Present bit (CPUID.1:ECX[31])
+        --xml "./cpu/feature[@name='ssbd']/@policy=disable"        # CONCEALMENT: Clears Speculative Store Bypass Disable (CPUID.7.0:EDX[31])
+        --xml "./cpu/feature[@name='amd-ssbd']/@policy=disable"    # CONCEALMENT: Clears AMD SSBD flag (CPUID.80000008:EBX[25])
+        --xml "./cpu/feature[@name='virt-ssbd']/@policy=disable"   # CONCEALMENT: Clears virtual SSBD exposure (CPUID.7.0:EDX[31])
 
 
 
@@ -263,7 +264,7 @@ configure_xml() {
 
         # --disk type=block,device=disk,source=/dev/nvme0n1,driver.name=qemu,driver.type=raw,driver.cache=none,driver.io=native,target.dev=nvme0,target.bus=nvme,serial=1233659 \
 
-        --disk "size=500,bus=nvme,serial=${DRIVE_SERIAL}"
+        --disk "size=500,bus=nvme,serial=$DRIVE_SERIAL"
         --check "disk_size=off"
         --cdrom "$ISO_PATH"
 
@@ -279,7 +280,7 @@ configure_xml() {
         #   - https://libvirt.org/formatdomain.html#network-interfaces
         #
 
-        --network "default,mac=${MAC_ADDRESS}"
+        --network "default,mac=$MAC_ADDRESS"
 
 
 
@@ -374,8 +375,10 @@ configure_xml() {
 
     # https://man.archlinux.org/man/virt-install.1
 
+    # sudo virt-install --features help
+
     $ROOT_ESC virt-install "${args[@]}" && \
-    virt-manager --connect qemu:///system --show-domain-console ${DOMAIN_NAME}
+    virt-manager --connect qemu:///system --show-domain-console $DOMAIN_NAME
 } &>>"$LOG_FILE"
 
 system_info
