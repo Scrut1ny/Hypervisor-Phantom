@@ -4,7 +4,7 @@
 
 source ./utils.sh || { echo "Failed to load utilities module!"; exit 1; }
 
-readonly SRC_DIR="src"
+readonly SRC_DIR="$(pwd)/src"
 readonly TKG_URL="https://github.com/Frogging-Family/linux-tkg.git"
 readonly TKG_DIR="linux-tkg"
 readonly TKG_CFG_DIR="../../$SRC_DIR/linux-tkg/customization.cfg"
