@@ -2,7 +2,7 @@
 
 [[ -z "$DISTRO" || -z "$LOG_FILE" ]] && { echo "Required environment variables not set."; exit 1; }
 
-source "./utils.sh"
+source ./utils.sh || { echo "Failed to load utilities module!"; exit 1; }
 
 readonly VFIO_CONF_PATH="/etc/modprobe.d/vfio.conf"
 readonly VFIO_KERNEL_OPTS_REGEX='(intel_iommu=[^ ]*|iommu=[^ ]*)'
