@@ -2,7 +2,7 @@
 
 [[ -z "$DISTRO" || -z "$LOG_FILE" ]] && { echo "Required environment variables not set."; exit 1; }
 
-source "./utils.sh"
+source ./utils.sh || { echo "Failed to load utilities module!"; exit 1; }
 
 readonly SRC_DIR="src"
 readonly TKG_URL="https://github.com/Frogging-Family/linux-tkg.git"
