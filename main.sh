@@ -48,12 +48,12 @@ cpu_detect() {
     *AuthenticAMD*)
       CPU_VENDOR_ID="AuthenticAMD"
       CPU_VIRTUALIZATION="svm"
-      CPU_MANUFACTURER="AMD"
+      CPU_MANUFACTURER="amd"
       ;;
     *GenuineIntel*)
       CPU_VENDOR_ID="GenuineIntel"
       CPU_VIRTUALIZATION="vmx"
-      CPU_MANUFACTURER="Intel"
+      CPU_MANUFACTURER="intel"
       ;;
     *)
       fmtr::fatal "Unsupported CPU vendor: $vendor"
