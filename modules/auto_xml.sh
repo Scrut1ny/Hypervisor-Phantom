@@ -153,7 +153,7 @@ configure_xml() {
 
         --xml "./features/hyperv/@mode=custom"
         --xml "./features/hyperv/vendor_id/@state=on"
-        --xml "./features/hyperv/vendor_id/@value=$VENDOR_ID" # CPU Vendor ID obtained via 'main.sh'
+        --xml "./features/hyperv/vendor_id/@value=$CPU_VENDOR_ID" # CPU Vendor ID obtained via 'main.sh'
 
         --features "hyperv.frequencies.state=off"     #
         --features "hyperv.reenlightenment.state=off" #
