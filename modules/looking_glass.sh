@@ -4,7 +4,7 @@
 
 source ./utils.sh || { echo "Failed to load utilities module!"; exit 1; }
 
-readonly SRC_DIR="src"
+readonly SRC_DIR="$(pwd)/src"
 readonly LG_URL="https://looking-glass.io/artifact/stable/source"
 readonly LG_VERSION="B7"
 readonly LG_ARCHIVE="looking-glass-$LG_VERSION.tar.gz"
