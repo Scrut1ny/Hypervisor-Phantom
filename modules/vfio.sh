@@ -136,7 +136,7 @@ $(printf '  [%s]\n' "${badf[@]}")"
 configure_bootloader() {
     local -a kernel_opts
     kernel_opts=( "iommu=pt" )
-    [[ "$VENDOR_ID" == *GenuineIntel* ]] && kernel_opts=( "intel_iommu=on" "${kernel_opts[@]}" )
+    [[ "$CPU_VENDOR_ID" == "GenuineIntel" ]] && kernel_opts=( "intel_iommu=on" "${kernel_opts[@]}" )
 
     local kernel_opts_str="${kernel_opts[*]}"
 
