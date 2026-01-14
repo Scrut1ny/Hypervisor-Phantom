@@ -4,19 +4,13 @@
 
 source "./utils.sh"
 
-declare -r CPU_VENDOR=$(case "$VENDOR_ID" in
-  *AuthenticAMD*) echo "amd" ;;
-  *GenuineIntel*) echo "intel" ;;
-  *) fmtr::error "Unknown CPU Vendor ID."; exit 1 ;;
-esac)
-
 readonly SRC_DIR="$(pwd)/src"
 readonly OUT_DIR="/opt/Hypervisor-Phantom"
 
 readonly QEMU_TAG="v10.2.0"
 readonly QEMU_URL="https://gitlab.com/qemu-project/qemu.git"
 
-readonly QEMU_PATCH="$(pwd)/patches/QEMU/${CPU_VENDOR}-${QEMU_TAG}.patch"
+readonly QEMU_PATCH="$(pwd)/patches/QEMU/${CPU_MANUFACTURER}-${QEMU_TAG}.patch"
 
 REQUIRED_PKGS_Arch=(
   # Basic Build Dependencie(s)
@@ -115,7 +109,7 @@ acquire_qemu_source() {
 patch_qemu() {
   [ -f "$QEMU_PATCH" ] || { fmtr::error "Missing '$QEMU_PATCH' patch file!"; return 1; }
   git apply < "$QEMU_PATCH" &>>"$LOG_FILE" || { fmtr::error "Failed to apply '$QEMU_PATCH'!"; return 1; }
-  fmtr::log "Applied '${CPU_VENDOR}-${QEMU_TAG}.patch' successfully."
+  fmtr::log "Applied '${CPU_MANUFACTURER}-${QEMU_TAG}.patch' successfully."
 
   fmtr::info "Applying dynamic modifications..."
   spoof_serials
