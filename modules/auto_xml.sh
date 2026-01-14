@@ -8,16 +8,6 @@ system_info() {
     # Domain Name
     DOMAIN_NAME="Hypervisor-Phantom"
 
-    # Sets CPU Virtualization
-    if [[ "$VENDOR_ID" == *AuthenticAMD* ]]; then
-        CPU_VENDOR="svm"
-    elif [[ "$VENDOR_ID" == *GenuineIntel* ]]; then
-        CPU_VENDOR="vmx"
-    else
-        fmtr::fatal "Unsupported CPU vendor: $VENDOR_ID" >&2
-        exit 1
-    fi
-
     # CPU Topology
     HOST_LOGICAL_CPUS=$(nproc --all 2>/dev/null || nproc 2>/dev/null)
     HOST_CORES_PER_SOCKET=$(LC_ALL=C lscpu | sed -n 's/^Core(s) per socket:[[:space:]]*//p')
@@ -200,7 +190,7 @@ configure_xml() {
 
         # TODO: Make this change based on if user is on AMD or Intel
 
-        --xml "./cpu/feature[@name='$CPU_VENDOR']/@policy=require" # OPTIMIZATION: Enables AMD SVM (CPUID.80000001:ECX[2])
+        --xml "./cpu/feature[@name='$CPU_VIRTUALIZATION']/@policy=require" # OPTIMIZATION: Enables AMD SVM (CPUID.80000001:ECX[2])
         --xml "./cpu/feature[@name='topoext']/@policy=require"     # OPTIMIZATION: Exposes extended topology (CPUID.80000001:ECX[22], CPUID.8000001E)
         --xml "./cpu/feature[@name='invtsc']/@policy=require"      # OPTIMIZATION: Provides invariant TSC (CPUID.80000007:EDX[8])
         --xml "./cpu/feature[@name='hypervisor']/@policy=disable"  # CONCEALMENT: Clears Hypervisor Present bit (CPUID.1:ECX[31])
