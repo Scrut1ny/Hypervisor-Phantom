@@ -118,7 +118,7 @@ modify_customization_cfg() {
 
   while true; do
 
-    if [[ "$VENDOR_ID" == *AuthenticAMD* ]]; then
+    if [[ "$CPU_VENDOR_ID" == "AuthenticAMD" ]]; then
       vendor="AMD" && fmtr::info "Detected CPU Vendor: $vendor
 
   - https://wikipedia.org/wiki/List_of_${vendor}_CPU_microarchitectures
@@ -155,7 +155,7 @@ modify_customization_cfg() {
           ;;
       esac
 
-    elif [[ "$VENDOR_ID" == *GenuineIntel* ]]; then
+    elif [[ "$CPU_VENDOR_ID" == "GenuineIntel" ]]; then
       vendor="Intel" && fmtr::info "Detected CPU Vendor: $vendor
 
   - https://wikipedia.org/wiki/List_of_${vendor}_CPU_microarchitectures
