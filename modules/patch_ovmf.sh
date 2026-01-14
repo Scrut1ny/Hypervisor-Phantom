@@ -2,7 +2,7 @@
 
 [[ -z "$DISTRO" || -z "$LOG_FILE" ]] && { echo "Required environment variables not set."; exit 1; }
 
-source "./utils.sh"
+source ./utils.sh || { echo "Failed to load utilities module!"; exit 1; }
 
 readonly SRC_DIR="$(pwd)/src"
 readonly OUT_DIR="/opt/Hypervisor-Phantom/firmware"
