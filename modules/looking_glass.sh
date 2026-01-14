@@ -77,10 +77,10 @@ install_looking_glass() {
   fmtr::info "Building, compiling, and installing LG..."
   cd looking-glass-$LG_VERSION && mkdir client/build && cd client/build
 
-  if [[ "$VENDOR_ID" == *GenuineIntel* ]]; then
+  if [[ "$CPU_VENDOR_ID" == "GenuineIntel" ]]; then
       NEW_VENDOR_ID="0x8086"
       NEW_DEVICE_ID="0x8086"
-  elif [[ "$VENDOR_ID" == *AuthenticAMD* ]]; then
+  elif [[ "$CPU_VENDOR_ID" == "AuthenticAMD" ]]; then
       NEW_VENDOR_ID="0x1022"
       NEW_DEVICE_ID="0x1022"
   else
