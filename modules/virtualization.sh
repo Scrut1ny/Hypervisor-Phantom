@@ -43,7 +43,7 @@ configure_system_installation() {
   RANDOM_MAC="$OUI:$(printf '%02x:%02x:%02x' $((RANDOM%256)) $((RANDOM%256)) $((RANDOM%256)))"
   XML_PATH="/etc/libvirt/qemu/networks/default.xml"
 
-  sudo sed -i \
+  $ROOT_ESC sed -i \
     -e "s|<mac address='[0-9A-Fa-f:]\{17\}'|<mac address='$RANDOM_MAC'|g" \
     -e "s|192\.168\.122\.|192.168.1.|g" \
     "$XML_PATH"
