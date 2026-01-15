@@ -31,7 +31,6 @@ detect_bootloader() {
         done
         [[ $SYSTEMD_BOOT_ENTRY_DIR ]] || { fmtr::error "No supported bootloader detected (GRUB or systemd-boot). Exiting."; exit 1; }
     }
-    export BOOTLOADER_TYPE SYSTEMD_BOOT_ENTRY_DIR
 }
 
 ################################################################################
@@ -46,12 +45,13 @@ revert_vfio() {
     fi
 
     if [[ $BOOTLOADER_TYPE == grub ]]; then
-        $ROOT_ESC sed -E -i "/^GRUB_CMDLINE_LINUX_DEFAULT=/ {
-        s/$VFIO_KERNEL_OPTS_REGEX//g;
-        s/[[:space:]]+/ /g;
-        s/\"[[:space:]]+/\"/;
-        s/[[:space:]]+\"/\"/;
-    }" /etc/default/grub
+        $ROOT_ESC sed -E -i '/^GRUB_CMDLINE_LINUX_DEFAULT=/{
+            s/'"$VFIO_KERNEL_OPTS_REGEX"'//g
+            s/[[:space:]]+/ /g
+            s/"[[:space:]]+/"
+            s/[[:space:]]+"/"/
+        }' /etc/default/grub
+    fi
     fmtr::log "Removed VFIO kernel opts from GRUB config."
 
     elif [[ $BOOTLOADER_TYPE == systemd-boot && $SYSTEMD_BOOT_ENTRY_DIR ]]; then
