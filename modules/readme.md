@@ -26,12 +26,37 @@ sudo pacman -S edk2-ovmf
 ```
 
 ## BmpImageDecoder (BMP Validator)
-
 - https://github.com/tianocore/edk2/blob/master/BaseTools/Source/Python/AutoGen/GenC.py#L1892
   - File Type: Bytes `0–1` must be `0x42 0x4D`
   - Bit Depth: Must be `1`, `4`, `8`, or `24`
   - Compression: Must be `0`
   - Width/Height: `≤65535x65535`
+
+
+
+
+## VMMBootOrderNNNN (L"BootOrder%04x")
+- OvmfPkg/Library/QemuBootOrderLib/QemuBootOrderLib.c
+
+
+
+
+
+
+## OVMF PK/KEK Vendor String & EnrollDefaultKeys
+- EnrollDefaultKeys
+  - https://github.com/tianocore/edk2/tree/master/OvmfPkg#readme
+  - OvmfPkg/EnrollDefaultKeys/EnrollDefaultKeys.c
+  - OvmfPkg/EnrollDefaultKeys/EnrollDefaultKeys.h
+  - OvmfPkg/EnrollDefaultKeys/EnrollDefaultKeys.inf
+- OvmfPkg/OvmfPkg.dec
+- OvmfPkg/Include/Guid/OvmfPkKek1AppPrefix.h
+
+
+
+
+
+
 
 ## OVMF MOR/MORLock support:
 - https://github.com/tianocore/edk2/blob/master/OvmfPkg/README#L160
