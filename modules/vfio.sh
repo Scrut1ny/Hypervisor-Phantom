@@ -8,7 +8,7 @@ readonly VFIO_CONF_PATH="/etc/modprobe.d/vfio.conf"
 readonly VFIO_KERNEL_OPTS_REGEX='(intel_iommu=[^ ]*|iommu=[^ ]*)'
 readonly -a SDBOOT_CONF_LOCATIONS=(/boot/loader/entries /boot/efi/loader/entries /efi/loader/entries)
 
-declare -A SOFTDEPS=(
+declare -A GPU_DRIVERS=(
     ["0x10de"]="nouveau nvidia nvidia_drm"
     ["0x1002"]="amdgpu radeon"
     ["0x8086"]="i915"
@@ -123,7 +123,7 @@ $(printf '  [%s]\n' "${badf[@]}")"
 
     {
         printf 'options vfio-pci ids=%s disable_vga=1\n' "$hwids"
-        for soft in ${SOFTDEPS[$pci_vendor]:-}; do printf 'softdep %s pre: vfio-pci\n' "$soft"; done
+        for soft in ${GPU_DRIVERS[$pci_vendor]:-}; do printf 'softdep %s pre: vfio-pci\n' "$soft"; done
     } | $ROOT_ESC tee "$VFIO_CONF_PATH" >>"$LOG_FILE"
 
     # sudo sed -i 's/^MODULES=()$/MODULES=(vfio vfio_iommu_type1 vfio_pci)/' /etc/mkinitcpio.conf
