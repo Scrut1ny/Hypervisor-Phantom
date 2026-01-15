@@ -36,25 +36,28 @@ configure_system_installation() {
     fi
   done
 
-  # Ensure libvirtd.socket is enabled and running
+  # Modify defaults for default (virbr0) libvirt network
+  # *IMPORTANT* Patches 52:54:00:XX:XX:XX and DHCP range 192.168.122.2-254
+  # This appears in ARP cache and needs to be modified.
+  OUI="b0:4e:26"
+  RANDOM_MAC="$OUI:$(printf '%02x:%02x:%02x' $((RANDOM%256)) $((RANDOM%256)) $((RANDOM%256)))"
+  XML_PATH="/etc/libvirt/qemu/networks/default.xml"
+
+  sudo sed -i \
+    -e "s|<mac address='[0-9A-Fa-f:]\{17\}'|<mac address='$RANDOM_MAC'|g" \
+    -e "s|192\.168\.122\.|192.168.1.|g" \
+    "$XML_PATH"
+
+  # Enable (autostart) & start libvirtd.socket
   $ROOT_ESC systemctl enable --now libvirtd.socket &>> "$LOG_FILE" \
     && fmtr::info "Ensured libvirtd.socket is enabled and started" \
     || fmtr::warn "Failed to enable/start libvirtd.socket (see $LOG_FILE)"
 
-  # Ensure default libvirt network exists, autostarts, and is active
-  if ! $ROOT_ESC virsh net-list --all --name 2>>"$LOG_FILE" | grep -qx default; then
-    fmtr::warn "Libvirt network 'default' is not defined; skipping (you may need to define it)."
-  else
-    $ROOT_ESC virsh net-autostart default &>>"$LOG_FILE" || true
-
-    if $ROOT_ESC virsh net-list --inactive --name 2>>"$LOG_FILE" | grep -qx default; then
-      $ROOT_ESC virsh net-start default &>>"$LOG_FILE" \
-        && fmtr::info "Started and enabled default libvirt network" \
-        || fmtr::warn "Failed to start default libvirt network (see $LOG_FILE)"
-    else
-      fmtr::info "Default libvirt network already active"
-    fi
-  fi
+  # Autostart & start default (virbr0) libvirt network
+  $ROOT_ESC virsh net-autostart default &>>"$LOG_FILE" || true
+  $ROOT_ESC virsh net-start default &>>"$LOG_FILE" \
+    && fmtr::info "Started and enabled default libvirt network" \
+    || fmtr::warn "Failed to start default libvirt network (see $LOG_FILE)"
 }
 
 main() {
