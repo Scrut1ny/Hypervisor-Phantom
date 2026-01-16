@@ -237,7 +237,6 @@ amdgpu.sg_display=0
 - OCR Powered Screen-Capture Tools
     - Linux:
         - [NormCap](https://github.com/dynobo/normcap)
-        - [TextSnatcher](https://github.com/RajSolai/TextSnatcher)
     - Windows:
         - [ShareX](https://github.com/ShareX/ShareX)
 - RAT (Remote Access/Administration Trojan)
