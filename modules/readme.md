@@ -1,4 +1,4 @@
-# EDK2 / OVMF / Firmware
+# EDK2 (OVMF) / UEFI / Firmware
 
 <details>
 <summary>Expand for details...</summary>
