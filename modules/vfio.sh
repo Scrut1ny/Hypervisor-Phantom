@@ -51,8 +51,7 @@ revert_vfio() {
             s/"[[:space:]]+/"
             s/[[:space:]]+"/"/
         }' /etc/default/grub
-    fi
-    fmtr::log "Removed VFIO kernel opts from GRUB config."
+        fmtr::log "Removed VFIO kernel opts from GRUB config."
 
     elif [[ $BOOTLOADER_TYPE == systemd-boot && $SYSTEMD_BOOT_ENTRY_DIR ]]; then
         local config_file
