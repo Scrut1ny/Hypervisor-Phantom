@@ -186,9 +186,9 @@ amdgpu.sg_display=0
 
 ## Video
 - Display
-  - [Virtual-Display-Driver](https://github.com/itsmikethetech/Virtual-Display-Driver)
-  - [memflow-mirror](https://github.com/ko1N/memflow-mirror)
   - [LookingGlass](https://github.com/gnif/LookingGlass)
+    - [Virtual-Display-Driver](https://github.com/itsmikethetech/Virtual-Display-Driver)
+  - [memflow-mirror](https://github.com/ko1N/memflow-mirror)
 - Streaming (WHIP/WHEP)
   - [meshcast.io](https://meshcast.io/)
   - [VDO.Ninja](https://vdo.ninja/)
