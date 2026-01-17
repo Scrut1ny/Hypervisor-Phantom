@@ -927,7 +927,7 @@ done
 - https://looking-glass.io/
 - https://github.com/gnif/LookingGlass
 
-## LG Unique Identifiers:
+## Unique Identifiers:
 
 - GUID
   - vendor/ivshmem/ivshmem.h
