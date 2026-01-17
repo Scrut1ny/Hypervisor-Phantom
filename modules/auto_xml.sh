@@ -50,16 +50,45 @@ system_info() {
         break
     done
 
-    # ISO Selection (from /var/lib/libvirt/images)
-    ISO_DIR="/var/lib/libvirt/images"
+    # ISO Selection
+    DOWNLOADS_DIR="/home/$USER/Downloads"
     ISO_PATH=""
 
-    mapfile -d '' -t ISO_FILES < <(find "$ISO_DIR" -maxdepth 1 -type f -iname '*.iso' -print0 | sort -z)
+    ensure_permissions() {
+        local dir="$1"
+        local username="libvirt-qemu"
 
-    (( ${#ISO_FILES[@]} )) || { fmtr::fatal "No .iso files found in $ISO_DIR"; exit 1; }
+        if getfacl "$dir" 2>/dev/null | grep -q "user:$username:.*x"; then
+            return 0
+        fi
+
+        if [[ -x "$dir" ]]; then
+            return 0
+        fi
+
+        if command -v setfacl &> /dev/null; then
+            if setfacl --modify "user:$username:rx" "$dir" 2>/dev/null; then
+                return 0
+            fi
+        fi
+
+        chmod o+x "$dir" 2>/dev/null || return 1
+    }
+
+    if ! ensure_permissions "$DOWNLOADS_DIR"; then
+        fmtr::fatal "Failed to set proper permissions for libvirt-qemu on $DOWNLOADS_DIR."
+        exit 1
+    fi
+
+    mapfile -d '' -t ISO_FILES < <(find "$DOWNLOADS_DIR" -maxdepth 1 -type f -iname '*.iso' -print0 | sort -z)
+
+    if (( ${#ISO_FILES[@]} == 0 )); then
+        fmtr::fatal "No .iso files found in $DOWNLOADS_DIR"
+        exit 1
+    fi
 
     while :; do
-        menu="Available ISOs ($ISO_DIR)\n"
+        menu="Available ISOs ($DOWNLOADS_DIR):\n"
         for i in "${!ISO_FILES[@]}"; do
             menu+="\n  $((i+1))) $(basename -- "${ISO_FILES[$i]}")"
         done
@@ -76,7 +105,6 @@ system_info() {
         break
     done
 
-    # Windows ISO Version Detection
     if grep -a -m1 -q '10\.0\.22' "$ISO_PATH"; then
         WIN_VERSION="win11"
     else
@@ -132,15 +160,14 @@ configure_xml() {
     local enable_evdev=""
 
     while :; do
-        read -r -p "$(fmtr::ask_inline "Enable evdev input device passthrough? [y/n]: ")" enable_evdev
+        read -r -p "$(fmtr::ask_inline "Configure evdev? [y/n]: ")" enable_evdev
         printf '%s\n' "$enable_evdev" >>"$LOG_FILE"
 
         case "$enable_evdev" in
             [Yy]*)
-                # Prompt for grabToggle option
                 local grab_toggle=""
                 while :; do
-                    fmtr::log "Select grabToggle combination:
+                    fmtr::log "Available grabToggle combinations:
 
   1) ctrl-ctrl    4) meta-meta
   2) alt-alt      5) scrolllock
@@ -158,34 +185,31 @@ configure_xml() {
                         6) grab_toggle="ctrl-scrolllock" ;;
                         *) fmtr::warn "Invalid option. Please choose 1-6."; continue ;;
                     esac
-
-                    fmtr::info "Selected grabToggle: $grab_toggle"
                     break
                 done
 
-                # Build evdev args for keyboards
-                for kbd in /dev/input/by-id/*-event-kbd; do
-                    [ -e "$kbd" ] || continue
-                    EVDEV_ARGS+=('--input' "type=evdev,source.dev=$kbd,source.grab=all,source.grabToggle=$grab_toggle,source.repeat=on")
-                done
+                declare -A seen_devices
+                for dev in /dev/input/by-{id,path}/*-event-{kbd,mouse}; do
+                    real_dev=$(readlink -f -- "$dev")
+                    [[ ${seen_devices["$real_dev"]+x} ]] && continue
+                    seen_devices["$real_dev"]=1
 
-                # Build evdev args for pointers
-                for pointer in /dev/input/by-id/*-event-mouse; do
-                    [ -e "$pointer" ] || continue
-                    EVDEV_ARGS+=('--input' "type=evdev,source.dev=$pointer,source.grabToggle=$grab_toggle")
+                    if [[ "$dev" == *-event-kbd ]]; then
+                        EVDEV_ARGS+=('--input' "type=evdev,source.dev=$dev,source.grab=all,source.grabToggle=$grab_toggle,source.repeat=on")
+                    else
+                        EVDEV_ARGS+=('--input' "type=evdev,source.dev=$dev,source.grabToggle=$grab_toggle")
+                    fi
                 done
 
                 fmtr::info "Evdev passthrough enabled."
                 break
                 ;;
             [Nn]*)
-                EVDEV_ARGS=()
                 fmtr::info "Evdev input passthrough disabled."
                 break
                 ;;
             *)
                 fmtr::warn "Please answer y or n."
-                continue
                 ;;
         esac
     done
@@ -369,7 +393,7 @@ configure_xml() {
         --input "mouse,bus=usb"    # USB mouse instead of PS2
         --input "keyboard,bus=usb" # USB keyboard instead of PS2
 
-        "${EVDEV_ARGS[@]}"         # Evdev configuration
+        #"${EVDEV_ARGS[@]}"         # Evdev configuration
 
 
 
@@ -461,14 +485,21 @@ configure_xml() {
 
 
 
-        --autoconsole none
+        ################################################################################
+        #
+        # Miscellaneous Options:
+        #
+
+        --noautoconsole
+        --wait
     )
 
     # https://man.archlinux.org/man/virt-install.1
     # sudo virt-install --features help
 
+    # TODO: Figure out weird boot hang freeze
     $ROOT_ESC virt-install "${args[@]}" &>> "$LOG_FILE" && \
-    virt-manager --connect qemu:///system --show-domain-console $DOMAIN_NAME &>> "$LOG_FILE"
+    virt-manager --connect qemu:///system --show-domain-console "$DOMAIN_NAME" &>> "$LOG_FILE"
 }
 
 system_info
