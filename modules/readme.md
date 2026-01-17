@@ -927,6 +927,9 @@ done
 - https://looking-glass.io/
 - https://github.com/gnif/LookingGlass
 
+- Building
+  - https://looking-glass.io/docs/B7/build/#building-the-windows-installer
+
 ## Unique Identifiers:
 
 - GUID
