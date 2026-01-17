@@ -904,3 +904,56 @@ done
 
 
 </details>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Looking Glass
+
+<details>
+<summary>Expand for details...</summary>
+
+- https://looking-glass.io/
+- https://github.com/gnif/LookingGlass
+
+## LG Unique Identifiers:
+
+- GUID
+  - vendor/ivshmem/ivshmem.h
+- Windows driver/package
+  - host/platform/Windows/installer.nsi
+  - idd/installer.nsi
+
+#### 1. GUID_DEVINTERFACE_IVSHMEM
+```
+LookingGlass/vendor/ivshmem/ivshmem.h
+```
+```h
+DEFINE_GUID (GUID_DEVINTERFACE_IVSHMEM,
+    0xdf576976,0x569d,0x4672,0x95,0xa0,0xf5,0x7e,0x4e,0xa0,0xb2,0x10);
+// {df576976-569d-4672-95a0-f57e4ea0b210}
+```
+
+#### 2. PCI_KVMFR_{VENDOR,DEVICE}_ID
+```
+module/kvmfr.c
+```
+```c
+#define PCI_KVMFR_VENDOR_ID 0x1af4 //Red Hat Inc,
+#define PCI_KVMFR_DEVICE_ID 0x1110 //Inter-VM shared memory
+...
+#define KVMFR_DEV_NAME    "kvmfr"
+```
+
+</details>
