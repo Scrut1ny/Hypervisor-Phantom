@@ -4,7 +4,7 @@ OUT="./VBIOS_${BDF}.rom"
 
 # Identify current driver (save it before unbinding)
 DRIVER_PATH="$(readlink "$DEV/driver" 2>/dev/null || true)"
-DRIVER_NAME="$(basename "$DRIVER_PATH" 2>/dev/null || true)"
+DRIVER_NAME="${DRIVER_PATH##*/}"
 
 # Unbind only if a driver is currently bound
 if [[ -n "$DRIVER_NAME" ]]; then
