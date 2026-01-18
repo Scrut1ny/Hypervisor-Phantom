@@ -393,7 +393,7 @@ configure_xml() {
         --input "mouse,bus=usb"    # USB mouse instead of PS2
         --input "keyboard,bus=usb" # USB keyboard instead of PS2
 
-        #"${EVDEV_ARGS[@]}"         # Evdev configuration
+        "${EVDEV_ARGS[@]}"         # Evdev configuration
 
 
 
