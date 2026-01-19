@@ -2,13 +2,7 @@
 
 [[ -z "$DISTRO" || -z "$LOG_FILE" ]] && { echo "Required environment variables not set."; exit 1; }
 
-source "./utils.sh"
-
-declare -r CPU_VENDOR=$(case "$VENDOR_ID" in
-  *AuthenticAMD*) echo "amd" ;;
-  *GenuineIntel*) echo "intel" ;;
-  *) fmtr::error "Unknown CPU Vendor ID."; exit 1 ;;
-esac)
+source ./utils.sh || { echo "Failed to load utilities module!"; exit 1; }
 
 readonly SRC_DIR="$(pwd)/src"
 readonly OUT_DIR="/opt/Hypervisor-Phantom/firmware"
@@ -16,7 +10,7 @@ readonly OUT_DIR="/opt/Hypervisor-Phantom/firmware"
 readonly EDK2_TAG="edk2-stable202511"
 readonly EDK2_URL="https://github.com/tianocore/edk2.git"
 
-readonly OVMF_PATCH="$(pwd)/patches/EDK2/${CPU_VENDOR}-${EDK2_TAG}.patch"
+readonly OVMF_PATCH="$(pwd)/patches/EDK2/${CPU_MANUFACTURER}-${EDK2_TAG}.patch"
 
 REQUIRED_PKGS_Arch=(base-devel acpica git imagemagick nasm python patch virt-firmware wget)
 REQUIRED_PKGS_Debian=(build-essential uuid-dev acpica-tools git imagemagick nasm python-is-python3 patch python3-virt-firmware wget)
@@ -65,7 +59,7 @@ acquire_edk2_source() {
 patch_ovmf() {
   [ -f "$OVMF_PATCH" ] || { fmtr::error "Missing '$OVMF_PATCH' patch file!"; return 1; }
   git apply < "$OVMF_PATCH" &>>"$LOG_FILE" || { fmtr::error "Failed to apply '$OVMF_PATCH'!"; return 1; }
-  fmtr::log "Applied '${CPU_VENDOR}-${EDK2_TAG}.patch' successfully."
+  fmtr::log "Applied '${CPU_MANUFACTURER}-${EDK2_TAG}.patch' successfully."
 
   fmtr::info "Applying dynamic modifications..."
 

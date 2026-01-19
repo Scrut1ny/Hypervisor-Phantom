@@ -2,9 +2,9 @@
 
 [[ -z "$DISTRO" || -z "$LOG_FILE" ]] && { echo "Required environment variables not set."; exit 1; }
 
-source "./utils.sh"
+source ./utils.sh || { echo "Failed to load utilities module!"; exit 1; }
 
-readonly SRC_DIR="src"
+readonly SRC_DIR="$(pwd)/src"
 readonly TKG_URL="https://github.com/Frogging-Family/linux-tkg.git"
 readonly TKG_DIR="linux-tkg"
 readonly TKG_CFG_DIR="../../$SRC_DIR/linux-tkg/customization.cfg"
@@ -118,7 +118,7 @@ modify_customization_cfg() {
 
   while true; do
 
-    if [[ "$VENDOR_ID" == *AuthenticAMD* ]]; then
+    if [[ "$CPU_VENDOR_ID" == "AuthenticAMD" ]]; then
       vendor="AMD" && fmtr::info "Detected CPU Vendor: $vendor
 
   - https://wikipedia.org/wiki/List_of_${vendor}_CPU_microarchitectures
@@ -155,7 +155,7 @@ modify_customization_cfg() {
           ;;
       esac
 
-    elif [[ "$VENDOR_ID" == *GenuineIntel* ]]; then
+    elif [[ "$CPU_VENDOR_ID" == "GenuineIntel" ]]; then
       vendor="Intel" && fmtr::info "Detected CPU Vendor: $vendor
 
   - https://wikipedia.org/wiki/List_of_${vendor}_CPU_microarchitectures

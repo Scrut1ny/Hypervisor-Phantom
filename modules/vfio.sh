@@ -2,13 +2,18 @@
 
 [[ -z "$DISTRO" || -z "$LOG_FILE" ]] && { echo "Required environment variables not set."; exit 1; }
 
-source "./utils.sh"
+source ./utils.sh || { echo "Failed to load utilities module!"; exit 1; }
 
 readonly VFIO_CONF_PATH="/etc/modprobe.d/vfio.conf"
 readonly VFIO_KERNEL_OPTS_REGEX='(intel_iommu=[^ ]*|iommu=[^ ]*)'
-readonly -a SDBOOT_CONF_LOCATIONS=(/boot/loader/entries /boot/efi/loader/entries /efi/loader/entries)
 
-declare -A SOFTDEPS=(
+readonly -a SDBOOT_CONF_LOCATIONS=(
+    /boot/loader/entries
+    /boot/efi/loader/entries
+    /efi/loader/entries
+)
+
+declare -A GPU_DRIVERS=(
     ["0x10de"]="nouveau nvidia nvidia_drm"
     ["0x1002"]="amdgpu radeon"
     ["0x8086"]="i915"
@@ -26,7 +31,6 @@ detect_bootloader() {
         done
         [[ $SYSTEMD_BOOT_ENTRY_DIR ]] || { fmtr::error "No supported bootloader detected (GRUB or systemd-boot). Exiting."; exit 1; }
     }
-    export BOOTLOADER_TYPE SYSTEMD_BOOT_ENTRY_DIR
 }
 
 ################################################################################
@@ -41,13 +45,13 @@ revert_vfio() {
     fi
 
     if [[ $BOOTLOADER_TYPE == grub ]]; then
-        $ROOT_ESC sed -E -i "/^GRUB_CMDLINE_LINUX_DEFAULT=/ {
-        s/$VFIO_KERNEL_OPTS_REGEX//g;
-        s/[[:space:]]+/ /g;
-        s/\"[[:space:]]+/\"/;
-        s/[[:space:]]+\"/\"/;
-    }" /etc/default/grub
-    fmtr::log "Removed VFIO kernel opts from GRUB config."
+        $ROOT_ESC sed -E -i '/^GRUB_CMDLINE_LINUX_DEFAULT=/{
+            s/'"$VFIO_KERNEL_OPTS_REGEX"'//g
+            s/[[:space:]]+/ /g
+            s/"[[:space:]]+/"
+            s/[[:space:]]+"/"/
+        }' /etc/default/grub
+        fmtr::log "Removed VFIO kernel opts from GRUB config."
 
     elif [[ $BOOTLOADER_TYPE == systemd-boot && $SYSTEMD_BOOT_ENTRY_DIR ]]; then
         local config_file
@@ -123,7 +127,7 @@ $(printf '  [%s]\n' "${badf[@]}")"
 
     {
         printf 'options vfio-pci ids=%s disable_vga=1\n' "$hwids"
-        for soft in ${SOFTDEPS[$pci_vendor]:-}; do printf 'softdep %s pre: vfio-pci\n' "$soft"; done
+        for soft in ${GPU_DRIVERS[$pci_vendor]:-}; do printf 'softdep %s pre: vfio-pci\n' "$soft"; done
     } | $ROOT_ESC tee "$VFIO_CONF_PATH" >>"$LOG_FILE"
 
     # sudo sed -i 's/^MODULES=()$/MODULES=(vfio vfio_iommu_type1 vfio_pci)/' /etc/mkinitcpio.conf
@@ -136,7 +140,7 @@ $(printf '  [%s]\n' "${badf[@]}")"
 configure_bootloader() {
     local -a kernel_opts
     kernel_opts=( "iommu=pt" )
-    [[ "$VENDOR_ID" == *GenuineIntel* ]] && kernel_opts=( "intel_iommu=on" "${kernel_opts[@]}" )
+    [[ "$CPU_VENDOR_ID" == "GenuineIntel" ]] && kernel_opts=( "intel_iommu=on" "${kernel_opts[@]}" )
 
     local kernel_opts_str="${kernel_opts[*]}"
 

@@ -2,30 +2,25 @@
 
 [[ -z "$DISTRO" || -z "$LOG_FILE" ]] && { echo "Required environment variables not set."; exit 1; }
 
-source "./utils.sh"
+source ./utils.sh || { echo "Failed to load utilities module!"; exit 1; }
 
 system_info() {
     # Domain Name
     DOMAIN_NAME="Hypervisor-Phantom"
-
-    # Sets CPU Virtualization
-    if [[ "$VENDOR_ID" == *AuthenticAMD* ]]; then
-        CPU_VENDOR="svm"
-    elif [[ "$VENDOR_ID" == *GenuineIntel* ]]; then
-        CPU_VENDOR="vmx"
-    else
-        CPU_VENDOR="unknown"
-    fi
 
     # CPU Topology
     HOST_LOGICAL_CPUS=$(nproc --all 2>/dev/null || nproc 2>/dev/null)
     HOST_CORES_PER_SOCKET=$(LC_ALL=C lscpu | sed -n 's/^Core(s) per socket:[[:space:]]*//p')
     HOST_THREADS_PER_CORE=$(LC_ALL=C lscpu | sed -n 's/^Thread(s) per core:[[:space:]]*//p')
 
-    # Generate a fully random, locally administered unicast MAC address.
-    MAC_ADDRESS=$(printf '02%s\n' "$(hexdump -vn5 -e '5/1 ":%02x"' /dev/urandom)")
-
-    # TODO: Add nmcli detection of default interface and use it to get mac address first 3 octets
+    # MAC Address (Uses host's OUI)
+    UPLINK_IFACE=$(nmcli -t device show | awk -F: '
+    /^GENERAL.DEVICE/ {dev=$2}
+    /^GENERAL.TYPE/   {type=$2}
+    /^IP4.GATEWAY/ && $2!="" && type!="wireguard" {print dev; exit}
+    ')
+    OUI=$(cat /sys/class/net/"$UPLINK_IFACE"/address | awk -F: '{print $1 ":" $2 ":" $3}')
+    RANDOM_MAC="$OUI:$(printf '%02x:%02x:%02x' $((RANDOM%256)) $((RANDOM%256)) $((RANDOM%256)))"
 
     # Random 20-char hex serial (A-F0-9)
     DRIVE_SERIAL="$(LC_ALL=C tr -dc 'A-F0-9' </dev/urandom | head -c 20)"
@@ -51,20 +46,49 @@ system_info() {
             *) fmtr::warn "Invalid option. Please choose 1, 2, 3, or 4."; continue ;;
         esac
 
-        fmtr::info "Selected #$mem_choice (${HOST_MEMORY_MIB} MiB)"
+        fmtr::info "Selected #$mem_choice ($HOST_MEMORY_MIB MiB)"
         break
     done
 
-    # ISO Selection (from /var/lib/libvirt/images)
-    ISO_DIR="/var/lib/libvirt/images"
+    # ISO Selection
+    DOWNLOADS_DIR="/home/$USER/Downloads"
     ISO_PATH=""
 
-    mapfile -d '' -t ISO_FILES < <(find "$ISO_DIR" -maxdepth 1 -type f -iname '*.iso' -print0 | sort -z)
+    ensure_permissions() {
+        local dir="$1"
+        local username="libvirt-qemu"
 
-    (( ${#ISO_FILES[@]} )) || { fmtr::fatal "No .iso files found in $ISO_DIR"; exit 1; }
+        if getfacl "$dir" 2>/dev/null | grep -q "user:$username:.*x"; then
+            return 0
+        fi
+
+        if [[ -x "$dir" ]]; then
+            return 0
+        fi
+
+        if command -v setfacl &> /dev/null; then
+            if setfacl --modify "user:$username:rx" "$dir" 2>/dev/null; then
+                return 0
+            fi
+        fi
+
+        chmod o+x "$dir" 2>/dev/null || return 1
+    }
+
+    if ! ensure_permissions "$DOWNLOADS_DIR"; then
+        fmtr::fatal "Failed to set proper permissions for libvirt-qemu on $DOWNLOADS_DIR."
+        exit 1
+    fi
+
+    mapfile -d '' -t ISO_FILES < <(find "$DOWNLOADS_DIR" -maxdepth 1 -type f -iname '*.iso' -print0 | sort -z)
+
+    if (( ${#ISO_FILES[@]} == 0 )); then
+        fmtr::fatal "No .iso files found in $DOWNLOADS_DIR"
+        exit 1
+    fi
 
     while :; do
-        menu="Available ISOs ($ISO_DIR)\n"
+        menu="Available ISOs ($DOWNLOADS_DIR):\n"
         for i in "${!ISO_FILES[@]}"; do
             menu+="\n  $((i+1))) $(basename -- "${ISO_FILES[$i]}")"
         done
@@ -81,7 +105,6 @@ system_info() {
         break
     done
 
-    # Windows ISO Version Detection
     if grep -a -m1 -q '10\.0\.22' "$ISO_PATH"; then
         WIN_VERSION="win11"
     else
@@ -96,6 +119,101 @@ configure_xml() {
         return 1
     fi
 
+    ################################################################################
+    #
+    # Hyper-V
+    #
+
+    local HYPERV_ARGS=()
+    local enable_hyperv=""
+
+    while :; do
+        read -r -p "$(fmtr::ask_inline "Enable Hyper-V enlightenments (passthrough mode)? [y/n]: ")" enable_hyperv
+        printf '%s\n' "$enable_hyperv" >>"$LOG_FILE"
+
+        case "$enable_hyperv" in
+            [Yy]*)
+                HYPERV_ARGS=('--xml' "./features/hyperv/@mode=passthrough")
+                HYPERV_CLOCK_STATUS="yes"
+                fmtr::info "Setting Hyper-V to passthrough mode."
+                break
+                ;;
+            [Nn]*)
+                HYPERV_ARGS=() # TODO: Add all enlightenments, but make sure all are disabled
+                HYPERV_CLOCK_STATUS="no"
+                fmtr::info "Hyper-V enlightenments will be explicitly disabled."
+                break
+                ;;
+            *)
+                fmtr::warn "Please answer y or n."
+                continue
+                ;;
+        esac
+    done
+
+    ################################################################################
+    #
+    # EVDEV
+    #
+
+    local EVDEV_ARGS=()
+    local enable_evdev=""
+
+    while :; do
+        read -r -p "$(fmtr::ask_inline "Configure evdev? [y/n]: ")" enable_evdev
+        printf '%s\n' "$enable_evdev" >>"$LOG_FILE"
+
+        case "$enable_evdev" in
+            [Yy]*)
+                local grab_toggle=""
+                while :; do
+                    fmtr::log "Available grabToggle combinations:
+
+  1) ctrl-ctrl    4) meta-meta
+  2) alt-alt      5) scrolllock
+  3) shift-shift  6) ctrl-scrolllock"
+
+                    read -r -p "$(fmtr::ask_inline "Choose an option [1-6]: ")" grab_toggle
+                    printf '%s\n' "$grab_toggle" >>"$LOG_FILE"
+
+                    case "$grab_toggle" in
+                        1) grab_toggle="ctrl-ctrl" ;;
+                        2) grab_toggle="alt-alt" ;;
+                        3) grab_toggle="shift-shift" ;;
+                        4) grab_toggle="meta-meta" ;;
+                        5) grab_toggle="scrolllock" ;;
+                        6) grab_toggle="ctrl-scrolllock" ;;
+                        *) fmtr::warn "Invalid option. Please choose 1-6."; continue ;;
+                    esac
+                    break
+                done
+
+                declare -A seen_devices
+                for dev in /dev/input/by-{id,path}/*-event-{kbd,mouse}; do
+                    real_dev=$(readlink -f -- "$dev")
+                    [[ ${seen_devices["$real_dev"]+x} ]] && continue
+                    seen_devices["$real_dev"]=1
+
+                    if [[ "$dev" == *-event-kbd ]]; then
+                        EVDEV_ARGS+=('--input' "type=evdev,source.dev=$dev,source.grab=all,source.grabToggle=$grab_toggle,source.repeat=on")
+                    else
+                        EVDEV_ARGS+=('--input' "type=evdev,source.dev=$dev,source.grabToggle=$grab_toggle")
+                    fi
+                done
+
+                fmtr::info "Evdev passthrough enabled."
+                break
+                ;;
+            [Nn]*)
+                fmtr::info "Evdev input passthrough disabled."
+                break
+                ;;
+            *)
+                fmtr::warn "Please answer y or n."
+                ;;
+        esac
+    done
+
     local -a args=(
         ################################################################################
         #
@@ -104,8 +222,8 @@ configure_xml() {
         #
 
         --connect qemu:///system
-        --name "${DOMAIN_NAME}"
-        --osinfo "${WIN_VERSION}"
+        --name "$DOMAIN_NAME"
+        --osinfo "$WIN_VERSION"
 
 
 
@@ -119,7 +237,7 @@ configure_xml() {
         # Allocate realistic memory amounts, such as 8, 16, 32, and 64.
         #
 
-        --memory "${HOST_MEMORY_MIB}"
+        --memory "$HOST_MEMORY_MIB"
 
 
 
@@ -150,33 +268,14 @@ configure_xml() {
         #   - https://libvirt.org/formatdomain.html#hypervisor-features
         #
 
-        --features "hyperv.relaxed.state=off"   #
-        --features "hyperv.vapic.state=off"     #
-        --features "hyperv.spinlocks.state=off" #
-        --features "hyperv.spinlocks.retries="  #
-        --features "hyperv.vpindex.state=off"   #
-        --features "hyperv.runtime.state=off"   #
-        --features "hyperv.synic.state=off"     #
-        --features "hyperv.stimer.state=off"    #
-        --features "hyperv.reset.state=off"     #
+        "${HYPERV_ARGS[@]}"
 
-        --xml "./features/hyperv/@mode=custom"
-        --xml "./features/hyperv/vendor_id/@state=on"
-        --xml "./features/hyperv/vendor_id/@value=${VENDOR_ID}" # CPU Vendor ID obtained via 'main.sh'
-
-        --features "hyperv.frequencies.state=off"     #
-        --features "hyperv.reenlightenment.state=off" #
-        --features "hyperv.tlbflush.state=off"        #
-        --features "hyperv.ipi.state=off"             #
-        --features "hyperv.evmcs.state=off"           #
-        --features "hyperv.avic.state=off"            #
-        --features "hyperv.emsr_bitmap.state=off"     #
-
-        --features "kvm.hidden.state=on" # CONCEALMENT: Hide the KVM hypervisor from standard MSR based discovery (CPUID Bitset)
-        --features "pmu.state=off"       # CONCEALMENT: Disables the Performance Monitoring Unit (PMU)
-        --features "vmport.state=off"    # CONCEALMENT: Disables the VMware I/O port backdoor (VMPort, 0x5658) in the guest | FYI: ACE AC looks for this
-        --features "smm.state=on"        #
-        --features "msrs.unknown=fault"  # CONCEALMENT: Injects a #GP(0) into the guest on RDMSR/WRMSR to an unhandled/unknown MSR
+        --features "kvm.hidden.state=on"  # CONCEALMENT: Hide the KVM hypervisor from standard MSR based discovery (CPUID Bitset)
+        --features "pmu.state=off"        # CONCEALMENT: Disables the Performance Monitoring Unit (PMU)
+        --features "vmport.state=off"     # CONCEALMENT: Disables the VMware I/O port backdoor (VMPort, 0x5658) in the guest | FYI: ACE AC looks for this
+        --features "smm.state=on"         # Secure boot requires SMM feature enabled
+        --features "msrs.unknown=fault"   # CONCEALMENT: Injects a #GP(0) into the guest on RDMSR/WRMSR to an unhandled/unknown MSR
+        --xml "./features/ps2/@state=off" # CONCEALMENT: Disable PS/2 controller emulation
 
 
 
@@ -188,7 +287,7 @@ configure_xml() {
         #   - https://libvirt.org/formatdomain.html#cpu-model-and-topology
         #
 
-        --cpu "host-passthrough,topology.sockets=1,topology.cores=${HOST_CORES_PER_SOCKET},topology.threads=${HOST_THREADS_PER_CORE}"
+        --cpu "host-passthrough,topology.sockets=1,topology.cores=$HOST_CORES_PER_SOCKET,topology.threads=$HOST_THREADS_PER_CORE"
 
         --xml "./cpu/@check=none"
         --xml "./cpu/@migratable=off"
@@ -199,13 +298,13 @@ configure_xml() {
 
         # TODO: Make this change based on if user is on AMD or Intel
 
-        --xml "./cpu/feature[@name='${CPU_VENDOR}']/@policy=require" # OPTIMIZATION: Enables AMD SVM (CPUID.80000001:ECX[2])
-        --xml "./cpu/feature[@name='topoext']/@policy=require"       # OPTIMIZATION: Exposes extended topology (CPUID.80000001:ECX[22], CPUID.8000001E)
-        --xml "./cpu/feature[@name='invtsc']/@policy=require"        # OPTIMIZATION: Provides invariant TSC (CPUID.80000007:EDX[8])
-        --xml "./cpu/feature[@name='hypervisor']/@policy=disable"    # CONCEALMENT: Clears Hypervisor Present bit (CPUID.1:ECX[31])
-        --xml "./cpu/feature[@name='ssbd']/@policy=disable"          # CONCEALMENT: Clears Speculative Store Bypass Disable (CPUID.7.0:EDX[31])
-        --xml "./cpu/feature[@name='amd-ssbd']/@policy=disable"      # CONCEALMENT: Clears AMD SSBD flag (CPUID.80000008:EBX[25])
-        --xml "./cpu/feature[@name='virt-ssbd']/@policy=disable"     # CONCEALMENT: Clears virtual SSBD exposure (CPUID.7.0:EDX[31])
+        --xml "./cpu/feature[@name='$CPU_VIRTUALIZATION']/@policy=require" # OPTIMIZATION: Enables AMD SVM (CPUID.80000001:ECX[2])
+        --xml "./cpu/feature[@name='topoext']/@policy=require"             # OPTIMIZATION: Exposes extended topology (CPUID.80000001:ECX[22], CPUID.8000001E)
+        --xml "./cpu/feature[@name='invtsc']/@policy=require"              # OPTIMIZATION: Provides invariant TSC (CPUID.80000007:EDX[8])
+        --xml "./cpu/feature[@name='hypervisor']/@policy=disable"          # CONCEALMENT: Clears Hypervisor Present bit (CPUID.1:ECX[31])
+        --xml "./cpu/feature[@name='ssbd']/@policy=disable"                # CONCEALMENT: Clears Speculative Store Bypass Disable (CPUID.7.0:EDX[31])
+        --xml "./cpu/feature[@name='amd-ssbd']/@policy=disable"            # CONCEALMENT: Clears AMD SSBD flag (CPUID.80000008:EBX[25])
+        --xml "./cpu/feature[@name='virt-ssbd']/@policy=disable"           # CONCEALMENT: Clears virtual SSBD exposure (CPUID.7.0:EDX[31])
 
 
 
@@ -220,9 +319,9 @@ configure_xml() {
         --xml "./clock/@offset=localtime"
         --xml "./clock/timer[@name='tsc']/@present=yes"
         --xml "./clock/timer[@name='tsc']/@mode=native"
-        --xml "./clock/timer[@name='hpet']/@present=yes"
-        --xml "./clock/timer[@name='kvmclock']/@present=no"    # CONCEALMENT: Disable KVM paravirtual clock source
-        --xml "./clock/timer[@name='hypervclock']/@present=no" # CONCEALMENT: Disable Hyper-V paravirtual clock source
+        # --xml "./clock/timer[@name='hpet']/@present=yes"
+        --xml "./clock/timer[@name='kvmclock']/@present=no"                      # CONCEALMENT: Disable KVM paravirtual clock source
+        --xml "./clock/timer[@name='hypervclock']/@present=$HYPERV_CLOCK_STATUS" # CONCEALMENT: Disable Hyper-V paravirtual clock source
 
 
 
@@ -263,7 +362,7 @@ configure_xml() {
 
         # --disk type=block,device=disk,source=/dev/nvme0n1,driver.name=qemu,driver.type=raw,driver.cache=none,driver.io=native,target.dev=nvme0,target.bus=nvme,serial=1233659 \
 
-        --disk "size=500,bus=nvme,serial=${DRIVE_SERIAL}"
+        --disk "size=500,bus=nvme,serial=$DRIVE_SERIAL"
         --check "disk_size=off"
         --cdrom "$ISO_PATH"
 
@@ -279,8 +378,22 @@ configure_xml() {
         #   - https://libvirt.org/formatdomain.html#network-interfaces
         #
 
-        --network "default,mac=${MAC_ADDRESS}"
+        --network "network=default,mac=$RANDOM_MAC"
 
+
+
+
+
+        ################################################################################
+        #
+        # Documentation:
+        #   - https://libvirt.org/formatdomain.html#input-devices
+        #
+
+        --input "mouse,bus=usb"    # USB mouse instead of PS2
+        --input "keyboard,bus=usb" # USB keyboard instead of PS2
+
+        "${EVDEV_ARGS[@]}"         # Evdev configuration
 
 
 
@@ -349,10 +462,21 @@ configure_xml() {
         ################################################################################
         #
         # Documentation:
+        #   - https://libvirt.org/formatdomain.html#consoles-serial-parallel-channel-devices
+        #
+
+        --console "none" # Removed because added by default
+        --channel "none" # Removed because added by default
+
+
+
+
+
+        ################################################################################
+        #
+        # Documentation:
         #   - https://www.libvirt.org/kbase/qemu-passthrough-security.html
         #   - https://www.qemu.org/docs/master/system/qemu-manpage.html#hxtool-4
-        #
-        #
         #
 
         --qemu-commandline="-smbios file=/opt/Hypervisor-Phantom/firmware/smbios.bin"
@@ -363,20 +487,20 @@ configure_xml() {
 
         ################################################################################
         #
-        # Documentation:
-        #   - https://libvirt.org/formatdomain.html#consoles-serial-parallel-channel-devices
+        # Miscellaneous Options:
         #
 
-        --input "none"
-        --console "none"
-        --channel "none"
+        --noautoconsole
+        --wait
     )
 
     # https://man.archlinux.org/man/virt-install.1
+    # sudo virt-install --features help
 
-    $ROOT_ESC virt-install "${args[@]}" && \
-    virt-manager --connect qemu:///system --show-domain-console ${DOMAIN_NAME}
-} &>>"$LOG_FILE"
+    # TODO: Figure out weird boot hang freeze
+    $ROOT_ESC virt-install "${args[@]}" &>> "$LOG_FILE" && \
+    virt-manager --connect qemu:///system --show-domain-console "$DOMAIN_NAME" &>> "$LOG_FILE"
+}
 
 system_info
 configure_xml

@@ -182,22 +182,21 @@ amdgpu.sg_display=0
 
 
 <details>
-<summary>Virtual Video & Audio</summary>
+<summary>Virtual Audio & Video (AV)</summary>
 
-## Bring live video from your smartphone, remote computer, or friends directly into OBS or other studio software.
-- [meshcast.io](https://meshcast.io/)
-- [VDO.Ninja](https://vdo.ninja/)
+## Video
+- Display
+  - [LookingGlass](https://github.com/gnif/LookingGlass)
+    - [Virtual-Display-Driver](https://github.com/itsmikethetech/Virtual-Display-Driver)
+  - [memflow-mirror](https://github.com/ko1N/memflow-mirror)
+- Streaming (WHIP/WHEP)
+  - [meshcast.io](https://meshcast.io/)
+  - [VDO.Ninja](https://vdo.ninja/)
+- Webcam Manipulation
+  - [Deep-Live-Cam](https://github.com/hacksider/Deep-Live-Cam)
 
-## VB-CABLE Virtual Audio Device
-- [VB-AUDIO Software](https://vb-audio.com/Cable/index.htm)
-    - [Windows Download](https://download.vb-audio.com/Download_CABLE/VBCABLE_Driver_Pack43.zip)
-
-## Virtual Displays
-- [Virtual-Display-Driver](https://github.com/itsmikethetech/Virtual-Display-Driver)
-- [memflow-mirror](https://github.com/ko1N/memflow-mirror)
-
-## Webcam Manipulation
-- [Deep-Live-Cam](https://github.com/hacksider/Deep-Live-Cam)
+## Audio
+- [VB-AUDIO](https://vb-audio.com/Cable/index.htm)
 
 </details>
 
@@ -237,20 +236,19 @@ amdgpu.sg_display=0
 - OCR Powered Screen-Capture Tools
     - Linux:
         - [NormCap](https://github.com/dynobo/normcap)
-        - [TextSnatcher](https://github.com/RajSolai/TextSnatcher)
     - Windows:
         - [ShareX](https://github.com/ShareX/ShareX)
 - RAT (Remote Access/Administration Trojan)
     - [Quasar](https://github.com/quasar/Quasar)
         - [Resource Hacker](https://www.angusj.com/resourcehacker/)
-- RDP (Remote Desktop Protocal)
-    - [Ammyy Admin](https://www.ammyy.com/)
-    - [MeshCentral](https://github.com/Ylianst/MeshCentral)
 - Monitor EDID Modifiers
+  - EEPROM EDID (Hardware)
+    - [Monitor Tests](https://www.monitortests.com/)
+      - [EDID/DisplayID Writer](https://www.monitortests.com/forum/Thread-EDID-DisplayID-Writer)
+  - Windows INF override registry EDID (Software)
+    - [Monitor Tests](https://www.monitortests.com/)
+      - [Custom Resolution Utility (CRU)](https://www.monitortests.com/forum/Thread-Custom-Resolution-Utility-CRU)
     - [Monitor Asset Manager](https://www.entechtaiwan.com/util/moninfo.shtm)
-        - [Dell Article](https://www.dell.com/support/kbdoc/en-us/000156229/using-monitor-asset-manager-version-2-6-to-read-extended-display-identification-data-edid-information)
-        - [Using an INF file to override EDIDs](https://learn.microsoft.com/en-us/windows-hardware/drivers/display/overriding-monitor-edids)
-    - [Custom Resolution Utility (CRU)](https://www.monitortests.com/forum/Thread-Custom-Resolution-Utility-CRU)
 - UEFI/BIOS Editors
     - [Phoenix BIOS Editor](https://theretroweb.com/drivers/208)
     - [UEFITool](https://github.com/LongSoft/UEFITool)

@@ -2,9 +2,9 @@
 
 [[ -z "$DISTRO" || -z "$LOG_FILE" ]] && { echo "Required environment variables not set."; exit 1; }
 
-source "./utils.sh"
+source ./utils.sh || { echo "Failed to load utilities module!"; exit 1; }
 
-readonly SRC_DIR="src"
+readonly SRC_DIR="$(pwd)/src"
 readonly LG_URL="https://looking-glass.io/artifact/stable/source"
 readonly LG_VERSION="B7"
 readonly LG_ARCHIVE="looking-glass-$LG_VERSION.tar.gz"
@@ -77,10 +77,10 @@ install_looking_glass() {
   fmtr::info "Building, compiling, and installing LG..."
   cd looking-glass-$LG_VERSION && mkdir client/build && cd client/build
 
-  if [[ "$VENDOR_ID" == *GenuineIntel* ]]; then
+  if [[ "$CPU_VENDOR_ID" == "GenuineIntel" ]]; then
       NEW_VENDOR_ID="0x8086"
       NEW_DEVICE_ID="0x8086"
-  elif [[ "$VENDOR_ID" == *AuthenticAMD* ]]; then
+  elif [[ "$CPU_VENDOR_ID" == "AuthenticAMD" ]]; then
       NEW_VENDOR_ID="0x1022"
       NEW_DEVICE_ID="0x1022"
   else
