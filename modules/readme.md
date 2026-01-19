@@ -155,43 +155,7 @@ QEMU XML:
 <details>
 <summary>Expand for details...</summary>
 
-## evdev
 
-#### References
-- [Libvirt - Input devices](https://libvirt.org/formatdomain.html#input-devices)
-- [Arch Wiki - Passing keyboard/mouse via Evdev](https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#Passing_keyboard/mouse_via_Evdev)
-- [Guide - "Evdev Passthrough Explained — Cheap, Seamless VM Input"](https://passthroughpo.st/using-evdev-passthrough-seamless-vm-input/)
-
-| **Category**              | **Attribute**   | **Value / Options**                                                       |
-|---------------------------|-----------------|---------------------------------------------------------------------------|
-| **Keyboards**             | grab            | all                                                                       |
-|                           | grabToggle      | shift-shift                                                               |
-|                           | repeat          | on                                                                        |
-| **Mice**                  | grabToggle      | shift-shift                                                               |
-| **evdev Attributes**      | grab            | all                                                                       |
-|                           | grabToggle      | ctrl-ctrl, alt-alt, shift-shift, meta-meta, scrolllock, ctrl-scrolllock   |
-|                           | repeat          | on, off                                                                   |
-
-#### Automated Libvirt XML evdev bash script:
-```bash
-for kbd in /dev/input/by-id/*-event-kbd; do
-    [ -e "$kbd" ] || continue
-    cat << EOF
-    <input type="evdev">
-      <source dev="$kbd" grab="all" grabToggle="shift-shift" repeat="on"/>
-    </input>
-EOF
-done
-
-for pointer in /dev/input/by-id/*-event-mouse; do
-    [ -e "$pointer" ] || continue
-    cat << EOF
-    <input type="evdev">
-      <source dev="$pointer" grabToggle="shift-shift"/>
-    </input>
-EOF
-done
-```
 
 </details>
 
