@@ -189,16 +189,19 @@ configure_xml() {
                 done
 
                 declare -A seen_devices
+
                 for dev in /dev/input/by-{id,path}/*-event-{kbd,mouse}; do
-                    real_dev=$(readlink -f -- "$dev")
-                    [[ ${seen_devices["$real_dev"]+x} ]] && continue
+                    # Deduplicate by real path
+                    real_dev=$(readlink -f "$dev") || continue
+                    [[ -n "${seen_devices[$real_dev]}" ]] && continue
                     seen_devices["$real_dev"]=1
 
-                    if [[ "$dev" == *-event-kbd ]]; then
-                        EVDEV_ARGS+=('--input' "type=evdev,source.dev=$dev,source.grab=all,source.grabToggle=$grab_toggle,source.repeat=on")
-                    else
-                        EVDEV_ARGS+=('--input' "type=evdev,source.dev=$dev,source.grabToggle=$grab_toggle")
-                    fi
+                    # Keyboard specific config
+                    extra_config=""
+                    [[ "$dev" == *"-event-kbd" ]] && extra_config=",source.grab=all,source.repeat=on"
+
+                    # Single append operation
+                    EVDEV_ARGS+=('--input' "type=evdev,source.dev=$dev,source.grabToggle=$grab_toggle${extra_config}")
                 done
 
                 fmtr::info "Evdev passthrough enabled."
