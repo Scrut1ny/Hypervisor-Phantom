@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# https://libvirt.org/formatdomain.html#input-devices
+# https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#Passing_keyboard/mouse_via_Evdev
+
 # Keyboards: grab="all" grabToggle="shift-shift" repeat="on"
 # Mice/Trackpads: grabToggle="shift-shift"
 # evdev attributes: grab (all), repeat (on/off), grabToggle (ctrl-ctrl, alt-alt, shift-shift, meta-meta, scrolllock, ctrl-scrolllock)
