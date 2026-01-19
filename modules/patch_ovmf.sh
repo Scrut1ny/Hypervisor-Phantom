@@ -18,10 +18,10 @@ readonly EDK2_URL="https://github.com/tianocore/edk2.git"
 
 readonly OVMF_PATCH="$(pwd)/patches/EDK2/${CPU_VENDOR}-${EDK2_TAG}.patch"
 
-REQUIRED_PKGS_Arch=(base-devel acpica git nasm python patch virt-firmware wget)
-REQUIRED_PKGS_Debian=(build-essential uuid-dev acpica-tools git nasm python-is-python3 patch python3-virt-firmware wget)
-REQUIRED_PKGS_openSUSE=(gcc gcc-c++ make acpica git nasm python3 libuuid-devel patch virt-firmware wget)
-REQUIRED_PKGS_Fedora=(gcc gcc-c++ make acpica-tools git nasm python3 libuuid-devel patch python3-virt-firmware wget)
+REQUIRED_PKGS_Arch=(base-devel acpica git imagemagick nasm python patch virt-firmware wget)
+REQUIRED_PKGS_Debian=(build-essential uuid-dev acpica-tools git imagemagick nasm python-is-python3 patch python3-virt-firmware wget)
+REQUIRED_PKGS_openSUSE=(gcc gcc-c++ make acpica git imagemagick nasm python3 libuuid-devel patch virt-firmware wget)
+REQUIRED_PKGS_Fedora=(gcc gcc-c++ make acpica-tools git imagemagick nasm python3 libuuid-devel patch python3-virt-firmware wget)
 
 ################################################################################
 # Acquire EDK2 source
