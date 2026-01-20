@@ -904,7 +904,7 @@ QEMU XML:
 - Vendor/Device IDs
   - module/kvmfr.c
 
-#### 1. GUID_DEVINTERFACE_IVSHMEM
+#### GUID_DEVINTERFACE_IVSHMEM
 ```
 LookingGlass/vendor/ivshmem/ivshmem.h
 ```
@@ -914,7 +914,47 @@ DEFINE_GUID (GUID_DEVINTERFACE_IVSHMEM,
 // {df576976-569d-4672-95a0-f57e4ea0b210}
 ```
 
-#### 2. PCI_KVMFR_{VENDOR,DEVICE}_ID
+#### Windows Driver Interface GUID
+```
+idd/LGIdd/Public.h
+```
+```h
+// {997b0b66-b74c-4017-9a89-e4aad41d3780}
+DEFINE_GUID (GUID_DEVINTERFACE_LGIdd, 0x997b0b66,0xb74c,0x4017,0x9a,0x89,0xe4,0xaa,0xd4,0x1d,0x37,0x80);
+```
+
+#### Driver Tracing GUID
+```
+idd/LGIdd/Trace.h
+```
+```h
+  WPP_DEFINE_CONTROL_GUID(                                      \
+    MyDriver1TraceGuid, (58bf0aac,4a52,4560,9873,693b645c0a47), \
+```
+
+#### Hardware ID and Registry Key
+```
+idd/LGIddInstall/LGIddInstall.c
+```
+```
+#define LGIDD_CLASS_GUID GUID_DEVCLASS_DISPLAY
+#define LGIDD_CLASS_NAME L"Display"
+#define LGIDD_HWID L"Root\\LGIdd"
+#define LGIDD_HWID_MULTI_SZ (LGIDD_HWID "\0")
+#define LGIDD_INF_NAME L"LGIdd.inf"
+#define LGIDD_REGKEY L"Software\\LookingGlass\\IDD"
+```
+
+#### KVMFR Protocol Magic & Version
+```
+common/include/common/KVMFR.h
+```
+```
+#define KVMFR_MAGIC   "KVMFR---"
+#define KVMFR_VERSION 20
+```
+
+#### PCI_KVMFR_{VENDOR,DEVICE}_ID
 ```
 module/kvmfr.c
 ```
