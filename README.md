@@ -6,9 +6,9 @@ This tool provides automated setups for linux virtualization related stuff.
 
 [![](https://dcbadge.limes.pink/api/server/https://discord.gg/kW8ZtQy6xU)](https://discord.gg/kW8ZtQy6xU)
 
-</div>
-
 ![skeleton-dance-low-quality](https://github.com/user-attachments/assets/752119bd-133b-4603-a091-3628b7ce7574)
+
+</div>
 
 
 
