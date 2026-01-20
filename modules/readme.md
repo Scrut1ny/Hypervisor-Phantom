@@ -901,6 +901,8 @@ QEMU XML:
 - Windows driver/package
   - host/platform/Windows/installer.nsi
   - idd/installer.nsi
+- Vendor/Device IDs
+  - module/kvmfr.c
 
 #### 1. GUID_DEVINTERFACE_IVSHMEM
 ```
