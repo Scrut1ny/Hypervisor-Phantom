@@ -8,6 +8,10 @@ This tool provides automated setups for linux virtualization related stuff.
 
 </div>
 
+![skeleton-dance-low-quality](https://github.com/user-attachments/assets/752119bd-133b-4603-a091-3628b7ce7574)
+
+
+
 ---
 
 
