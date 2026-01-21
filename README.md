@@ -193,6 +193,8 @@ amdgpu.sg_display=0
   - [LookingGlass](https://github.com/gnif/LookingGlass)
     - [Virtual-Display-Driver](https://github.com/itsmikethetech/Virtual-Display-Driver)
   - [memflow-mirror](https://github.com/ko1N/memflow-mirror)
+  - [Sunshine](https://github.com/LizardByte/Sunshine)
+  - [Moonlight](https://github.com/moonlight-stream/moonlight-qt)
 - Streaming (WHIP/WHEP)
   - [meshcast.io](https://meshcast.io/)
   - [VDO.Ninja](https://vdo.ninja/)
