@@ -155,7 +155,13 @@ QEMU XML:
 <details>
 <summary>Expand for details...</summary>
 
+## QEMU - KVM MSRs/Signatures
 
+- Linux Kernel:
+  - https://docs.kernel.org/virt/kvm/x86/msr.html
+  - https://github.com/torvalds/linux/blob/master/arch/x86/include/uapi/asm/kvm_para.h
+- QEMU
+  - https://gitlab.com/qemu-project/qemu/-/blob/master/include/standard-headers/asm-x86/kvm_para.h
 
 </details>
 
