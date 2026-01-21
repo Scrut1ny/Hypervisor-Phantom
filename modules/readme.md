@@ -155,7 +155,7 @@ QEMU XML:
 <details>
 <summary>Expand for details...</summary>
 
-## QEMU - KVM MSRs/Signatures
+## KVM-specific custom MSR/Signatures
 
 - Linux Kernel:
   - https://docs.kernel.org/virt/kvm/x86/msr.html
