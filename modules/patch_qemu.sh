@@ -112,7 +112,7 @@ patch_qemu() {
   fmtr::log "Applied '${CPU_MANUFACTURER}-${QEMU_TAG}.patch' successfully."
 
   fmtr::info "Applying dynamic modifications..."
-  spoof_serials
+  #spoof_serials
   spoof_models
   spoof_acpi
   spoof_smbios
