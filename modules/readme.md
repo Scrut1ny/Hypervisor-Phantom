@@ -1,3 +1,24 @@
+# Linux Kernel
+
+<details>
+<summary>Expand for details...</summary>
+
+- Kernel Paramaters:
+  - https://github.com/torvalds/linux/blob/master/Documentation/admin-guide/kernel-parameters.txt
+ 
+- KVM MSRs
+  - https://docs.kernel.org/virt/kvm/x86/msr.html
+  - https://github.com/torvalds/linux/blob/master/arch/x86/include/uapi/asm/kvm_para.h
+
+</details>
+
+---
+
+
+
+
+
+
 # EDK2 (OVMF) / UEFI / Firmware
 
 <details>
