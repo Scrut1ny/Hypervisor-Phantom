@@ -381,7 +381,7 @@ configure_xml() {
         #   - https://libvirt.org/formatdomain.html#network-interfaces
         #
 
-        --network "network=default,mac=$RANDOM_MAC"
+        --network "network=default,model=rtl8139,mac=$RANDOM_MAC"
 
 
 
