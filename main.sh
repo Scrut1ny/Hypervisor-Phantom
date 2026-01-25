@@ -92,12 +92,12 @@ main_menu() {
 
     case $choice in
       1) fmtr::box_text "${options[1]}"; ./modules/virtualization.sh ;;
-      2) fmtr::box_text "${options[2]}"; ./modules/patch_qemu.sh ;;
-      3) fmtr::box_text "${options[3]}"; ./modules/patch_ovmf.sh ;;
+      2) fmtr::box_text "${options[2]}"; ./modules/qemu.sh ;;
+      3) fmtr::box_text "${options[3]}"; ./modules/edk2.sh ;;
       4) fmtr::box_text "${options[4]}"; ./modules/vfio.sh ;;
-      5) fmtr::box_text "${options[5]}"; ./modules/patch_kernel.sh ;;
-      6) fmtr::box_text "${options[6]}"; ./modules/looking_glass.sh ;;
-      7) fmtr::box_text "${options[7]}"; ./modules/auto_xml.sh ;;
+      5) fmtr::box_text "${options[5]}"; ./modules/kernel.sh ;;
+      6) fmtr::box_text "${options[6]}"; ./modules/lg.sh ;;
+      7) fmtr::box_text "${options[7]}"; ./modules/deploy.sh ;;
       0)
         prmt::yes_or_no "$(fmtr::ask 'Do you want to clear the logs directory?')" &&
           rm -f -- "${LOG_PATH}"/*.log
