@@ -105,7 +105,7 @@ system_info() {
         break
     done
 
-    if grep -a -m1 -q '10\.0\.22' "$ISO_PATH"; then
+    if grep -a -m1 -q '10\.0\.2[2-9]' "$ISO_PATH"; then
         WIN_VERSION="win11"
     else
         WIN_VERSION="win10"
