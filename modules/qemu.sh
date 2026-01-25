@@ -242,7 +242,7 @@ spoof_acpi() {
   local h=include/hw/acpi/aml-build.h
   local c=hw/acpi/aml-build.c
 
-  local OEMID OEM_Table_ID Creator_ID Preferred_PM_Profile ssdt out
+  local OEMID OEM_Table_ID Creator_ID Preferred_PM_Profile SSDT out
 
   OEMID="$(LC_ALL=C $ROOT_ESC dd if=$t bs=1 skip=10 count=6 status=none | tr '\0' ' ')"
   OEM_Table_ID="$(LC_ALL=C $ROOT_ESC dd if=$t bs=1 skip=16 count=8 status=none | tr '\0' ' ')"
@@ -261,19 +261,20 @@ spoof_acpi() {
 
     sed -i 's/1 \/\* Desktop \*\/, 1/2 \/\* Mobile \*\/, 1/' $c
 
-    ssdt="$($ROOT_ESC find /sys/firmware/acpi/tables/ -type f ! -name DSDT -exec grep -il battery {} + | head -n1)"
-    if [[ -z $ssdt ]]; then
-      fmtr::warn "No SSDT containing 'battery' found"
+    SSDT=$($ROOT_ESC grep -aliE 'Battery|Capacity|Discharge|Charge' /sys/firmware/acpi/tables/SSDT* 2>/dev/null | head -n 1)
+
+    if [ -z "$SSDT" ]; then
+      fmtr::warn "No SSDT containing battery info found"
       return 0
     fi
 
-    out="$OUT_DIR/firmware/$(basename "$ssdt")-battery.aml"
-    $ROOT_ESC cp -- "$ssdt" "$out"
+    out="$OUT_DIR/firmware/$(basename "$SSDT")-battery.aml"
+    $ROOT_ESC cp -- "$SSDT" "$out"
 
     $ROOT_ESC chmod 0644 -- "$out"
     $ROOT_ESC chown -- "${SUDO_USER:-$USER}:${SUDO_USER:-$USER}" "$out" 2>/dev/null || true
 
-    fmtr::info "Copied '$ssdt' to '$out'"
+    fmtr::info "Copied '$SSDT' to '$out'"
   fi
 }
 
