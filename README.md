@@ -23,19 +23,25 @@ This tool provides automated setups for linux virtualization related stuff.
 <details>
 <summary>Expand for details...</summary>
 
-#### 1. Clone, CD:
+#### 1. Clone Git repository
 ```
-git clone --single-branch --depth=1 https://github.com/Scrut1ny/Hypervisor-Phantom && cd Hypervisor-Phantom/
+git clone --single-branch --depth=1 https://github.com/Scrut1ny/Hypervisor-Phantom
 ```
 
-#### 2. Run the script:
+#### 2. Change directory
+```
+cd Hypervisor-Phantom/
+```
+
+#### 3. Execute
 ```
 ./main.sh
 ```
 
 ---
 
-### 3. Update Repository
+### 4. Update repository
+- **Make sure you're in the `Hypervisor-Phantom/` root directory when running the command below!**
 ```
 git fetch --all && git reset --hard origin/main
 ```
