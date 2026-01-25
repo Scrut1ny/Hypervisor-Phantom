@@ -5,6 +5,7 @@ source ./utils.sh || { echo "Failed to load utilities module!"; exit 1; }
 check_non_root() {
   if [[ $EUID -eq 0 ]]; then
     fmtr::fatal "Do not run as root."
+    exit 1
   fi
 }
 
