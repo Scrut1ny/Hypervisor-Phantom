@@ -5,7 +5,7 @@
 source ./utils.sh || { echo "Failed to load utilities module!"; exit 1; }
 
 readonly SRC_DIR="$(pwd)/src"
-readonly OUT_DIR="/opt/Hypervisor-Phantom/firmware"
+readonly OUT_DIR="/opt/Hypervisor-Phantom"
 
 readonly EDK2_TAG="edk2-stable202511"
 readonly EDK2_URL="https://github.com/tianocore/edk2.git"
@@ -156,10 +156,10 @@ compile_and_inject_ovmf() {
     --define TPM2_ENABLE=TRUE \
     --define SMM_REQUIRE=TRUE &>>"$LOG_FILE" || { fmtr::fatal "Failed to build OVMF"; return 1; }
 
-  $ROOT_ESC mkdir -p "$OUT_DIR"
+  $ROOT_ESC mkdir -p "$OUT_DIR/firmware"
 
   for f in CODE VARS; do
-    $ROOT_ESC /opt/Hypervisor-Phantom/emulator/bin/qemu-img convert -f raw -O qcow2 "Build/OvmfX64/RELEASE_GCC5/FV/OVMF_${f}.fd" "$OUT_DIR/OVMF_${f}.qcow2" || return 1
+    $ROOT_ESC "$OUT_DIR/emulator/bin/qemu-img" convert -f raw -O qcow2 "Build/OvmfX64/RELEASE_GCC5/FV/OVMF_${f}.fd" "$OUT_DIR/firmware/OVMF_${f}.qcow2" || return 1
   done
 
   TEMP_DIR="$(mktemp -d)" || return 1
@@ -240,7 +240,7 @@ compile_and_inject_ovmf() {
     printf '    ]\n}\n'
   } > "$efivars_json"
 
-  $ROOT_ESC virt-fw-vars --input "$OUT_DIR/OVMF_VARS.qcow2" --output "$OUT_DIR/OVMF_VARS.qcow2" \
+  $ROOT_ESC virt-fw-vars --input "$OUT_DIR/firmware/OVMF_VARS.qcow2" --output "$OUT_DIR/firmware/OVMF_VARS.qcow2" \
     --secure-boot \
     --set-pk "$UUID" "$TEMP_DIR/ms_pk_oem.der" \
     --add-kek "$UUID" "$TEMP_DIR/ms_kek_2011.der" \
