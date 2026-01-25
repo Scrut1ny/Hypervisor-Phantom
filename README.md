@@ -33,6 +33,11 @@ git clone --single-branch --depth=1 https://github.com/Scrut1ny/Hypervisor-Phant
 cd Hypervisor-Phantom/
 ```
 
+#### 3. Set executable permissions
+```
+find . -type f -name '*.sh' -exec chmod +x {} +
+```
+
 #### 3. Execute
 ```
 ./main.sh
