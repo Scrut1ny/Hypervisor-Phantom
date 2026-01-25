@@ -41,7 +41,7 @@ cd Hypervisor-Phantom/
 ---
 
 ### 4. Update repository
-- **Make sure you're in the `Hypervisor-Phantom/` root directory when running the command below!**
+- ***Make sure you're in the `Hypervisor-Phantom/` root directory when running the command below!***
 ```
 git fetch --all && git reset --hard origin/main
 ```
