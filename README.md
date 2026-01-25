@@ -38,14 +38,14 @@ cd Hypervisor-Phantom/
 find . -type f -name '*.sh' -exec chmod +x {} +
 ```
 
-#### 3. Execute
+#### 4. Execute
 ```
 ./main.sh
 ```
 
 ---
 
-### 4. Update repository
+### 5. Update repository
 - ***Make sure you're in the `Hypervisor-Phantom/` root directory when running the command below!***
 ```
 git fetch --all && git reset --hard origin/main
