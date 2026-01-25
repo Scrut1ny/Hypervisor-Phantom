@@ -2,6 +2,12 @@
 
 source ./utils.sh || { echo "Failed to load utilities module!"; exit 1; }
 
+check_non_root() {
+  if [[ $EUID -eq 0 ]]; then
+    fmtr::fatal "Do not run as root."
+  fi
+}
+
 detect_distro() {
   local id
 
@@ -110,6 +116,7 @@ main_menu() {
 }
 
 main() {
+  check_non_root
   detect_distro
   cpu_detect
   main_menu
