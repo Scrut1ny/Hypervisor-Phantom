@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+source ./utils.sh || { echo "Failed to load utilities module!"; exit 1; }
+
 detect_distro() {
   local id
 
@@ -111,7 +113,6 @@ main_menu() {
 }
 
 main() {
-  source ./utils.sh || { echo "Failed to load utilities module!"; exit 1; }
   detect_distro
   cpu_detect
   main_menu
