@@ -9,8 +9,6 @@ detect_distro() {
   if [[ -r /etc/os-release ]]; then
     . /etc/os-release
     id=${ID,,}
-  else
-    id=""
   fi
 
   # Map known distro IDs to canonical names
@@ -30,8 +28,7 @@ detect_distro() {
       elif command -v dnf >/dev/null 2>&1; then
         DISTRO="Fedora"
       else
-        DISTRO=${id:+Unknown ($id)}
-        : "${DISTRO:=Unknown}"
+        fmtr::fatal "${id:-Unknown} distro isn't supported yet."
       fi
       ;;
   esac
