@@ -159,7 +159,7 @@ compile_and_inject_ovmf() {
   $ROOT_ESC mkdir -p "$OUT_DIR"
 
   for f in CODE VARS; do
-    $ROOT_ESC qemu-img convert -f raw -O qcow2 "Build/OvmfX64/RELEASE_GCC5/FV/OVMF_${f}.fd" "$OUT_DIR/OVMF_${f}.qcow2" || return 1
+    $ROOT_ESC /opt/Hypervisor-Phantom/emulator/bin/qemu-img convert -f raw -O qcow2 "Build/OvmfX64/RELEASE_GCC5/FV/OVMF_${f}.fd" "$OUT_DIR/OVMF_${f}.qcow2" || return 1
   done
 
   TEMP_DIR="$(mktemp -d)" || return 1
