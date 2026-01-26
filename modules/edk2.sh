@@ -142,8 +142,8 @@ patch_ovmf() {
 compile_and_inject_ovmf() {
   local WORKSPACE EDK_TOOLS_PATH CONF_PATH TEMP_DIR
 
-  local EFI_GLOBAL_VAR="8be4df61-93ca-11d2-aa0d-00e098032b8c"
-  local EFI_IMAGE_SEC_DB="d719b2cb-3d3a-4596-a3bc-dad00e67656f"
+  local EFI_GLOBAL_VARIABLE_GUID="8be4df61-93ca-11d2-aa0d-00e098032b8c"
+  local EFI_IMAGE_SECURITY_DATABASE_GUID="d719b2cb-3d3a-4596-a3bc-dad00e67656f"
 
   fmtr::info "Configuring build environment..."
 
@@ -169,25 +169,27 @@ compile_and_inject_ovmf() {
   TEMP_DIR="$(mktemp -d)" || return 1
   trap 'rm -rf "$TEMP_DIR"' RETURN
 
-  fmtr::info "Cloning Host Secure Boot Keys..."
+  fmtr::info "Cloning host Secure Boot keys..."
   local efivars_json="$TEMP_DIR/efivars.json"
 
   local -A key_mappings=(
-    ["PK"]="PKDefault-8be4df61-93ca-11d2-aa0d-00e098032b8c|${EFI_GLOBAL_VAR}"
-    ["KEK"]="KEKDefault-8be4df61-93ca-11d2-aa0d-00e098032b8c|${EFI_GLOBAL_VAR}"
-    ["db"]="dbDefault-8be4df61-93ca-11d2-aa0d-00e098032b8c|${EFI_IMAGE_SEC_DB}"
-    ["dbx"]="dbxDefault-8be4df61-93ca-11d2-aa0d-00e098032b8c|${EFI_IMAGE_SEC_DB}"
-    ["PKDefault"]="PKDefault-8be4df61-93ca-11d2-aa0d-00e098032b8c|${EFI_GLOBAL_VAR}"
-    ["KEKDefault"]="KEKDefault-8be4df61-93ca-11d2-aa0d-00e098032b8c|${EFI_GLOBAL_VAR}"
-    ["dbDefault"]="dbDefault-8be4df61-93ca-11d2-aa0d-00e098032b8c|${EFI_GLOBAL_VAR}"
-    ["dbxDefault"]="dbxDefault-8be4df61-93ca-11d2-aa0d-00e098032b8c|${EFI_GLOBAL_VAR}"
+    # Enrolled
+    ["PK"]="PK-${EFI_GLOBAL_VARIABLE_GUID}|${EFI_GLOBAL_VARIABLE_GUID}"
+    ["KEK"]="KEK-${EFI_GLOBAL_VARIABLE_GUID}|${EFI_GLOBAL_VARIABLE_GUID}"
+    ["db"]="db-${EFI_IMAGE_SECURITY_DATABASE_GUID}|${EFI_IMAGE_SECURITY_DATABASE_GUID}"
+    ["dbx"]="dbx-${EFI_IMAGE_SECURITY_DATABASE_GUID}|${EFI_IMAGE_SECURITY_DATABASE_GUID}"
+
+    # Default
+    ["PKDefault"]="PKDefault-${EFI_GLOBAL_VARIABLE_GUID}|${EFI_GLOBAL_VARIABLE_GUID}"
+    ["KEKDefault"]="KEKDefault-${EFI_GLOBAL_VARIABLE_GUID}|${EFI_GLOBAL_VARIABLE_GUID}"
+    ["dbDefault"]="dbDefault-${EFI_GLOBAL_VARIABLE_GUID}|${EFI_GLOBAL_VARIABLE_GUID}"
+    ["dbxDefault"]="dbxDefault-${EFI_GLOBAL_VARIABLE_GUID}|${EFI_GLOBAL_VARIABLE_GUID}"
   )
 
   {
     printf '{\n    "version": 2,\n    "variables": [\n'
 
-    local first_entry=true
-    local target_name target_guid host_file path header_hex attr data_hex
+    local first_entry=true target_name target_guid host_file path header_hex attr data_hex
 
     for target_name in "${!key_mappings[@]}"; do
       IFS='|' read -r host_file target_guid <<< "${key_mappings[$target_name]}"
@@ -199,7 +201,6 @@ compile_and_inject_ovmf() {
 
       header_hex=$(hexdump -n 4 -ve '1/1 "%.2x"' "$path" 2>/dev/null)
       attr=$(( 16#${header_hex:6:2}${header_hex:4:2}${header_hex:2:2}${header_hex:0:2} ))
-
       data_hex=$(tail -c +5 "$path" | hexdump -ve '1/1 "%.2x"')
 
       if [ "$first_entry" = true ]; then
@@ -221,7 +222,9 @@ compile_and_inject_ovmf() {
 
   fmtr::info "Injecting variables into OVMF..."
 
-  $ROOT_ESC virt-fw-vars --input "$OUT_DIR/firmware/OVMF_VARS.qcow2" --output "$OUT_DIR/firmware/OVMF_VARS.qcow2" \
+  $ROOT_ESC virt-fw-vars \
+    --input "$OUT_DIR/firmware/OVMF_VARS.qcow2" \
+    --output "$OUT_DIR/firmware/OVMF_VARS.qcow2" \
     --secure-boot \
     --set-json "$efivars_json" &>>"$LOG_FILE" || { fmtr::fatal "Failed to inject vars"; return 1; }
 
