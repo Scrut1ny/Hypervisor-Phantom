@@ -25,12 +25,12 @@ This tool provides automated setups for linux virtualization related stuff.
 
 #### 1. Clone Git repository
 ```
-git clone --single-branch --depth=1 https://github.com/Scrut1ny/Hypervisor-Phantom
+git clone --single-branch --depth=1 https://github.com/Scrut1ny/AutoVirt
 ```
 
 #### 2. Change directory
 ```
-cd Hypervisor-Phantom/
+cd AutoVirt/
 ```
 
 #### 3. Set executable permissions
@@ -46,7 +46,7 @@ find . -type f -name '*.sh' -exec chmod +x {} +
 ---
 
 ### 5. Update repository
-- ***Make sure you're in the `Hypervisor-Phantom/` root directory when running the command below!***
+- ***Make sure you're in the `AutoVirt/` root directory when running the command below!***
 ```
 git fetch --all && git reset --hard origin/main
 ```
@@ -59,10 +59,10 @@ git fetch --all && git reset --hard origin/main
 
 ---
 
-<a href="https://www.star-history.com/#Scrut1ny/Hypervisor-Phantom&type=date&legend=bottom-right">
+<a href="https://www.star-history.com/#Scrut1ny/AutoVirt&type=date&legend=bottom-right">
  <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=Scrut1ny/Hypervisor-Phantom&type=date&theme=dark&legend=bottom-right" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=Scrut1ny/Hypervisor-Phantom&type=date&legend=bottom-right" />
-   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=Scrut1ny/Hypervisor-Phantom&type=date&legend=bottom-right" />
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=Scrut1ny/AutoVirt&type=date&theme=dark&legend=bottom-right" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=Scrut1ny/AutoVirt&type=date&legend=bottom-right" />
+   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=Scrut1ny/AutoVirt&type=date&legend=bottom-right" />
  </picture>
 </a>
