@@ -24,7 +24,7 @@ acquire_edk2_source() {
   mkdir -p "$SRC_DIR" && cd "$SRC_DIR" || { fmtr::fatal "Failed to enter source dir: $SRC_DIR"; exit 1; }
 
   clone_repo() {
-    fmtr::info "Cloning '$EDK2_URL' repository..."
+    fmtr::info "Cloning '$EDK2_TAG' from '$EDK2_URL'..."
     git clone --depth=1 --branch "$EDK2_TAG" "$EDK2_URL" "$EDK2_TAG" &>>"$LOG_FILE" \
       || { fmtr::fatal "Failed to clone repository!"; exit 1; }
     cd "$EDK2_TAG" || { fmtr::fatal "Missing '$EDK2_TAG' directory!"; exit 1; }
