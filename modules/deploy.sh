@@ -6,7 +6,7 @@ source ./utils.sh || { echo "Failed to load utilities module!"; exit 1; }
 
 system_info() {
     # Domain Name
-    DOMAIN_NAME="Hypervisor-Phantom"
+    DOMAIN_NAME="AutoVirt"
 
     # CPU Topology
     HOST_LOGICAL_CPUS=$(nproc --all 2>/dev/null || nproc 2>/dev/null)
@@ -257,8 +257,8 @@ configure_xml() {
         --xml "./os/loader/@secure=yes"
         --xml "./os/loader/@type=pflash"
         --xml "./os/loader/@format=qcow2"
-        --xml "./os/loader=/opt/Hypervisor-Phantom/firmware/OVMF_CODE.qcow2"
-        --xml "./os/nvram/@template=/opt/Hypervisor-Phantom/firmware/OVMF_VARS.qcow2"
+        --xml "./os/loader=/opt/AutoVirt/firmware/OVMF_CODE.qcow2"
+        --xml "./os/nvram/@template=/opt/AutoVirt/firmware/OVMF_VARS.qcow2"
         --xml "./os/nvram/@format=qcow2"
 
 
@@ -351,7 +351,7 @@ configure_xml() {
         # 'qemu-system-x86_64' binary path
         #
 
-        --xml "./devices/emulator=/opt/Hypervisor-Phantom/emulator/bin/qemu-system-x86_64"
+        --xml "./devices/emulator=/opt/AutoVirt/emulator/bin/qemu-system-x86_64"
 
 
 
@@ -482,7 +482,7 @@ configure_xml() {
         #   - https://www.qemu.org/docs/master/system/qemu-manpage.html#hxtool-4
         #
 
-        --qemu-commandline="-smbios file=/opt/Hypervisor-Phantom/firmware/smbios.bin"
+        --qemu-commandline="-smbios file=/opt/AutoVirt/firmware/smbios.bin"
 
 
 
