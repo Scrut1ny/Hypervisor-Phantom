@@ -4,7 +4,7 @@
 
 This tool provides automated setups for linux virtualization related stuff.
 
-[![](https://dcbadge.limes.pink/api/server/https://discord.gg/kW8ZtQy6xU)](https://discord.gg/kW8ZtQy6xU)
+[![](https://dcbadge.limes.pink/api/server/https://discord.gg/hNVHChp7PX)](https://discord.gg/hNVHChp7PX)
 
 </div>
 
