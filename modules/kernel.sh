@@ -1,363 +1,291 @@
 #!/usr/bin/env bash
 
-[[ -z "$DISTRO" || -z "$LOG_FILE" ]] && { echo "Required environment variables not set."; exit 1; }
+[[ -f ./utils.sh ]] && source ./utils.sh || { echo "Error: utils.sh not found."; exit 1; }
 
-source ./utils.sh || { echo "Failed to load utilities module!"; exit 1; }
+
+
+
 
 readonly SRC_DIR="$(pwd)/src"
+
 readonly TKG_URL="https://github.com/Frogging-Family/linux-tkg.git"
 readonly TKG_DIR="linux-tkg"
-readonly TKG_CFG_DIR="../../$SRC_DIR/linux-tkg/customization.cfg"
-readonly PATCH_DIR="../../patches/Kernel"
+
 readonly KERNEL_MAJOR="6"
-readonly KERNEL_MINOR="14"
-readonly KERNEL_PATCH="latest" # Set as "-latest" for linux-tkg
+readonly KERNEL_MINOR="18"
+readonly KERNEL_PATCH="latest"
 readonly KERNEL_VERSION="${KERNEL_MAJOR}.${KERNEL_MINOR}-${KERNEL_PATCH}"
-readonly KERNEL_USER_PATCH="../../patches/Kernel/zen-kernel-${KERNEL_MAJOR}.${KERNEL_MINOR}-${KERNEL_PATCH}-${CPU_VENDOR}.mypatch"
-readonly REQUIRED_DISK_SPACE="35"
+
+readonly REQUIRED_DISK_SPACE_GB="35"
+
+
+
+
 
 check_disk_space() {
-  local build_path="${1:-$(pwd)}"
-  local required_bytes=$((REQUIRED_DISK_SPACE * 1024 * 1024 * 1024))
+    local build_path="${1:-$(pwd)}"
+    local required_kb=$((REQUIRED_DISK_SPACE_GB * 1024 * 1024))
 
-  local mountpoint
-  mountpoint=$(df --output=target "$build_path" | tail -1)
-  local available_bytes=$(($(stat -f --format="%a*%S" "$mountpoint")))
-  local required_gb=$(awk "BEGIN {printf \"%.1f\", $required_bytes/1024/1024/1024}")
-  local available_gb=$(awk "BEGIN {printf \"%.1f\", $available_bytes/1024/1024/1024}")
+    local available_kb
+    available_kb=$(df --output=avail "$build_path" | tail -1)
 
-  if (( available_bytes < required_bytes )); then
-    fmtr::error "Insufficient disk space on $mountpoint."
-    fmtr::error "Available: ${available_gb}GB, Required: ${required_gb}GB"
-    exit 1
-  fi
-
-  fmtr::info "Sufficient drive space: ${available_gb}GB available on '$mountpoint' (Required: ${required_gb}GB)"
+    if (( available_kb < required_kb )); then
+        fmtr::error "Insufficient disk space on $(pwd)."
+        fmtr::error "Available: $((available_kb/1024/1024))GB, Required: ${REQUIRED_DISK_SPACE_GB}GB"
+        exit 1
+    fi
+    fmtr::info "Disk space check passed."
 }
+
+
+
+
 
 acquire_tkg_source() {
-  mkdir -p "$SRC_DIR" && cd "$SRC_DIR"
+    mkdir -p "$SRC_DIR" && cd "$SRC_DIR" || { fmtr::fatal "Failed to enter source dir: $SRC_DIR"; exit 1; }
 
-  if [ -d "$TKG_DIR" ]; then
-    if [ -d "$TKG_DIR/.git" ]; then
-      fmtr::warn "Directory $TKG_DIR already exists and is a valid Git repository."
-      if ! prmt::yes_or_no "$(fmtr::ask 'Delete and re-clone the linux-tkg source?')"; then
-        fmtr::info "Keeping existing directory; Skipping re-clone."
-        cd "$TKG_DIR" || { fmtr::fatal "Failed to change to TKG directory after cloning: $TKG_DIR"; exit 1; }
-        return
-      fi
+    clone_repo() {
+        fmtr::info "Cloning '$TKG_DIR' from '$TKG_URL'..."
+        git clone --depth=1 "$TKG_URL" "$TKG_DIR" &>>"$LOG_FILE" \
+        || { fmtr::fatal "Failed to clone repository!"; exit 1; }
+        cd "$TKG_DIR" || { fmtr::fatal "Missing '$TKG_DIR' directory!"; exit 1; }
+
+        # Disable -Werror to prevent build failures on newer compilers
+        fmtr::info "Patching -Werror..."
+        grep -RIl '\-Werror' . | xargs -r sed -i 's/-Werror=/-W/g; s/-Werror-/-W/g; s/-Werror/-W/g'
+    }
+
+    if [ -d "$TKG_DIR" ]; then
+        fmtr::warn "Repository directory '$TKG_DIR' found."
+        if prmt::yes_or_no "$(fmtr::ask "Purge '$TKG_DIR' directory?")"; then
+        rm -rf "$TKG_DIR" || { fmtr::fatal "Failed to purge '$TKG_DIR' directory!"; exit 1; }
+        fmtr::info "Directory purged successfully."
+        if prmt::yes_or_no "$(fmtr::ask "Clone '$TKG_URL' again?")"; then
+            clone_repo
+        else
+            fmtr::info "Skipping..."
+        fi
+        else
+        fmtr::info "Skipping..."
+        cd "$TKG_DIR" || { fmtr::fatal "Missing '$TKG_DIR' directory!"; exit 1; }
+        fi
     else
-      fmtr::warn "Directory $TKG_DIR exists but is not a valid Git repository."
-      if ! prmt::yes_or_no "$(fmtr::ask 'Delete and re-clone the linux-tkg source?')"; then
-        fmtr::info "Keeping existing directory; Skipping re-clone."
-        cd "$TKG_DIR" || { fmtr::fatal "Failed to change to TKG directory after cloning: $TKG_DIR"; exit 1; }
-        return
-      fi
+        clone_repo
     fi
-    rm -rf "$TKG_DIR" || { fmtr::fatal "Failed to remove existing directory: $TKG_DIR"; exit 1; }
-    fmtr::info "Directory purged"
-  fi
-
-  fmtr::info "Cloning linux-tkg repository..."
-  git clone --depth=1 "$TKG_URL" "$TKG_DIR" &>> "$LOG_FILE" || { fmtr::fatal "Failed to clone repository."; exit 1; }
-  cd "$TKG_DIR" || { fmtr::fatal "Failed to change to TKG directory after cloning: $TKG_DIR"; exit 1; }
-  fmtr::info "TKG source successfully acquired."
-
-  grep -RIl '\-Werror' "$(pwd)" | while read -r file; do
-      echo "$file"
-      sed -i -e 's/-Werror=/\-W/g' -e 's/-Werror-/\-W/g' -e 's/-Werror/\-W/g' "$file"
-  done &>> "$LOG_FILE" || { fmtr::fatal "Failed to disable warnings-as-errors!"; exit 1; }
 }
+
+
+
 
 
 select_distro() {
-  while true; do
-    clear; fmtr::info "Please select your Linux distribution:
+    local options=("Arch" "Ubuntu" "Debian" "Fedora" "Suse" "Gentoo" "Generic")
 
-  1) Arch    3) Debian  5) Suse    7) Generic
-  2) Ubuntu  4) Fedora  6) Gentoo
-    "
+    while true; do
+        clear
+        fmtr::info "Select Linux Distribution:\n"
+        local i=1
+        for opt in "${options[@]}"; do echo "  $i) $opt"; ((i++)); done
 
-    local choice="$(prmt::quick_prompt '  Enter your choice [1-7]: ')"
+        local choice
+        echo "" && read -p "  Enter choice [1-7]: " choice
 
-    case "$choice" in
-        1) distro="Arch" ;;
-        2) distro="Ubuntu" ;;
-        3) distro="Debian" ;;
-        4) distro="Fedora" ;;
-        5) distro="Suse" ;;
-        6) distro="Gentoo" ;;
-        7) distro="Generic" ;;
+        if [[ "$choice" -ge 1 && "$choice" -le 7 ]]; then
+            _SELECTED_DISTRO="${options[$((choice-1))]}"
+            echo "" && fmtr::info "Selected: $_SELECTED_DISTRO"
+            break
+        fi
+
+        fmtr::error "Invalid option."
+        prmt::quick_prompt "  Press any key to retry..." >/dev/null
+    done
+}
+
+
+
+
+
+detect_and_select_cpu() {
+    local -a architectures
+
+    clear && fmtr::info "Detected CPU Manufacturer: $CPU_MANUFACTURER"
+
+    case "$CPU_MANUFACTURER" in
+        "AMD")
+            architectures=(
+                "k8" "k8sse3" "k10" "barcelona" "bobcat" "jaguar" "bulldozer" "piledriver"
+                "steamroller" "excavator" "znver1" "znver2" "znver3" "znver4" "znver5" "native_amd"
+            )
+            ;;
+        "Intel")
+            architectures=(
+                "mpsc" "atom" "core2" "nehalem" "westmere" "silvermont" "sandybridge" "ivybridge"
+                "haswell" "broadwell" "skylake" "skylakex" "cannonlake" "icelake" "icelake_server"
+                "goldmont" "goldmontplus" "cascadelake" "cooperlake" "tigerlake" "sapphirerapids"
+                "rocketlake" "alderlake" "raptorlake" "meteorlake" "native_intel"
+            )
+            ;;
         *)
-            clear; fmtr::error "Invalid option, please try again."
-            prmt::quick_prompt "$(fmtr::info 'Press any key to continue...')"
-            continue
+            fmtr::warn "Unsupported CPU Manufacturer: $CPU_MANUFACTURER. Defaulting to generic."
+            _SELECTED_CPU_OPT="generic"
+            return
             ;;
     esac
 
-    echo ""; fmtr::info "Selected Linux distribution: $distro"
-    break
-  done
+    while true; do
+        fmtr::info "Select CPU μarch:\n\n  https://wikipedia.org/wiki/List_of_${CPU_MANUFACTURER}_CPU_microarchitectures\n"
+        local i=1
+        for arch in "${architectures[@]}"; do
+            printf "  %2d) %s\n" "$i" "$arch"
+            ((i++))
+        done
+
+        local choice
+        echo "" && read -p "  Enter choice [1-${#architectures[@]}]: " choice
+
+        if [[ "$choice" -ge 1 && "$choice" -le "${#architectures[@]}" ]]; then
+            _SELECTED_CPU_OPT="${architectures[$((choice-1))]}"
+            break
+        fi
+
+        fmtr::error "Invalid selection."
+        prmt::quick_prompt "  Press any key to retry..." >/dev/null
+    done
 }
 
 
-modify_customization_cfg() {
-  ####################################################################################################
-  ####################################################################################################
 
-  fmtr::info "This patch enables corrected IOMMU grouping on
-      motherboards with bad PCI IOMMU grouping."
-  if prmt::yes_or_no "$(fmtr::ask 'Apply ACS override bypass Kernel patch?')"; then
-      acs="true"
-  else
-      acs="false"
-  fi
 
-  ####################################################################################################
-  ####################################################################################################
 
-  while true; do
-
-    if [[ "$CPU_VENDOR_ID" == "AuthenticAMD" ]]; then
-      vendor="AMD" && fmtr::info "Detected CPU Vendor: $vendor
-
-  - https://wikipedia.org/wiki/List_of_${vendor}_CPU_microarchitectures
-
-  Please select your $vendor CPU μarch's code name:
-
-  1) k8         5) bobcat      9) steamroller  13) zen3
-  2) k8sse3     6) jaguar      10) excavator   14) zen4
-  3) k10        7) bulldozer   11) zen         15) zen5
-  4) barcelona  8) piledriver  12) zen2        16) Automated (not recommended)
-      "
-      read -p "  Enter your choice [1-16]: " choice
-      case "$choice" in
-        1) selected="k8" ;;
-        2) selected="k8sse3" ;;
-        3) selected="k10" ;;
-        4) selected="barcelona" ;;
-        5) selected="bobcat" ;;
-        6) selected="jaguar" ;;
-        7) selected="bulldozer" ;;
-        8) selected="piledriver" ;;
-        9) selected="steamroller" ;;
-        10) selected="excavator" ;;
-        11) selected="znver1" ;;
-        12) selected="znver2" ;;
-        13) selected="znver3" ;;
-        14) selected="znver4" ;;
-        15) selected="znver5" ;;
-        16) selected="native_amd" ;;
-        *)
-          clear; fmtr::error "Invalid option, please try again."
-          prmt::quick_prompt "$(fmtr::info 'Press any key to continue...')"
-          continue
-          ;;
-      esac
-
-    elif [[ "$CPU_VENDOR_ID" == "GenuineIntel" ]]; then
-      vendor="Intel" && fmtr::info "Detected CPU Vendor: $vendor
-
-  - https://wikipedia.org/wiki/List_of_${vendor}_CPU_microarchitectures
-
-  Please select your $vendor CPU μarch's code name:
-
-  1) mpsc         8) ivybridge    15) icelake_server  22) rocketlake
-  2) atom         9) haswell      16) goldmont        23) alderlake
-  3) core2        10) broadwell   17) goldmontplus    24) raptorlake
-  4) nehalem      11) skylake     18) cascadelake     25) meteorlake
-  5) westmere     12) skylakex    19) cooperlake      26) automated (not recommended)
-  6) silvermont   13) cannonlake  20) tigerlake
-  7) sandybridge  14) icelake     21) sapphirerapids
-      "
-      read -p "  Enter your choice [1-26]: " choice
-      case "$choice" in
-        1) selected="mpsc" ;;
-        2) selected="atom" ;;
-        3) selected="core2" ;;
-        4) selected="nehalem" ;;
-        5) selected="westmere" ;;
-        6) selected="silvermont" ;;
-        7) selected="sandybridge" ;;
-        8) selected="ivybridge" ;;
-        9) selected="haswell" ;;
-        10) selected="broadwell" ;;
-        11) selected="skylake" ;;
-        12) selected="skylakex" ;;
-        13) selected="cannonlake" ;;
-        14) selected="icelake" ;;
-        15) selected="icelake_server" ;;
-        16) selected="goldmont" ;;
-        17) selected="goldmontplus" ;;
-        18) selected="cascadelake" ;;
-        19) selected="cooperlake" ;;
-        20) selected="tigerlake" ;;
-        21) selected="sapphirerapids" ;;
-        22) selected="rocketlake" ;;
-        23) selected="alderlake" ;;
-        24) selected="raptorlake" ;;
-        25) selected="meteorlake" ;;
-        26) selected="native_intel" ;;
-        *)
-          clear; fmtr::error "Invalid option, please try again."
-          prmt::quick_prompt "$(fmtr::info 'Press any key to continue...')"
-          ;;
-      esac
-
-    else
-      fmtr::warn "Unsupported or undefined CPU_VENDOR: $CPU_VENDOR"
-      exit 1
+apply_tkg_config() {
+    local acs_override="false"
+    if prmt::yes_or_no "$(fmtr::ask_inline 'Enable ACS override patch (for IOMMU groups)?')"; then
+        acs_override="true"
     fi
 
-    break
-  done
+    declare -A config=(
+        [_distro]="$_SELECTED_DISTRO"
+        [_version]="$KERNEL_VERSION"
+        [_EXT_CONFIG_PATH]=""
+        [_menunconfig]="false"
+        [_diffconfig]="false"
+        [_cpusched]="eevdf"
+        [_compiler]="gcc"
+        [_sched_yield_type]="0"
+        [_rr_interval]="2"
+        [_tickless]="1"
+        [_acs_override]="$acs_override"
+        [_processor_opt]="$_SELECTED_CPU_OPT"
+        [_timer_freq]="1000"
+        [_user_patches_no_confirm]="true"
+        [_force_all_threads]="true"
+        [_modprobeddb]="false"
+    )
 
-  ####################################################################################################
-  ####################################################################################################
+    local sed_script=""
+    for key in "${!config[@]}"; do
+        sed_script+="s|^$key=.*|$key=\"${config[$key]}\"|;"
+    done
 
-  if output=$(/lib/ld-linux-x86-64.so.2 --help 2>/dev/null | grep supported); then
-      :
-  elif output=$(/lib64/ld-linux-x86-64.so.2 --help 2>/dev/null | grep supported); then
-      :
-  fi
+    sed -i "$sed_script" "customization.cfg" || { fmtr::fatal "Failed to write configuration."; exit 1; }
 
-  highest=0
-
-  while IFS= read -r line; do
-      if [[ $line =~ x86-64-v([123]) ]]; then
-          version="${BASH_REMATCH[1]}"
-          if (( version > highest )); then
-              highest=$version
-          fi
-      fi
-  done <<< "$output"
-
-  x86_version=$highest
-
-  ####################################################################################################
-  ####################################################################################################
-
-  declare -A config_values=(
-      [_distro]="$distro"
-      [_version]="$KERNEL_VERSION"
-      [_menunconfig]="false"
-      [_diffconfig]="false"
-      [_cpusched]="eevdf"
-      [_compiler]="gcc"
-      [_sched_yield_type]="0"
-      [_rr_interval]="2"
-      [_tickless]="1"
-      [_acs_override]="$acs"
-      [_processor_opt]="$selected"
-      [_x86_64_isalvl]="$highest"
-      [_timer_freq]="1000"
-      [_user_patches_no_confirm]="true"
-  )
-
-  for key in "${!config_values[@]}"; do
-      sed -i "s|$key=\"[^\"]*\"|$key=\"${config_values[$key]}\"|" "$TKG_CFG_DIR" &>> "$LOG_FILE"
-  done
+    fmtr::info "Applied configuration to 'customization.cfg'"
 }
 
-patch_kernel() {
-  mkdir -p "linux${KERNEL_MAJOR}${KERNEL_MINOR}-tkg-userpatches"
-  cp "${KERNEL_USER_PATCH}" "linux${KERNEL_MAJOR}${KERNEL_MINOR}-tkg-userpatches"
+
+
+
+
+patch_kernel_files() {
+    local patch_name="zen-kernel-${KERNEL_MAJOR}.${KERNEL_MINOR}-${KERNEL_PATCH}-${CPU_MANUFACTURER}.mypatch"
+    local user_patch_dir="linux${KERNEL_MAJOR}${KERNEL_MINOR}-tkg-userpatches"
+    local source_patch="../../patches/Kernel/$patch_name"
+
+    if [[ -f "$source_patch" ]]; then
+        mkdir -p "$user_patch_dir"
+        cp "$source_patch" "$user_patch_dir/"
+        fmtr::info "Copied user patch: $patch_name"
+    else
+        fmtr::warn "Patch file not found: $source_patch"
+    fi
 }
 
-arch_distro() {
-  clear
-  makepkg -C -si --noconfirm
-  
-  if prmt::yes_or_no "$(fmtr::ask 'Would you like to add a systemd-boot entry for this kernel?')"; then
-    systemd-boot_boot_entry_maker
-  else
-    fmtr::info "Skipping systemd-boot entry creation."
-  fi
-}
 
-other_distro() {
-  clear; ./install.sh install
 
-  if prmt::yes_or_no "$(fmtr::ask 'Would you like to add a systemd-boot entry for this kernel?')"; then
-    systemd-boot_boot_entry_maker
-  else
-    fmtr::info "Skipping systemd-boot entry creation."
-  fi
-}
 
-systemd-boot_boot_entry_maker() {
-  local -a SDBOOT_CONF_LOCATIONS=(
-    "/boot/loader/entries"
-    "/boot/efi/loader/entries"
-    "/efi/loader/entries"
-  )
 
-  local ENTRY_NAME="HvP-RDTSC"
-  local TIMESTAMP ROOT_DEVICE ROOTFSTYPE PARTUUID ENTRY_DIR
-  TIMESTAMP="$(date +"%Y-%m-%d_%H-%M-%S")"
-  ROOT_DEVICE="$(findmnt -no SOURCE /)"
-  ROOT_DEVICE="${ROOT_DEVICE%%\[*}" # Fix for 'btrfs' storage format
-  ROOTFSTYPE="$(findmnt -no FSTYPE /)"
+create_systemd_boot_entry() {
+    if ! prmt::yes_or_no "$(fmtr::ask_inline 'Create systemd-boot entry?')"; then
+        return
+    fi
 
-  PARTUUID="$($ROOT_ESC blkid -s PARTUUID -o value "$ROOT_DEVICE")"
-  if [[ -z "$PARTUUID" ]]; then
-    fmtr::error "Unable to determine PARTUUID for root device ($ROOT_DEVICE)."
-    return 1
-  fi
+    local kernel_tag="linux${KERNEL_MAJOR}${KERNEL_MINOR}-tkg-eevdf"
+    local entry_name="HvP-RDTSC"
+    local timestamp
+    timestamp=$(date +"%Y-%m-%d_%H-%M-%S")
 
-  for ENTRY_DIR in "${SDBOOT_CONF_LOCATIONS[@]}"; do
-    [[ -d "$ENTRY_DIR" ]] && break
-    ENTRY_DIR=""
-  done
+    # Find boot entry location
+    local entry_dir=""
+    for dir in "/boot/loader/entries" "/boot/efi/loader/entries" "/efi/loader/entries"; do
+        if [[ -d "$dir" ]]; then entry_dir="$dir"; break; fi
+    done
+    [[ -z "$entry_dir" ]] && { fmtr::error "No systemd-boot directory found."; return 1; }
 
-  if [[ -z "$ENTRY_DIR" ]]; then
-    fmtr::error "No valid systemd-boot entry directory found."
-    return 1
-  fi
+    local root_dev=$(findmnt -n -o SOURCE /)
+    local partuuid=$(blkid -s PARTUUID -o value "${root_dev%\[*}")
+    local fstype=$(findmnt -n -o FSTYPE /)
+    local options="options root=PARTUUID=${partuuid} rw rootfstype=${fstype}"
 
-  local KERNEL_PATH="/vmlinuz-linux${KERNEL_MAJOR}${KERNEL_MINOR}-tkg-eevdf"
-  local INITRD_PATH="/initramfs-linux${KERNEL_MAJOR}${KERNEL_MINOR}-tkg-eevdf.img"
-  local INITRD_FALLBACK_PATH="/initramfs-linux${KERNEL_MAJOR}${KERNEL_MINOR}-tkg-eevdf-fallback.img"
-  local OPTIONS_LINE="options root=PARTUUID=${PARTUUID} rw rootfstype=${ROOTFSTYPE}"
+    fmtr::info "Writing boot entries to $entry_dir (requires privileges)..."
 
-  if ! $ROOT_ESC tee "$ENTRY_DIR/$ENTRY_NAME.conf" >/dev/null 2>>"$LOG_FILE" <<EOF
-# Created by: Hypervisor-Phantom
-# Created on: $TIMESTAMP
+    cat <<EOF | $ROOT_ESC tee "$entry_dir/$entry_name.conf" >/dev/null
+# Created by: HvP-Script ($timestamp)
 title   HvP (RDTSC Patch)
-linux   $KERNEL_PATH
-initrd  $INITRD_PATH
-$OPTIONS_LINE
+linux   /vmlinuz-$kernel_tag
+initrd  /initramfs-$kernel_tag.img
+$options
 EOF
-  then
-    fmtr::error "Failed to write boot entry: $ENTRY_DIR/$ENTRY_NAME.conf"
-    return 1
-  fi
 
-  if ! $ROOT_ESC tee "$ENTRY_DIR/$ENTRY_NAME-fallback.conf" >/dev/null 2>>"$LOG_FILE" <<EOF
-# Created by: Hypervisor-Phantom
-# Created on: $TIMESTAMP
+    cat <<EOF | $ROOT_ESC tee "$entry_dir/$entry_name-fallback.conf" >/dev/null
+# Created by: HvP-Script ($timestamp)
 title   HvP (RDTSC Patch - Fallback)
-linux   $KERNEL_PATH
-initrd  $INITRD_FALLBACK_PATH
-$OPTIONS_LINE
+linux   /vmlinuz-$kernel_tag
+initrd  /initramfs-$kernel_tag-fallback.img
+$options
 EOF
-  then
-    fmtr::error "Failed to write fallback boot entry: $ENTRY_DIR/$ENTRY_NAME-fallback.conf"
-    return 1
-  fi
 
-  fmtr::info "Boot entries written to: $ENTRY_DIR/$ENTRY_NAME.conf and $ENTRY_DIR/$ENTRY_NAME-fallback.conf"
-  return 0
+    fmtr::info "Boot entries created successfully."
 }
 
-check_disk_space
-acquire_tkg_source
-select_distro
-modify_customization_cfg
-patch_kernel
+build_arch() {
+    fmtr::info "Starting Arch Linux build (makepkg)..."
+    makepkg -C -si --noconfirm
+    create_systemd_boot_entry
+}
 
-if [ "$distro" == "Arch" ]; then
-    arch_distro
-else
-    other_distro
-fi
+build_generic() {
+    fmtr::info "Starting Generic build (install.sh)..."
+    ./install.sh install
+    create_systemd_boot_entry
+}
+
+# ==============================================================================
+# Main Execution
+# ==============================================================================
+
+main() {
+    check_disk_space
+    acquire_tkg_source
+    select_distro
+    detect_and_select_cpu
+    apply_tkg_config
+    # patch_kernel_files TODO
+
+    if [[ "$_SELECTED_DISTRO" == "Arch" ]]; then
+        build_arch
+    else
+        build_generic
+    fi
+}
+
+main "$@"
