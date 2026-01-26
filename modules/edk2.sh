@@ -153,8 +153,7 @@ compile_and_inject_ovmf() {
 
   [ -d BaseTools/Build ] || { make -C BaseTools -j"$(nproc)" && source edksetup.sh; } &>>"$LOG_FILE" || { fmtr::fatal "Failed to build BaseTools"; return 1; }
 
-  build -a X64 -b RELEASE -t GCC5 -n 0 -s \
-    -p OvmfPkg/OvmfPkgX64.dsc \
+  build -p OvmfPkg/OvmfPkgX64.dsc -a X64 -t GCC5 -b RELEASE -n 0 -s \
     --define SECURE_BOOT_ENABLE=TRUE \
     --define TPM1_ENABLE=TRUE \
     --define TPM2_ENABLE=TRUE \
