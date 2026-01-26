@@ -77,6 +77,129 @@ sudo pacman -S edk2-ovmf
 
 
 
+## Old script for reference
+```bash
+################################################################################
+# Compile OVMF and inject Secure Boot certs into template VARS
+################################################################################
+compile_and_inject_ovmf() {
+  local WORKSPACE EDK_TOOLS_PATH CONF_PATH TEMP_DIR URL UUID
+
+  fmtr::info "Configuring build environment..."
+
+  export WORKSPACE="$(pwd)"
+  export EDK_TOOLS_PATH="$WORKSPACE/BaseTools"
+  export CONF_PATH="$WORKSPACE/Conf"
+
+  [ -d BaseTools/Build ] || { make -C BaseTools -j"$(nproc)" && source edksetup.sh; } &>>"$LOG_FILE" || { fmtr::fatal "Failed to build BaseTools"; return 1; }
+
+  build -a X64 -p OvmfPkg/OvmfPkgX64.dsc -b RELEASE -t GCC5 -n 0 -s \
+    --define SECURE_BOOT_ENABLE=TRUE \
+    --define TPM1_ENABLE=TRUE \
+    --define TPM2_ENABLE=TRUE \
+    --define SMM_REQUIRE=TRUE &>>"$LOG_FILE" || { fmtr::fatal "Failed to build OVMF"; return 1; }
+
+  $ROOT_ESC mkdir -p "$OUT_DIR/firmware"
+
+  for f in CODE VARS; do
+    $ROOT_ESC "$OUT_DIR/emulator/bin/qemu-img" convert -f raw -O qcow2 "Build/OvmfX64/RELEASE_GCC5/FV/OVMF_${f}.fd" "$OUT_DIR/firmware/OVMF_${f}.qcow2" || return 1
+  done
+
+  TEMP_DIR="$(mktemp -d)" || return 1
+  trap 'rm -rf "$TEMP_DIR"' RETURN
+
+  URL="https://raw.githubusercontent.com/microsoft/secureboot_objects/main"
+  UUID="77fa9abd-0359-4d32-bd60-28f4e78f784b"
+
+  local -A certs=(
+    # PK (Platform Key)
+    ["ms_pk_oem.der"]="$URL/PreSignedObjects/PK/Certificate/WindowsOEMDevicesPK.der"
+    # KEK (Key Exchange Key)
+    ["ms_kek_2011.der"]="$URL/PreSignedObjects/KEK/Certificates/MicCorKEKCA2011_2011-06-24.der"
+    ["ms_kek_2023.der"]="$URL/PreSignedObjects/KEK/Certificates/microsoft%20corporation%20kek%202k%20ca%202023.der"
+    # DB (Signature Database)
+    ["ms_db_uefi_2011.der"]="$URL/PreSignedObjects/DB/Certificates/MicCorUEFCA2011_2011-06-27.der"
+    ["ms_db_pro_2011.der"]="$URL/PreSignedObjects/DB/Certificates/MicWinProPCA2011_2011-10-19.der"
+    ["ms_db_optionrom_2023.der"]="$URL/PreSignedObjects/DB/Certificates/microsoft%20option%20rom%20uefi%20ca%202023.der"
+    ["ms_db_uefi_2023.der"]="$URL/PreSignedObjects/DB/Certificates/microsoft%20uefi%20ca%202023.der"
+    ["ms_db_windows_2023.der"]="$URL/PreSignedObjects/DB/Certificates/windows%20uefi%20ca%202023.der"
+    # DBX (Forbidden Signatures Database)
+    ["dbxupdate.bin"]="$URL/PostSignedObjects/DBX/amd64/DBXUpdate.bin"
+  )
+
+  for c in "${!certs[@]}"; do
+    wget -q -O "$TEMP_DIR/$c" "${certs[$c]}" &
+  done
+  wait || { fmtr::fatal "Failed to download one or more certificates"; return 1; }
+
+  # Generate efivars.json
+  local efivars_json="$TEMP_DIR/efivars.json"
+  local -A guids=(
+    ["dbDefault"]="8be4df61-93ca-11d2-aa0d-00e098032b8c"
+    ["dbxDefault"]="8be4df61-93ca-11d2-aa0d-00e098032b8c"
+    ["KEKDefault"]="8be4df61-93ca-11d2-aa0d-00e098032b8c"
+    ["PKDefault"]="8be4df61-93ca-11d2-aa0d-00e098032b8c"
+  )
+
+  {
+    local entries=() var path hex attr data entry
+
+    for var in "${!guids[@]}"; do
+      path="/sys/firmware/efi/efivars/${var}-${guids[$var]}"
+      [[ -f "$path" ]] || continue
+
+      hex=$(hexdump -ve '1/1 "%.2x"' "$path" 2>/dev/null)
+      [[ ${#hex} -ge 8 ]] || continue
+
+      # Parse attribute (little-endian 4 bytes) and data
+      attr=$(( 16#${hex:6:2}${hex:4:2}${hex:2:2}${hex:0:2} ))
+      data=${hex:8}
+
+      # Build JSON entry
+      entry=$(printf '        {
+              "name": "%s",
+              "guid": "%s",
+              "attr": %d,' "$var" "${guids[$var]}" "$attr")
+
+      # Handle EFI_VARIABLE_TIME_BASED_AUTHENTICATED_WRITE_ACCESS (0x20)
+      if (( attr & 0x20 )) && [[ ${#data} -ge 32 ]]; then
+        entry+=$(printf '
+              "data": "%s",
+              "time": "%s"
+          }' "${data:32}" "${data:0:32}")
+      else
+        entry+=$(printf '
+              "data": "%s"
+          }' "$data")
+      fi
+
+      entries+=("$entry")
+    done
+
+    # Output complete JSON
+    printf '{\n    "version": 2,\n    "variables": [\n'
+    local IFS=','$'\n'
+    echo "${entries[*]}"
+    printf '    ]\n}\n'
+  } > "$efivars_json"
+
+  $ROOT_ESC virt-fw-vars --input "$OUT_DIR/firmware/OVMF_VARS.qcow2" --output "$OUT_DIR/firmware/OVMF_VARS.qcow2" \
+    --secure-boot \
+    --set-pk "$UUID" "$TEMP_DIR/ms_pk_oem.der" \
+    --add-kek "$UUID" "$TEMP_DIR/ms_kek_2011.der" \
+    --add-kek "$UUID" "$TEMP_DIR/ms_kek_2023.der" \
+    --add-db "$UUID" "$TEMP_DIR/ms_db_uefi_2011.der" \
+    --add-db "$UUID" "$TEMP_DIR/ms_db_pro_2011.der" \
+    --add-db "$UUID" "$TEMP_DIR/ms_db_optionrom_2023.der" \
+    --add-db "$UUID" "$TEMP_DIR/ms_db_uefi_2023.der" \
+    --add-db "$UUID" "$TEMP_DIR/ms_db_windows_2023.der" \
+    --set-dbx "$TEMP_DIR/dbxupdate.bin" \
+    --set-json "$efivars_json" &>>"$LOG_FILE" || { fmtr::fatal "Failed to inject"; return 1; }
+}
+```
+
+
+
 
 
 ## OVMF MOR/MORLock support:
