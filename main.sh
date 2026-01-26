@@ -101,8 +101,8 @@ main_menu() {
       2) fmtr::box_text "${options[2]}"; ./modules/qemu.sh ;;
       3) fmtr::box_text "${options[3]}"; ./modules/edk2.sh ;;
       4) fmtr::box_text "${options[4]}"; ./modules/vfio.sh ;;
-      5) fmtr::box_text "${options[5]}"; ./modules/kernel.sh ;;
-      6) fmtr::box_text "${options[6]}"; ./modules/lg.sh ;;
+      5) fmtr::box_text "${options[5]}"; fmtr::warn "This module isn't ready yet." ;; #./modules/kernel.sh ;;
+      6) fmtr::box_text "${options[6]}"; fmtr::warn "This module isn't ready yet." ;; #./modules/lg.sh ;;
       7) fmtr::box_text "${options[7]}"; ./modules/deploy.sh ;;
       0)
         prmt::yes_or_no "$(fmtr::ask 'Do you want to clear the logs directory?')" &&
