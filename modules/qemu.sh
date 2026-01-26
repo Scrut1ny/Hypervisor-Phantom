@@ -80,7 +80,7 @@ acquire_qemu_source() {
   mkdir -p "$SRC_DIR" && cd "$SRC_DIR" || { fmtr::fatal "Failed to enter source dir: $SRC_DIR"; exit 1; }
 
   clone_repo() {
-    fmtr::info "Cloning '$QEMU_TAG' '$QEMU_URL' repository..."
+    fmtr::info "Cloning '$QEMU_TAG' from '$QEMU_URL'..."
     git clone --depth=1 --branch "$QEMU_TAG" "$QEMU_URL" "$QEMU_TAG" &>>"$LOG_FILE" \
       || { fmtr::fatal "Failed to clone repository!"; exit 1; }
     cd "$QEMU_TAG" || { fmtr::fatal "Missing '$QEMU_TAG' directory!"; exit 1; }
