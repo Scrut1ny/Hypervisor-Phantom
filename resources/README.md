@@ -107,6 +107,7 @@ amdgpu.sg_display=0
 | ProctorU | ✅ |  | • [⬇ Firefox ⬇](https://s3-us-west-2.amazonaws.com/proctoru-assets/extension/firefox-extension-latest.xpi) <br> • [⬇ Chrome ⬇](https://chrome.google.com/webstore/detail/proctoru/goobgennebinldhonaajgafidboenlkl) | ✅ |
 | ProctorU: Guardian Browser |  | [System Test](https://go.proctoru.com/testitout) | • [⬇ Download ⬇](https://production-archimedes-secure-browser-artifacts.s3.amazonaws.com/latest/windows/guardian-browser-x64.exe) <br> • [Meazure Learning Page](https://guardian.meazurelearning.com/) <br> • [ProctorU Page](https://go.proctoru.com/testitout) | ✅ |
 | Proctorio | ✅ | [System Test](https://getproctorio.com/) |  | ✅ |
+| Prometric: ProProctor |  | [System Test](https://rpcandidate.prometric.com/) |  | ✅ |
 | Honorlock | ✅ |  | • [Honorlock](https://app.honorlock.com/install/extension) <br> • [⬇ Chrome ⬇](https://chromewebstore.google.com/detail/honorlock/hnbmpkmhjackfpkpcbapafmpepgmmddc) | ✅ |
 | Pearson VUE |  | • [System Test](https://system-test.onvue.com/system_test?customer=pearson_vue) <br> • [System Test](https://vueop.startpractice.com/) |  | ✅ |
 | ExamSoft: Examplify |  |  | [⬇ Download ⬇](https://releases.examsoft.com/Examplify/Examplify_LATEST_win.exe) | ✅ |
