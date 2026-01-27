@@ -1224,7 +1224,7 @@ index 2d8ffd7..e0d2a92 100644
  
      return SCSI_INQUIRY_LEN;
 diff --git a/hw/usb/canokey.c b/hw/usb/canokey.c
-index cbefbb5..1998dd0 100644
+index cbefbb5..4b98e7a 100644
 --- a/hw/usb/canokey.c
 +++ b/hw/usb/canokey.c
 @@ -35,8 +35,8 @@ enum {
@@ -1234,12 +1234,12 @@ index cbefbb5..1998dd0 100644
 -    [STR_PRODUCT]          = "CanoKey QEMU",
 -    [STR_SERIALNUMBER]     = "0"
 +    [STR_PRODUCT]          = "CanoKey",
-+    [STR_SERIALNUMBER]     = "ORPEIJ8LEZ"
++    [STR_SERIALNUMBER]     = ""
  };
  
  static const USBDescDevice desc_device_canokey = {
 diff --git a/hw/usb/dev-audio.c b/hw/usb/dev-audio.c
-index 8dd9d26..e790a9b 100644
+index 8dd9d26..30c4540 100644
 --- a/hw/usb/dev-audio.c
 +++ b/hw/usb/dev-audio.c
 @@ -73,9 +73,9 @@ enum usb_audio_strings {
@@ -1251,12 +1251,12 @@ index 8dd9d26..e790a9b 100644
 -    [STRING_SERIALNUMBER]       = "1",
 +    [STRING_MANUFACTURER]       = "Logitech",
 +    [STRING_PRODUCT]            = "USB Audio",
-+    [STRING_SERIALNUMBER]       = "SCNU3K6LPU",
++    [STRING_SERIALNUMBER]       = "",
      [STRING_CONFIG]             = "Audio Configuration",
      [STRING_USBAUDIO_CONTROL]   = "Audio Device",
      [STRING_INPUT_TERMINAL]     = "Audio Output Pipe",
 diff --git a/hw/usb/dev-hid.c b/hw/usb/dev-hid.c
-index 96623aa..f10c420 100644
+index 96623aa..7bd5905 100644
 --- a/hw/usb/dev-hid.c
 +++ b/hw/usb/dev-hid.c
 @@ -63,17 +63,17 @@ enum {
@@ -1272,16 +1272,16 @@ index 96623aa..f10c420 100644
 +    [STR_PRODUCT_MOUSE]    = "USB Mouse",
 +    [STR_PRODUCT_TABLET]   = "USB Tablet",
 +    [STR_PRODUCT_KEYBOARD] = "USB Keyboard",
-+    [STR_SERIAL_COMPAT]    = "N76POILMPP",
++    [STR_SERIAL_COMPAT]    = "",
      [STR_CONFIG_MOUSE]     = "HID Mouse",
      [STR_CONFIG_TABLET]    = "HID Tablet",
      [STR_CONFIG_KEYBOARD]  = "HID Keyboard",
 -    [STR_SERIAL_MOUSE]     = "89126",
 -    [STR_SERIAL_TABLET]    = "28754",
 -    [STR_SERIAL_KEYBOARD]  = "68284",
-+    [STR_SERIAL_MOUSE]     = "1F6IT6W2IF",
-+    [STR_SERIAL_TABLET]    = "WSS5T9RFVE",
-+    [STR_SERIAL_KEYBOARD]  = "V96SH0F8ZX",
++    [STR_SERIAL_MOUSE]     = "",
++    [STR_SERIAL_TABLET]    = "",
++    [STR_SERIAL_KEYBOARD]  = "",
  };
  
  static const USBDescIface desc_iface_mouse = {
@@ -1367,7 +1367,7 @@ index 96623aa..f10c420 100644
      device_class_set_props(dc, usb_keyboard_properties);
      set_bit(DEVICE_CATEGORY_INPUT, dc->categories);
 diff --git a/hw/usb/dev-hub.c b/hw/usb/dev-hub.c
-index a19350d..33aad4f 100644
+index a19350d..cdf3008 100644
 --- a/hw/usb/dev-hub.c
 +++ b/hw/usb/dev-hub.c
 @@ -104,9 +104,9 @@ enum {
@@ -1379,7 +1379,7 @@ index a19350d..33aad4f 100644
 -    [STR_SERIALNUMBER] = "314159",
 +    [STR_MANUFACTURER] = "Logitech",
 +    [STR_PRODUCT]      = "USB Hub",
-+    [STR_SERIALNUMBER] = "EPCEFDU54X",
++    [STR_SERIALNUMBER] = "",
  };
  
  static const USBDescIface desc_iface_hub = {
@@ -1393,7 +1393,7 @@ index a19350d..33aad4f 100644
      uc->find_device    = usb_hub_find_device;
      uc->handle_reset   = usb_hub_handle_reset;
 diff --git a/hw/usb/dev-mtp.c b/hw/usb/dev-mtp.c
-index afd7944..8e7778a 100644
+index afd7944..cd725e3 100644
 --- a/hw/usb/dev-mtp.c
 +++ b/hw/usb/dev-mtp.c
 @@ -246,8 +246,8 @@ typedef struct {
@@ -1412,7 +1412,7 @@ index afd7944..8e7778a 100644
      [STR_MANUFACTURER] = MTP_MANUFACTURER,
      [STR_PRODUCT]      = MTP_PRODUCT,
 -    [STR_SERIALNUMBER] = "34617",
-+    [STR_SERIALNUMBER] = "FJFR36ZGFQ",
++    [STR_SERIALNUMBER] = "",
      [STR_MTP]          = "MTP",
      [STR_CONFIG_FULL]  = "Full speed config (usb 1.1)",
      [STR_CONFIG_HIGH]  = "High speed config (usb 2.0)",
@@ -1426,7 +1426,7 @@ index afd7944..8e7778a 100644
      uc->cancel_packet  = usb_mtp_cancel_packet;
      uc->handle_attach  = usb_desc_attach;
 diff --git a/hw/usb/dev-network.c b/hw/usb/dev-network.c
-index 1df2454..e399a10 100644
+index 1df2454..1623653 100644
 --- a/hw/usb/dev-network.c
 +++ b/hw/usb/dev-network.c
 @@ -99,16 +99,16 @@ enum usbstring_idx {
@@ -1452,7 +1452,7 @@ index 1df2454..e399a10 100644
 +    [STRING_CDC]                = "USB Net CDC",
 +    [STRING_SUBSET]             = "USB Net Subset",
 +    [STRING_RNDIS]              = "USB Net RNDIS",
-+    [STRING_SERIALNUMBER]       = "D9H87OLLOE",
++    [STRING_SERIALNUMBER]       = "",
  };
  
  static const USBDescIface desc_iface_rndis[] = {
@@ -1475,7 +1475,7 @@ index 1df2454..e399a10 100644
      uc->handle_reset   = usb_net_handle_reset;
      uc->handle_control = usb_net_handle_control;
 diff --git a/hw/usb/dev-serial.c b/hw/usb/dev-serial.c
-index 2eb52b2..72fe629 100644
+index 2eb52b2..57a7fdf 100644
 --- a/hw/usb/dev-serial.c
 +++ b/hw/usb/dev-serial.c
 @@ -119,10 +119,10 @@ enum {
@@ -1489,7 +1489,7 @@ index 2eb52b2..72fe629 100644
 +    [STR_MANUFACTURER]    = "Microsoft",
 +    [STR_PRODUCT_SERIAL]  = "USB SERIAL",
 +    [STR_PRODUCT_BRAILLE] = "USB BAUM BRAILLE",
-+    [STR_SERIALNUMBER]    = "6KCP6OG5KL",
++    [STR_SERIALNUMBER]    = "",
  };
  
  static const USBDescIface desc_iface0 = {
@@ -1512,10 +1512,10 @@ index 2eb52b2..72fe629 100644
      device_class_set_props(dc, braille_properties);
  }
 diff --git a/hw/usb/dev-smartcard-reader.c b/hw/usb/dev-smartcard-reader.c
-index 6ce7154..b02d281 100644
+index 6ce7154..027a52d 100644
 --- a/hw/usb/dev-smartcard-reader.c
 +++ b/hw/usb/dev-smartcard-reader.c
-@@ -80,8 +80,8 @@ OBJECT_DECLARE_SIMPLE_TYPE(USBCCIDState, USB_CCID_DEV)
+@@ -80,10 +80,10 @@ OBJECT_DECLARE_SIMPLE_TYPE(USBCCIDState, USB_CCID_DEV)
  #define CCID_CONTROL_GET_CLOCK_FREQUENCIES  0x2
  #define CCID_CONTROL_GET_DATA_RATES         0x3
  
@@ -1524,8 +1524,11 @@ index 6ce7154..b02d281 100644
 +#define CCID_PRODUCT_DESCRIPTION        "USB CCID"
 +#define CCID_VENDOR_DESCRIPTION         "Identiv"
  #define CCID_INTERFACE_NAME             "CCID Interface"
- #define CCID_SERIAL_NUMBER_STRING       "1"
+-#define CCID_SERIAL_NUMBER_STRING       "1"
++#define CCID_SERIAL_NUMBER_STRING       ""
  /*
+  * Using Gemplus Vendor and Product id
+  * Effect on various drivers:
 @@ -419,9 +419,9 @@ enum {
  };
  
@@ -1535,7 +1538,7 @@ index 6ce7154..b02d281 100644
 -    [STR_SERIALNUMBER]  = "1",
 +    [STR_MANUFACTURER]  = "Identiv",
 +    [STR_PRODUCT]       = "USB CCID",
-+    [STR_SERIALNUMBER]  = "L9Z3ZM8CDP",
++    [STR_SERIALNUMBER]  = "",
      [STR_INTERFACE]     = "CCID Interface",
  };
  
@@ -1549,7 +1552,7 @@ index 6ce7154..b02d281 100644
      uc->handle_reset   = ccid_handle_reset;
      uc->handle_control = ccid_handle_control;
 diff --git a/hw/usb/dev-storage.c b/hw/usb/dev-storage.c
-index b13fe34..7680bee 100644
+index b13fe34..a02b0cd 100644
 --- a/hw/usb/dev-storage.c
 +++ b/hw/usb/dev-storage.c
 @@ -47,9 +47,9 @@ enum {
@@ -1561,7 +1564,7 @@ index b13fe34..7680bee 100644
 -    [STR_SERIALNUMBER] = "1",
 +    [STR_MANUFACTURER] = "Samsung",
 +    [STR_PRODUCT]      = "USB HARDDRIVE",
-+    [STR_SERIALNUMBER] = "HLN8ILM0SH",
++    [STR_SERIALNUMBER] = "",
      [STR_CONFIG_FULL]  = "Full speed config (usb 1.1)",
      [STR_CONFIG_HIGH]  = "High speed config (usb 2.0)",
      [STR_CONFIG_SUPER] = "Super speed config (usb 3.0)",
@@ -1575,7 +1578,7 @@ index b13fe34..7680bee 100644
      uc->cancel_packet  = usb_msd_cancel_io;
      uc->handle_attach  = usb_desc_attach;
 diff --git a/hw/usb/dev-uas.c b/hw/usb/dev-uas.c
-index 18ebe15..7926464 100644
+index 18ebe15..0048a8f 100644
 --- a/hw/usb/dev-uas.c
 +++ b/hw/usb/dev-uas.c
 @@ -170,9 +170,9 @@ enum {
@@ -1586,12 +1589,12 @@ index 18ebe15..7926464 100644
 +    [STR_MANUFACTURER] = "Microsoft",
      [STR_PRODUCT]      = "USB Attached SCSI HBA",
 -    [STR_SERIALNUMBER] = "27842",
-+    [STR_SERIALNUMBER] = "E5DEMH2Y7X",
++    [STR_SERIALNUMBER] = "",
      [STR_CONFIG_HIGH]  = "High speed config (usb 2.0)",
      [STR_CONFIG_SUPER] = "Super speed config (usb 3.0)",
  };
 diff --git a/hw/usb/dev-wacom.c b/hw/usb/dev-wacom.c
-index f4b71a2..ff724dd 100644
+index f4b71a2..028189f 100644
 --- a/hw/usb/dev-wacom.c
 +++ b/hw/usb/dev-wacom.c
 @@ -64,9 +64,9 @@ enum {
@@ -1602,7 +1605,7 @@ index f4b71a2..ff724dd 100644
 +    [STR_MANUFACTURER]     = "Wacom",
      [STR_PRODUCT]          = "Wacom PenPartner",
 -    [STR_SERIALNUMBER]     = "1",
-+    [STR_SERIALNUMBER]     = "718H83W0T4",
++    [STR_SERIALNUMBER]     = "",
  };
  
  static const uint8_t qemu_wacom_hid_report_descriptor[] = {
@@ -1669,7 +1672,7 @@ index fa8d9cd..cd4d451 100644
      device_class_set_props(dc, u2f_passthru_properties);
      set_bit(DEVICE_CATEGORY_MISC, dc->categories);
 diff --git a/hw/usb/u2f.c b/hw/usb/u2f.c
-index b051a99..a6c48cd 100644
+index b051a99..ec103ba 100644
 --- a/hw/usb/u2f.c
 +++ b/hw/usb/u2f.c
 @@ -46,9 +46,9 @@ enum {
@@ -1680,7 +1683,7 @@ index b051a99..a6c48cd 100644
 +    [STR_MANUFACTURER]     = "Microsoft",
      [STR_PRODUCT]          = "U2F USB key",
 -    [STR_SERIALNUMBER]     = "0",
-+    [STR_SERIALNUMBER]     = "JFX4J5OICR",
++    [STR_SERIALNUMBER]     = "",
      [STR_CONFIG]           = "U2F key config",
      [STR_INTERFACE]        = "U2F key interface"
  };
