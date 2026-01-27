@@ -129,13 +129,12 @@ amdgpu.sg_display=0
 | Roblox | Hyperion | ✅ |
 | Valorant / League of Legends | Vanguard | ✅ ([Hyper-V](https://learn.microsoft.com/en-us/windows-server/virtualization/hyper-v/overview) + [HVCI](https://learn.microsoft.com/en-us/windows/security/hardware-security/enable-virtualization-based-protection-of-code-integrity)) |
 | PUBG: Battlegrounds | Gepard Shield | ✅ |
-| Tom Clancy's Rainbow Six® Siege | BattlEye (BE) + FairFight | ✅ |
 | Genshin Impact | Mhyprot | ❔ (HoYoKProtect.sys) <br> 🪟 [BSOD: ATTEMPTED_WRITE_TO_READONLY_MEMORY](https://github.com/Scrut1ny/Hypervisor-Phantom/issues/34) |
 | Battlefield™ 2042 | EA anticheat (EAAC) | ✅ |
 | Marvel Rivals | NACE (Netease Anticheat Expert) | ✅ |
 | Various Desktop Games | Easy Anti-Cheat (EAC) | ✅ |
 | Various Desktop Games | nProtect GameGuard (NP) | ✅ |
-| Various Desktop Games | BattlEye (BE) | ✅ ([Hyper-V](https://learn.microsoft.com/en-us/windows-server/virtualization/hyper-v/overview) + [HVCI](https://learn.microsoft.com/en-us/windows/security/hardware-security/enable-virtualization-based-protection-of-code-integrity)) |
+| Various Desktop Games | BattlEye (BE) | ✅ Add `    <feature policy="disable" name="aes"/>` to XML |
 | Various Mobile Games | Anti-Cheat Expert (ACE) | ✅ |
 
 </details>
