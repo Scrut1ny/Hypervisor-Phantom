@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-[[ -f ./utils.sh ]] && source ./utils.sh || { echo "Error: utils.sh not found."; exit 1; }
+source ./utils.sh || { echo "Failed to load utilities module!"; exit 1; }
 
 
 
