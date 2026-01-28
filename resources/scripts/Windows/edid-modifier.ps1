@@ -31,5 +31,6 @@ foreach ($monitor in $edidKeys) {
     # Extract clean monitor ID (manufacturer/model only)
     $monitorId = ($regPath -split '\\')[-3]
 
-    Write-Host "Spoofed [$monitorId] - serial (bytes 12-15) cleared" -ForegroundColor Green
+    Write-Host "Modified [$monitorId] - Serial number (bytes 12-15) cleared" -ForegroundColor Green
 }
+
