@@ -13,7 +13,9 @@ foreach ($item in Get-ItemProperty -Path $regPattern -Name EDID -ErrorAction Sil
     $edid[12] = $edid[13] = $edid[14] = $edid[15] = 0
 
     # Recalculate checksum (byte 127)
-    $edid[127] = (256 - (($edid[0..126] | Measure-Object -Sum).Sum % 256)) % 256
+    $sum = 0
+    for ($i = 0; $i -lt 127; $i++) { $sum += $edid[$i] }
+    $edid[127] = (256 - ($sum % 256)) % 256
 
     # Save changes
     Set-ItemProperty -LiteralPath $item.PSPath -Name EDID -Value $edid -Force
