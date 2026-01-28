@@ -18,7 +18,7 @@ foreach ($item in Get-ItemProperty -Path $regPattern -Name EDID -ErrorAction Sil
     # Save changes
     Set-ItemProperty -LiteralPath $item.PSPath -Name EDID -Value $edid -Force
 
-    # Extract Monitor Name
+    # Extract Monitor Name (bytes 5-17 of 'FC' descriptor)
     $monitorName = "Unknown Monitor"
     foreach ($off in 54, 72, 90, 108) {
         if ($edid[$off] -eq 0 -and $edid[$off+1] -eq 0 -and $edid[$off+2] -eq 0 -and $edid[$off+3] -eq 0xFC) {
