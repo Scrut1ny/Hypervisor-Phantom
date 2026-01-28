@@ -3,32 +3,69 @@ if ([Security.Principal.WindowsIdentity]::GetCurrent().Name -ne "NT AUTHORITY\SY
     exit 1
 }
 
-$regPattern = "HKLM:\SYSTEM\CurrentControlSet\Enum\DISPLAY\*\*\Device Parameters"
+# Get monitors via WMI for full EDID data
+$wmiMonitors = Get-CimInstance -Namespace root\wmi -ClassName WmiMonitorDescriptorMethods
 
-foreach ($item in Get-ItemProperty -Path $regPattern -Name EDID -ErrorAction SilentlyContinue) {
-    if (-not $item.EDID) { continue }
-    $edid = [byte[]]$item.EDID
+foreach ($wmiMon in $wmiMonitors) {
+    # --- 1. Fetch Full EDID (Base + Extensions) ---
+    try {
+        $block0Result = Invoke-CimMethod -InputObject $wmiMon -MethodName WmiGetMonitorRawEEdidV1Block -Arguments @{BlockId=0}
+        $block0 = [byte[]]$block0Result.BlockContent
+    } catch { continue }
+
+    if (-not $block0) { continue }
+
+    # Initialize block list
+    $edidBlocks = @(,$block0)
+
+    # Fetch extension block if flagged (Byte 126)
+    if ($block0[126] -gt 0) {
+        try {
+            $extResult = Invoke-CimMethod -InputObject $wmiMon -MethodName WmiGetMonitorRawEEdidV1Block -Arguments @{BlockId=1}
+            $edidBlocks += ,([byte[]]$extResult.BlockContent)
+        } catch { }
+    }
+
+    # --- 2. Modify Base Block ---
+    $targetBlock = $edidBlocks[0]
 
     # Clear serial number (bytes 12-15)
-    $edid[12] = $edid[13] = $edid[14] = $edid[15] = 0
+    $targetBlock[12] = $targetBlock[13] = $targetBlock[14] = $targetBlock[15] = 0
 
     # Recalculate checksum (byte 127)
     $sum = 0
-    for ($i = 0; $i -lt 127; $i++) { $sum += $edid[$i] }
-    $edid[127] = (256 - ($sum % 256)) % 256
+    for ($i = 0; $i -lt 127; $i++) { $sum += $targetBlock[$i] }
+    $targetBlock[127] = (256 - ($sum % 256)) % 256
+    
+    $edidBlocks[0] = $targetBlock
 
-    # Save to EDID_OVERRIDE for persistence
-    Set-ItemProperty -LiteralPath $item.PSPath -Name EDID_OVERRIDE -Value $edid -Force
+    # --- 3. Save to Registry ---
+    # Map WMI ID to Registry path
+    $pnpId = $wmiMon.InstanceName -replace "_0$", ""
+    $regPath = "HKLM:\SYSTEM\CurrentControlSet\Enum\$pnpId\Device Parameters"
+
+    if (-not (Test-Path $regPath)) { continue }
+
+    $overrideKeyPath = Join-Path -Path $regPath -ChildPath "EDID_OVERRIDE"
+    
+    if (-not (Test-Path -LiteralPath $overrideKeyPath)) {
+        New-Item -Path $overrideKeyPath -Force | Out-Null
+    }
+
+    # Write blocks 0 and 1
+    for ($i = 0; $i -lt $edidBlocks.Count; $i++) {
+        Set-ItemProperty -LiteralPath $overrideKeyPath -Name $i.ToString() -Value $edidBlocks[$i] -Type Binary -Force
+    }
 
     # Extract Monitor Name (bytes 5-17 of 'FC' descriptor)
     $monitorName = "Unknown Monitor"
     foreach ($off in 54, 72, 90, 108) {
-        if ($edid[$off] -eq 0 -and $edid[$off+1] -eq 0 -and $edid[$off+2] -eq 0 -and $edid[$off+3] -eq 0xFC) {
-            $nameBytes = $edid[($off+5)..($off+17)]
+        if ($targetBlock[$off] -eq 0 -and $targetBlock[$off+1] -eq 0 -and $targetBlock[$off+2] -eq 0 -and $targetBlock[$off+3] -eq 0xFC) {
+            $nameBytes = $targetBlock[($off+5)..($off+17)]
             $monitorName = [System.Text.Encoding]::ASCII.GetString($nameBytes).Split([char]0x0A)[0].Trim()
             break
         }
     }
 
-    Write-Host "REG_BINARY: 'EDID_OVERRIDE' created for [$monitorName] - Serial bytes (12-15) zeroed" -ForegroundColor Green
+    Write-Host "SUCCESS: EDID_OVERRIDE created for [$monitorName] (Block 0: Bytes 12-15 zeroed)" -ForegroundColor Green
 }
