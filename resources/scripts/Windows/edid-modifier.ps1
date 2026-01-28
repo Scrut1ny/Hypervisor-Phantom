@@ -30,5 +30,5 @@ foreach ($item in Get-ItemProperty -Path $regPattern -Name EDID -ErrorAction Sil
         }
     }
 
-    Write-Host "Created EDID Override for [$monitorName] - Serial cleared" -ForegroundColor Green
+    Write-Host "REG_BINARY: 'EDID_OVERRIDE' created for [$monitorName] - Serial bytes (12-15) zeroed" -ForegroundColor Green
 }
