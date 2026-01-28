@@ -7,19 +7,26 @@ $regPattern = "HKLM:\SYSTEM\CurrentControlSet\Enum\DISPLAY\*\*\Device Parameters
 
 foreach ($item in Get-ItemProperty -Path $regPattern -Name EDID -ErrorAction SilentlyContinue) {
     if (-not $item.EDID) { continue }
-
     $edid = [byte[]]$item.EDID
 
     # Clear serial number (bytes 12-15)
     $edid[12] = $edid[13] = $edid[14] = $edid[15] = 0
 
     # Recalculate checksum (byte 127)
-    # Sum bytes 0-126, calculate complement
     $edid[127] = (256 - (($edid[0..126] | Measure-Object -Sum).Sum % 256)) % 256
 
+    # Save changes
     Set-ItemProperty -LiteralPath $item.PSPath -Name EDID -Value $edid -Force
 
-    # Parse Monitor ID from path directly
-    $monitorId = $item.PSPath.Split('\')[-3]
-    Write-Host "Modified [$monitorId] - Serial number (bytes 12-15) cleared" -ForegroundColor Green
+    # Extract Monitor Name
+    $monitorName = "Unknown Monitor"
+    foreach ($off in 54, 72, 90, 108) {
+        if ($edid[$off] -eq 0 -and $edid[$off+1] -eq 0 -and $edid[$off+2] -eq 0 -and $edid[$off+3] -eq 0xFC) {
+            $nameBytes = $edid[($off+5)..($off+17)]
+            $monitorName = [System.Text.Encoding]::ASCII.GetString($nameBytes).Split([char]0x0A)[0].Trim()
+            break
+        }
+    }
+
+    Write-Host "Modified [$monitorName] - Serial number (bytes 12-15) cleared" -ForegroundColor Green
 }
