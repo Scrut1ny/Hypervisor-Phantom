@@ -1,5 +1,5 @@
-if ([Security.Principal.WindowsIdentity]::GetCurrent().Name -ne "NT AUTHORITY\SYSTEM") {
-    Write-Host "ERROR: This script must be run as NT AUTHORITY\SYSTEM." -ForegroundColor Red
+if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole(544)) {
+    Write-Host "ERROR: This script must be run as Administrator." -ForegroundColor Red
     exit 1
 }
 
@@ -69,3 +69,4 @@ foreach ($wmiMon in $wmiMonitors) {
 
     Write-Host "SUCCESS: EDID_OVERRIDE created for [$monitorName] (Block 0: Bytes 12-15 zeroed)" -ForegroundColor Green
 }
+
