@@ -17,8 +17,8 @@ foreach ($item in Get-ItemProperty -Path $regPattern -Name EDID -ErrorAction Sil
     for ($i = 0; $i -lt 127; $i++) { $sum += $edid[$i] }
     $edid[127] = (256 - ($sum % 256)) % 256
 
-    # Save changes
-    Set-ItemProperty -LiteralPath $item.PSPath -Name EDID -Value $edid -Force
+    # Save to EDID_OVERRIDE for persistence
+    Set-ItemProperty -LiteralPath $item.PSPath -Name EDID_OVERRIDE -Value $edid -Force
 
     # Extract Monitor Name (bytes 5-17 of 'FC' descriptor)
     $monitorName = "Unknown Monitor"
@@ -30,5 +30,5 @@ foreach ($item in Get-ItemProperty -Path $regPattern -Name EDID -ErrorAction Sil
         }
     }
 
-    Write-Host "Modified [$monitorName] - Serial number (bytes 12-15) cleared" -ForegroundColor Green
+    Write-Host "Created EDID Override for [$monitorName] - Serial cleared" -ForegroundColor Green
 }
