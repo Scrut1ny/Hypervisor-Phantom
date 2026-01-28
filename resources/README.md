@@ -331,3 +331,19 @@ Now, connect the capture card device back to your Linux host system now and open
 </details>
 
 
+
+
+
+
+<details>
+<summary>I²C EEPROM</summary>
+
+- EEPROM (**E**lectrically **E**rasable **P**rogrammable **R**ead-**O**nly **M**emory)
+
+## EDID (**E**xtended **D**isplay **I**dentification **D**ata)
+- [EDID structure, version 1.4](https://en.wikipedia.org/wiki/Extended_Display_Identification_Data#Structure,_version_1.4)
+  - Bytes 12–15: Serial number. 32 bits, little-endian.
+
+- [EDID Analysis & Generation Tool](https://edidcraft.com/)
+
+</details>
