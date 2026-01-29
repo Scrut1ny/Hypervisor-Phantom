@@ -1,5 +1,5 @@
 if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole(544)) {
-    Write-Host "ERROR: This script must be run as Administrator." -ForegroundColor Red
+    Write-Host "[!] Script must be run as Administrator." -ForegroundColor Red
     exit 1
 }
 
@@ -67,28 +67,27 @@ foreach ($wmiMon in $wmiMonitors) {
         }
     }
 
-    Write-Host "SUCCESS: EDID_OVERRIDE created for [$monitorName] (Block 0: Bytes 12-15 zeroed)" -ForegroundColor Green
+    Write-Host "[+] EDID_OVERRIDE created for: $monitorName" -ForegroundColor Green
+    Write-Host "[+] Block 0: Bytes 12-15 zeroed" -ForegroundColor Green
 }
 
 # --- 4. Restart Graphics Driver
-Write-Host "`nAttempting to restart Graphics Driver to apply changes..." -ForegroundColor Cyan
-
 # Filter for Display class devices that are currently OK (active)
 $displayAdapters = Get-PnpDevice -Class Display | Where-Object { $_.Status -eq 'OK' }
 
 if ($displayAdapters) {
     foreach ($gpu in $displayAdapters) {
-        Write-Host "Restarting adapter: $($gpu.FriendlyName)"
+        Write-Host "[*] Restarting Display adapter: $($gpu.FriendlyName)" -ForegroundColor Cyan
         try {
             Disable-PnpDevice -InstanceId $gpu.InstanceId -Confirm:$false -ErrorAction Stop
             Start-Sleep -Seconds 2
             Enable-PnpDevice -InstanceId $gpu.InstanceId -Confirm:$false -ErrorAction Stop
-            Write-Host "Graphics driver restarted. Changes should be active." -ForegroundColor Green
+            Write-Host "[+] Display adapter restarted successfully." -ForegroundColor Green
         }
         catch {
-            Write-Host "Failed to restart $($gpu.FriendlyName): $_" -ForegroundColor Red
+            Write-Host "[!] Failed to restart Display adapter: $($gpu.FriendlyName)" -ForegroundColor Red
         }
     }
 } else {
-    Write-Host "WARNING: No active display adapters found to restart." -ForegroundColor Yellow
+    Write-Host "[!] No active Display adapters found." -ForegroundColor Yellow
 }
