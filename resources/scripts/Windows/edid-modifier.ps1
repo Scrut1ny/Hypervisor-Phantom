@@ -70,3 +70,25 @@ foreach ($wmiMon in $wmiMonitors) {
     Write-Host "SUCCESS: EDID_OVERRIDE created for [$monitorName] (Block 0: Bytes 12-15 zeroed)" -ForegroundColor Green
 }
 
+# --- 4. Restart Graphics Driver
+Write-Host "`nAttempting to restart Graphics Driver to apply changes..." -ForegroundColor Cyan
+
+# Filter for Display class devices that are currently OK (active)
+$displayAdapters = Get-PnpDevice -Class Display | Where-Object { $_.Status -eq 'OK' }
+
+if ($displayAdapters) {
+    foreach ($gpu in $displayAdapters) {
+        Write-Host "Restarting adapter: $($gpu.FriendlyName)"
+        try {
+            Disable-PnpDevice -InstanceId $gpu.InstanceId -Confirm:$false -ErrorAction Stop
+            Start-Sleep -Seconds 2
+            Enable-PnpDevice -InstanceId $gpu.InstanceId -Confirm:$false -ErrorAction Stop
+            Write-Host "Graphics driver restarted. Changes should be active." -ForegroundColor Green
+        }
+        catch {
+            Write-Host "Failed to restart $($gpu.FriendlyName): $_" -ForegroundColor Red
+        }
+    }
+} else {
+    Write-Host "WARNING: No active display adapters found to restart." -ForegroundColor Yellow
+}
