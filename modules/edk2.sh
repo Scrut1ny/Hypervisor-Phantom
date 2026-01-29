@@ -180,7 +180,7 @@ patch_ovmf() {
 ################################################################################
 # Build OVMF w/SB & TPM
 ################################################################################
-compile_and_inject_ovmf() {
+build_ovmf() {
   local WORKSPACE EDK_TOOLS_PATH CONF_PATH TEMP_DIR
   local efivars_json EFI_GLOBAL_VARIABLE_GUID EFI_IMAGE_SECURITY_DATABASE_GUID
 
@@ -319,7 +319,7 @@ cleanup() {
 main() {
   install_req_pkgs "EDK2"
   acquire_edk2_source
-  prmt::yes_or_no "$(fmtr::ask "Build & install OVMF?")" && compile_and_inject_ovmf
+  prmt::yes_or_no "$(fmtr::ask "Build & install OVMF?")" && build_ovmf
   ! prmt::yes_or_no "$(fmtr::ask "Keep repository directory?")" && cleanup
 }
 
