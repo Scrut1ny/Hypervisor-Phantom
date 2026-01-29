@@ -67,12 +67,12 @@ system_info() {
         fi
 
         if command -v setfacl &> /dev/null; then
-            if setfacl --modify "user:$username:rx" "$dir" 2>/dev/null; then
+            if $ROOT_ESC setfacl --modify "user:$username:rx" "$dir" 2>/dev/null; then
                 return 0
             fi
         fi
 
-        chmod o+x "$dir" 2>/dev/null || return 1
+        $ROOT_ESC chmod o+x "$dir" 2>/dev/null || return 1
     }
 
     if ! ensure_permissions "$DOWNLOADS_DIR"; then
