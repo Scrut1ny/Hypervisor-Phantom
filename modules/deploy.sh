@@ -58,7 +58,7 @@ system_info() {
         local dir="$1"
         local username="libvirt-qemu"
 
-        if getfacl "$dir" 2>/dev/null | grep -q "user:$username:.*x"; then
+        if $ROOT_ESC getfacl "$dir" 2>/dev/null | grep -q "user:$username:.*x"; then
             return 0
         fi
 
