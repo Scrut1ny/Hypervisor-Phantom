@@ -145,24 +145,19 @@ configure_bootloader() {
     local kernel_opts_str="${kernel_opts[*]}"
 
     if [[ "$BOOTLOADER_TYPE" == "grub" ]]; then
-        fmtr::log "Configuring GRUB"
+        fmtr::log "Configuring GRUB config: /etc/default/grub"
 
-        if ! grep -Eq "^GRUB_CMDLINE_LINUX_DEFAULT=.*${kernel_opts[1]}" /etc/default/grub; then
-            $ROOT_ESC sed -E -i "/^GRUB_CMDLINE_LINUX_DEFAULT=/ {
-                s/^GRUB_CMDLINE_LINUX_DEFAULT=//;
-                s/^\"//; s/\"$//;
-                s/$VFIO_KERNEL_OPTS_REGEX//g;
-                s/[[:space:]]+/ /g;
-                s/[[:space:]]+$//;
-                s|^|GRUB_CMDLINE_LINUX_DEFAULT=\"|;
-                s|$| ${kernel_opts_str}\"|;
-            }" /etc/default/grub
+        $ROOT_ESC sed -E -i "/^GRUB_CMDLINE_LINUX_DEFAULT=/ {
+            s/^GRUB_CMDLINE_LINUX_DEFAULT=//;
+            s/^\"//; s/\"$//;
+            s/$VFIO_KERNEL_OPTS_REGEX//g;
+            s/[[:space:]]+/ /g;
+            s/[[:space:]]+$//;
+            s|^|GRUB_CMDLINE_LINUX_DEFAULT=\"|;
+            s|$| ${kernel_opts_str}\"|;
+        }" /etc/default/grub
 
-            fmtr::log "Inserted new VFIO kernel opts into GRUB config."
-            export BOOTLOADER_CHANGED=1
-        else
-            fmtr::log "VFIO kernel opts already present in GRUB config. Skipping."
-        fi
+        export BOOTLOADER_CHANGED=1
 
     elif [[ "$BOOTLOADER_TYPE" == "systemd-boot" ]]; then
         [[ -z "$SYSTEMD_BOOT_ENTRY_DIR" || ! -d "$SYSTEMD_BOOT_ENTRY_DIR" ]] && {
@@ -178,20 +173,14 @@ configure_bootloader() {
             return 0
         }
 
-        fmtr::log "Modifying systemd-boot config: $config_file"
+        fmtr::log "Configuring systemd-boot config: $config_file"
 
         $ROOT_ESC sed -E -i "/^options / {
             s/$VFIO_KERNEL_OPTS_REGEX//g;
             s/[[:space:]]+/ /g;
             s/[[:space:]]+$//;
+            s/$/ ${kernel_opts_str}/;
         }" "$config_file"
-
-        if ! grep -q -E "^options .*${kernel_opts[1]}" "$config_file"; then
-            $ROOT_ESC sed -E -i -e "/^options / s/$/ ${kernel_opts_str}/" "$config_file"
-            fmtr::log "Appended VFIO kernel opts to systemd-boot config."
-        else
-            fmtr::log "VFIO kernel opts already present in systemd-boot config. Skipping append."
-        fi
     fi
 }
 
