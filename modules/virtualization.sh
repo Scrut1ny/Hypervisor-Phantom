@@ -35,7 +35,7 @@ configure_system_installation() {
       fmtr::info "Added $target_user to $grp group"
     fi
   done
-
+  
   # Modify defaults for default (virbr0) libvirt network
   # *IMPORTANT* Patches 52:54:00:XX:XX:XX and DHCP range 192.168.122.2-254
   # This appears in ARP cache and needs to be modified.
@@ -45,7 +45,9 @@ configure_system_installation() {
 
   $ROOT_ESC sed -i \
     -e "s|<mac address='[0-9A-Fa-f:]\{17\}'|<mac address='$RANDOM_MAC'|g" \
-    -e "s|192\.168\.122\.|192.168.1.|g" \
+    -e "s|address='[0-9]\{1,3\}\(\.[0-9]\{1,3\}\)\{3\}'|address='10.0.0.1'|g" \
+    -e "s|start='[0-9]\{1,3\}\(\.[0-9]\{1,3\}\)\{3\}'|start='10.0.0.2'|g" \
+    -e "s|end='[0-9]\{1,3\}\(\.[0-9]\{1,3\}\)\{3\}'|end='10.0.0.254'|g" \
     "$XML_PATH"
 
   # Enable (autostart) & start libvirtd.socket
