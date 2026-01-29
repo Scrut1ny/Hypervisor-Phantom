@@ -144,7 +144,27 @@ configure_xml() {
                 break
                 ;;
             [Nn]*)
-                HYPERV_ARGS=() # TODO: Add all enlightenments, but make sure all are disabled
+                HYPERV_ARGS=(
+                    "--features" "hyperv.avic.state=off"
+                    "--features" "hyperv.emsr_bitmap.state=off"
+                    "--features" "hyperv.evmcs.state=off"
+                    "--features" "hyperv.frequencies.state=off"
+                    "--features" "hyperv.ipi.state=off"
+                    "--features" "hyperv.reenlightenment.state=off"
+                    "--features" "hyperv.relaxed.state=off"
+                    "--features" "hyperv.reset.state=off"
+                    "--features" "hyperv.runtime.state=off"
+                    "--features" "hyperv.spinlocks.state=off"
+                    "--features" "hyperv.stimer.direct.state=off"
+                    "--features" "hyperv.stimer.state=off"
+                    "--features" "hyperv.synic.state=off"
+                    "--features" "hyperv.tlbflush.direct.state=off"
+                    "--features" "hyperv.tlbflush.extended.state=off"
+                    "--features" "hyperv.tlbflush.state=off"
+                    "--features" "hyperv.vapic.state=off"
+                    "--features" "hyperv.vpindex.state=off"
+                    "--features" "hyperv.xmm_input.state=off"
+                )
                 HYPERV_CLOCK_STATUS="no"
                 CPU_FEATURE_HYPERVISOR="disable"
                 fmtr::info "Hyper-V enlightenments will be explicitly disabled."
