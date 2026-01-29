@@ -21,6 +21,7 @@ REQUIRED_PKGS_Fedora=(gcc gcc-c++ make acpica-tools git nasm python3 libuuid-dev
 # Acquire EDK2 source
 ################################################################################
 acquire_edk2_source() {
+  $ROOT_ESC mkdir -p "$OUT_DIR/firmware"
   mkdir -p "$SRC_DIR" && cd "$SRC_DIR" || { fmtr::fatal "Failed to enter source dir: $SRC_DIR"; exit 1; }
 
   clone_repo() {
@@ -158,8 +159,6 @@ compile_and_inject_ovmf() {
     --define TPM1_ENABLE=TRUE \
     --define TPM2_ENABLE=TRUE \
     --define SMM_REQUIRE=TRUE &>>"$LOG_FILE" || { fmtr::fatal "Failed to build OVMF"; return 1; }
-
-  $ROOT_ESC mkdir -p "$OUT_DIR/firmware"
 
   for f in CODE VARS; do
     $ROOT_ESC "$OUT_DIR/emulator/bin/qemu-img" convert -f raw -O qcow2 "Build/OvmfX64/RELEASE_GCC5/FV/OVMF_${f}.fd" "$OUT_DIR/firmware/OVMF_${f}.qcow2" || return 1
