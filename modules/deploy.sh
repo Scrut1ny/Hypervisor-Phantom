@@ -30,20 +30,24 @@ system_info() {
     while :; do
         fmtr::log "Memory allocation:
 
-  1) 8  GiB (8192  MiB)
-  2) 16 GiB (16384 MiB)
-  3) 32 GiB (32768 MiB)
-  4) 64 GiB (65536 MiB)"
+  1) 8  GiB  (8192  MiB)
+  2) 12 GiB  (12288 MiB)
+  3) 16 GiB  (16384 MiB)
+  4) 24 GiB  (24576 MiB)
+  5) 32 GiB  (32768 MiB)
+  6) 64 GiB  (65536 MiB)"
 
-        read -r -p "$(fmtr::ask_inline "Choose an option [1-4]: ")" mem_choice
+        read -r -p "$(fmtr::ask_inline "Choose an option [1-6]: ")" mem_choice
         printf '%s\n' "$mem_choice" >>"$LOG_FILE"
 
         case "$mem_choice" in
             1) HOST_MEMORY_MIB=8192  ;;
-            2) HOST_MEMORY_MIB=16384 ;;
-            3) HOST_MEMORY_MIB=32768 ;;
-            4) HOST_MEMORY_MIB=65536 ;;
-            *) fmtr::warn "Invalid option. Please choose 1, 2, 3, or 4."; continue ;;
+            2) HOST_MEMORY_MIB=12288 ;;
+            3) HOST_MEMORY_MIB=16384 ;;
+            4) HOST_MEMORY_MIB=24576 ;;
+            5) HOST_MEMORY_MIB=32768 ;;
+            6) HOST_MEMORY_MIB=65536 ;;
+            *) fmtr::warn "Invalid option. Please choose 1–6."; continue ;;
         esac
 
         fmtr::info "Selected #$mem_choice ($HOST_MEMORY_MIB MiB)"
