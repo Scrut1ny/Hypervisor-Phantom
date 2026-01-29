@@ -348,7 +348,7 @@ configure_xml() {
         --xml "./clock/@offset=localtime"
         --xml "./clock/timer[@name='tsc']/@present=yes"
         --xml "./clock/timer[@name='tsc']/@mode=native"
-        # --xml "./clock/timer[@name='hpet']/@present=yes"
+        --xml "./clock/timer[@name='hpet']/@present=yes"
         --xml "./clock/timer[@name='kvmclock']/@present=no"                      # CONCEALMENT: Disable KVM paravirtual clock source
         --xml "./clock/timer[@name='hypervclock']/@present=$HYPERV_CLOCK_STATUS" # CONCEALMENT: Disable Hyper-V paravirtual clock source
 
