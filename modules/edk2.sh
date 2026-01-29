@@ -197,9 +197,16 @@ compile_and_inject_ovmf() {
         continue
       fi
 
-      header_hex=$(hexdump -n 4 -ve '1/1 "%.2x"' "$path" 2>/dev/null)
+      full_hex=$(hexdump -ve '1/1 "%.2x"' "$path" 2>/dev/null)
+
+      # Extract the header (first 4 bytes = 8 hex characters)
+      header_hex="${full_hex:0:8}"
+
+      # Extract the data (everything after the first 8 hex characters)
+      data_hex="${full_hex:8}"
+
+      # Calculate attributes from the header (Little Endian)
       attr=$(( 16#${header_hex:6:2}${header_hex:4:2}${header_hex:2:2}${header_hex:0:2} ))
-      data_hex=$(tail -c +5 "$path" | hexdump -ve '1/1 "%.2x"')
 
       if [ "$first_entry" = true ]; then
         first_entry=false
