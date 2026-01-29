@@ -33,19 +33,14 @@ git clone --single-branch --depth=1 https://github.com/Scrut1ny/AutoVirt
 cd AutoVirt/
 ```
 
-#### 3. Set executable permissions
-```
-find . -type f -name '*.sh' -exec chmod +x {} +
-```
-
-#### 4. Execute
+#### 3. Execute
 ```
 ./main.sh
 ```
 
 ---
 
-### 5. Update repository
+### 4. Update repository
 - ***Make sure you're in the `AutoVirt/` root directory when running the command below!***
 ```
 git fetch --all && git reset --hard origin/main
