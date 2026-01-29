@@ -77,6 +77,7 @@ REQUIRED_PKGS_Fedora=(
 # Acquire QEMU source
 ################################################################################
 acquire_qemu_source() {
+  $ROOT_ESC mkdir -p "$OUT_DIR"/{emulator,firmware}
   mkdir -p "$SRC_DIR" && cd "$SRC_DIR" || { fmtr::fatal "Failed to enter source dir: $SRC_DIR"; exit 1; }
 
   clone_repo() {
@@ -242,7 +243,7 @@ spoof_acpi() {
   local h=include/hw/acpi/aml-build.h
   local c=hw/acpi/aml-build.c
 
-  local OEMID OEM_Table_ID Creator_ID Preferred_PM_Profile SSDT out
+  local OEMID OEM_Table_ID Creator_ID Preferred_PM_Profile Battery_SSDT out
 
   OEMID="$(LC_ALL=C $ROOT_ESC dd if=$t bs=1 skip=10 count=6 status=none | tr '\0' ' ')"
   OEM_Table_ID="$(LC_ALL=C $ROOT_ESC dd if=$t bs=1 skip=16 count=8 status=none | tr '\0' ' ')"
@@ -259,22 +260,24 @@ spoof_acpi() {
   if [[ $Preferred_PM_Profile -eq 2 ]]; then
     fmtr::warn "Host FADT: Preferred_PM_Profile equals '2' (Mobile)"
 
-    sed -i 's/1 \/\* Desktop \*\/, 1/2 \/\* Mobile \*\/, 1/' $c
+    sed -i 's/1 \/\* Desktop \*\/, 1/2 \/\* Mobile \*\/, 1/' "$c"
 
-    SSDT=$($ROOT_ESC grep -aliE 'Battery|Capacity|Discharge|Charge' /sys/firmware/acpi/tables/SSDT* 2>/dev/null | head -n 1)
+    Battery_SSDT=$($ROOT_ESC grep -aliE 'Battery|Capacity|Discharge|Charge' /sys/firmware/acpi/tables/SSDT* 2>/dev/null | head -n 1)
 
-    if [ -z "$SSDT" ]; then
-      fmtr::warn "No SSDT containing battery info found"
-      return 0
+    if [[ -n "$Battery_SSDT" ]]; then
+      out="$OUT_DIR/firmware/$(basename "$Battery_SSDT")-battery.aml"
+
+      if $ROOT_ESC cp -- "$Battery_SSDT" "$out" && \
+         $ROOT_ESC chmod 0644 -- "$out" && \
+         $ROOT_ESC chown -- "${SUDO_USER:-$USER}:${SUDO_USER:-$USER}" "$out" 2>/dev/null; then
+
+         fmtr::info "Copied '$Battery_SSDT' to '$out'"
+      else
+         fmtr::error "Failed to copy or set permissions for battery SSDT"
+      fi
+    else
+      fmtr::warn "No SSDT containing battery info found; skipping battery SSDT copy."
     fi
-
-    out="$OUT_DIR/firmware/$(basename "$SSDT")-battery.aml"
-    $ROOT_ESC cp -- "$SSDT" "$out"
-
-    $ROOT_ESC chmod 0644 -- "$out"
-    $ROOT_ESC chown -- "${SUDO_USER:-$USER}:${SUDO_USER:-$USER}" "$out" 2>/dev/null || true
-
-    fmtr::info "Copied '$SSDT' to '$out'"
   fi
 }
 
@@ -326,8 +329,6 @@ spoof_smbios() {
 
 compile_qemu() {
   fmtr::info "Configuring QEMU..."
-
-  $ROOT_ESC mkdir -p "$OUT_DIR"/{emulator,firmware}
 
   ./configure --target-list=x86_64-softmmu \
               --prefix="$OUT_DIR/emulator" \
