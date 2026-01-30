@@ -6,7 +6,7 @@ source ./utils.sh || { echo "Failed to load utilities module!"; exit 1; }
 
 system_info() {
     # Domain Name
-    DOMAIN_NAME="AutoVirt"
+    DOMAIN_NAME="AutoVirt #2"
 
     # CPU Topology
     HOST_LOGICAL_CPUS=$(nproc --all 2>/dev/null || nproc 2>/dev/null)
@@ -24,6 +24,9 @@ system_info() {
 
     # Random 20-char hex serial (A-F0-9)
     DRIVE_SERIAL="$(LC_ALL=C tr -dc 'A-F0-9' </dev/urandom | head -c 20)"
+
+    # Random WWN (World Wide Name) - 16 hex chars, typically starts with 5 for NAA
+    # DRIVE_WWN="0x5$(LC_ALL=C tr -dc '0-9a-f' </dev/urandom | head -c 15)"
 
     # Memory selection (MiB)
     local mem_choice
@@ -62,7 +65,7 @@ system_info() {
         local dir="$1"
         local username="libvirt-qemu"
 
-        if $ROOT_ESC getfacl "$dir" 2>/dev/null | grep -q "user:$username:.*x"; then
+        if getfacl "$dir" 2>/dev/null | grep -q "user:$username:.*x"; then
             return 0
         fi
 
@@ -144,30 +147,10 @@ configure_xml() {
                 break
                 ;;
             [Nn]*)
-                HYPERV_ARGS=(
-                    "--features" "hyperv.avic.state=off"
-                    "--features" "hyperv.emsr_bitmap.state=off"
-                    "--features" "hyperv.evmcs.state=off"
-                    "--features" "hyperv.frequencies.state=off"
-                    "--features" "hyperv.ipi.state=off"
-                    "--features" "hyperv.reenlightenment.state=off"
-                    "--features" "hyperv.relaxed.state=off"
-                    "--features" "hyperv.reset.state=off"
-                    "--features" "hyperv.runtime.state=off"
-                    "--features" "hyperv.spinlocks.state=off"
-                    "--features" "hyperv.stimer.direct.state=off"
-                    "--features" "hyperv.stimer.state=off"
-                    "--features" "hyperv.synic.state=off"
-                    "--features" "hyperv.tlbflush.direct.state=off"
-                    "--features" "hyperv.tlbflush.extended.state=off"
-                    "--features" "hyperv.tlbflush.state=off"
-                    "--features" "hyperv.vapic.state=off"
-                    "--features" "hyperv.vpindex.state=off"
-                    "--features" "hyperv.xmm_input.state=off"
-                )
+                HYPERV_ARGS=('--xml' "xpath.delete=./features/hyperv")
                 HYPERV_CLOCK_STATUS="no"
                 CPU_FEATURE_HYPERVISOR="disable"
-                fmtr::info "Hyper-V enlightenments will be explicitly disabled."
+                fmtr::info "Disabling all Hyper-V related settings."
                 break
                 ;;
             *)
@@ -278,14 +261,20 @@ configure_xml() {
         #   - https://libvirt.org/formatdomain.html#operating-system-booting
         #
 
-        --boot "menu=on"
+        # Loader / OVMF_CODE
         --xml "./os/loader/@readonly=yes"
         --xml "./os/loader/@secure=yes"
         --xml "./os/loader/@type=pflash"
         --xml "./os/loader/@format=qcow2"
         --xml "./os/loader=/opt/AutoVirt/firmware/OVMF_CODE.qcow2"
+
+        # NVRAM / OVMF_VARS
         --xml "./os/nvram/@template=/opt/AutoVirt/firmware/OVMF_VARS.qcow2"
+        --xml "./os/nvram/@templateFormat=qcow2"
         --xml "./os/nvram/@format=qcow2"
+
+        # Boot order & menu
+        --boot "cdrom,hd,menu=on"
 
 
 
@@ -348,7 +337,7 @@ configure_xml() {
         --xml "./clock/@offset=localtime"
         --xml "./clock/timer[@name='tsc']/@present=yes"
         --xml "./clock/timer[@name='tsc']/@mode=native"
-        --xml "./clock/timer[@name='hpet']/@present=yes"
+        # --xml "./clock/timer[@name='hpet']/@present=yes"
         --xml "./clock/timer[@name='kvmclock']/@present=no"                      # CONCEALMENT: Disable KVM paravirtual clock source
         --xml "./clock/timer[@name='hypervclock']/@present=$HYPERV_CLOCK_STATUS" # CONCEALMENT: Disable Hyper-V paravirtual clock source
 
@@ -387,15 +376,17 @@ configure_xml() {
         #
         # Documentation:
         #   - https://libvirt.org/formatdomain.html#hard-drives-floppy-disks-cdroms
+        #   - https://www.qemu.org/docs/master/system/devices/nvme.html
         #
 
+        # TODO: Add user choice of using virtual drive, virtual drive + passthrough, complete PCI passthrough.
+        # TODO: passthrough physical drive
         # --disk type=block,device=disk,source=/dev/nvme0n1,driver.name=qemu,driver.type=raw,driver.cache=none,driver.io=native,target.dev=nvme0,target.bus=nvme,serial=1233659 \
 
-        --disk "size=500,bus=nvme,serial=$DRIVE_SERIAL"
+        --disk "size=500,bus=nvme,serial=$DRIVE_SERIAL,driver.cache=none,driver.io=native,driver.discard=unmap,blockio.logical_block_size=4096,blockio.physical_block_size=4096"
         --check "disk_size=off"
-        --cdrom "$ISO_PATH"
 
-        # TODO: Add user choice of using virtual drive, virtual drive + passthrough, complete PCI passthrough.
+        --cdrom "$ISO_PATH"
 
 
 
@@ -437,7 +428,7 @@ configure_xml() {
         # TODO: Add option for user to passthrough TPM or emulate it
         #
 
-        --tpm "model=tpm-crb,backend.type=emulator,backend.version=2.0"
+        --tpm "backend.type=emulator,model=tpm-crb"
 
 
 
@@ -522,13 +513,16 @@ configure_xml() {
         --noautoconsole
         --wait
     )
-
     # https://man.archlinux.org/man/virt-install.1
     # sudo virt-install --features help
 
     # TODO: Figure out weird boot hang freeze
-    $ROOT_ESC virt-install "${args[@]}" &>> "$LOG_FILE" && \
-    virt-manager --connect qemu:///system --show-domain-console "$DOMAIN_NAME" &>> "$LOG_FILE"
+
+    $ROOT_ESC virt-install "${args[@]}" &>> "$LOG_FILE"
+
+    # $ROOT_ESC virt-install "${args[@]}" --print-xml > /tmp/AutoVirt.xml &>> "$LOG_FILE"
+
+    # virt-manager --connect qemu:///system --show-domain-console "$DOMAIN_NAME" &>> "$LOG_FILE"
 }
 
 system_info
