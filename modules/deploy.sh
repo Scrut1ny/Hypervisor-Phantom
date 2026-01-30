@@ -6,7 +6,7 @@ source ./utils.sh || { echo "Failed to load utilities module!"; exit 1; }
 
 system_info() {
     # Domain Name
-    DOMAIN_NAME="AutoVirt #2"
+    DOMAIN_NAME="AutoVirt"
 
     # CPU Topology
     HOST_LOGICAL_CPUS=$(nproc --all 2>/dev/null || nproc 2>/dev/null)
