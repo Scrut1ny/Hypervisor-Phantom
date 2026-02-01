@@ -62,28 +62,52 @@ system_info() {
     ISO_PATH=""
 
     ensure_permissions() {
-        local dir="$1"
+        local target_path="$1"
         local username="libvirt-qemu"
+        local dirs_to_check=()
 
-        if getfacl "$dir" 2>/dev/null | grep -q "user:$username:.*x"; then
-            return 0
-        fi
+        local current_dir="$target_path"
+        while [[ "$current_dir" != "/" && "$current_dir" != "/home" ]]; do
+            dirs_to_check+=("$current_dir")
+            current_dir="$(dirname "$current_dir")"
+        done
 
-        if [[ -x "$dir" ]]; then
-            return 0
-        fi
+        for ((i=${#dirs_to_check[@]}-1; i>=0; i--)); do
+            local dir="${dirs_to_check[$i]}"
 
-        if command -v setfacl &> /dev/null; then
-            if $ROOT_ESC setfacl --modify "user:$username:rx" "$dir" 2>/dev/null; then
-                return 0
+            # Check if libvirt-qemu already has access via ACL
+            if getfacl "$dir" 2>/dev/null | grep -q "user:$username:.*x"; then
+                continue
             fi
-        fi
 
-        $ROOT_ESC chmod o+x "$dir" 2>/dev/null || return 1
+            # Check if directory is already world-executable
+            if [[ -x "$dir" ]]; then
+                continue
+            fi
+
+            # Try setting ACL first (preferred - more granular)
+            if command -v setfacl &> /dev/null; then
+                if $ROOT_ESC setfacl --modify "user:$username:x" "$dir" 2>/dev/null; then
+                    fmtr::info "Set ACL execute permission for $username on $dir"
+                    continue
+                fi
+            fi
+
+            # Fallback to chmod o+x
+            if $ROOT_ESC chmod o+x "$dir" 2>/dev/null; then
+                fmtr::info "Set world-execute permission on $dir"
+                continue
+            fi
+
+            fmtr::warn "Failed to set permissions on $dir"
+            return 1
+        done
+
+        return 0
     }
 
     if ! ensure_permissions "$DOWNLOADS_DIR"; then
-        fmtr::fatal "Failed to set proper permissions for libvirt-qemu on $DOWNLOADS_DIR."
+        fmtr::fatal "Failed to set proper permissions for libvirt-qemu on $DOWNLOADS_DIR or its parent directories."
         exit 1
     fi
 
@@ -337,7 +361,7 @@ configure_xml() {
         --xml "./clock/@offset=localtime"
         --xml "./clock/timer[@name='tsc']/@present=yes"
         --xml "./clock/timer[@name='tsc']/@mode=native"
-        # --xml "./clock/timer[@name='hpet']/@present=yes"
+        --xml "./clock/timer[@name='hpet']/@present=yes"
         --xml "./clock/timer[@name='kvmclock']/@present=no"                      # CONCEALMENT: Disable KVM paravirtual clock source
         --xml "./clock/timer[@name='hypervclock']/@present=$HYPERV_CLOCK_STATUS" # CONCEALMENT: Disable Hyper-V paravirtual clock source
 
@@ -383,6 +407,7 @@ configure_xml() {
         # TODO: passthrough physical drive
         # --disk type=block,device=disk,source=/dev/nvme0n1,driver.name=qemu,driver.type=raw,driver.cache=none,driver.io=native,target.dev=nvme0,target.bus=nvme,serial=1233659 \
 
+        # set & spoof eid64
         --disk "size=500,bus=nvme,serial=$DRIVE_SERIAL,driver.cache=none,driver.io=native,driver.discard=unmap,blockio.logical_block_size=4096,blockio.physical_block_size=4096"
         --check "disk_size=off"
 
