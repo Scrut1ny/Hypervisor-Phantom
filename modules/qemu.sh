@@ -336,7 +336,8 @@ compile_qemu() {
               --enable-usb-redir \
               --enable-spice \
               --enable-spice-protocol \
-              --disable-werror &>> "$LOG_FILE"
+              --disable-werror \
+              --disable-docs &>> "$LOG_FILE"
 
   if [[ $? -ne 0 ]]; then
     fmtr::error "Configuration failed; Check $LOG_FILE"
