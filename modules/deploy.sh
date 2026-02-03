@@ -6,7 +6,7 @@ source ./utils.sh || { echo "Failed to load utilities module!"; exit 1; }
 
 system_info() {
     # Domain Name
-    DOMAIN_NAME="AutoVirt"
+    DOMAIN_NAME="AutoVirt #2"
 
     # CPU Topology
     HOST_LOGICAL_CPUS=$(nproc --all 2>/dev/null || nproc 2>/dev/null)
@@ -159,7 +159,7 @@ configure_xml() {
     local enable_hyperv=""
 
     while :; do
-        read -r -p "$(fmtr::ask_inline "Enable Hyper-V enlightenments (passthrough mode)? [y/n]: ")" enable_hyperv
+        read -r -p "$(fmtr::ask_inline "Enable Hyper-V? [y/n]: ")" enable_hyperv
         printf '%s\n' "$enable_hyperv" >>"$LOG_FILE"
 
         case "$enable_hyperv" in
@@ -242,6 +242,41 @@ configure_xml() {
                 ;;
             [Nn]*)
                 fmtr::info "Evdev input passthrough disabled."
+                break
+                ;;
+            *)
+                fmtr::warn "Please answer y or n."
+                ;;
+        esac
+    done
+
+    ################################################################################
+    #
+    # Audio
+    #
+
+    local AUDIO_ARGS=()
+    local enable_audio=""
+
+    while :; do
+        read -r -p "$(fmtr::ask_inline "Enable PipeWire audio passthrough (input + output)? [y/n]: ")" enable_audio
+        printf '%s\n' "$enable_audio" >>"$LOG_FILE"
+
+        case "$enable_audio" in
+            [Yy]*)
+                AUDIO_ARGS=(
+                    '--sound' 'model=ich9,audio.id=1'
+                    '--xml' './devices/audio/@id=1'
+                    '--xml' './devices/audio/@type=pipewire'
+                    '--xml' "./devices/audio/@runtimeDir=/run/user/$(id -u)"
+                    '--xml' './devices/audio/input/@mixingEngine=no'
+                    '--xml' './devices/audio/output/@mixingEngine=no'
+                )
+                fmtr::info "PipeWire audio enabled (low-latency mode)."
+                break
+                ;;
+            [Nn]*)
+                fmtr::info "Audio passthrough disabled."
                 break
                 ;;
             *)
@@ -407,7 +442,7 @@ configure_xml() {
         # TODO: passthrough physical drive
         # --disk type=block,device=disk,source=/dev/nvme0n1,driver.name=qemu,driver.type=raw,driver.cache=none,driver.io=native,target.dev=nvme0,target.bus=nvme,serial=1233659 \
 
-        # set & spoof eid64
+        # set & spoof eui64
         --disk "size=500,bus=nvme,serial=$DRIVE_SERIAL,driver.cache=none,driver.io=native,driver.discard=unmap,blockio.logical_block_size=4096,blockio.physical_block_size=4096"
         --check "disk_size=off"
 
@@ -439,6 +474,26 @@ configure_xml() {
         --input "keyboard,bus=usb" # USB keyboard instead of PS2
 
         "${EVDEV_ARGS[@]}"         # Evdev configuration
+
+
+
+
+
+        ################################################################################
+        #
+        # Documentation:
+        #   - https://libvirt.org/formatdomain.html#sound-devices
+        #   - https://libvirt.org/formatdomain.html#audio-devices
+        #   - https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#Passing_audio_from_virtual_machine_to_host_via_PipeWire_directly
+        #
+
+        --sound "model=ich9,audio.id=1"
+        --xml "./devices/audio/@id=1"
+        --xml "./devices/audio/@type=pipewire"
+        --xml "./devices/audio/@runtimeDir=/run/user/$(id -u)"
+        --xml "./devices/audio/input/@mixingEngine=no"
+        --xml "./devices/audio/output/@mixingEngine=no"
+
 
 
 
