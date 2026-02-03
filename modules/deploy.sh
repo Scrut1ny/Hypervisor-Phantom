@@ -423,7 +423,7 @@ configure_xml() {
         #   - https://libvirt.org/formatdomain.html#network-interfaces
         #
 
-        --network "network=default,model=rtl8139,mac=$RANDOM_MAC"
+        --network "network=default,model=e1000e,mac=$RANDOM_MAC"
 
 
 
