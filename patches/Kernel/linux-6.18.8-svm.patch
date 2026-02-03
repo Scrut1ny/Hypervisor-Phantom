@@ -1,0 +1,52 @@
+diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
+index 24d59ccfa..4a1a24299 100644
+--- a/arch/x86/kvm/svm/svm.c
++++ b/arch/x86/kvm/svm/svm.c
+@@ -1078,6 +1078,8 @@ static void init_vmcb(struct kvm_vcpu *vcpu, bool init_event)
+ 	svm_set_intercept(svm, INTERCEPT_XSETBV);
+ 	svm_set_intercept(svm, INTERCEPT_RDPRU);
+ 	svm_set_intercept(svm, INTERCEPT_RSM);
++	svm_clr_intercept(svm, INTERCEPT_RDTSC);
++	svm_clr_intercept(svm, INTERCEPT_RDTSCP);
+ 
+ 	if (!kvm_mwait_in_guest(vcpu->kvm)) {
+ 		svm_set_intercept(svm, INTERCEPT_MONITOR);
+@@ -4276,8 +4278,38 @@ static __no_kcsan fastpath_t svm_vcpu_run(struct kvm_vcpu *vcpu, u64 run_flags)
+ 	if (!static_cpu_has(X86_FEATURE_V_SPEC_CTRL))
+ 		x86_spec_ctrl_set_guest(svm->virt_spec_ctrl);
+ 
++reenter_guest_fast:
++
+ 	svm_vcpu_enter_exit(vcpu, spec_ctrl_intercepted);
+ 
++	/*
++	 * Original Author: Marcos
++	 *
++	 * REQUIRED kernel cmdline: 'mitigations=off idle=poll processor.max_cstate=1 tsc=reliable'
++	 *
++	 */
++
++	if (unlikely(svm->vmcb->control.exit_code == SVM_EXIT_CPUID)) {
++		if (svm->vmcb->save.rax == 0) {
++		    svm->vmcb->save.rax = 0x16;
++
++		    vcpu->arch.regs[VCPU_REGS_RBX] = 0x68747541;
++		    vcpu->arch.regs[VCPU_REGS_RCX] = 0x444d4163;
++		    vcpu->arch.regs[VCPU_REGS_RDX] = 0x69746e65;
++
++		    u64 next_rip = svm->vmcb->control.next_rip;
++		    if (!next_rip) {
++			next_rip = svm->vmcb->save.rip +
++				svm->vmcb->control.insn_len;
++		    }
++
++		    svm->vmcb->save.rip = next_rip;
++		    vcpu->arch.regs[VCPU_REGS_RIP] = next_rip;
++
++		    goto reenter_guest_fast;
++		}
++	}
++
+ 	if (!static_cpu_has(X86_FEATURE_V_SPEC_CTRL))
+ 		x86_spec_ctrl_restore_host(svm->virt_spec_ctrl);
+ 
