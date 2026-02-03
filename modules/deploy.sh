@@ -487,12 +487,7 @@ configure_xml() {
         #   - https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#Passing_audio_from_virtual_machine_to_host_via_PipeWire_directly
         #
 
-        --sound "model=ich9,audio.id=1"
-        --xml "./devices/audio/@id=1"
-        --xml "./devices/audio/@type=pipewire"
-        --xml "./devices/audio/@runtimeDir=/run/user/$(id -u)"
-        --xml "./devices/audio/input/@mixingEngine=no"
-        --xml "./devices/audio/output/@mixingEngine=no"
+        "${AUDIO_ARGS[@]}"
 
 
 
