@@ -22,15 +22,15 @@ for name in ("product_serial", "board_serial", "chassis_serial"):
     if (val := get_bytes(f"/sys/class/dmi/id/{name}").strip()) and val not in (b"Not Specified", OEM):
         data = data.replace(val, OEM)
 
-# 4. Overwrite RAM Serial Strings with Null Bytes
+# 4. Overwrite RAM Serial Strings with '0' Characters
 ram_serials = {
     s for p in Path("/sys/firmware/dmi/entries/").glob("17-*/raw")
     for s in get_bytes(p)[2:].split(b'\x00')
     if HEX_PAT.match(s.upper())
 }
 for s in ram_serials:
-    blank = b"\x00" * len(s)
-    data = data.replace(s, blank).replace(s.lower(), blank)
+    zeros = b"0" * len(s) # Use `blank = b"\x00" * len(s)` instead for for null bytes
+    data = data.replace(s, zeros).replace(s.lower(), zeros)
 
 if data:
     Path("smbios.bin").write_bytes(data)
