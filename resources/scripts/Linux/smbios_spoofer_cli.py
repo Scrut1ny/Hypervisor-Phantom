@@ -1,63 +1,36 @@
 #!/usr/bin/env python3
 from pathlib import Path
-import uuid
 import re
 
-HEX_PATTERN  = re.compile(r'^[0-9A-F]{8}$')
-DMI_SERIALS  = "To be filled by O.E.M."
-RAM_SERIAL   = b"00000000"
-SERIAL_PATHS = ("/sys/class/dmi/id/product_serial", "/sys/class/dmi/id/board_serial", "/sys/class/dmi/id/chassis_serial")
+OEM = b"To be filled by O.E.M."
+HEX_PAT = re.compile(rb'^[0-9A-F]{8}$')
 
-def get_ram_serials():
-    return [
-        s for p in Path("/sys/firmware/dmi/entries/").glob("17-*/raw")
-        if (raw := p.read_text(errors='ignore'))
-        for s in raw[2:].split('\x00')
-        if s and HEX_PATTERN.match(s.upper())
-    ]
+def get_bytes(path):
+    try: return Path(path).read_bytes()
+    except OSError: return b""
 
-def to_smbios_uuid(u: str) -> str:
-    u = u.replace("-", "")
-    return "".join(u[i:i + 2] for i in (6, 4, 2, 0, 10, 8, 14, 12)) + u[16:]
+# 1. SMBIOS Tables Concatenation
+data = get_bytes("/sys/firmware/dmi/tables/smbios_entry_point") + get_bytes("/sys/firmware/dmi/tables/DMI")
 
-def safe_read(path: str) -> bytes | None:
-    try:
-        return Path(path).read_bytes()
-    except OSError:
-        return None
+# 2. Overwrite Little-Endian UUID Bytes with 0xFF
+if (u_txt := get_bytes("/sys/class/dmi/id/product_uuid").strip()):
+    b = bytes.fromhex(u_txt.decode().replace("-", ""))
+    data = data.replace(b[3::-1] + b[5:3:-1] + b[7:5:-1] + b[8:], b"\xFF" * 16)
 
-# Combine SMBIOS tables
-smbios_path = Path("smbios.bin")
-smbios_path.write_bytes(b"".join(
-    d for f in ("/sys/firmware/dmi/tables/smbios_entry_point", "/sys/firmware/dmi/tables/DMI")
-    if (d := safe_read(f))
-))
+# 3. Overwrite System Serial Strings with OEM Constant
+for name in ("product_serial", "board_serial", "chassis_serial"):
+    if (val := get_bytes(f"/sys/class/dmi/id/{name}").strip()) and val not in (b"Not Specified", OEM):
+        data = data.replace(val, OEM)
 
-data = smbios_path.read_bytes()
+# 4. Overwrite RAM Serial Strings with Null Bytes
+ram_serials = {
+    s for p in Path("/sys/firmware/dmi/entries/").glob("17-*/raw")
+    for s in get_bytes(p)[2:].split(b'\x00')
+    if HEX_PAT.match(s.upper())
+}
+for s in ram_serials:
+    blank = b"\x00" * len(s)
+    data = data.replace(s, blank).replace(s.lower(), blank)
 
-# Replace UUID if exists
-if (uuid_path := Path("/sys/class/dmi/id/product_uuid")).exists() and (uuid_val := uuid_path.read_text().strip()):
-    try:
-        old_bytes = bytes.fromhex(to_smbios_uuid(uuid_val))
-        new_bytes = b"\xFF" * 16  # SMBIOS UUID = all 00h (ID not present)
-
-        if (idx := data.find(old_bytes)) != -1:
-            data = data[:idx] + new_bytes + data[idx + len(old_bytes):]
-    except Exception:
-        pass
-
-# Replace serial numbers
-spoofer_encoded = DMI_SERIALS.encode("latin-1", errors="ignore")
-for serial_path in SERIAL_PATHS:
-    if (fp := Path(serial_path)).exists() and (val := fp.read_text(errors="ignore").strip()):
-        if val not in ("Not Specified", DMI_SERIALS) and (old := val.encode("latin-1", errors="ignore")) and old != spoofer_encoded:
-            data = data.replace(old, spoofer_encoded)
-
-# Replace RAM serials
-for ram_serial in get_ram_serials():
-    for encoded in (ram_serial.encode("ascii"), ram_serial.lower().encode("ascii")):
-        data = data.replace(encoded, RAM_SERIAL)
-
-# Write if changed
-if data != smbios_path.read_bytes():
-    smbios_path.write_bytes(data)
+if data:
+    Path("smbios.bin").write_bytes(data)
