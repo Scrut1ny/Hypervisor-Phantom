@@ -624,56 +624,6 @@ index b00987f..438ec55 100644
      k->revision = 0x02;
      k->class_id = PCI_CLASS_STORAGE_SATA;
      dc->vmsd = &vmstate_ich9_ahci;
-diff --git a/hw/input/hid.c b/hw/input/hid.c
-index de24cd0..ff5b407 100644
---- a/hw/input/hid.c
-+++ b/hw/input/hid.c
-@@ -512,20 +512,20 @@ void hid_free(HIDState *hs)
- }
- 
- static const QemuInputHandler hid_keyboard_handler = {
--    .name  = "QEMU HID Keyboard",
-+    .name  = "HID Keyboard",
-     .mask  = INPUT_EVENT_MASK_KEY,
-     .event = hid_keyboard_event,
- };
- 
- static const QemuInputHandler hid_mouse_handler = {
--    .name  = "QEMU HID Mouse",
-+    .name  = "HID Mouse",
-     .mask  = INPUT_EVENT_MASK_BTN | INPUT_EVENT_MASK_REL,
-     .event = hid_pointer_event,
-     .sync  = hid_pointer_sync,
- };
- 
- static const QemuInputHandler hid_tablet_handler = {
--    .name  = "QEMU HID Tablet",
-+    .name  = "HID Tablet",
-     .mask  = INPUT_EVENT_MASK_BTN | INPUT_EVENT_MASK_ABS,
-     .event = hid_pointer_event,
-     .sync  = hid_pointer_sync,
-diff --git a/hw/input/ps2.c b/hw/input/ps2.c
-index 7f7b1fc..7e38002 100644
---- a/hw/input/ps2.c
-+++ b/hw/input/ps2.c
-@@ -1232,7 +1232,7 @@ static const VMStateDescription vmstate_ps2_mouse = {
- };
- 
- static const QemuInputHandler ps2_keyboard_handler = {
--    .name  = "QEMU PS/2 Keyboard",
-+    .name  = "PS/2 Keyboard",
-     .mask  = INPUT_EVENT_MASK_KEY,
-     .event = ps2_keyboard_event,
- };
-@@ -1243,7 +1243,7 @@ static void ps2_kbd_realize(DeviceState *dev, Error **errp)
- }
- 
- static const QemuInputHandler ps2_mouse_handler = {
--    .name  = "QEMU PS/2 Mouse",
-+    .name  = "PS/2 Mouse",
-     .mask  = INPUT_EVENT_MASK_BTN | INPUT_EVENT_MASK_REL,
-     .event = ps2_mouse_event,
-     .sync  = ps2_mouse_sync,
 diff --git a/hw/isa/lpc_ich9.c b/hw/isa/lpc_ich9.c
 index c9cb8f7..bf99152 100644
 --- a/hw/isa/lpc_ich9.c
