@@ -29,7 +29,7 @@ ram_serials = {
     if HEX_PAT.match(s.upper())
 }
 for s in ram_serials:
-    zeros = b"0" * len(s) # Use `blank = b"\x00" * len(s)` instead for for null bytes
+    zeros = b"0" * len(s)
     data = data.replace(s, zeros).replace(s.lower(), zeros)
 
 if data:
