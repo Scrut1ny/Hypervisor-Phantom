@@ -1384,7 +1384,7 @@ index b72e484..a15ff52 100644
  #define PCI_DEVICE_ID_REDHAT_NVME        0x0010
  #define PCI_DEVICE_ID_REDHAT_PVPANIC     0x0011
 diff --git a/include/hw/pci/pci_ids.h b/include/hw/pci/pci_ids.h
-index 16034aa..916a689 100644
+index 16034aa..2bae16e 100644
 --- a/include/hw/pci/pci_ids.h
 +++ b/include/hw/pci/pci_ids.h
 @@ -178,6 +178,7 @@
@@ -1409,10 +1409,10 @@ index 16034aa..916a689 100644
  #define PCI_DEVICE_ID_INTEL_ICH9_4       0x2914
  #define PCI_DEVICE_ID_INTEL_ICH9_5       0x2919
 -#define PCI_DEVICE_ID_INTEL_ICH9_6       0x2930
-+#define PCI_DEVICE_ID_INTEL_ICH9_6       0x790b // Type: System Device | Category: SMBus Controller | PCI Class: 0x0c05 | hw/i2c/smbus_ich9.c | Modified via 'qemu.sh'
++#define PCI_DEVICE_ID_INTEL_ICH9_6       0x790b // Type: System Device | Category: SMBus Controller | PCI Class: 0x0c05 | hw/i2c/smbus_ich9.c
  #define PCI_DEVICE_ID_INTEL_ICH9_7       0x2916
 -#define PCI_DEVICE_ID_INTEL_ICH9_8       0x2918
-+#define PCI_DEVICE_ID_INTEL_ICH9_8       0x790e // Type: Bridge Device | Category: LPC Controller   | PCI Class: 0x0601 | hw/isa/lpc_ich9.c   | Modified via 'qemu.sh'
++#define PCI_DEVICE_ID_INTEL_ICH9_8       0x790e // Type: Bridge Device | Category: LPC Controller   | PCI Class: 0x0601 | hw/isa/lpc_ich9.c
  
  #define PCI_DEVICE_ID_INTEL_82801I_UHCI1 0x2934
  #define PCI_DEVICE_ID_INTEL_82801I_UHCI2 0x2935
@@ -1421,7 +1421,7 @@ index 16034aa..916a689 100644
  #define PCI_DEVICE_ID_INTEL_82599_SFP_VF 0x10ed
  
 -#define PCI_DEVICE_ID_INTEL_P35_MCH      0x29c0
-+#define PCI_DEVICE_ID_INTEL_P35_MCH      0x14d8 // Type: Bridge Device | Category: Host Bridge | PCI Class: 0x0600 | hw/pci-host/q35.c | Modified via 'qemu.sh'
++#define PCI_DEVICE_ID_INTEL_P35_MCH      0x14d8 // Type: Bridge Device | Category: Host Bridge | PCI Class: 0x0600 | hw/pci-host/q35.c
  
  #define PCI_VENDOR_ID_XEN                0x5853
  #define PCI_DEVICE_ID_XEN_PLATFORM       0x0001
@@ -1474,22 +1474,20 @@ index c5612e1..048cb93 100644
  enum virtio_scsi_vq_id {
      VR_CONTROL  = 0,
 diff --git a/target/i386/cpu.c b/target/i386/cpu.c
-index 6417775..648b526 100644
+index 6417775..ecb3184 100644
 --- a/target/i386/cpu.c
 +++ b/target/i386/cpu.c
-@@ -10019,9 +10019,9 @@ static const Property x86_cpu_properties[] = {
+@@ -10019,8 +10019,8 @@ static const Property x86_cpu_properties[] = {
      DEFINE_PROP_BOOL("lmce", X86CPU, enable_lmce, false),
      DEFINE_PROP_BOOL("l3-cache", X86CPU, enable_l3_cache, true),
      DEFINE_PROP_BOOL("kvm-pv-enforce-cpuid", X86CPU, kvm_pv_enforce_cpuid,
 -                     false),
 -    DEFINE_PROP_BOOL("vmware-cpuid-freq", X86CPU, vmware_cpuid_freq, true),
--    DEFINE_PROP_BOOL("tcg-cpuid", X86CPU, expose_tcg, true),
 +                     true),
 +    DEFINE_PROP_BOOL("vmware-cpuid-freq", X86CPU, vmware_cpuid_freq, false),
-+    DEFINE_PROP_BOOL("tcg-cpuid", X86CPU, expose_tcg, false),
+     DEFINE_PROP_BOOL("tcg-cpuid", X86CPU, expose_tcg, true),
      DEFINE_PROP_BOOL("x-migrate-smi-count", X86CPU, migrate_smi_count,
                       true),
-     /*
 diff --git a/target/i386/kvm/kvm-cpu.c b/target/i386/kvm/kvm-cpu.c
 index 9c25b55..1ae774b 100644
 --- a/target/i386/kvm/kvm-cpu.c
