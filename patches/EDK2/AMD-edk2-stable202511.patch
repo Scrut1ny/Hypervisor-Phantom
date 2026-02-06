@@ -200,7 +200,7 @@ index ba21393..eacf8c6 100644
      0,     // UINT8                     SystemBiosMajorRelease
      0,     // UINT8                     SystemBiosMinorRelease
 diff --git a/OvmfPkg/Include/IndustryStandard/Q35MchIch9.h b/OvmfPkg/Include/IndustryStandard/Q35MchIch9.h
-index db828d3..6fddd3e 100644
+index db828d3..523f8a1 100644
 --- a/OvmfPkg/Include/IndustryStandard/Q35MchIch9.h
 +++ b/OvmfPkg/Include/IndustryStandard/Q35MchIch9.h
 @@ -20,7 +20,7 @@
@@ -208,7 +208,7 @@ index db828d3..6fddd3e 100644
  // Host Bridge Device ID (DID) value for Q35/MCH
  //
 -#define INTEL_Q35_MCH_DEVICE_ID  0x29C0
-+#define INTEL_Q35_MCH_DEVICE_ID  0x1480 // Intel G33/P35/Q35/Q33 Chipset - Memory Controller Hub [A0] | AMD Vendor ID Replacement from 0x29c0 | hw/pci-host/q35.c
++#define INTEL_Q35_MCH_DEVICE_ID  0x14d8 // Intel G33/P35/Q35/Q33 Chipset - Memory Controller Hub [A0] | AMD Vendor ID Replacement from 0x29c0 | hw/pci-host/q35.c
  
  //
  // B/D/F/Type: 0/0/0/PCI
