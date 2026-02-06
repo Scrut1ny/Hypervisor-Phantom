@@ -1341,7 +1341,7 @@ index b72e484..514b6ac 100644
  #define PCI_DEVICE_ID_REDHAT_NVME        0x0010
  #define PCI_DEVICE_ID_REDHAT_PVPANIC     0x0011
 diff --git a/include/hw/pci/pci_ids.h b/include/hw/pci/pci_ids.h
-index 16034aa..bb5377b 100644
+index 16034aa..e75f41a 100644
 --- a/include/hw/pci/pci_ids.h
 +++ b/include/hw/pci/pci_ids.h
 @@ -237,6 +237,8 @@
@@ -1376,27 +1376,15 @@ index 16034aa..bb5377b 100644
  
  #define PCI_DEVICE_ID_INTEL_82801I_UHCI1 0x2934
  #define PCI_DEVICE_ID_INTEL_82801I_UHCI2 0x2935
-@@ -273,9 +275,9 @@
+@@ -273,7 +275,7 @@
  #define PCI_DEVICE_ID_INTEL_82801I_EHCI2 0x293c
  #define PCI_DEVICE_ID_INTEL_82599_SFP_VF 0x10ed
  
 -#define PCI_DEVICE_ID_INTEL_P35_MCH      0x29c0
 +#define PCI_DEVICE_ID_INTEL_P35_MCH      0x4641 // Type: Bridge Device | Category: Host Bridge | PCI Class: 0x0600 | hw/pci-host/q35.c
  
--#define PCI_VENDOR_ID_XEN                0x5853
-+#define PCI_VENDOR_ID_XEN                0x8086 // Intel Vendor ID Replacement from 0x5853
+ #define PCI_VENDOR_ID_XEN                0x5853
  #define PCI_DEVICE_ID_XEN_PLATFORM       0x0001
- 
- #define PCI_VENDOR_ID_NEC                0x1033
-@@ -284,7 +286,7 @@
- #define PCI_VENDOR_ID_TEWS               0x1498
- #define PCI_DEVICE_ID_TEWS_TPCI200       0x30C8
- 
--#define PCI_VENDOR_ID_VMWARE             0x15ad
-+#define PCI_VENDOR_ID_VMWARE             0x8086 // Intel Vendor ID Replacement from 0x15ad
- #define PCI_DEVICE_ID_VMWARE_PVRDMA      0x0820
- 
- #define PCI_VENDOR_ID_SYNOPSYS           0x16C3
 diff --git a/include/standard-headers/linux/qemu_fw_cfg.h b/include/standard-headers/linux/qemu_fw_cfg.h
 index cb93f66..fe34590 100644
 --- a/include/standard-headers/linux/qemu_fw_cfg.h
