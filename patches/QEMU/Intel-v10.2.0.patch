@@ -1,68 +1,3 @@
-diff --git a/block/vhdx.c b/block/vhdx.c
-index c16e4a0..3a472fb 100644
---- a/block/vhdx.c
-+++ b/block/vhdx.c
-@@ -2020,7 +2020,7 @@ vhdx_co_create(BlockdevCreateOptions *opts, Error **errp)
- 
-     /* The creator field is optional, but may be useful for
-      * debugging / diagnostics */
--    creator = g_utf8_to_utf16("QEMU v" QEMU_VERSION, -1, NULL,
-+    creator = g_utf8_to_utf16("Microsoft v" QEMU_VERSION, -1, NULL,
-                               &creator_items, NULL);
-     signature = cpu_to_le64(VHDX_FILE_SIGNATURE);
-     ret = blk_co_pwrite(blk, VHDX_FILE_ID_OFFSET, sizeof(signature), &signature,
-diff --git a/block/vvfat.c b/block/vvfat.c
-index e334b9f..209549b 100644
---- a/block/vvfat.c
-+++ b/block/vvfat.c
-@@ -1176,7 +1176,7 @@ static int vvfat_open(BlockDriverState *bs, QDict *options, int flags,
-         }
-         memcpy(s->volume_label, label, label_length);
-     } else {
--        memcpy(s->volume_label, "QEMU VVFAT", 10);
-+        memcpy(s->volume_label, "ASUS VVFAT", 10);
-     }
- 
-     if (floppy) {
-diff --git a/chardev/msmouse.c b/chardev/msmouse.c
-index 1a55755..49b979b 100644
---- a/chardev/msmouse.c
-+++ b/chardev/msmouse.c
-@@ -172,7 +172,7 @@ static int msmouse_chr_write(struct Chardev *s, const uint8_t *buf, int len)
- }
- 
- static const QemuInputHandler msmouse_handler = {
--    .name  = "QEMU Microsoft Mouse",
-+    .name  = "Microsoft Mouse",
-     .mask  = INPUT_EVENT_MASK_BTN | INPUT_EVENT_MASK_REL,
-     .event = msmouse_input_event,
-     .sync  = msmouse_input_sync,
-diff --git a/chardev/wctablet.c b/chardev/wctablet.c
-index 0dc6ef0..de3d126 100644
---- a/chardev/wctablet.c
-+++ b/chardev/wctablet.c
-@@ -179,7 +179,7 @@ static void wctablet_input_sync(DeviceState *dev)
- }
- 
- static const QemuInputHandler wctablet_handler = {
--    .name  = "QEMU Wacom Pen Tablet",
-+    .name  = "Wacom Pen Tablet",
-     .mask  = INPUT_EVENT_MASK_BTN | INPUT_EVENT_MASK_ABS,
-     .event = wctablet_input_event,
-     .sync  = wctablet_input_sync,
-diff --git a/contrib/vhost-user-gpu/vhost-user-gpu.c b/contrib/vhost-user-gpu/vhost-user-gpu.c
-index bb41758..dbd2777 100644
---- a/contrib/vhost-user-gpu/vhost-user-gpu.c
-+++ b/contrib/vhost-user-gpu/vhost-user-gpu.c
-@@ -1254,7 +1254,7 @@ main(int argc, char *argv[])
-     QTAILQ_INIT(&g.reslist);
-     QTAILQ_INIT(&g.fenceq);
- 
--    context = g_option_context_new("QEMU vhost-user-gpu");
-+    context = g_option_context_new("vhost-user-gpu");
-     g_option_context_add_main_entries(context, entries, NULL);
-     if (!g_option_context_parse(context, &argc, &argv, &error)) {
-         g_printerr("Option parsing failed: %s\n", error->message);
 diff --git a/hw/acpi/aml-build.c b/hw/acpi/aml-build.c
 index 2d5826a..7cd88c2 100644
 --- a/hw/acpi/aml-build.c
@@ -252,51 +187,8 @@ index 4922bbc..2b86b9d 100644
          aml_append(dev, aml_name_decl("_ADR", aml_int(adr)));
  
          call_dev_aml_func(DEVICE(bus->devices[devfn]), dev);
-diff --git a/hw/arm/sbsa-ref.c b/hw/arm/sbsa-ref.c
-index 2205500..f4d68d1 100644
---- a/hw/arm/sbsa-ref.c
-+++ b/hw/arm/sbsa-ref.c
-@@ -898,7 +898,7 @@ static void sbsa_ref_class_init(ObjectClass *oc, const void *data)
-     };
- 
-     mc->init = sbsa_ref_init;
--    mc->desc = "QEMU 'SBSA Reference' ARM Virtual Machine";
-+    mc->desc = "Qualcomm 'Reference' ARM SoC";
-     mc->default_cpu_type = ARM_CPU_TYPE_NAME("neoverse-n2");
-     mc->valid_cpu_types = valid_cpu_types;
-     mc->max_cpus = 512;
-diff --git a/hw/arm/virt.c b/hw/arm/virt.c
-index 25fb2ba..b4fe7d9 100644
---- a/hw/arm/virt.c
-+++ b/hw/arm/virt.c
-@@ -118,7 +118,7 @@ static void arm_virt_compat_set(MachineClass *mc)
-         MachineClass *mc = MACHINE_CLASS(oc); \
-         arm_virt_compat_set(mc); \
-         MACHINE_VER_SYM(options, virt, __VA_ARGS__)(mc); \
--        mc->desc = "QEMU " MACHINE_VER_STR(__VA_ARGS__) " ARM Virtual Machine"; \
-+        mc->desc = "Intel" MACHINE_VER_STR(__VA_ARGS__) " ARM Machine"; \
-         MACHINE_VER_DEPRECATION(__VA_ARGS__); \
-         if (latest) { \
-             mc->alias = "virt"; \
-@@ -1797,13 +1797,13 @@ static void virt_build_smbios(VirtMachineState *vms)
-     uint8_t *smbios_tables, *smbios_anchor;
-     size_t smbios_tables_len, smbios_anchor_len;
-     struct smbios_phys_mem_area mem_array;
--    const char *product = "QEMU Virtual Machine";
-+    const char *product = "Intel Machine";
- 
-     if (kvm_enabled()) {
--        product = "KVM Virtual Machine";
-+        product = "Intel Machine";
-     }
- 
--    smbios_set_defaults("QEMU", product, mc->name);
-+    smbios_set_defaults("Unknown", product, mc->name);
- 
-     /* build the array of physical mem area from base_memmap */
-     mem_array.address = vms->memmap[VIRT_MEM].base;
 diff --git a/hw/audio/hda-codec.c b/hw/audio/hda-codec.c
-index e90c9de..b482486 100644
+index e90c9de..5b147d6 100644
 --- a/hw/audio/hda-codec.c
 +++ b/hw/audio/hda-codec.c
 @@ -118,7 +118,7 @@ static void hda_codec_parse_fmt(uint32_t format, struct audsettings *as)
@@ -304,7 +196,7 @@ index e90c9de..b482486 100644
  /* some defines */
  
 -#define QEMU_HDA_ID_VENDOR  0x1af4
-+#define QEMU_HDA_ID_VENDOR  0x10EC
++#define QEMU_HDA_ID_VENDOR  0x10EC /* Realtek HDA Codec Vendor ID */
  #define QEMU_HDA_PCM_FORMATS (AC_SUPPCM_BITS_16 |       \
                                0x1fc /* 16 -> 96 kHz */)
  #define QEMU_HDA_AMP_NONE    (0)
@@ -332,19 +224,6 @@ index 758e130..78a4e0f 100644
      set_bit(DEVICE_CATEGORY_SOUND, dc->categories);
      dc->desc = "Intel HD Audio Controller (ich9)";
  }
-diff --git a/hw/char/escc.c b/hw/char/escc.c
-index afe4ca4..fa4f4a0 100644
---- a/hw/char/escc.c
-+++ b/hw/char/escc.c
-@@ -1037,7 +1037,7 @@ static void sunmouse_sync(DeviceState *dev)
- }
- 
- static const QemuInputHandler sunmouse_handler = {
--    .name  = "QEMU Sun Mouse",
-+    .name  = "Sun Mouse",
-     .mask  = INPUT_EVENT_MASK_BTN | INPUT_EVENT_MASK_REL,
-     .event = sunmouse_handle_event,
-     .sync  = sunmouse_sync,
 diff --git a/hw/core/qdev.c b/hw/core/qdev.c
 index fab42a7..ed5052b 100644
 --- a/hw/core/qdev.c
@@ -666,88 +545,6 @@ index 5c0bcd5..ac47187 100644
  }
  #endif
 +#endif
-diff --git a/hw/i386/multiboot.c b/hw/i386/multiboot.c
-index 7869078..beacaa5 100644
---- a/hw/i386/multiboot.c
-+++ b/hw/i386/multiboot.c
-@@ -103,7 +103,7 @@ typedef struct {
-     int mb_mods_count;
- } MultibootState;
- 
--const char *bootloader_name = "qemu";
-+const char *bootloader_name = "Windows Boot Manager";
- 
- static uint32_t mb_add_cmdline(MultibootState *s, const char *cmdline)
- {
-diff --git a/hw/i386/pc.c b/hw/i386/pc.c
-index f8b919c..f9f7e6c 100644
---- a/hw/i386/pc.c
-+++ b/hw/i386/pc.c
-@@ -77,9 +77,9 @@
-  * depending on QEMU versions up to QEMU 2.4.
-  */
- #define PC_CPU_MODEL_IDS(v) \
--    { "qemu32-" TYPE_X86_CPU, "model-id", "QEMU Virtual CPU version " v, },\
--    { "qemu64-" TYPE_X86_CPU, "model-id", "QEMU Virtual CPU version " v, },\
--    { "athlon-" TYPE_X86_CPU, "model-id", "QEMU Virtual CPU version " v, },
-+    { "qemu32-" TYPE_X86_CPU, "model-id", "CPU version " v, },\
-+    { "qemu64-" TYPE_X86_CPU, "model-id", "CPU version " v, },\
-+    { "athlon-" TYPE_X86_CPU, "model-id", "CPU version " v, },
- 
- GlobalProperty pc_compat_10_1[] = {
-     { "mch", "extended-tseg-mbytes", "16" },
-@@ -1735,7 +1735,7 @@ static void pc_machine_class_init(ObjectClass *oc, const void *data)
- 
-     pcmc->pci_enabled = true;
-     pcmc->has_acpi_build = true;
--    pcmc->smbios_defaults = true;
-+    pcmc->smbios_defaults = false;
-     pcmc->gigabyte_align = true;
-     pcmc->has_reserved_memory = true;
-     pcmc->enforce_amd_1tb_hole = true;
-diff --git a/hw/i386/pc_piix.c b/hw/i386/pc_piix.c
-index 7b3611e..5331452 100644
---- a/hw/i386/pc_piix.c
-+++ b/hw/i386/pc_piix.c
-@@ -417,12 +417,12 @@ static void pc_i440fx_machine_options(MachineClass *m)
-     pcmc->pci_root_uid = 0;
-     pcmc->default_cpu_version = 1;
- 
--    m->family = "pc_piix";
--    m->desc = "Standard PC (i440FX + PIIX, 1996)";
-+    m->family = "pc_x570";
-+    m->desc = "12th Gen Intel(R) Core(TM) i7-12700H";
-     m->default_machine_opts = "firmware=bios-256k.bin";
--    m->default_display = "std";
--    m->default_nic = "e1000";
--    m->no_floppy = !module_object_class_by_name(TYPE_ISA_FDC);
-+    m->default_display = "none";
-+    m->default_nic = "rtl8139"; // Realtek PCI Express Gigabit Ethernet Controller
-+    m->no_floppy = 1;
-     m->no_parallel = !module_object_class_by_name(TYPE_ISA_PARALLEL);
-     machine_class_allow_dynamic_sysbus_dev(m, TYPE_RAMFB_DEVICE);
-     machine_class_allow_dynamic_sysbus_dev(m, TYPE_VMBUS_BRIDGE);
-diff --git a/hw/i386/pc_q35.c b/hw/i386/pc_q35.c
-index 6015e63..33c9d20 100644
---- a/hw/i386/pc_q35.c
-+++ b/hw/i386/pc_q35.c
-@@ -355,12 +355,12 @@ static void pc_q35_machine_options(MachineClass *m)
-     pcmc->pci_root_uid = 0;
-     pcmc->default_cpu_version = 1;
- 
--    m->family = "pc_q35";
--    m->desc = "Standard PC (Q35 + ICH9, 2009)";
-+    m->family = "pc_x570";
-+    m->desc = "12th Gen Intel(R) Core(TM) i7-12700H";
-     m->units_per_default_bus = 1;
-     m->default_machine_opts = "firmware=bios-256k.bin";
--    m->default_display = "std";
--    m->default_nic = "e1000e";
-+    m->default_display = "none";
-+    m->default_nic = "rtl8139"; // Realtek PCI Express Gigabit Ethernet Controller
-     m->default_kernel_irqchip_split = false;
-     m->no_floppy = 1;
-     m->max_cpus = 4096;
 diff --git a/hw/ide/atapi.c b/hw/ide/atapi.c
 index a42b748..c10cf51 100644
 --- a/hw/ide/atapi.c
@@ -793,155 +590,6 @@ index 8c380ab..edd4294 100644
              break;
          }
      }
-diff --git a/hw/input/adb-kbd.c b/hw/input/adb-kbd.c
-index 507557d..7de1e5f 100644
---- a/hw/input/adb-kbd.c
-+++ b/hw/input/adb-kbd.c
-@@ -356,7 +356,7 @@ static void adb_kbd_reset(DeviceState *dev)
- }
- 
- static const QemuInputHandler adb_keyboard_handler = {
--    .name  = "QEMU ADB Keyboard",
-+    .name  = "ADB Keyboard",
-     .mask  = INPUT_EVENT_MASK_KEY,
-     .event = adb_keyboard_event,
- };
-diff --git a/hw/input/adb-mouse.c b/hw/input/adb-mouse.c
-index 373ef3f..0e44371 100644
---- a/hw/input/adb-mouse.c
-+++ b/hw/input/adb-mouse.c
-@@ -94,7 +94,7 @@ static void adb_mouse_handle_event(DeviceState *dev, QemuConsole *src,
- }
- 
- static const QemuInputHandler adb_mouse_handler = {
--    .name  = "QEMU ADB Mouse",
-+    .name  = "ADB Mouse",
-     .mask  = INPUT_EVENT_MASK_BTN | INPUT_EVENT_MASK_REL,
-     .event = adb_mouse_handle_event,
-     /*
-diff --git a/hw/input/hid.c b/hw/input/hid.c
-index de24cd0..ff5b407 100644
---- a/hw/input/hid.c
-+++ b/hw/input/hid.c
-@@ -512,20 +512,20 @@ void hid_free(HIDState *hs)
- }
- 
- static const QemuInputHandler hid_keyboard_handler = {
--    .name  = "QEMU HID Keyboard",
-+    .name  = "HID Keyboard",
-     .mask  = INPUT_EVENT_MASK_KEY,
-     .event = hid_keyboard_event,
- };
- 
- static const QemuInputHandler hid_mouse_handler = {
--    .name  = "QEMU HID Mouse",
-+    .name  = "HID Mouse",
-     .mask  = INPUT_EVENT_MASK_BTN | INPUT_EVENT_MASK_REL,
-     .event = hid_pointer_event,
-     .sync  = hid_pointer_sync,
- };
- 
- static const QemuInputHandler hid_tablet_handler = {
--    .name  = "QEMU HID Tablet",
-+    .name  = "HID Tablet",
-     .mask  = INPUT_EVENT_MASK_BTN | INPUT_EVENT_MASK_ABS,
-     .event = hid_pointer_event,
-     .sync  = hid_pointer_sync,
-diff --git a/hw/input/ps2.c b/hw/input/ps2.c
-index 7f7b1fc..7e38002 100644
---- a/hw/input/ps2.c
-+++ b/hw/input/ps2.c
-@@ -1232,7 +1232,7 @@ static const VMStateDescription vmstate_ps2_mouse = {
- };
- 
- static const QemuInputHandler ps2_keyboard_handler = {
--    .name  = "QEMU PS/2 Keyboard",
-+    .name  = "PS/2 Keyboard",
-     .mask  = INPUT_EVENT_MASK_KEY,
-     .event = ps2_keyboard_event,
- };
-@@ -1243,7 +1243,7 @@ static void ps2_kbd_realize(DeviceState *dev, Error **errp)
- }
- 
- static const QemuInputHandler ps2_mouse_handler = {
--    .name  = "QEMU PS/2 Mouse",
-+    .name  = "PS/2 Mouse",
-     .mask  = INPUT_EVENT_MASK_BTN | INPUT_EVENT_MASK_REL,
-     .event = ps2_mouse_event,
-     .sync  = ps2_mouse_sync,
-diff --git a/hw/input/virtio-input-hid.c b/hw/input/virtio-input-hid.c
-index d986c3c..2e9dd7b 100644
---- a/hw/input/virtio-input-hid.c
-+++ b/hw/input/virtio-input-hid.c
-@@ -16,10 +16,10 @@
- 
- #include "standard-headers/linux/input.h"
- 
--#define VIRTIO_ID_NAME_KEYBOARD     "QEMU Virtio Keyboard"
--#define VIRTIO_ID_NAME_MOUSE        "QEMU Virtio Mouse"
--#define VIRTIO_ID_NAME_TABLET       "QEMU Virtio Tablet"
--#define VIRTIO_ID_NAME_MULTITOUCH   "QEMU Virtio MultiTouch"
-+#define VIRTIO_ID_NAME_KEYBOARD     "Keyboard"
-+#define VIRTIO_ID_NAME_MOUSE        "Mouse"
-+#define VIRTIO_ID_NAME_TABLET       "Tablet"
-+#define VIRTIO_ID_NAME_MULTITOUCH   "MultiTouch"
- 
- /* ----------------------------------------------------------------- */
- 
-@@ -281,7 +281,7 @@ static struct virtio_input_config virtio_keyboard_config[] = {
-         .size      = sizeof(struct virtio_input_devids),
-         .u.ids     = {
-             .bustype = const_le16(BUS_VIRTUAL),
--            .vendor  = const_le16(0x0627), /* same we use for usb hid devices */
-+            .vendor  = const_le16(0x046d), /* same we use for usb hid devices */
-             .product = const_le16(0x0001),
-             .version = const_le16(0x0001),
-         },
-@@ -338,7 +338,7 @@ static struct virtio_input_config virtio_mouse_config_v1[] = {
-         .size      = sizeof(struct virtio_input_devids),
-         .u.ids     = {
-             .bustype = const_le16(BUS_VIRTUAL),
--            .vendor  = const_le16(0x0627), /* same we use for usb hid devices */
-+            .vendor  = const_le16(0x046d), /* same we use for usb hid devices */
-             .product = const_le16(0x0002),
-             .version = const_le16(0x0001),
-         },
-@@ -363,7 +363,7 @@ static struct virtio_input_config virtio_mouse_config_v2[] = {
-         .size      = sizeof(struct virtio_input_devids),
-         .u.ids     = {
-             .bustype = const_le16(BUS_VIRTUAL),
--            .vendor  = const_le16(0x0627), /* same we use for usb hid devices */
-+            .vendor  = const_le16(0x046d), /* same we use for usb hid devices */
-             .product = const_le16(0x0002),
-             .version = const_le16(0x0002),
-         },
-@@ -431,7 +431,7 @@ static struct virtio_input_config virtio_tablet_config_v1[] = {
-         .size      = sizeof(struct virtio_input_devids),
-         .u.ids     = {
-             .bustype = const_le16(BUS_VIRTUAL),
--            .vendor  = const_le16(0x0627), /* same we use for usb hid devices */
-+            .vendor  = const_le16(0x056a), /* same we use for usb hid devices */
-             .product = const_le16(0x0003),
-             .version = const_le16(0x0001),
-         },
-@@ -468,7 +468,7 @@ static struct virtio_input_config virtio_tablet_config_v2[] = {
-         .size      = sizeof(struct virtio_input_devids),
-         .u.ids     = {
-             .bustype = const_le16(BUS_VIRTUAL),
--            .vendor  = const_le16(0x0627), /* same we use for usb hid devices */
-+            .vendor  = const_le16(0x056a), /* same we use for usb hid devices */
-             .product = const_le16(0x0003),
-             .version = const_le16(0x0002),
-         },
-@@ -555,7 +555,7 @@ static struct virtio_input_config virtio_multitouch_config[] = {
-         .size      = sizeof(struct virtio_input_devids),
-         .u.ids     = {
-             .bustype = const_le16(BUS_VIRTUAL),
--            .vendor  = const_le16(0x0627), /* same we use for usb hid devices */
-+            .vendor  = const_le16(0x056a), /* same we use for usb hid devices */
-             .product = const_le16(0x0003),
-             .version = const_le16(0x0001),
-         },
 diff --git a/hw/isa/lpc_ich9.c b/hw/isa/lpc_ich9.c
 index c9cb8f7..c1c7bdc 100644
 --- a/hw/isa/lpc_ich9.c
@@ -955,67 +603,6 @@ index c9cb8f7..c1c7bdc 100644
      aml_append(field, aml_named_field("PRQA", 8));
      aml_append(field, aml_named_field("PRQB", 8));
      aml_append(field, aml_named_field("PRQC", 8));
-diff --git a/hw/loongarch/virt.c b/hw/loongarch/virt.c
-index 49434ad..648da72 100644
---- a/hw/loongarch/virt.c
-+++ b/hw/loongarch/virt.c
-@@ -155,17 +155,17 @@ static void virt_build_smbios(LoongArchVirtMachineState *lvms)
-     MachineClass *mc = MACHINE_GET_CLASS(lvms);
-     uint8_t *smbios_tables, *smbios_anchor;
-     size_t smbios_tables_len, smbios_anchor_len;
--    const char *product = "QEMU Virtual Machine";
-+    const char *product = "Intel Machine";
- 
-     if (!lvms->fw_cfg) {
-         return;
-     }
- 
-     if (kvm_enabled()) {
--        product = "KVM Virtual Machine";
-+        product = "Intel Machine";
-     }
- 
--    smbios_set_defaults("QEMU", product, mc->name);
-+    smbios_set_defaults("Unknown", product, mc->name);
- 
-     smbios_get_tables(ms, SMBIOS_ENTRY_POINT_TYPE_64,
-                       NULL, 0,
-diff --git a/hw/m68k/virt.c b/hw/m68k/virt.c
-index 3f65d91..ae5daba 100644
---- a/hw/m68k/virt.c
-+++ b/hw/m68k/virt.c
-@@ -313,7 +313,7 @@ static void virt_init(MachineState *machine)
- static void virt_machine_class_init(ObjectClass *oc, const void *data)
- {
-     MachineClass *mc = MACHINE_CLASS(oc);
--    mc->desc = "QEMU M68K Virtual Machine";
-+    mc->desc = "Intel M68K Machine";
-     mc->init = virt_init;
-     mc->default_cpu_type = M68K_CPU_TYPE_NAME("m68040");
-     mc->max_cpus = 1;
-@@ -343,7 +343,7 @@ type_init(virt_machine_register_types)
-     { \
-         MachineClass *mc = MACHINE_CLASS(oc); \
-         MACHINE_VER_SYM(options, virt, __VA_ARGS__)(mc); \
--        mc->desc = "QEMU " MACHINE_VER_STR(__VA_ARGS__) " M68K Virtual Machine"; \
-+        mc->desc = "Intel" MACHINE_VER_STR(__VA_ARGS__) " M68K Machine"; \
-         MACHINE_VER_DEPRECATION(__VA_ARGS__); \
-         if (latest) { \
-             mc->alias = "virt"; \
-diff --git a/hw/misc/applesmc.c b/hw/misc/applesmc.c
-index a015d4a..30099e8 100644
---- a/hw/misc/applesmc.c
-+++ b/hw/misc/applesmc.c
-@@ -85,8 +85,7 @@ enum {
- #define smc_debug(...) do { } while (0)
- #endif
- 
--static char default_osk[64] = "This is a dummy key. Enter the real key "
--                              "using the -osk parameter";
-+static char default_osk[64] = "ourhardworkbythesewordsguardedpleasedontsteal(c)AppleComputerInc";
- 
- struct AppleSMCData {
-     uint8_t len;
 diff --git a/hw/misc/pvpanic-isa.c b/hw/misc/pvpanic-isa.c
 index f7b421c..881cf2b 100644
 --- a/hw/misc/pvpanic-isa.c
@@ -1090,32 +677,6 @@ index b806a22..3713551 100644
      dc->vmsd = &vmstate_gpex_root;
      k->vendor_id = PCI_VENDOR_ID_REDHAT;
      k->device_id = PCI_DEVICE_ID_REDHAT_PCIE_HOST;
-diff --git a/hw/ppc/e500plat.c b/hw/ppc/e500plat.c
-index 4f1d659..b54e0d9 100644
---- a/hw/ppc/e500plat.c
-+++ b/hw/ppc/e500plat.c
-@@ -22,7 +22,7 @@
- 
- static void e500plat_fixup_devtree(void *fdt)
- {
--    const char model[] = "QEMU ppce500";
-+    const char model[] = "ppce500";
-     const char compatible[] = "fsl,qemu-e500";
- 
-     qemu_fdt_setprop(fdt, "/", "model", model, sizeof(model));
-diff --git a/hw/ppc/pnv.c b/hw/ppc/pnv.c
-index 895132d..b32ac39 100644
---- a/hw/ppc/pnv.c
-+++ b/hw/ppc/pnv.c
-@@ -684,7 +684,7 @@ static void *pnv_dt_create(MachineState *machine)
-     _FDT((fdt_create_empty_tree(fdt, FDT_MAX_SIZE)));
- 
-     /* /qemu node */
--    _FDT((fdt_add_subnode(fdt, 0, "qemu")));
-+    _FDT((fdt_add_subnode(fdt, 0, "qemu"))); // "qemu"
- 
-     /* Root node */
-     _FDT((fdt_setprop_cell(fdt, 0, "#address-cells", 0x2)));
 diff --git a/hw/scsi/mptconfig.c b/hw/scsi/mptconfig.c
 index 19d01f3..00ee3f8 100644
 --- a/hw/scsi/mptconfig.c
@@ -1256,7 +817,7 @@ index 8dd9d26..30c4540 100644
      [STRING_USBAUDIO_CONTROL]   = "Audio Device",
      [STRING_INPUT_TERMINAL]     = "Audio Output Pipe",
 diff --git a/hw/usb/dev-hid.c b/hw/usb/dev-hid.c
-index 96623aa..7bd5905 100644
+index 96623aa..218c651 100644
 --- a/hw/usb/dev-hid.c
 +++ b/hw/usb/dev-hid.c
 @@ -63,17 +63,17 @@ enum {
@@ -1285,60 +846,50 @@ index 96623aa..7bd5905 100644
  };
  
  static const USBDescIface desc_iface_mouse = {
-@@ -368,7 +368,7 @@ static const USBDescMSOS desc_msos_suspend = {
+@@ -368,8 +368,8 @@ static const USBDescMSOS desc_msos_suspend = {
  
  static const USBDesc desc_mouse = {
      .id = {
 -        .idVendor          = 0x0627,
-+        .idVendor          = 0x8086,
-         .idProduct         = 0x0001,
+-        .idProduct         = 0x0001,
++        .idVendor          = 0x046D,
++        .idProduct         = 0xC077,
          .bcdDevice         = 0,
          .iManufacturer     = STR_MANUFACTURER,
-@@ -382,7 +382,7 @@ static const USBDesc desc_mouse = {
+         .iProduct          = STR_PRODUCT_MOUSE,
+@@ -382,8 +382,8 @@ static const USBDesc desc_mouse = {
  
  static const USBDesc desc_mouse2 = {
      .id = {
 -        .idVendor          = 0x0627,
-+        .idVendor          = 0x8086,
-         .idProduct         = 0x0001,
+-        .idProduct         = 0x0001,
++        .idVendor          = 0x046D,
++        .idProduct         = 0xC077,
          .bcdDevice         = 0,
          .iManufacturer     = STR_MANUFACTURER,
-@@ -397,7 +397,7 @@ static const USBDesc desc_mouse2 = {
- 
- static const USBDesc desc_tablet = {
-     .id = {
--        .idVendor          = 0x0627,
-+        .idVendor          = 0x8086,
-         .idProduct         = 0x0001,
-         .bcdDevice         = 0,
-         .iManufacturer     = STR_MANUFACTURER,
-@@ -411,7 +411,7 @@ static const USBDesc desc_tablet = {
- 
- static const USBDesc desc_tablet2 = {
-     .id = {
--        .idVendor          = 0x0627,
-+        .idVendor          = 0x8086,
-         .idProduct         = 0x0001,
-         .bcdDevice         = 0,
-         .iManufacturer     = STR_MANUFACTURER,
-@@ -426,7 +426,7 @@ static const USBDesc desc_tablet2 = {
+         .iProduct          = STR_PRODUCT_MOUSE,
+@@ -426,8 +426,8 @@ static const USBDesc desc_tablet2 = {
  
  static const USBDesc desc_keyboard = {
      .id = {
 -        .idVendor          = 0x0627,
-+        .idVendor          = 0x8086,
-         .idProduct         = 0x0001,
+-        .idProduct         = 0x0001,
++        .idVendor          = 0x046D,
++        .idProduct         = 0xC31C,
          .bcdDevice         = 0,
          .iManufacturer     = STR_MANUFACTURER,
-@@ -440,7 +440,7 @@ static const USBDesc desc_keyboard = {
+         .iProduct          = STR_PRODUCT_KEYBOARD,
+@@ -440,8 +440,8 @@ static const USBDesc desc_keyboard = {
  
  static const USBDesc desc_keyboard2 = {
      .id = {
 -        .idVendor          = 0x0627,
-+        .idVendor          = 0x8086,
-         .idProduct         = 0x0001,
+-        .idProduct         = 0x0001,
++        .idVendor          = 0x046D,
++        .idProduct         = 0xC31C,
          .bcdDevice         = 0,
          .iManufacturer     = STR_MANUFACTURER,
+         .iProduct          = STR_PRODUCT_KEYBOARD,
 @@ -805,7 +805,7 @@ static void usb_tablet_class_initfn(ObjectClass *klass, const void *data)
      USBDeviceClass *uc = USB_DEVICE_CLASS(klass);
  
@@ -1512,10 +1063,10 @@ index 2eb52b2..57a7fdf 100644
      device_class_set_props(dc, braille_properties);
  }
 diff --git a/hw/usb/dev-smartcard-reader.c b/hw/usb/dev-smartcard-reader.c
-index 6ce7154..027a52d 100644
+index 6ce7154..4ce5ffa 100644
 --- a/hw/usb/dev-smartcard-reader.c
 +++ b/hw/usb/dev-smartcard-reader.c
-@@ -80,10 +80,10 @@ OBJECT_DECLARE_SIMPLE_TYPE(USBCCIDState, USB_CCID_DEV)
+@@ -80,8 +80,8 @@ OBJECT_DECLARE_SIMPLE_TYPE(USBCCIDState, USB_CCID_DEV)
  #define CCID_CONTROL_GET_CLOCK_FREQUENCIES  0x2
  #define CCID_CONTROL_GET_DATA_RATES         0x3
  
@@ -1524,11 +1075,8 @@ index 6ce7154..027a52d 100644
 +#define CCID_PRODUCT_DESCRIPTION        "USB CCID"
 +#define CCID_VENDOR_DESCRIPTION         "Identiv"
  #define CCID_INTERFACE_NAME             "CCID Interface"
--#define CCID_SERIAL_NUMBER_STRING       "1"
-+#define CCID_SERIAL_NUMBER_STRING       ""
+ #define CCID_SERIAL_NUMBER_STRING       "1"
  /*
-  * Using Gemplus Vendor and Product id
-  * Effect on various drivers:
 @@ -419,9 +419,9 @@ enum {
  };
  
@@ -1793,7 +1341,7 @@ index b72e484..514b6ac 100644
  #define PCI_DEVICE_ID_REDHAT_NVME        0x0010
  #define PCI_DEVICE_ID_REDHAT_PVPANIC     0x0011
 diff --git a/include/hw/pci/pci_ids.h b/include/hw/pci/pci_ids.h
-index 16034aa..5b8ab39 100644
+index 16034aa..bb5377b 100644
 --- a/include/hw/pci/pci_ids.h
 +++ b/include/hw/pci/pci_ids.h
 @@ -237,6 +237,8 @@
@@ -1821,10 +1369,10 @@ index 16034aa..5b8ab39 100644
  #define PCI_DEVICE_ID_INTEL_ICH9_4       0x2914
  #define PCI_DEVICE_ID_INTEL_ICH9_5       0x2919
 -#define PCI_DEVICE_ID_INTEL_ICH9_6       0x2930
-+#define PCI_DEVICE_ID_INTEL_ICH9_6       0x51a3 // Intel 82801IB ICH9 - SMBus Controller [A2] | Intel Vendor ID Replacement from 0x2930 | hw/i2c/smbus_ich9.c
++#define PCI_DEVICE_ID_INTEL_ICH9_6       0x51a3 // Type: System Device | Category: SMBus Controller | PCI Class: 0x0c05 | hw/i2c/smbus_ich9.c
  #define PCI_DEVICE_ID_INTEL_ICH9_7       0x2916
 -#define PCI_DEVICE_ID_INTEL_ICH9_8       0x2918
-+#define PCI_DEVICE_ID_INTEL_ICH9_8       0x5182 // Intel 82801IR ICH9 - LPC Bridge [A2] | Intel Vendor ID Replacement from 0x2918 | hw/isa/lpc_ich9.c
++#define PCI_DEVICE_ID_INTEL_ICH9_8       0x5182 // Type: Bridge Device | Category: LPC Controller   | PCI Class: 0x0601 | hw/isa/lpc_ich9.c
  
  #define PCI_DEVICE_ID_INTEL_82801I_UHCI1 0x2934
  #define PCI_DEVICE_ID_INTEL_82801I_UHCI2 0x2935
@@ -1833,7 +1381,7 @@ index 16034aa..5b8ab39 100644
  #define PCI_DEVICE_ID_INTEL_82599_SFP_VF 0x10ed
  
 -#define PCI_DEVICE_ID_INTEL_P35_MCH      0x29c0
-+#define PCI_DEVICE_ID_INTEL_P35_MCH      0x4641 // Intel G33/P35/Q35/Q33 Chipset - Memory Controller Hub [A0] | Intel Vendor ID Replacement from 0x29c0 | hw/pci-host/q35.c
++#define PCI_DEVICE_ID_INTEL_P35_MCH      0x4641 // Type: Bridge Device | Category: Host Bridge | PCI Class: 0x0600 | hw/pci-host/q35.c
  
 -#define PCI_VENDOR_ID_XEN                0x5853
 +#define PCI_VENDOR_ID_XEN                0x8086 // Intel Vendor ID Replacement from 0x5853
@@ -1871,19 +1419,6 @@ index cb93f66..fe34590 100644
  
  /* Control as first field allows for different structures selected by this
   * field, which might be useful in the future
-diff --git a/migration/rdma.c b/migration/rdma.c
-index 337b415..9baf14c 100644
---- a/migration/rdma.c
-+++ b/migration/rdma.c
-@@ -220,7 +220,7 @@ static const char *control_desc(unsigned int rdma_control)
-         [RDMA_CONTROL_NONE] = "NONE",
-         [RDMA_CONTROL_ERROR] = "ERROR",
-         [RDMA_CONTROL_READY] = "READY",
--        [RDMA_CONTROL_QEMU_FILE] = "QEMU FILE",
-+        [RDMA_CONTROL_QEMU_FILE] = "FILE",
-         [RDMA_CONTROL_RAM_BLOCKS_REQUEST] = "RAM BLOCKS REQUEST",
-         [RDMA_CONTROL_RAM_BLOCKS_RESULT] = "RAM BLOCKS RESULT",
-         [RDMA_CONTROL_COMPRESS] = "COMPRESS",
 diff --git a/pc-bios/optionrom/optionrom.h b/pc-bios/optionrom/optionrom.h
 index 7bcdf0e..02dd06e 100644
 --- a/pc-bios/optionrom/optionrom.h
@@ -1910,191 +1445,21 @@ index c5612e1..048cb93 100644
  
  enum virtio_scsi_vq_id {
      VR_CONTROL  = 0,
-diff --git a/qapi/ui.json b/qapi/ui.json
-index e3da776..62335e9 100644
---- a/qapi/ui.json
-+++ b/qapi/ui.json
-@@ -832,13 +832,13 @@
- #     -> { "execute": "query-mice" }
- #     <- { "return": [
- #              {
--#                 "name":"QEMU Microsoft Mouse",
-+#                 "name":"Microsoft Mouse",
- #                 "index":0,
- #                 "current":false,
- #                 "absolute":false
- #              },
- #              {
--#                 "name":"QEMU PS/2 Mouse",
-+#                 "name":"PS/2 Mouse",
- #                 "index":1,
- #                 "current":true,
- #                 "absolute":true
 diff --git a/target/i386/cpu.c b/target/i386/cpu.c
-index 6417775..8069228 100644
+index 6417775..ecb3184 100644
 --- a/target/i386/cpu.c
 +++ b/target/i386/cpu.c
-@@ -922,7 +922,7 @@ void x86_cpu_vendor_words2str(char *dst, uint32_t vendor1,
-           CPUID_EXT_MONITOR | CPUID_EXT_SSSE3 | CPUID_EXT_CX16 | \
-           CPUID_EXT_SSE41 | CPUID_EXT_SSE42 | CPUID_EXT_POPCNT | \
-           CPUID_EXT_XSAVE | /* CPUID_EXT_OSXSAVE is dynamic */   \
--          CPUID_EXT_MOVBE | CPUID_EXT_AES | CPUID_EXT_HYPERVISOR | \
-+          CPUID_EXT_MOVBE | CPUID_EXT_AES | \
-           CPUID_EXT_RDRAND | CPUID_EXT_AVX | CPUID_EXT_F16C | \
-           CPUID_EXT_FMA | CPUID_EXT_X2APIC | CPUID_EXT_KERNEL_FEATURES)
-           /* missing:
-@@ -3325,7 +3325,7 @@ static const X86CPUDefinition builtin_x86_defs[] = {
-         .features[FEAT_8000_0001_ECX] =
-             CPUID_EXT3_LAHF_LM | CPUID_EXT3_SVM,
-         .xlevel = 0x8000000A,
--        .model_id = "QEMU Virtual CPU version " QEMU_HW_VERSION,
-+        .model_id = "AMD CPU version " QEMU_HW_VERSION,
-     },
-     {
-         .name = "phenom",
-@@ -3440,7 +3440,7 @@ static const X86CPUDefinition builtin_x86_defs[] = {
-              VMX_CPU_BASED_UNCOND_IO_EXITING | VMX_CPU_BASED_USE_IO_BITMAPS |
-              VMX_CPU_BASED_MONITOR_EXITING | VMX_CPU_BASED_PAUSE_EXITING,
-         .xlevel = 0x80000008,
--        .model_id = "Common KVM processor"
-+        .model_id = "Common AMD processor"
-     },
-     {
-         .name = "qemu32",
-@@ -3454,7 +3454,7 @@ static const X86CPUDefinition builtin_x86_defs[] = {
-         .features[FEAT_1_ECX] =
-             CPUID_EXT_SSE3,
-         .xlevel = 0x80000004,
--        .model_id = "QEMU Virtual CPU version " QEMU_HW_VERSION,
-+        .model_id = "AMD CPU version " QEMU_HW_VERSION,
-     },
-     {
-         .name = "kvm32",
-@@ -3484,7 +3484,7 @@ static const X86CPUDefinition builtin_x86_defs[] = {
-              VMX_CPU_BASED_USE_IO_BITMAPS | VMX_CPU_BASED_MONITOR_EXITING |
-              VMX_CPU_BASED_PAUSE_EXITING | VMX_CPU_BASED_USE_MSR_BITMAPS,
-         .xlevel = 0x80000008,
--        .model_id = "Common 32-bit KVM processor"
-+        .model_id = "Common 32-bit AMD processor"
-     },
-     {
-         .name = "coreduo",
-@@ -3584,7 +3584,7 @@ static const X86CPUDefinition builtin_x86_defs[] = {
-         .features[FEAT_8000_0001_EDX] =
-             CPUID_EXT2_MMXEXT | CPUID_EXT2_3DNOW | CPUID_EXT2_3DNOWEXT,
-         .xlevel = 0x80000008,
--        .model_id = "QEMU Virtual CPU version " QEMU_HW_VERSION,
-+        .model_id = "AMD CPU version " QEMU_HW_VERSION,
-     },
-     {
-         .name = "n270",
-@@ -6761,7 +6761,7 @@ static void max_x86_cpu_initfn(Object *obj)
-     }
-     if (!env->cpuid_model[0]) {
-         object_property_set_str(OBJECT(cpu), "model-id",
--                                "QEMU TCG CPU version " QEMU_HW_VERSION,
-+                                "TCG CPU version " QEMU_HW_VERSION,
-                                 &error_abort);
-     }
- }
-@@ -7740,8 +7740,6 @@ static void x86_cpu_load_model(X86CPU *cpu, const X86CPUModel *model)
-     /* legacy-cache defaults to 'off' if CPU model provides cache info */
-     cpu->legacy_cache = !x86_cpu_get_versioned_cache_info(cpu, model);
- 
--    env->features[FEAT_1_ECX] |= CPUID_EXT_HYPERVISOR;
--
-     /* sysenter isn't supported in compatibility mode on AMD,
-      * syscall isn't supported in compatibility mode on Intel.
-      * Normally we advertise the actual CPU vendor, but you can
-@@ -8315,18 +8313,10 @@ void cpu_x86_cpuid(CPUX86State *env, uint32_t index, uint32_t count,
-          * CPUID code in kvm_arch_init_vcpu() ignores stuff
-          * set here, but we restrict to TCG none the less.
-          */
--        if (tcg_enabled() && cpu->expose_tcg) {
--            memcpy(signature, "TCGTCGTCGTCG", 12);
--            *eax = 0x40000001;
--            *ebx = signature[0];
--            *ecx = signature[1];
--            *edx = signature[2];
--        } else {
--            *eax = 0;
--            *ebx = 0;
--            *ecx = 0;
--            *edx = 0;
--        }
-+        *eax = 0;
-+        *ebx = 0;
-+        *ecx = 0;
-+        *edx = 0;
-         break;
-     case 0x40000001:
-         *eax = 0;
-@@ -8790,9 +8780,11 @@ static void x86_cpu_reset_hold(Object *obj, ResetType type)
- void x86_cpu_after_reset(X86CPU *cpu)
- {
- #ifndef CONFIG_USER_ONLY
-+#if 0
-     if (kvm_enabled()) {
-         kvm_arch_after_reset_vcpu(cpu);
-     }
-+#endif
- 
-     if (cpu->apic_state) {
-         device_cold_reset(DEVICE(cpu->apic_state));
-@@ -9098,9 +9090,11 @@ void x86_cpu_expand_features(X86CPU *cpu, Error **errp)
-         env->cpuid_xlevel2 = env->cpuid_min_xlevel2;
-     }
- 
-+#if 0
-     if (kvm_enabled() && !kvm_hyperv_expand_features(cpu, errp)) {
-         return;
-     }
-+#endif
- }
- 
- /*
-@@ -9194,7 +9188,7 @@ static void x86_cpu_hyperv_realize(X86CPU *cpu)
- 
-     /* Hyper-V vendor id */
-     if (!cpu->hyperv_vendor) {
--        object_property_set_str(OBJECT(cpu), "hv-vendor-id", "Microsoft Hv",
-+        object_property_set_str(OBJECT(cpu), "hv-vendor-id", "",
-                                 &error_abort);
-     }
-     len = strlen(cpu->hyperv_vendor);
-@@ -9296,7 +9290,6 @@ static void x86_cpu_realizefn(DeviceState *dev, Error **errp)
-      * Process Hyper-V enlightenments.
-      * Note: this currently has to happen before the expansion of CPU features.
-      */
--    x86_cpu_hyperv_realize(cpu);
- 
-     x86_cpu_expand_features(cpu, &local_err);
-     if (local_err) {
-@@ -10019,9 +10012,9 @@ static const Property x86_cpu_properties[] = {
+@@ -10019,8 +10019,8 @@ static const Property x86_cpu_properties[] = {
      DEFINE_PROP_BOOL("lmce", X86CPU, enable_lmce, false),
      DEFINE_PROP_BOOL("l3-cache", X86CPU, enable_l3_cache, true),
      DEFINE_PROP_BOOL("kvm-pv-enforce-cpuid", X86CPU, kvm_pv_enforce_cpuid,
 -                     false),
 -    DEFINE_PROP_BOOL("vmware-cpuid-freq", X86CPU, vmware_cpuid_freq, true),
--    DEFINE_PROP_BOOL("tcg-cpuid", X86CPU, expose_tcg, true),
 +                     true),
 +    DEFINE_PROP_BOOL("vmware-cpuid-freq", X86CPU, vmware_cpuid_freq, false),
-+    DEFINE_PROP_BOOL("tcg-cpuid", X86CPU, expose_tcg, false),
+     DEFINE_PROP_BOOL("tcg-cpuid", X86CPU, expose_tcg, true),
      DEFINE_PROP_BOOL("x-migrate-smi-count", X86CPU, migrate_smi_count,
                       true),
-     /*
-diff --git a/target/i386/hvf/x86_cpuid.c b/target/i386/hvf/x86_cpuid.c
-index 0798a0c..d965113 100644
---- a/target/i386/hvf/x86_cpuid.c
-+++ b/target/i386/hvf/x86_cpuid.c
-@@ -80,7 +80,6 @@ uint32_t hvf_get_supported_cpuid(uint32_t func, uint32_t idx,
-              CPUID_EXT_POPCNT | CPUID_EXT_AES | CPUID_EXT_X2APIC |
-              (supported_xcr0 ? CPUID_EXT_XSAVE : 0) |
-              CPUID_EXT_AVX | CPUID_EXT_F16C | CPUID_EXT_RDRAND;
--        ecx |= CPUID_EXT_HYPERVISOR;
-         break;
-     case 6:
-         eax = CPUID_6_EAX_ARAT;
 diff --git a/target/i386/kvm/kvm-cpu.c b/target/i386/kvm/kvm-cpu.c
 index 9c25b55..1ae774b 100644
 --- a/target/i386/kvm/kvm-cpu.c
@@ -2131,155 +1496,3 @@ index 9c25b55..1ae774b 100644
          /* Special cases not set in the X86CPUDefinition structs: */
          x86_cpu_apply_props(cpu, kvm_default_props);
      }
-diff --git a/target/i386/kvm/kvm.c b/target/i386/kvm/kvm.c
-index 60c7981..e054f53 100644
---- a/target/i386/kvm/kvm.c
-+++ b/target/i386/kvm/kvm.c
-@@ -457,7 +457,7 @@ uint32_t kvm_arch_get_supported_cpuid(KVMState *s, uint32_t function,
-         /* We can set the hypervisor flag, even if KVM does not return it on
-          * GET_SUPPORTED_CPUID
-          */
--        ret |= CPUID_EXT_HYPERVISOR;
-+
-         /* tsc-deadline flag is not returned by GET_SUPPORTED_CPUID, but it
-          * can be enabled if the kernel has KVM_CAP_TSC_DEADLINE_TIMER,
-          * and the irqchip is in the kernel.
-@@ -1647,7 +1647,7 @@ static int hyperv_fill_cpuids(CPUState *cs,
-         c->function = HV_CPUID_SYNDBG_VENDOR_AND_MAX_FUNCTIONS;
-         c->eax = hyperv_feat_enabled(cpu, HYPERV_FEAT_EVMCS) ?
-             HV_CPUID_NESTED_FEATURES : HV_CPUID_IMPLEMENT_LIMITS;
--        memcpy(signature, "Microsoft VS", 12);
-+        memset(signature, 0, 12);
-         c->eax = 0;
-         c->ebx = signature[0];
-         c->ecx = signature[1];
-@@ -1655,7 +1655,7 @@ static int hyperv_fill_cpuids(CPUState *cs,
- 
-         c = &cpuid_ent[cpuid_i++];
-         c->function = HV_CPUID_SYNDBG_INTERFACE;
--        memcpy(signature, "VS#1\0\0\0\0\0\0\0\0", 12);
-+        memset(signature, 0, 12);
-         c->eax = signature[0];
-         c->ebx = 0;
-         c->ecx = 0;
-@@ -2145,6 +2145,7 @@ int kvm_arch_init_vcpu(CPUState *cs)
- 
-     env->apic_bus_freq = KVM_APIC_BUS_FREQUENCY;
- 
-+#if 0
-     /*
-      * kvm_hyperv_expand_features() is called here for the second time in case
-      * KVM_CAP_SYS_HYPERV_CPUID is not supported. While we can't possibly handle
-@@ -2173,7 +2174,7 @@ int kvm_arch_init_vcpu(CPUState *cs)
- #ifdef CONFIG_XEN_EMU
-         struct kvm_cpuid_entry2 *xen_max_leaf;
- 
--        memcpy(signature, "XenVMMXenVMM", 12);
-+        memset(signature, 0, 12);
- 
-         xen_max_leaf = c = &cpuid_data.entries[cpuid_i++];
-         c->function = kvm_base + XEN_CPUID_SIGNATURE;
-@@ -2249,7 +2250,7 @@ int kvm_arch_init_vcpu(CPUState *cs)
-         abort();
- #endif
-     } else if (cpu->expose_kvm) {
--        memcpy(signature, "KVMKVMKVM\0\0\0", 12);
-+        memset(signature, 0, 12);
-         c = &cpuid_data.entries[cpuid_i++];
-         c->function = KVM_CPUID_SIGNATURE | kvm_base;
-         c->eax = KVM_CPUID_FEATURES | kvm_base;
-@@ -2262,6 +2263,7 @@ int kvm_arch_init_vcpu(CPUState *cs)
-         c->eax = env->features[FEAT_KVM];
-         c->edx = env->features[FEAT_KVM_HINTS];
-     }
-+#endif
- 
-     if (cpu->kvm_pv_enforce_cpuid) {
-         r = kvm_vcpu_enable_cap(cs, KVM_CAP_ENFORCE_PV_FEATURE_CPUID, 0, 1);
-@@ -2437,6 +2439,7 @@ void kvm_arch_reset_vcpu(X86CPU *cpu)
-     sev_es_set_reset_vector(CPU(cpu));
- }
- 
-+#if 0
- void kvm_arch_after_reset_vcpu(X86CPU *cpu)
- {
-     CPUX86State *env = &cpu->env;
-@@ -2454,6 +2457,7 @@ void kvm_arch_after_reset_vcpu(X86CPU *cpu)
-         hyperv_x86_synic_reset(cpu);
-     }
- }
-+#endif
- 
- void kvm_arch_reset_parked_vcpu(unsigned long vcpu_id, int kvm_fd)
- {
-diff --git a/target/s390x/cpu_models.c b/target/s390x/cpu_models.c
-index 954a7a9..3f1fe01 100644
---- a/target/s390x/cpu_models.c
-+++ b/target/s390x/cpu_models.c
-@@ -954,7 +954,7 @@ static void s390_qemu_cpu_model_class_init(ObjectClass *oc, const void *data)
-     S390CPUClass *xcc = S390_CPU_CLASS(oc);
- 
-     xcc->is_migration_safe = true;
--    xcc->desc = g_strdup_printf("QEMU Virtual CPU version %s",
-+    xcc->desc = g_strdup_printf("CPU version %s",
-                                 qemu_hw_version());
- }
- 
-diff --git a/target/s390x/tcg/misc_helper.c b/target/s390x/tcg/misc_helper.c
-index 215b5b9..c1fa437 100644
---- a/target/s390x/tcg/misc_helper.c
-+++ b/target/s390x/tcg/misc_helper.c
-@@ -335,18 +335,18 @@ uint32_t HELPER(stsi)(CPUS390XState *env, uint64_t a0, uint64_t r0, uint64_t r1)
-             /* Basic Machine Configuration */
-             char type[5] = {};
- 
--            ebcdic_put(sysib.sysib_111.manuf, "QEMU            ", 16);
-+            ebcdic_put(sysib.sysib_111.manuf, "Intel           ", 16);
-             /* same as machine type number in STORE CPU ID, but in EBCDIC */
-             snprintf(type, ARRAY_SIZE(type), "%X", cpu->model->def->type);
-             ebcdic_put(sysib.sysib_111.type, type, 4);
-             /* model number (not stored in STORE CPU ID for z/Architecture) */
--            ebcdic_put(sysib.sysib_111.model, "QEMU            ", 16);
--            ebcdic_put(sysib.sysib_111.sequence, "QEMU            ", 16);
--            ebcdic_put(sysib.sysib_111.plant, "QEMU", 4);
-+            ebcdic_put(sysib.sysib_111.model, "Intel           ", 16);
-+            ebcdic_put(sysib.sysib_111.sequence, "Intel           ", 16);
-+            ebcdic_put(sysib.sysib_111.plant, "INTL", 4);
-         } else if ((sel1 == 2) && (sel2 == 1)) {
-             /* Basic Machine CPU */
--            ebcdic_put(sysib.sysib_121.sequence, "QEMUQEMUQEMUQEMU", 16);
--            ebcdic_put(sysib.sysib_121.plant, "QEMU", 4);
-+            ebcdic_put(sysib.sysib_121.sequence, "INTELINTELINTELI", 16);
-+            ebcdic_put(sysib.sysib_121.plant, "INTL", 4);
-             sysib.sysib_121.cpu_addr = cpu_to_be16(env->core_id);
-         } else if ((sel1 == 2) && (sel2 == 2)) {
-             /* Basic Machine CPUs */
-@@ -361,8 +361,8 @@ uint32_t HELPER(stsi)(CPUS390XState *env, uint64_t a0, uint64_t r0, uint64_t r1)
-     case STSI_R0_FC_LEVEL_2:
-         if ((sel1 == 2) && (sel2 == 1)) {
-             /* LPAR CPU */
--            ebcdic_put(sysib.sysib_221.sequence, "QEMUQEMUQEMUQEMU", 16);
--            ebcdic_put(sysib.sysib_221.plant, "QEMU", 4);
-+            ebcdic_put(sysib.sysib_221.sequence, "INTELINTELINTELI", 16);
-+            ebcdic_put(sysib.sysib_221.plant, "INTL", 4);
-             sysib.sysib_221.cpu_addr = cpu_to_be16(env->core_id);
-         } else if ((sel1 == 2) && (sel2 == 2)) {
-             /* LPAR CPUs */
-@@ -370,7 +370,7 @@ uint32_t HELPER(stsi)(CPUS390XState *env, uint64_t a0, uint64_t r0, uint64_t r1)
-             sysib.sysib_222.total_cpus = cpu_to_be16(total_cpus);
-             sysib.sysib_222.conf_cpus = cpu_to_be16(conf_cpus);
-             sysib.sysib_222.reserved_cpus = cpu_to_be16(reserved_cpus);
--            ebcdic_put(sysib.sysib_222.name, "QEMU    ", 8);
-+            ebcdic_put(sysib.sysib_222.name, "Intel   ", 8);
-             sysib.sysib_222.caf = cpu_to_be32(1000);
-             sysib.sysib_222.dedicated_cpus = cpu_to_be16(conf_cpus);
-         } else {
-@@ -386,7 +386,7 @@ uint32_t HELPER(stsi)(CPUS390XState *env, uint64_t a0, uint64_t r0, uint64_t r1)
-             sysib.sysib_322.vm[0].reserved_cpus = cpu_to_be16(reserved_cpus);
-             sysib.sysib_322.vm[0].caf = cpu_to_be32(1000);
-             /* Linux kernel uses this to distinguish us from z/VM */
--            ebcdic_put(sysib.sysib_322.vm[0].cpi, "KVM/Linux       ", 16);
-+            ebcdic_put(sysib.sysib_322.vm[0].cpi, "IntelIntel      ", 16);
-             sysib.sysib_322.vm[0].ext_name_encoding = 2; /* UTF-8 */
- 
-             /* If our VM has a name, use the real name */
