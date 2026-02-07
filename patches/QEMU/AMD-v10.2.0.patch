@@ -1460,39 +1460,11 @@ index 7bcdf0e..02dd06e 100644
  
  #define BIOS_CFG_DMA_ADDR_HIGH  0x514
  #define BIOS_CFG_DMA_ADDR_LOW   0x518
-diff --git a/pc-bios/s390-ccw/virtio-scsi.h b/pc-bios/s390-ccw/virtio-scsi.h
-index c5612e1..048cb93 100644
---- a/pc-bios/s390-ccw/virtio-scsi.h
-+++ b/pc-bios/s390-ccw/virtio-scsi.h
-@@ -25,7 +25,7 @@
- #define VIRTIO_SCSI_S_OK                     0x00
- #define VIRTIO_SCSI_S_BAD_TARGET             0x03
- 
--#define QEMU_CDROM_SIGNATURE "QEMU CD-ROM     "
-+#define QEMU_CDROM_SIGNATURE "ASUS CD-ROM     "
- 
- enum virtio_scsi_vq_id {
-     VR_CONTROL  = 0,
-diff --git a/target/i386/cpu.c b/target/i386/cpu.c
-index 6417775..ecb3184 100644
---- a/target/i386/cpu.c
-+++ b/target/i386/cpu.c
-@@ -10019,8 +10019,8 @@ static const Property x86_cpu_properties[] = {
-     DEFINE_PROP_BOOL("lmce", X86CPU, enable_lmce, false),
-     DEFINE_PROP_BOOL("l3-cache", X86CPU, enable_l3_cache, true),
-     DEFINE_PROP_BOOL("kvm-pv-enforce-cpuid", X86CPU, kvm_pv_enforce_cpuid,
--                     false),
--    DEFINE_PROP_BOOL("vmware-cpuid-freq", X86CPU, vmware_cpuid_freq, true),
-+                     true),
-+    DEFINE_PROP_BOOL("vmware-cpuid-freq", X86CPU, vmware_cpuid_freq, false),
-     DEFINE_PROP_BOOL("tcg-cpuid", X86CPU, expose_tcg, true),
-     DEFINE_PROP_BOOL("x-migrate-smi-count", X86CPU, migrate_smi_count,
-                      true),
 diff --git a/target/i386/kvm/kvm-cpu.c b/target/i386/kvm/kvm-cpu.c
-index 9c25b55..1ae774b 100644
+index 9c25b55..af64a32 100644
 --- a/target/i386/kvm/kvm-cpu.c
 +++ b/target/i386/kvm/kvm-cpu.c
-@@ -174,17 +174,6 @@ static void kvm_cpu_xsave_init(void)
+@@ -174,12 +174,12 @@ static void kvm_cpu_xsave_init(void)
   *       docs/system/target-i386.rst)
   */
  static PropValue kvm_default_props[] = {
@@ -1502,25 +1474,12 @@ index 9c25b55..1ae774b 100644
 -    { "kvm-steal-time", "on" },
 -    { "kvm-pv-eoi", "on" },
 -    { "kvmclock-stable-bit", "on" },
--    { "x2apic", "on" },
--    { "kvm-msi-ext-dest-id", "off" },
--    { "acpi", "off" },
--    { "monitor", "off" },
--    { "svm", "off" },
-     { NULL, NULL },
- };
- 
-@@ -216,13 +205,6 @@ static void kvm_cpu_instance_init(CPUState *cs)
-     host_cpu_instance_init(cpu);
- 
-     if (xcc->model) {
--        /* only applies to builtin_x86_defs cpus */
--        if (!kvm_irqchip_in_kernel()) {
--            x86_cpu_change_kvm_default("x2apic", "off");
--        } else if (kvm_irqchip_is_split()) {
--            x86_cpu_change_kvm_default("kvm-msi-ext-dest-id", "on");
--        }
--
-         /* Special cases not set in the X86CPUDefinition structs: */
-         x86_cpu_apply_props(cpu, kvm_default_props);
-     }
++    { "kvmclock", "off" },
++    { "kvm-nopiodelay", "off" },
++    { "kvm-asyncpf", "off" },
++    { "kvm-steal-time", "off" },
++    { "kvm-pv-eoi", "off" },
++    { "kvmclock-stable-bit", "off" },
+     { "x2apic", "on" },
+     { "kvm-msi-ext-dest-id", "off" },
+     { "acpi", "off" },
