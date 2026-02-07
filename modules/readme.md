@@ -325,12 +325,34 @@ Hides `CPUID 0x40000000` (`KVMKVMKVM` signature) and `CPUID 0x40000001` (KVM fea
 </features>
 ```
 
-### KVM Paravirt Features & MSR Enforcement
+### KVM paravirtualization features
 
-Enforces PV CPUID at the kernel level and disables all default-on PV features (`0x4b564d00`–`0x4b564dff`).
+Disables all KVM paravirtualization features
 
-```
--cpu host,kvm=off,kvm-pv-enforce-cpuid=on,kvmclock=off,kvm-nopiodelay=off,kvm-asyncpf=off,kvm-steal-time=off,kvm-pv-eoi=off,kvmclock-stable-bit=off
+```patch
+diff --git a/target/i386/kvm/kvm-cpu.c b/target/i386/kvm/kvm-cpu.c
+index 9c25b55..af64a32 100644
+--- a/target/i386/kvm/kvm-cpu.c
++++ b/target/i386/kvm/kvm-cpu.c
+@@ -174,12 +174,12 @@ static void kvm_cpu_xsave_init(void)
+  *       docs/system/target-i386.rst)
+  */
+ static PropValue kvm_default_props[] = {
+-    { "kvmclock", "on" },
+-    { "kvm-nopiodelay", "on" },
+-    { "kvm-asyncpf", "on" },
+-    { "kvm-steal-time", "on" },
+-    { "kvm-pv-eoi", "on" },
+-    { "kvmclock-stable-bit", "on" },
++    { "kvmclock", "off" },
++    { "kvm-nopiodelay", "off" },
++    { "kvm-asyncpf", "off" },
++    { "kvm-steal-time", "off" },
++    { "kvm-pv-eoi", "off" },
++    { "kvmclock-stable-bit", "off" },
+     { "x2apic", "on" },
+     { "kvm-msi-ext-dest-id", "off" },
+     { "acpi", "off" },
 ```
 
 </details>
