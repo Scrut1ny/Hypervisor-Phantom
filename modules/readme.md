@@ -299,13 +299,39 @@ QEMU XML:
 <details>
 <summary>Expand for details...</summary>
 
-## KVM-specific custom MSR/Signatures
+## KVM-specific Custom MSR/Signatures
 
-- Linux Kernel:
-  - https://docs.kernel.org/virt/kvm/x86/msr.html
-  - https://github.com/torvalds/linux/blob/master/arch/x86/include/uapi/asm/kvm_para.h
-- QEMU
-  - https://gitlab.com/qemu-project/qemu/-/blob/master/include/standard-headers/asm-x86/kvm_para.h
+> Reference: [`kvm_para.h`](https://gitlab.com/qemu-project/qemu/-/blob/master/include/standard-headers/asm-x86/kvm_para.h)
+
+### Hypervisor Bit
+
+Clears `CPUID.1.ECX[31]` — the universal "hypervisor present" indicator.
+
+```xml
+  <cpu>
+    <feature policy="disable" name="hypervisor"/>
+  </cpu>
+```
+
+### KVM Signature & Feature Bits
+
+Hides `CPUID 0x40000000` (`KVMKVMKVM` signature) and `CPUID 0x40000001` (KVM feature bits).
+
+```xml
+<features>
+  <kvm>
+    <hidden state="on"/>
+  </kvm>
+</features>
+```
+
+### KVM Paravirt Features & MSR Enforcement
+
+Enforces PV CPUID at the kernel level and disables all default-on PV features (`0x4b564d00`–`0x4b564dff`).
+
+```
+-cpu host,kvm=off,kvm-pv-enforce-cpuid=on,kvmclock=off,kvm-nopiodelay=off,kvm-asyncpf=off,kvm-steal-time=off,kvm-pv-eoi=off,kvmclock-stable-bit=off
+```
 
 </details>
 
