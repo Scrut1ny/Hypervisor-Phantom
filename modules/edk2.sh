@@ -181,12 +181,9 @@ patch_ovmf() {
 # Build OVMF w/SB & TPM
 ################################################################################
 build_ovmf() {
-  local WORKSPACE EDK_TOOLS_PATH CONF_PATH TEMP_DIR
-  local efivars_json EFI_GLOBAL_VARIABLE_GUID EFI_IMAGE_SECURITY_DATABASE_GUID
-
-
-
-
+  local efivars_json
+  local -r EFI_GLOBAL=8be4df61-93ca-11d2-aa0d-00e098032b8c
+  local -r EFI_IMAGE_SEC=d719b2cb-3d3a-4596-a3bc-dad00e67656f
 
   # --- Phase 1: Build Environment & Compilation ---
   fmtr::info "Initializing build environment..."
@@ -195,96 +192,58 @@ build_ovmf() {
   export EDK_TOOLS_PATH="$WORKSPACE/BaseTools"
   export CONF_PATH="$WORKSPACE/Conf"
 
-  # Ensure BaseTools are built
   if [ ! -d "BaseTools/Build" ]; then
     { make -C BaseTools -j"$(nproc)" && source edksetup.sh; } &>>"$LOG_FILE" || {
       fmtr::fatal "BaseTools build failed"; return 1;
     }
   fi
 
-  # Build OVMF (Release, X64)
   build -p OvmfPkg/OvmfPkgX64.dsc -a X64 -t GCC5 -b RELEASE -n 0 -s \
-    --define SECURE_BOOT_ENABLE=TRUE \
-    --define TPM1_ENABLE=TRUE \
-    --define TPM2_ENABLE=TRUE \
-    --define SMM_REQUIRE=TRUE &>>"$LOG_FILE" || {
+    -D SECURE_BOOT_ENABLE=TRUE -D SMM_REQUIRE=TRUE \
+    -D TPM1_ENABLE=TRUE -D TPM2_ENABLE=TRUE &>>"$LOG_FILE" || {
       fmtr::fatal "OVMF build failed"; return 1;
     }
 
-
-
-
-
   # --- Phase 2: Artifact Conversion ---
-  # Convert raw firmware volumes to qcow2
-  for f in CODE VARS; do
+  local f; for f in CODE VARS; do
     $ROOT_ESC "$OUT_DIR/emulator/bin/qemu-img" convert -f raw -O qcow2 \
       "Build/OvmfX64/RELEASE_GCC5/FV/OVMF_${f}.fd" \
       "$OUT_DIR/firmware/OVMF_${f}.qcow2" || return 1
   done
 
-
-
-
-
-  # --- Phase 3: Variable Extraction ---
-  TEMP_DIR="$(mktemp -d)" || return 1
-  trap 'rm -rf "$TEMP_DIR"' RETURN
+  # --- Phase 3: Variable Extraction & NVRAM Injection ---
+  efivars_json="$(mktemp)" || return 1
+  trap 'rm -f "$efivars_json"' RETURN
 
   fmtr::info "Extracting host EFI keys..."
 
-  efivars_json="$TEMP_DIR/efivars.json"
-  EFI_GLOBAL_VARIABLE_GUID="8be4df61-93ca-11d2-aa0d-00e098032b8c"
-  EFI_IMAGE_SECURITY_DATABASE_GUID="d719b2cb-3d3a-4596-a3bc-dad00e67656f"
-
-  # Map OVMF variable names to Host sysfs paths and target GUIDs
-  local -A key_mappings=(
-    ["PK"]="PK-${EFI_GLOBAL_VARIABLE_GUID}|${EFI_GLOBAL_VARIABLE_GUID}"
-    ["KEK"]="KEK-${EFI_GLOBAL_VARIABLE_GUID}|${EFI_GLOBAL_VARIABLE_GUID}"
-    ["db"]="db-${EFI_IMAGE_SECURITY_DATABASE_GUID}|${EFI_IMAGE_SECURITY_DATABASE_GUID}"
-    ["dbx"]="dbx-${EFI_IMAGE_SECURITY_DATABASE_GUID}|${EFI_IMAGE_SECURITY_DATABASE_GUID}"
-    ["PKDefault"]="PKDefault-${EFI_GLOBAL_VARIABLE_GUID}|${EFI_GLOBAL_VARIABLE_GUID}"
-    ["KEKDefault"]="KEKDefault-${EFI_GLOBAL_VARIABLE_GUID}|${EFI_GLOBAL_VARIABLE_GUID}"
-    ["dbDefault"]="dbDefault-${EFI_GLOBAL_VARIABLE_GUID}|${EFI_GLOBAL_VARIABLE_GUID}"
-    ["dbxDefault"]="dbxDefault-${EFI_GLOBAL_VARIABLE_GUID}|${EFI_GLOBAL_VARIABLE_GUID}"
+  local -a keys=(
+    "PK:${EFI_GLOBAL}"         "KEK:${EFI_GLOBAL}"
+    "db:${EFI_IMAGE_SEC}"      "dbx:${EFI_IMAGE_SEC}"
+    "PKDefault:${EFI_GLOBAL}"  "KEKDefault:${EFI_GLOBAL}"
+    "dbDefault:${EFI_GLOBAL}"  "dbxDefault:${EFI_GLOBAL}"
   )
 
-  # Generate JSON payload from host NVRAM
   {
     printf '{\n    "version": 2,\n    "variables": [\n'
-
-    local first_entry=true target_name target_guid host_file path full_hex header_hex data_hex attr
-
-    for target_name in "${!key_mappings[@]}"; do
-      IFS='|' read -r host_file target_guid <<< "${key_mappings[$target_name]}"
-      path="/sys/firmware/efi/efivars/${host_file}"
-
+    local first=true name guid path full_hex attr
+    for entry in "${keys[@]}"; do
+      IFS=: read -r name guid <<< "$entry"
+      path="/sys/firmware/efi/efivars/${name}-${guid}"
       [ -f "$path" ] || continue
 
-      # Dump hex: Header (4 bytes) + Data
-      full_hex=$(hexdump -ve '1/1 "%.2x"' "$path" 2>/dev/null)
-      header_hex="${full_hex:0:8}"
-      data_hex="${full_hex:8}"
+      full_hex=$(hexdump -ve '1/1 "%.2x"' "$path" 2>/dev/null) || continue
+      attr=$(printf '%d' "0x${full_hex:6:2}${full_hex:4:2}${full_hex:2:2}${full_hex:0:2}")
 
-      # Parse attributes (Little Endian 32-bit int)
-      attr=$(( 16#${header_hex:6:2}${header_hex:4:2}${header_hex:2:2}${header_hex:0:2} ))
-
-      "$first_entry" && first_entry=false || printf ',\n'
-
+      "$first" && first=false || printf ',\n'
       printf '        { "name": "%s", "guid": "%s", "attr": %d, "data": "%s" }' \
-        "$target_name" "$target_guid" "$attr" "$data_hex"
+        "$name" "$guid" "$attr" "${full_hex:8}"
     done
-
     printf '\n    ]\n}\n'
   } > "$efivars_json"
 
-
-
-
-
   # --- Phase 4: NVRAM Injection ---
   fmtr::info "Populating OVMF NVRAM..."
-
   $ROOT_ESC virt-fw-vars \
     --input "$OUT_DIR/firmware/OVMF_VARS.qcow2" \
     --output "$OUT_DIR/firmware/OVMF_VARS.qcow2" \
