@@ -182,8 +182,8 @@ patch_ovmf() {
 ################################################################################
 build_ovmf() {
   local efivars_json
-  local -r EFI_GLOBAL=8be4df61-93ca-11d2-aa0d-00e098032b8c
-  local -r EFI_IMAGE_SEC=d719b2cb-3d3a-4596-a3bc-dad00e67656f
+  local -r EFI_GLOBAL_VARIABLE=8be4df61-93ca-11d2-aa0d-00e098032b8c
+  local -r EFI_IMAGE_SECURITY_DATABASE_GUID=d719b2cb-3d3a-4596-a3bc-dad00e67656f
 
   # --- Phase 1: Build Environment & Compilation ---
   fmtr::info "Initializing build environment..."
@@ -218,10 +218,10 @@ build_ovmf() {
   fmtr::info "Extracting host EFI keys..."
 
   local -a keys=(
-    "PK:${EFI_GLOBAL}"         "KEK:${EFI_GLOBAL}"
-    "db:${EFI_IMAGE_SEC}"      "dbx:${EFI_IMAGE_SEC}"
-    "PKDefault:${EFI_GLOBAL}"  "KEKDefault:${EFI_GLOBAL}"
-    "dbDefault:${EFI_GLOBAL}"  "dbxDefault:${EFI_GLOBAL}"
+    "PK:${EFI_GLOBAL_VARIABLE}"               "KEK:${EFI_GLOBAL_VARIABLE}"
+    "db:${EFI_IMAGE_SECURITY_DATABASE_GUID}"  "dbx:${EFI_IMAGE_SECURITY_DATABASE_GUID}"
+    "PKDefault:${EFI_GLOBAL_VARIABLE}"        "KEKDefault:${EFI_GLOBAL_VARIABLE}"
+    "dbDefault:${EFI_GLOBAL_VARIABLE}"        "dbxDefault:${EFI_GLOBAL_VARIABLE}"
   )
 
   {
