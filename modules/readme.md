@@ -279,6 +279,22 @@ QEMU XML:
 /var/lib/libvirt/images/
 ```
 
+
+
+## Firmware Specifications
+
+- https://uefi.org/specifications
+  - [ACPI Specification](https://uefi.org/sites/default/files/resources/ACPI_Spec_6.6.pdf)
+  - [UEFI Specification](https://uefi.org/sites/default/files/resources/UEFI_Spec_Final_2.11.pdf)
+
+| Variable Name                    | Variable GUID                        |
+| EFI_GLOBAL_VARIABLE              | 8be4df61-93ca-11d2-aa0d-00e098032b8c |
+| EFI_IMAGE_SECURITY_DATABASE_GUID | d719b2cb-3d3a-4596-a3bc-dad00e67656f |
+
+
+
+
+
 </details>
 
 
