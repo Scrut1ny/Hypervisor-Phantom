@@ -78,9 +78,10 @@ revert_vfio() {
 # Configure VFIO
 ################################################################################
 configure_vfio() {
-    local dev bdf desc sel target_bdf device_addr iommu_path iommu_group vendor_id device_id bad=0 pci_vendor hwids="" soft
+    local dev bdf desc sel target_bdf iommu_group vendor_id device_id pci_vendor bad=0
     local -a gpus=() badf=() ids=()
 
+    # Discover GPUs
     for dev in /sys/bus/pci/devices/*; do
         [[ $(<"$dev/class") == 0x03* ]] || continue
         bdf=${dev##*/}
@@ -89,46 +90,46 @@ configure_vfio() {
         gpus+=("$bdf|$desc")
     done
 
-    ((${#gpus[@]})) || { fmtr::error "No GPUs detected!"; exit 1; }
-    ((${#gpus[@]}==1)) && fmtr::warn "Only one GPU detected! Passing it through will leave the host without display output."
+    (( ${#gpus[@]} )) || { fmtr::error "No GPUs detected!"; exit 1; }
+    (( ${#gpus[@]} == 1 )) && fmtr::warn "Only one GPU detected! Passing it through will leave the host without display output."
 
+    # GPU selection
     while :; do
-        for dev in "${!gpus[@]}"; do
-            printf '\n  %d) %s\n' "$((dev+1))" "${gpus[dev]#*|}"
-        done
+        for dev in "${!gpus[@]}"; do printf '\n  %d) %s\n' "$((dev+1))" "${gpus[dev]#*|}"; done
         read -rp "$(fmtr::ask 'Select device number: ')" sel
-        (( sel>=1 && sel<=${#gpus[@]} )) 2>/dev/null && break
+        (( sel >= 1 && sel <= ${#gpus[@]} )) 2>/dev/null && break
         fmtr::error "Invalid selection. Please choose a valid number."
     done
 
     target_bdf=${gpus[sel-1]%%|*}
-    device_addr=${target_bdf%.*}
-    iommu_path=$(readlink "/sys/bus/pci/devices/$target_bdf/iommu_group") || { fmtr::error "No IOMMU group for $target_bdf"; return 1; }
-    iommu_group=${iommu_path##*/}
+    iommu_group=$(readlink -f "/sys/bus/pci/devices/$target_bdf/iommu_group")
+    iommu_group=${iommu_group##*/}
 
+    # Collect device IDs & validate IOMMU group isolation
     for dev in "/sys/kernel/iommu_groups/$iommu_group/devices/"*; do
         bdf=${dev##*/}
-        read -r vendor_id <"$dev/vendor"
-        read -r device_id <"$dev/device"
-        ids+=("${vendor_id:2}:${device_id:2}")
-        [[ $bdf == "$device_addr".* ]] || { bad=1; badf+=("$bdf"); }
+        read -r vendor_id < "$dev/vendor"
+        read -r device_id < "$dev/device"
+        ids+=("${vendor_id#0x}:${device_id#0x}")
+        [[ $bdf == "${target_bdf%.*}".* ]] || { bad=1; badf+=("$bdf"); }
     done
 
-    if ((bad)); then
-        fmtr::error "Bad IOMMU grouping - group #$iommu_group contains:
+    if (( bad )); then
+        fmtr::error "Detected poor IOMMU grouping! IOMMU group #$iommu_group contains:\n
 $(printf '  [%s]\n' "${badf[@]}")"
-        fmtr::warn "VFIO PT requires full group isolation. Fix with ACS override, firmware update, or proper hardware support."
+        fmtr::warn "VFIO PT requires full group isolation. Possible solutions:
+      BIOS update, ACS override kernel patch, or new motherboard."
         return 1
     fi
 
+    # Write VFIO config
     fmtr::log "Modifying VFIO config: $VFIO_CONF_PATH"
-    read -r pci_vendor <"/sys/bus/pci/devices/$target_bdf/vendor" || return 1
-    hwids=$(IFS=,; echo "${ids[*]}")
+    read -r pci_vendor < "/sys/bus/pci/devices/$target_bdf/vendor" || return 1
 
     {
-        printf 'options vfio-pci ids=%s disable_vga=1\n' "$hwids"
+        printf 'options vfio-pci ids=%s disable_vga=1\n' "$(IFS=,; echo "${ids[*]}")"
         for soft in ${GPU_DRIVERS[$pci_vendor]:-}; do printf 'softdep %s pre: vfio-pci\n' "$soft"; done
-    } | $ROOT_ESC tee "$VFIO_CONF_PATH" >>"$LOG_FILE"
+    } | $ROOT_ESC tee "$VFIO_CONF_PATH" >> "$LOG_FILE"
 
     # sudo sed -i 's/^MODULES=()$/MODULES=(vfio vfio_iommu_type1 vfio_pci)/' /etc/mkinitcpio.conf
     # sudo mkinitcpio -P
