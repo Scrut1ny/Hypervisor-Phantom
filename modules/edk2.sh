@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-[[ -z "$DISTRO" || -z "$LOG_FILE" ]] && { echo "Required environment variables not set."; exit 1; }
-
 source ./utils.sh || { echo "Failed to load utilities module!"; exit 1; }
 
 
