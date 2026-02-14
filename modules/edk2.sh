@@ -72,7 +72,7 @@ acquire_edk2_source() {
 # Patch OVMF
 ################################################################################
 patch_ovmf() {
-  local BIOS_VENDOR BIOS_VERSION BIOS_RELEASE_DATE
+  local BIOS_VENDOR BIOS_VERSION BIOS_DATE
   local logo_choice custom_bmp width height bit_depth compression
 
 
@@ -94,20 +94,20 @@ patch_ovmf() {
   # --- Phase 2: SMBIOS Spoofing ---
   fmtr::info "Spoofing SMBIOS metadata..."
 
-  BIOS_VENDOR="$($ROOT_ESC dmidecode --string bios-vendor)"
-  BIOS_VERSION="$($ROOT_ESC dmidecode --string bios-version)"
-  BIOS_RELEASE_DATE="$($ROOT_ESC dmidecode --string bios-release-date)"
+  BIOS_VENDOR="$(</sys/class/dmi/id/bios_vendor)"
+  BIOS_VERSION="$(</sys/class/dmi/id/bios_version)"
+  BIOS_DATE="$(</sys/class/dmi/id/bios_date)"
 
   sed -i \
     -e 's|VendStr = L"unknown";|VendStr = L"'"$BIOS_VENDOR"'";|' \
     -e 's|VersStr = L"unknown";|VersStr = L"'"$BIOS_VERSION"'";|' \
-    -e 's|DateStr = L"02/02/2022";|DateStr = L"'"$BIOS_RELEASE_DATE"'";|' \
+    -e 's|DateStr = L"02/02/2022";|DateStr = L"'"$BIOS_DATE"'";|' \
     OvmfPkg/SmbiosPlatformDxe/SmbiosPlatformDxe.c
 
   sed -i \
     -e 's|EFI Development Kit II / OVMF|'"$BIOS_VENDOR"'|' \
     -e 's|"0\.0\.0\\0"|"'"$BIOS_VERSION"'\\0"|' \
-    -e 's|"02/06/2015\\0"|"'"$BIOS_RELEASE_DATE"'\\0"|' \
+    -e 's|"02/06/2015\\0"|"'"$BIOS_DATE"'\\0"|' \
     OvmfPkg/Bhyve/SmbiosPlatformDxe/SmbiosPlatformDxe.c
 
 
