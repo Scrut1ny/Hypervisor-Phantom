@@ -30,7 +30,7 @@ index 0775aa9..10197a5 100644
    ## Default OEM Revision for ACPI table creation.
    #  According to ACPI specification, for LoadTable() opcode, the OS can also
 diff --git a/OvmfPkg/Include/IndustryStandard/Q35MchIch9.h b/OvmfPkg/Include/IndustryStandard/Q35MchIch9.h
-index db828d3..523f8a1 100644
+index db828d3..103b1ce 100644
 --- a/OvmfPkg/Include/IndustryStandard/Q35MchIch9.h
 +++ b/OvmfPkg/Include/IndustryStandard/Q35MchIch9.h
 @@ -20,7 +20,7 @@
@@ -38,12 +38,12 @@ index db828d3..523f8a1 100644
  // Host Bridge Device ID (DID) value for Q35/MCH
  //
 -#define INTEL_Q35_MCH_DEVICE_ID  0x29C0
-+#define INTEL_Q35_MCH_DEVICE_ID  0x14d8 // Intel G33/P35/Q35/Q33 Chipset - Memory Controller Hub [A0] | AMD Vendor ID Replacement from 0x29c0 | hw/pci-host/q35.c
++#define INTEL_Q35_MCH_DEVICE_ID  0x14d8 /* Host-to-PCI / Host bridge [0600] | hw/pci-host/q35.c */
  
  //
  // B/D/F/Type: 0/0/0/PCI
 diff --git a/OvmfPkg/Include/IndustryStandard/QemuPciBridgeCapabilities.h b/OvmfPkg/Include/IndustryStandard/QemuPciBridgeCapabilities.h
-index a70b99f..3293947 100644
+index a70b99f..bb9c2b5 100644
 --- a/OvmfPkg/Include/IndustryStandard/QemuPciBridgeCapabilities.h
 +++ b/OvmfPkg/Include/IndustryStandard/QemuPciBridgeCapabilities.h
 @@ -18,7 +18,7 @@
@@ -51,7 +51,7 @@ index a70b99f..3293947 100644
  // equals the following value.
  //
 -#define QEMU_PCI_BRIDGE_VENDOR_ID_REDHAT  0x1B36
-+#define QEMU_PCI_BRIDGE_VENDOR_ID_REDHAT  0x1022 // "Red Hat, Inc." | AMD Vendor ID Replacement from 0x1b36
++#define QEMU_PCI_BRIDGE_VENDOR_ID_REDHAT  0x1022 /* Red Hat QEMU devices */
  
  //
  // Common capability header for all hints.
